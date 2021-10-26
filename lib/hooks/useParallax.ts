@@ -8,7 +8,7 @@ export interface UseParallax {
   data: ParallaxItem[]
 }
 
-export default function useParallax(interval: number, count: number, deep: any[] = []): UseParallax {
+export default function useParallax(parallax: number, count: number): UseParallax {
   const initList = useMemo(() => {
     const list: ParallaxItem[] = []
     for (let i = 0; i < count; i++) list.push(new ParallaxItem())
@@ -19,7 +19,8 @@ export default function useParallax(interval: number, count: number, deep: any[]
 
   useEffect(() => {
     let index = count + 1
-    const task = setInterval(async () => {
+    setData(initList)
+    const task = setInterval(() => {
       if (index >= initList.length) {
         index -= 1;
         return;
@@ -28,12 +29,15 @@ export default function useParallax(interval: number, count: number, deep: any[]
         clearInterval(task)
         return;
       }
-      initList[index].value = true
-      setData([...initList])
+      console.info('setValueTrue-->', index)
+      setData((oldList) => {
+        oldList[index].value = true
+        return [...oldList]
+      })
       index -= 1
-    }, 100)
+    }, parallax)
     return () => clearInterval(task)
-  }, [initList, interval, count, ...deep])
+  }, [initList, parallax, count])
 
   return useMemo(() => ({data}), [data])
 }

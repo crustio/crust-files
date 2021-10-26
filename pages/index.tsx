@@ -3,7 +3,7 @@ import classNames from "classnames";
 import {useTranslation} from "react-i18next";
 import BgAnim from '../components/effect/BgAnim';
 import useParallax from "../lib/hooks/useParallax";
-import React, {useCallback, useContext, useEffect, useState} from "react";
+import React, {useCallback, useContext, useEffect, useMemo, useState} from "react";
 import {useContextWrapLoginUser} from "../lib/wallet/hooks";
 import {nearConfig} from "../lib/wallet/config";
 import styled from "styled-components";
@@ -19,7 +19,7 @@ interface Wallet {
 
 function Home({className}: { className?: string }) {
   const {t} = useTranslation()
-  const {data} = useParallax(120, 7)
+  const {data} = useParallax(100, 7)
   const user = useContextWrapLoginUser()
   const {alert} = useContext(AppContext)
   const _onClickCrust = useCallback(async () => {
@@ -173,43 +173,45 @@ function Home({className}: { className?: string }) {
 
   }, [])
 
-  const wallets: Wallet[] = [
-    {
-      name: 'crust wallet',
-      image: '/images/wallet_crust.png',
-      onClick: _onClickCrust,
-    },
-    {
-      name: 'polkadot-js',
-      image: '/images/wallet_polkadot.png',
-      onClick: _onClickPolkadotJs,
-    },
-    {
-      name: 'metamask',
-      image: '/images/wallet_metamask.png',
-      onClick: _onClickMetamask,
-    },
-    {
-      name: 'near',
-      image: '/images/wallet_near.png',
-      onClick: _onClickNear,
-    },
-    {
-      name: 'flow',
-      image: '/images/wallet_flow.png',
-      onClick: _onClickFlow,
-    },
-    {
-      name: 'solana',
-      image: '/images/wallet_solana.png',
-      onClick: _onClickSolana,
-    },
-    {
-      name: 'maiar',
-      image: '/images/wallet_elrond.png',
-      onClick: _onClickElrond,
-    },
-  ]
+  const wallets: Wallet[] = useMemo(() => {
+    return [
+      {
+        name: 'crust wallet',
+        image: '/images/wallet_crust.png',
+        onClick: _onClickCrust,
+      },
+      {
+        name: 'polkadot-js',
+        image: '/images/wallet_polkadot.png',
+        onClick: _onClickPolkadotJs,
+      },
+      {
+        name: 'metamask',
+        image: '/images/wallet_metamask.png',
+        onClick: _onClickMetamask,
+      },
+      {
+        name: 'near',
+        image: '/images/wallet_near.png',
+        onClick: _onClickNear,
+      },
+      {
+        name: 'flow',
+        image: '/images/wallet_flow.png',
+        onClick: _onClickFlow,
+      },
+      {
+        name: 'solana',
+        image: '/images/wallet_solana.png',
+        onClick: _onClickSolana,
+      },
+      {
+        name: 'maiar',
+        image: '/images/wallet_elrond.png',
+        onClick: _onClickElrond,
+      },
+    ]
+  }, [])
 
   const [showSlog, setShowSlog] = useState(false)
   const [slogTextIndex, setSlogTextIndex] = useState(0)
@@ -296,6 +298,7 @@ export default React.memo(styled(Home)`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  //background: #333333;
 
   .slog {
     display: flex;
@@ -355,10 +358,9 @@ export default React.memo(styled(Home)`
 
     .animStart {
       cursor: pointer;
-      transition: all ease-out 0ms;
+      transition: all cubic-bezier(.41, .19, .21, 1.25) 1.2s;
       position: relative;
-      left: -515px;
-      transform: rotate(-720deg);
+      transform: translateX(-800px) rotateZ(-720deg);
 
       &:hover {
         filter: drop-shadow(0 4px 6px white);
@@ -370,9 +372,7 @@ export default React.memo(styled(Home)`
     }
 
     .animFinal {
-      transition: all cubic-bezier(.41, .19, .21, 1.43) 1.2s;
-      left: 0;
-      transform: rotate(0deg);
+      transform: none;
     }
   }
 
