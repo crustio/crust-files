@@ -9,7 +9,6 @@ import UploadModal from "../components/UploadModal";
 import Btn from "../components/Btn"
 import {AppContext} from "../lib/AppContext";
 import User from "../components/User";
-import {useAutoToggle} from "../lib/hooks/useAutoToggle";
 import {usePage} from "../lib/hooks/usePage";
 import FileItem from "../components/FileItem";
 import styled from "styled-components";

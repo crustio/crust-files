@@ -1,7 +1,6 @@
 import React, {useCallback} from "react";
-import {Divider, Dropdown, Item, Segment} from "semantic-ui-react";
+import {Dropdown, Item, Segment} from "semantic-ui-react";
 import {useContextWrapLoginUser, WrapLoginUser} from "../lib/wallet/hooks";
-import DropdownText from "semantic-ui-react/dist/commonjs/modules/Dropdown/DropdownText";
 import styled from "styled-components";
 
 export interface Props {

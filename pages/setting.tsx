@@ -1,9 +1,9 @@
-import React, {useCallback, useContext, useState} from "react";
+import React, {useContext} from "react";
 import styled from "styled-components";
 import SideLayout from "../components/SideLayout";
-import {Input, Modal, Segment} from "semantic-ui-react";
+import {Segment} from "semantic-ui-react";
 import User from "../components/User";
-import {parseUserCrypto, useUserCrypto} from "../lib/crypto/useUserCrypto";
+import {useUserCrypto} from "../lib/crypto/useUserCrypto";
 import Btn from "../components/Btn";
 import {useTranslation} from "react-i18next";
 import {useToggle} from "../lib/hooks/useToggle";

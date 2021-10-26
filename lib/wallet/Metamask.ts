@@ -17,9 +17,6 @@ export class Metamask implements BaseWallet {
   isAllowed = false;
   accounts: string[] = [];
 
-  constructor() {
-  }
-
   init(): Promise<void> {
     if (this.isInit) return Promise.resolve()
     return new Promise<void>((resolve) => {
@@ -42,7 +39,7 @@ export class Metamask implements BaseWallet {
               this.accounts = accounts;
               resolve()
             })
-            .catch((e) => {
+            .catch(() => {
               this.isInstalled = true;
               this.isInit = true;
               resolve()

@@ -1,5 +1,5 @@
 import React, {useCallback} from "react";
-import {Grid, Header, Icon, Image, Menu, Segment, SemanticICONS, Sidebar} from 'semantic-ui-react'
+import {Grid, Icon, Image, Menu, Segment, SemanticICONS, Sidebar} from 'semantic-ui-react'
 import {useRouter} from "next/router";
 import classNames from "classnames";
 import styled from "styled-components";

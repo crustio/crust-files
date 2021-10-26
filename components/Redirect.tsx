@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import React from "react";
 import {useContextWrapLoginUser} from "../lib/wallet/hooks";
 import {useRouter} from "next/router";

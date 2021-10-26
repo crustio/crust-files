@@ -33,11 +33,6 @@ function createUrl(f: SaveFile, endpoints: AuthIpfsEndpoint[]) {
   return `${endpoint}/ipfs/${f.Hash}?filename=${f.Name}`;
 }
 
-const createOnDown = (f: SaveFile, endpoints: AuthIpfsEndpoint[]) => () => {
-  window.open(createUrl(f, endpoints), '_blank');
-  // FileSaver.saveAs(createUrl(f), f.Name);
-};
-
 const shortStr = (name: string, count = 6): string => {
   if (name.length > (count * 2)) {
     return `${name.substr(0, count)}...${name.substr(name.length - count)}`;

@@ -26,7 +26,7 @@ export class Elrond implements BaseWallet {
   }
 
 
-  sign(data: string, account: string | undefined): Promise<string> {
+  sign(): Promise<string> {
     const rawTransaction = {
       receiver: Address.Zero().hex(),
       data: 'Sign message for crust files',

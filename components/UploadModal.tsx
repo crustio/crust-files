@@ -29,7 +29,6 @@ function UploadModal(p: Props): React.ReactElement<Props> {
   const {t} = useTranslation();
   const {endpoint, endpoints, onChangeEndpoint} = useAuthGateway();
   const {onChangePinner, pinner, pins} = useAuthPinner();
-  const [password, setPassword] = useState('');
   const [isBusy, setBusy] = useState(false);
   const fileSizeError = useMemo(() => {
     const MAX = 100 * 1024 * 1024;
@@ -150,7 +149,7 @@ function UploadModal(p: Props): React.ReactElement<Props> {
       setError(t('Network Error,Please try to switch a Gateway.'));
       // setError((e as Error).message);
     }
-  }, [user, file, password, pinner, endpoint, onSuccess, t]);
+  }, [user, file, pinner, endpoint, onSuccess, t]);
 
   const [encrypt, toggleEncrypt] = useToggle()
 
