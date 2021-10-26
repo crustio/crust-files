@@ -12,7 +12,7 @@ export interface Props extends ModalProps {
 }
 
 function ModalNewKey(props: Props) {
-  const {alert, onSuccess, toggleOpen} = props
+  const {alert, onSuccess, toggleOpen, ...other} = props
 
   const [inputKey, setInputKey] = useState("")
 
@@ -34,7 +34,7 @@ function ModalNewKey(props: Props) {
     toggleOpen(false)
   }, [])
 
-  return <Modal closeIcon={true} {...props} onClose={_onCloseInputKey} defaultOpen={false}>
+  return <Modal closeIcon={true} onClose={_onCloseInputKey} {...other}>
     <Modal.Header content={'Input a new key'}/>
     <Modal.Content>
       <Input
@@ -70,6 +70,7 @@ export default React.memo<Props>(styled(ModalNewKey)`
 
     .btns {
       padding-top: 1rem;
+
       button {
         width: calc(50% - 0.5rem) !important;
         margin: unset;

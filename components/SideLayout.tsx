@@ -44,7 +44,7 @@ function SideLayout(props: Props) {
     >
       <Grid textAlign='center'>
         <Grid.Row columns={1} className={"logoPanel"}>
-          <Image size={'small'} src={"/images/crust_box2x.png"}/>
+          <Image size={'small'} src={"/images/logo_1.png"}/>
         </Grid.Row>
         <Grid.Row columns={1}>
           <Menu fluid vertical borderless>

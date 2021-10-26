@@ -13,6 +13,8 @@ import styled from "styled-components";
 import MDropdown from "./MDropdown";
 import Btn from "./Btn";
 import {useToggle} from "../lib/hooks/useToggle";
+import {readFileAsync, WrapUserCrypto} from "../lib/crypto/useUserCrypto";
+import {encryptFile} from "../lib/crypto/encryption";
 
 export interface Props {
   className?: string,
@@ -20,12 +22,13 @@ export interface Props {
   onClose?: () => void,
   onSuccess?: (res: SaveFile) => void,
   user: WrapLoginUser,
+  uc: WrapUserCrypto,
 }
 
 const NOOP = (): void => undefined;
 
 function UploadModal(p: Props): React.ReactElement<Props> {
-  const {className, file, onClose = NOOP, onSuccess = NOOP, user} = p;
+  const {className, uc, file, onClose = NOOP, onSuccess = NOOP, user} = p;
   const {t} = useTranslation();
   const {endpoint, endpoints, onChangeEndpoint} = useAuthGateway();
   const {onChangePinner, pinner, pins} = useAuthPinner();
@@ -52,6 +55,7 @@ function UploadModal(p: Props): React.ReactElement<Props> {
   const errorText = fileSizeError ? t<string>('Do not upload files larger than 100MB!') : error;
   const [upState, setUpState] = useState({progress: 0, up: false});
   const [cancelUp, setCancelUp] = useState<CancelTokenSource | null>(null);
+  const [encrypt, toggleEncrypt] = useToggle()
 
   const _onClose = useCallback(() => {
     if (cancelUp) cancelUp.cancel();
@@ -61,7 +65,7 @@ function UploadModal(p: Props): React.ReactElement<Props> {
   const _onClickUp = useCallback(async () => {
     setError('');
 
-    if (!user.account || !user.sign) {
+    if (fileSizeError || !user.account || !user.sign) {
       return;
     }
 
@@ -81,13 +85,32 @@ function UploadModal(p: Props): React.ReactElement<Props> {
 
       setCancelUp(cancel);
       setUpState({progress: 0, up: true});
+      // 2.**** : encrypt
       const form = new FormData();
-
-      if (file.file) {
-        form.append('file', file.file, file.file.name);
-      } else if (file.files) {
-        for (const f of file.files) {
-          form.append('file', f, f.webkitRelativePath);
+      const isEncrypt = !!(encrypt && uc.secret)
+      if (isEncrypt) { // encrypt
+        if (file.file) {
+          const time1 = new Date().getTime()
+          const fileData = await readFileAsync(file.file)
+          const encryptedData = await encryptFile(fileData, uc.secret)
+          console.info('encrypted::', (new Date().getTime() - time1) / 1000)
+          const encryptedFile = new Blob([encryptedData], {type: file.file.type})
+          form.append('file', encryptedFile, file.file.name)
+        } else if (file.files) {
+          for (const f of file.files) {
+            const fileData = await readFileAsync(f)
+            const encryptedData = await encryptFile(fileData, uc.secret)
+            const encryptedFile = new Blob([encryptedData], {type: f.type})
+            form.append('file', encryptedFile, f.webkitRelativePath)
+          }
+        }
+      } else { // normal
+        if (file.file) {
+          form.append('file', file.file, file.file.name);
+        } else if (file.files) {
+          for (const f of file.files) {
+            form.append('file', f, f.webkitRelativePath);
+          }
         }
       }
 
@@ -141,6 +164,7 @@ function UploadModal(p: Props): React.ReactElement<Props> {
         PinEndpoint,
         PinTime: new Date().getTime(),
         UpEndpoint,
+        Encrypted: isEncrypt,
       });
     } catch (e) {
       setUpState({progress: 0, up: false});
@@ -149,9 +173,7 @@ function UploadModal(p: Props): React.ReactElement<Props> {
       setError(t('Network Error,Please try to switch a Gateway.'));
       // setError((e as Error).message);
     }
-  }, [user, file, pinner, endpoint, onSuccess, t]);
-
-  const [encrypt, toggleEncrypt] = useToggle()
+  }, [fileSizeError, user, file, pinner, endpoint, encrypt, onSuccess, t]);
 
   return (
     <Modal
@@ -200,13 +222,15 @@ function UploadModal(p: Props): React.ReactElement<Props> {
               defaultValue={pinner.value}
             />
           </Card>
-          <Card fluid className="encryption">
-            <Card.Content>
-              <Card.Header content={"File Encryption"}/>
-              <Card.Description content={encrypt ? 'Yes' : 'No'}/>
-              <Radio toggle defaultChecked={encrypt} onChange={() => toggleEncrypt()}/>
-            </Card.Content>
-          </Card>
+          {
+            file.file && <Card fluid className="encryption">
+              <Card.Content>
+                <Card.Header content={"File Encryption"}/>
+                <Card.Description content={encrypt ? 'Yes' : 'No'}/>
+                <Radio toggle defaultChecked={encrypt} disabled={!uc.secret} onChange={() => toggleEncrypt()}/>
+              </Card.Content>
+            </Card>
+          }
         </Card.Group>
         {
           errorText &&
@@ -230,15 +254,15 @@ function UploadModal(p: Props): React.ReactElement<Props> {
             active
             color={"orange"}
           />}
-          {upState.up && <Btn>{t('Cancel')}</Btn>}
-          {!upState.up && <Btn fluid onClick={_onClickUp}>{t('Sing and Upload')}</Btn>}
+          {upState.up && <Btn onClick={_onClose}>{t('Cancel')}</Btn>}
+          {!upState.up && <Btn fluid onClick={_onClickUp} disabled={fileSizeError}>{t('Sing and Upload')}</Btn>}
         </div>
       </Modal.Actions>
     </Modal>
   );
 }
 
-export default React.memo(styled(UploadModal)`
+export default React.memo<Props>(styled(UploadModal)`
 
   .header:nth-child(2) {
     height: 3.36rem;

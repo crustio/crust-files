@@ -140,8 +140,8 @@ export function useSign(wUser: WrapLoginUser): UseSign {
     }
     if (wUser.wallet === 'elrond') {
       setState((o) => ({
-        ...o, sign: async (data) => {
-          return wUser.elrond.sign(data, wUser.account)
+        ...o, sign: async () => {
+          return wUser.elrond.sign()
         }
       }))
     }

@@ -1,6 +1,6 @@
 import React, {useCallback, useContext, useRef, useState} from "react";
 import {useContextWrapLoginUser, useFiles} from "../lib/wallet/hooks";
-import {Pagination, Segment, Table, Transition} from "semantic-ui-react";
+import {Icon, Pagination, Popup, Segment, Table, Transition} from "semantic-ui-react";
 import {useTranslation} from "react-i18next";
 import {DirFile, FileInfo, SaveFile} from "../lib/wallet/types";
 import SideLayout from "../components/SideLayout";
@@ -12,6 +12,8 @@ import User from "../components/User";
 import {usePage} from "../lib/hooks/usePage";
 import FileItem from "../components/FileItem";
 import styled from "styled-components";
+import {useUserCrypto} from "../lib/crypto/useUserCrypto";
+import {useAutoToggle} from "../lib/hooks/useAutoToggle";
 
 type FunInputFile = (e: React.ChangeEvent<HTMLInputElement>) => void
 
@@ -25,6 +27,8 @@ function Files(p: { className?: string }) {
   const localFiles = usePage(wFiles.files, 5)
   const [file, setFile] = useState<FileInfo | undefined>(undefined);
   const inputRef = useRef<HTMLInputElement>(null);
+  const uc = useUserCrypto()
+
   const _clickUploadFile = useCallback((dir = false) => {
     if (!inputRef.current) return;
     // eslint-disable-next-line
@@ -151,8 +155,8 @@ function Files(p: { className?: string }) {
     FileSaver.saveAs(blob, 'files.json');
   }, [wFiles]);
 
-  // const visibleFile = useAutoToggle(3000)
-  // const visibleFolder = useAutoToggle(2800)
+  const visibleFile = useAutoToggle(2000)
+  const visibleFolder = useAutoToggle(1800)
 
   return <SideLayout path={'/files'}>
     <Segment basic className={p.className}>
@@ -172,11 +176,11 @@ function Files(p: { className?: string }) {
           type={'file'}
         />
         <span>{'Upload'}</span>
-        <Transition animation={'jiggle'} duration={800} visible={true}>
+        <Transition animation={'pulse'} duration={500} visible={visibleFile}>
           <span className={"btn file"} onClick={onClickUpFile}>File</span>
         </Transition>
         <span>{'or'}</span>
-        <Transition animation={'jiggle'} duration={800} visible={true}>
+        <Transition animation={'pulse'} duration={500} visible={visibleFolder}>
           <span className={"btn folder"} onClick={onClickUpFolder}>Folder</span>
         </Transition>
         <span>{'to IPFS.'}</span>
@@ -186,6 +190,7 @@ function Files(p: { className?: string }) {
             user={user}
             onClose={_onClose}
             onSuccess={_onSuccess}
+            uc={uc}
           />
         }
       </Segment>
@@ -202,19 +207,28 @@ function Files(p: { className?: string }) {
         </Table.Header>
 
         <Table.Body>
-          {localFiles.pageList.map((f, index) => <FileItem file={f} key={`files_${index}`}/>)}
+          {localFiles.pageList.map((f, index) => <FileItem uc={uc} file={f} key={`files_${index}`}/>)}
         </Table.Body>
 
         <Table.Footer>
           <Table.Row>
-            <Table.HeaderCell colSpan='2'>
+            <Table.HeaderCell colSpan={localFiles.totalPage > 1 ? 2 : 5} className={"btns"}>
               <Btn onClick={_clickImport}>Import</Btn>
               <Btn onClick={_export}>Export</Btn>
+              <Popup
+                position={"top center"}
+                trigger={<Icon size={'large'} name={'question circle outline'}/>}
+                content={"Crust Files is a decentralized Application, and it will NEVER store your Upload History and File Encryption Key on any remote server. Instead, they are cached on your local devices. If you want to migrate your Upload History and File Encryption Key to a new device, use Export & Import function."}/>
             </Table.HeaderCell>
             {
               localFiles.totalPage > 1 && <Table.HeaderCell colSpan='3' textAlign={"right"}>
                 <Pagination
                   totalPages={localFiles.totalPage} activePage={localFiles.page}
+                  firstItem={{content: <Icon name={"angle double left"}/>, icon: true}}
+                  lastItem={{content: <Icon name={"angle double right"}/>, icon: true}}
+                  prevItem={{content: <Icon name={"angle left"} />, icon: true}}
+                  nextItem={{content: <Icon name={"angle right"} />, icon: true}}
+                  secondary
                   onPageChange={(_, {activePage}) => localFiles.setPage(activePage as number)}
                 />
               </Table.HeaderCell>
@@ -231,17 +245,36 @@ export default React.memo(styled(Files)`
 
   .table {
     padding: 1rem 2rem;
-    thead{
+
+    thead {
       font-size: 1.3rem;
     }
+
+    tfoot {
+      .btns > button {
+        margin-right: 1rem !important;
+      }
+
+      .btns > i {
+        color: var(--secend-color);
+        cursor: pointer;
+      }
+
+      .pagination > .item {
+        color: var(--secend-color);
+        padding: 0.928rem 1.143rem;
+        margin: unset;
+      }
+    }
   }
-  
-  
+
+
   .uploadPanel {
     font-size: 5rem !important;
     line-height: 17.14rem;
     white-space: nowrap;
     padding: 2rem 1rem;
+
     .btn {
       display: inline-block;
       width: 18.57rem;
@@ -275,4 +308,5 @@ export default React.memo(styled(Files)`
     margin-left: 2rem;
     line-height: 60px;
   }
+
 `)

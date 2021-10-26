@@ -27,10 +27,10 @@ function Setting(props: Props) {
     <Segment basic className={className}>
       <User/>
       {
-        <ModalNewKey
+        open && <ModalNewKey
           alert={alert}
-          open={open}
           size={'tiny'}
+          open={true}
           toggleOpen={toggleOpen}
           onSuccess={uc.set}
         />

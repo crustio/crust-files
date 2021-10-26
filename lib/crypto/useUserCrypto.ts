@@ -17,6 +17,22 @@ export interface WrapUserCrypto extends UserCrypto {
   init: boolean,
 }
 
+export const readFileAsync = (file: Blob): Promise<ArrayBuffer> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+
+    reader.onload = () => {
+      reader.result && resolve(reader.result as ArrayBuffer)
+    }
+
+    reader.onerror = reject
+
+    reader.readAsArrayBuffer(file)
+  })
+}
+
+
+
 export function parseUserCrypto(value?: string): UserCrypto | null {
   try {
     const tValue = value && value.trim()
@@ -67,6 +83,8 @@ export function useUserCrypto(): WrapUserCrypto {
     set(uc)
     return uc
   }, [])
+
+
   return useMemo(() => ({
     ...userCrypto,
     generate,

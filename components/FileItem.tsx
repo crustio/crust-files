@@ -8,10 +8,15 @@ import {AppContext} from "../lib/AppContext";
 import {useCall} from "../lib/hooks/useCall";
 import styled from "styled-components";
 import {useAuthGateway} from "../lib/useAuth";
+import {WrapUserCrypto} from "../lib/crypto/useUserCrypto";
+import axios from "axios";
+import {decryptFile} from "../lib/crypto/encryption";
+import _ from 'lodash';
 
 export interface Props {
   className?: string,
-  file: SaveFile
+  file: SaveFile,
+  uc: WrapUserCrypto,
 }
 
 type Status = 'Loading' | 'Waiting' | 'Expired' | 'Success' | 'Failed';
@@ -45,11 +50,38 @@ const shortStr = (name: string, count = 6): string => {
 const FailedTime = 2 * 60 * 60 * 1000
 
 function FileItem(props: Props) {
-  const {file, className} = props;
+  const {file, className, uc} = props;
   const copy = useClipboard();
-  const {api} = useContext(AppContext)
+  const {api, alert, loading} = useContext(AppContext)
   const {endpoints} = useAuthGateway()
+
+  const _onClickOpen = useCallback(async () => {
+    if (file.Encrypted && _.size(file.items) === 0) {
+      try {
+        if (!uc.secret) return;
+        loading.show()
+        const res = await axios.get<ArrayBuffer>(createUrl(file, endpoints), {responseType: "arraybuffer"})
+        console.info('res::', res)
+        const time1 = new Date().getTime()
+        const decryptData = await decryptFile(res.data, uc.secret)
+        console.info('decrypt:', (new Date().getTime() - time1) / 1000)
+        if (!decryptData) {
+          throw 'error'
+        }
+        console.info('de:', decryptData)
+        const url = URL.createObjectURL(new File([decryptData], file.Name, {type: res.headers['content-type']}))
+        window.open(url, '_blank')
+        loading.hide()
+      } catch (e) {
+        loading.hide()
+        alert.error("decrypt error")
+      }
+    } else {
+      window.open(createUrl(file, endpoints), '_blank')
+    }
+  }, [uc, file, endpoints])
   const _onClickCopy = useCallback(() => copy(createUrl(file, endpoints)), [file, endpoints])
+
   const queryFileApi = api && api.query?.market && api.query?.market.files
   const hasQueryFileApi = !!queryFileApi
   const stat = useCall(queryFileApi, [file.Hash])
@@ -90,7 +122,7 @@ function FileItem(props: Props) {
 
   }
   return <Table.Row className={className}>
-    <Table.Cell>{shortStr(file.Name)}</Table.Cell>
+    <Table.Cell>{shortStr(file.Name)} {file.Encrypted && <Icon name={'lock'}/>}</Table.Cell>
     <Table.Cell textAlign={"center"}>
       {shortStr(file.Hash)}
       <span onClick={() => copy(file.Hash)} style={{cursor: "pointer", paddingLeft: 10}}>
@@ -109,7 +141,7 @@ function FileItem(props: Props) {
       {fileStat.status === "Success" && `${fileStat.status} (${fileStat.confirmedReplicas} replicas)`}
     </Table.Cell>
     <Table.Cell textAlign={"center"}>
-      <span style={{cursor: "pointer"}}>
+      <span style={{cursor: "pointer", marginRight: '1rem'}} onClick={_onClickOpen}>
         <Icon name={'external'}/>
       </span>
       <span style={{cursor: "pointer"}} onClick={_onClickCopy}>

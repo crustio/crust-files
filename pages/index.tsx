@@ -241,6 +241,7 @@ function Home({className}: { className?: string }) {
   return (
     <div className={className}>
       <BgAnim/>
+      <Image className={'logo'} src={"/images/logo_2.png"}/>
       <div className="slog">
         <Image src={"/images/crust_box2x.png"}
                className={classNames("slogIcon", {slogShow: true})}/>
@@ -299,6 +300,12 @@ export default React.memo(styled(Home)`
   justify-content: center;
   align-items: center;
   //background: #333333;
+  .logo {
+    position: fixed;
+    left: 3.5rem;
+    top: 3rem;
+    z-index: 10;
+  }
 
   .slog {
     display: flex;
@@ -360,10 +367,10 @@ export default React.memo(styled(Home)`
       cursor: pointer;
       transition: all cubic-bezier(.41, .19, .21, 1.25) 1.2s;
       position: relative;
-      transform: translateX(-800px) rotateZ(-720deg);
+      transform: translateX(-800px) rotateZ(-900deg);
 
       &:hover {
-        filter: drop-shadow(0 4px 6px white);
+        filter: drop-shadow(0 2px 6px rgba(255, 255, 255, 0.5));
       }
     }
 
