@@ -16,12 +16,11 @@ export function useAuthGateway(): AuthGateway {
   const {t} = useTranslation();
   const endpoints = useMemo(
     () => createAuthIpfsEndpoints(t)
-      .sort(() => Math.random() > 0.5 ? -1 : 1)
       .map((item) => ({...item, text: `${item.text ?? ''}(${item.location ?? ''})`})),
     [t]
   );
-
-  const [endpoint, setEndpoint] = useState<AuthIpfsEndpoint>(endpoints[0]);
+  const defaultIndex = useMemo(() => Math.floor(Math.random() * (endpoints.length - 2)),[])
+  const [endpoint, setEndpoint] = useState<AuthIpfsEndpoint>(endpoints[defaultIndex]);
 
   const onChangeEndpoint = useCallback((_: any, {value}: { value: string }) => {
     const find = endpoints.find((item) => item.value === value);

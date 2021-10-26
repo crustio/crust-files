@@ -12,7 +12,7 @@ function getColor(type: AlertMsg['type']): SemanticCOLORS {
 
 export function AlertMessage() {
   const {alert} = useContext(AppContext)
-  return <List animated style={{position: 'fixed', index: 10000, right: 20, top: 100}}>
+  return <List animated style={{position: 'fixed', zIndex: 10000, right: 20, top: 100}}>
     {
       alert.alerts.map((msg, index) =>
         <Message

@@ -140,7 +140,8 @@ function UploadModal(p: Props): React.ReactElement<Props> {
       onSuccess({
         ...upRes,
         PinEndpoint,
-        UpEndpoint
+        PinTime: new Date().getTime(),
+        UpEndpoint,
       });
     } catch (e) {
       setUpState({progress: 0, up: false});
@@ -184,6 +185,7 @@ function UploadModal(p: Props): React.ReactElement<Props> {
               label={t<string>('Select a Web3 IPFS Gateway')}
               onChange={onChangeEndpoint}
               options={endpoints}
+              defaultGroup={endpoint.group}
               defaultValue={endpoint.value}
             />
           </Card>
@@ -229,8 +231,8 @@ function UploadModal(p: Props): React.ReactElement<Props> {
             active
             color={"orange"}
           />}
-          {upState.up && <Btn color={"orange"}>{t('Cancel')}</Btn>}
-          {!upState.up && <Btn fluid onClick={_onClickUp} color={"orange"}>{t('Sing and Upload')}</Btn>}
+          {upState.up && <Btn>{t('Cancel')}</Btn>}
+          {!upState.up && <Btn fluid onClick={_onClickUp}>{t('Sing and Upload')}</Btn>}
         </div>
       </Modal.Actions>
     </Modal>
@@ -260,11 +262,13 @@ export default React.memo(styled(UploadModal)`
 
   .ui.cards > .card {
     margin: 0.5rem !important;
-    .content>.header {
+
+    .content > .header {
       font-size: 1.14rem;
       font-weight: unset !important;
     }
-    .content>.description {
+
+    .content > .description {
       font-size: 1rem;
     }
   }
@@ -302,15 +306,16 @@ export default React.memo(styled(UploadModal)`
       }
     }
   }
-  
+
   .card.encryption {
     position: relative;
+
     .toggle {
       position: absolute;
       top: calc(50% - 0.75rem);
       right: 1rem;
-      
-      input[type="radio"]:checked + label:before{
+
+      input[type="radio"]:checked + label:before {
         background-color: #2ED158 !important;
       }
     }

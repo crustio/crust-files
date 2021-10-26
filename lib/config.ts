@@ -25,24 +25,27 @@ export function createAuthIpfsEndpoints(t: TFunction): AuthIpfsEndpoint[] {
     {
       location: t('Singapore'),
       text: t('DCF'),
-      value: 'https://crustipfs.xyz'
+      value: 'https://crustipfs.xyz',
+      group: "Public Gateway"
     },
     {
       location: t('United States'),
       text: t('Crust Network'),
-      value: 'https://crustwebsites.net'
-    },
-    {
-      location: t('United States'),
-      text: t('Crust Network'),
-      value: 'https://ipfs-gw.decloud.foundation'
+      value: 'https://crustwebsites.net',
+      group: "Public Gateway"
     },
     {
       location: t('United States'),
       text: t('Crust Network'),
       value: 'https://ipfs-gw.decloud.foundation',
+      group: "Public Gateway"
+    },
+    {
+      location: t('️2.5x speed up'),
+      text: t('️⚡ Thunder Gateway'),
+      value: 'https://gw.crustapps.net',
       group: "Thunder Gateway"
-    }
+    },
   ];
 }
 
@@ -55,7 +58,7 @@ export interface AuthIpfsPinner {
 // Definitions here are with the following values -
 //   text: the IPFS pinner name
 //   value: the IPFS pinner domain
-export function createAuthIpfsPinner (t: TFunction): AuthIpfsPinner[] {
+export function createAuthIpfsPinner(t: TFunction): AuthIpfsPinner[] {
   return [
     // for Beta
     // {

@@ -2,7 +2,7 @@ import Head from 'next/head'
 import React from "react";
 import styled from "styled-components";
 
-export const siteTitle = 'A basic framework use next.js'
+export const siteTitle = 'Crust Files'
 
 function Layout({
                   children,

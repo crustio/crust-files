@@ -14,7 +14,17 @@ export interface Props {
   file: SaveFile
 }
 
-type Status = 'Loading' | 'Waiting' | 'Expired' | 'Success'
+type Status = 'Loading' | 'Waiting' | 'Expired' | 'Success' | 'Failed';
+
+export interface FileStat {
+  status: Status
+  expireTime?: number
+  amount?: number
+  startTime?: number
+  fileSize?: number
+  confirmedReplicas?: number
+  prepaid?: boolean
+}
 
 function createUrl(f: SaveFile, endpoints: AuthIpfsEndpoint[]) {
   const p = endpoints.find((e) => e.value === f.UpEndpoint);
@@ -36,25 +46,21 @@ const shortStr = (name: string, count = 6): string => {
   return name;
 };
 
+//
+const FailedTime = 2 * 60 * 60 * 1000
+
 function FileItem(props: Props) {
   const {file, className} = props;
   const copy = useClipboard();
   const {api} = useContext(AppContext)
   const {endpoints} = useAuthGateway()
   const _onClickCopy = useCallback(() => copy(createUrl(file, endpoints)), [file, endpoints])
-
-  const stat = useCall(api && api.query?.market && api.query?.market.files, [file.Hash])
+  const queryFileApi = api && api.query?.market && api.query?.market.files
+  const hasQueryFileApi = !!queryFileApi
+  const stat = useCall(queryFileApi, [file.Hash])
   let bestNumber = useCall(api && api.derive.chain.bestNumber);
   bestNumber = bestNumber && JSON.parse(JSON.stringify(bestNumber));
-  const fileStat: {
-    status: Status
-    expireTime?: number
-    amount?: number
-    startTime?: number
-    fileSize?: number
-    confirmedReplicas?: number
-    prepaid?: boolean
-  } = {status: 'Loading'}
+  const fileStat: FileStat = {status: 'Loading'}
   if (stat) {
     const statObj = JSON.parse(JSON.stringify(stat))
     if (statObj) {
@@ -80,6 +86,11 @@ function FileItem(props: Props) {
         // success
         fileStat.status = 'Success';
       }
+    } else if (hasQueryFileApi && (file.PinTime - new Date().getTime()) >= FailedTime) {
+      // 'Failed or Waiting'
+      fileStat.status = 'Failed'
+    } else {
+      fileStat.status = 'Waiting'
     }
 
   }
@@ -99,6 +110,7 @@ function FileItem(props: Props) {
       }
       {fileStat.status === "Waiting" && fileStat.status}
       {fileStat.status === "Expired" && fileStat.status}
+      {fileStat.status === "Failed" && fileStat.status}
       {fileStat.status === "Success" && `${fileStat.status} (${fileStat.confirmedReplicas} replicas)`}
     </Table.Cell>
     <Table.Cell textAlign={"center"}>

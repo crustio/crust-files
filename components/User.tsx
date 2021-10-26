@@ -56,7 +56,9 @@ function User(props: Props) {
 
 export default React.memo(styled(User)`
   border-bottom: 2px solid #eeeeee;
-  .ui.dropdown  {
+  margin: unset !important;
+
+  .ui.dropdown {
     .text {
       font-family: "ArialRoundedMTBold";
       font-size: 1.3rem;

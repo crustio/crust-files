@@ -16,8 +16,9 @@ export interface UploadRes {
 export interface SaveFile extends UploadRes {
   UpEndpoint: string,
   PinEndpoint?: string,
+  PinTime: number,
   Account?: string,
-  Encrypted?: boolean
+  Encrypted?: boolean,
 }
 
 export interface DirFile extends File {

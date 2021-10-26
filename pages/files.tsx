@@ -1,7 +1,6 @@
 import React, {useCallback, useContext, useRef, useState} from "react";
 import {useContextWrapLoginUser, useFiles} from "../lib/wallet/hooks";
 import {Pagination, Segment, Table, Transition} from "semantic-ui-react";
-import {useAuthGateway} from "../lib/useAuth";
 import {useTranslation} from "react-i18next";
 import {DirFile, FileInfo, SaveFile} from "../lib/wallet/types";
 import SideLayout from "../components/SideLayout";

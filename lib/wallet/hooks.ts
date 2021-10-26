@@ -53,6 +53,12 @@ export interface WrapLoginUser extends LoginUser {
 
 const defFilesObj: Files = {files: [], isLoad: true};
 
+const initPinTime = (fileObj: Files) => {
+  fileObj.files.forEach((file) => {
+    if (!file.PinTime) file.PinTime = new Date().getTime()
+  })
+}
+
 export function useFiles(key: KEYS_FILES = 'files'): WrapFiles {
   const [filesObj, setFilesObj] = useState<Files>(defFilesObj);
 
@@ -63,6 +69,8 @@ export function useFiles(key: KEYS_FILES = 'files'): WrapFiles {
       f.isLoad = false;
 
       if (f !== defFilesObj) {
+        // init file.PinTime
+        initPinTime(f)
         setFilesObj(f);
       }
     } catch (e) {
@@ -71,7 +79,8 @@ export function useFiles(key: KEYS_FILES = 'files'): WrapFiles {
   }, [key]);
   const setFiles = useCallback((nFiles: SaveFile[]) => {
     const nFilesObj = {...filesObj, files: nFiles};
-
+    // init file.PinTime
+    initPinTime(nFilesObj)
     setFilesObj(nFilesObj);
     store.set(key, nFilesObj);
   }, [filesObj, key]);
