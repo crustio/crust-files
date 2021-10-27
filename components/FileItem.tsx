@@ -3,6 +3,7 @@ import {SaveFile} from "../lib/wallet/types";
 import {AuthIpfsEndpoint} from "../lib/config";
 import {Icon, Table} from "semantic-ui-react";
 import filesize from "filesize";
+import {saveAs} from 'file-saver';
 import {useClipboard} from "../lib/hooks/useClipboard";
 import {AppContext} from "../lib/AppContext";
 import {useCall} from "../lib/hooks/useCall";
@@ -69,8 +70,8 @@ function FileItem(props: Props) {
           throw 'error'
         }
         console.info('de:', decryptData)
-        const url = URL.createObjectURL(new File([decryptData], file.Name, {type: res.headers['content-type']}))
-        window.open(url, '_blank')
+        const saveFile = new File([decryptData], file.Name, {type: res.headers['content-type']})
+        saveAs(saveFile, file.Name)
         loading.hide()
       } catch (e) {
         loading.hide()

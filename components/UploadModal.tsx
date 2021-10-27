@@ -226,7 +226,12 @@ function UploadModal(p: Props): React.ReactElement<Props> {
             file.file && <Card fluid className="encryption">
               <Card.Content>
                 <Card.Header content={"File Encryption"}/>
-                <Card.Description content={encrypt ? 'Yes' : 'No'}/>
+                {
+                  uc.secret ? <Card.Description content={encrypt ? 'Yes' : 'No'}/> :
+                    <Card.Description
+                      content={"Please go to the 'Setting' page and set encryption key before activating this function."}
+                    />
+                }
                 <Radio toggle defaultChecked={encrypt} disabled={!uc.secret} onChange={() => toggleEncrypt()}/>
               </Card.Content>
             </Card>
@@ -255,7 +260,7 @@ function UploadModal(p: Props): React.ReactElement<Props> {
             color={"orange"}
           />}
           {upState.up && <Btn onClick={_onClose}>{t('Cancel')}</Btn>}
-          {!upState.up && <Btn fluid onClick={_onClickUp} disabled={fileSizeError}>{t('Sing and Upload')}</Btn>}
+          {!upState.up && <Btn fluid onClick={_onClickUp} disabled={fileSizeError}>{t('Sign and Upload')}</Btn>}
         </div>
       </Modal.Actions>
     </Modal>
