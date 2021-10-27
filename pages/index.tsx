@@ -324,6 +324,7 @@ export default React.memo(styled(Home)`
   .slog {
     display: flex;
     overflow: hidden;
+    padding-top: 4rem;
     width: 875px;
     height: 400px;
 

@@ -270,15 +270,15 @@ export default React.memo(styled(Files)`
 
 
   .uploadPanel {
-    font-size: 5rem !important;
-    line-height: 17.14rem;
+    font-size: 4rem !important;
+    line-height: 14rem;
     white-space: nowrap;
     padding: 2rem 1rem;
 
     .btn {
       display: inline-block;
-      width: 18.57rem;
-      height: 17.14rem;
+      width: 15rem;
+      height: 14rem;
       text-align: center;
       margin: 0 10px;
       border-radius: 50px;
@@ -304,7 +304,7 @@ export default React.memo(styled(Files)`
   }
 
   .filesTitle {
-    font-size: 2.8rem;
+    font-size: 2rem;
     margin-left: 2rem;
     line-height: 60px;
   }

@@ -71,6 +71,7 @@ function SideLayout(props: Props) {
   </Sidebar.Pushable>
 }
 
+const sideWidth = '15.7rem'
 export default React.memo<Props>(styled(SideLayout)`
   overflow: hidden;
   height: 100vh;
@@ -79,9 +80,12 @@ export default React.memo<Props>(styled(SideLayout)`
   .ui.sidebar {
     background: #F5F5F5;
     box-shadow: unset !important;
+    width: ${sideWidth};
+
     .logoPanel {
       padding: 2rem 0;
     }
+
     .menu {
       box-shadow: unset !important;
       border: unset !important;
@@ -109,8 +113,9 @@ export default React.memo<Props>(styled(SideLayout)`
   }
 
   .pusher {
-    width: calc(100vw - 260px);
+    width: calc(100vw - ${sideWidth});
     height: 100vh;
+    transform: translate3d(${sideWidth}, 0, 0) !important;
     overflow: auto !important;
     background: white;
   }
