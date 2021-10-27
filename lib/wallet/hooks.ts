@@ -166,6 +166,7 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
   useEffect(() => {
     try {
       const f = store.get(key, defLoginUser) as LoginUser;
+
       if (f === defLoginUser || f.account === '') {
         setIsLoad(false)
         return;

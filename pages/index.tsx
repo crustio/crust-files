@@ -98,6 +98,20 @@ function Home({className}: { className?: string }) {
     await user.near.wallet.requestSignIn(nearConfig.contractName, 'Crust Files');
   }, [user, t, alert]);
 
+  useEffect(() => {
+    user.near.init()
+      .then(() => {
+        if (user.near.keyPair && user.near.wallet.isSignedIn()) {
+          user.setLoginUser({
+            account: user.near.wallet.getAccountId() as string,
+            wallet: 'near',
+            pubKey: user.near.keyPair.getPublicKey().toString().substr(8)
+          })
+        }
+      })
+      .catch(console.error)
+  }, [user])
+
   const _onClickFlow = useCallback(async () => {
     await user.flow.init()
     const fcl = user.flow.fcl;

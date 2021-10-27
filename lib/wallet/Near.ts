@@ -26,6 +26,7 @@ export class NearM implements BaseWallet {
       }
       this.isInit = true
     } catch (e) {
+      console.error(e)
       this.isInit = true
     }
   }
