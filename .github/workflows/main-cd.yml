@@ -33,9 +33,9 @@ jobs:
         uses: fifsky/ssh-action@master
         with:
           command: |
-            docker pull crustio/crust-files:latest
+            docker pull coderyashiro/crust-files:latest
             cd /opt/compose
-            docker tag crustio/crust-files:latest compose_crust-files
+            docker tag coderyashiro/crust-files:latest compose_crust-files
             docker-compose up -d crust-files
           host: ${{ secrets.SSH_HOST }}
           user: ${{ secrets.SSH_USER }}
