@@ -5,10 +5,9 @@ on:
     branches: [ main ]
 # manual trigger
   workflow_dispatch:
-    
+
 jobs:
   build:
-    if: github.repository == 'crustio/crust-home'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
