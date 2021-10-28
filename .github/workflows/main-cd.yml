@@ -3,7 +3,9 @@ name: main-cd
 on:
   push:
     branches: [ main ]
-
+# manual trigger
+  workflow_dispatch:
+    
 jobs:
   build:
     if: github.repository == 'crustio/crust-home'
