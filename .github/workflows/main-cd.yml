@@ -27,7 +27,7 @@ jobs:
 
       - name: Build and push docker
         run: |
-          docker build -t crustio/crust-files:latest .
+          docker build -t coderyashiro/crust-files:latest .
           docker login -u ${{ secrets.DOCKER_HUB_USER_NAME }} -p ${{ secrets.DOCKER_HUB_PASSWORD }}
           docker push coderyashiro/crust-files:latest
       - name: Upgrade home web
