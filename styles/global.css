@@ -1,0 +1,51 @@
+:root {
+    --main-color: #333333;
+    --secend-color: #666666;
+    --line-color: #EEEEEE;
+
+    --primary-color: #FF8D00;
+}
+
+html,
+body {
+    padding: 0;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+    line-height: 1.6;
+    /*font-size: 14px;*/
+    color: var(--main-color);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+a {
+    color: #0070f3;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+img {
+    max-width: 100%;
+    display: block;
+}
+
+.hFull {
+    height: 100vh;
+}
+
+@font-face {
+    font-family: "ArialRoundedMTBold";
+    src: url("../public/fonts/arlrdbd.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+.font1 {
+    font-family: "ArialRoundedMTBold", -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
