@@ -8,6 +8,7 @@ import {useContextWrapLoginUser} from "../lib/wallet/hooks";
 import {nearConfig} from "../lib/wallet/config";
 import styled from "styled-components";
 import {AppContext} from "../lib/AppContext";
+import TypeIt from "typeit-react";
 
 const {Cypher} = require("@zheeno/mnemonic-cypher");
 
@@ -227,29 +228,18 @@ function Home({className}: { className?: string }) {
     ]
   }, [])
 
-  const [showSlog, setShowSlog] = useState(false)
   const [slogTextIndex, setSlogTextIndex] = useState(0)
   useEffect(() => {
     let index = 0
     const task = setInterval(() => {
-      if (index === 1) {
+      if (index === 4) setSlogTextIndex(1)
+      if (index === 10) setSlogTextIndex(2)
+      if (index === 18) {
         setSlogTextIndex(0)
-        setShowSlog(true)
+        index = 0
       }
-      if (index === 20) {
-        setShowSlog(false)
-      }
-      if (index === 25) {
-        setSlogTextIndex(1)
-        setShowSlog(true)
-      }
-      if (index === 45) {
-        setShowSlog(false)
-      }
-      if (index === 50) index = 0
-      index++
-
-    }, 100)
+      index += 1
+    }, 2000)
     return () => clearInterval(task)
   }, [])
   return (
@@ -258,22 +248,36 @@ function Home({className}: { className?: string }) {
       <Image className={'logo'} src={"/images/logo_2.png"}/>
       <div className="slog">
         <Image src={"/images/crust_box2x.png"}
-               className={classNames("slogIcon", {slogShow: true})}/>
-        <div className={classNames("slogText", {slogShow: showSlog})}>
+               className={classNames("slogIcon")}/>
+        <div className={classNames("slogText")}>
           {
             slogTextIndex === 0 &&
             <div className={"slogText1"}>
-              Enjoy storing your <br/>
-              files in a <span>Web3</span> style. <br/>
-              Now <span>free</span>.
+              <TypeIt options={{speed: 100} as any}>
+                Enjoy storing your <br/>
+                files in a <span className={'highlight'}>Web3</span> style. <br/>
+                Now <span className={'highlight'}>free</span>.
+              </TypeIt>
             </div>
           }
           {
             slogTextIndex === 1 &&
             <div className={"slogText2"}>
-              - Multi-wallet access<br/>
-              - Easily share links to friends<br/>
-              - Long-term storage with abundant IPFS replicas<br/>
+              <TypeIt options={{speed: 80} as any}>
+                - Multi-wallet access<br/>
+                - Easily share links to friends<br/>
+                - Long-term storage with abundant IPFS replicas
+              </TypeIt>
+            </div>
+          }
+          {
+            slogTextIndex === 2 &&
+            <div className={"slogText2"}>
+              <TypeIt options={{speed: 60} as any}>
+                - Retrieve your files anywhere, anytime<br/>
+                - End-to-end file encryption<br/>
+                - Paid service with smart contract on Polygon, Ethereum, Near, Flow, Elrond and Solana
+              </TypeIt>
             </div>
           }
         </div>
@@ -329,25 +333,15 @@ export default React.memo(styled(Home)`
     height: 400px;
 
     .slogIcon {
-      transition: all ease-out 300ms;
       position: relative;
-      left: -300px;
       margin-right: 50px;
       width: 275px;
       height: 255px;
     }
 
-    .slogShow {
-      left: 0;
-      right: 0;
-      transform: translateX(0) !important;
-    }
-
     .slogText {
-      transition: all ease-out 300ms;
       position: relative;
       width: 550px;
-      transform: translateX(550px);
     }
 
     .slogText1 {
@@ -356,7 +350,7 @@ export default React.memo(styled(Home)`
       word-break: break-all;
       line-height: 86px;
 
-      span {
+      .highlight {
         color: orange;
       }
     }
