@@ -34,10 +34,10 @@ jobs:
         uses: fifsky/ssh-action@master
         with:
           command: |
-            docker pull crustio/crust-files:latest
+            sudo docker pull crustio/crust-files:latest
             cd /opt/compose
-            docker tag crustio/crust-files:latest crust-files
-            docker-compose up -d crust-files
+            sudo docker tag crustio/crust-files:latest crust-files
+            sudo docker-compose up -d crust-files
           host: ${{ secrets.SSH_HOST }}
           user: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
