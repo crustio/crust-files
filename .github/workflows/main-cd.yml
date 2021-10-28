@@ -1,0 +1,43 @@
+name: main-cd
+
+on:
+  push:
+    branches: [ main ]
+# manual trigger
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '14'
+          always-auth: true
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Build bundle
+        run: yarn export
+
+      - name: Build and push docker
+        run: |
+          docker build -t crustio/crust-files:latest .
+          docker login -u ${{ secrets.DOCKER_HUB_USER_NAME }} -p ${{ secrets.DOCKER_HUB_PASSWORD }}
+          docker push crustio/crust-files:latest
+      - name: Upgrade crust files website
+        uses: fifsky/ssh-action@master
+        with:
+          command: |
+            sudo docker pull crustio/crust-files:latest
+            cd /opt/compose
+            sudo docker tag crustio/crust-files:latest crust-files
+            sudo docker-compose up -d crust-files
+          host: ${{ secrets.SSH_HOST }}
+          user: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
