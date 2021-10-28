@@ -13,6 +13,7 @@ import {WrapUserCrypto} from "../lib/crypto/useUserCrypto";
 import axios from "axios";
 import {decryptFile} from "../lib/crypto/encryption";
 import _ from 'lodash';
+import {shortStr} from "../lib/utils";
 
 export interface Props {
   className?: string,
@@ -38,14 +39,6 @@ function createUrl(f: SaveFile, endpoints: AuthIpfsEndpoint[]) {
 
   return `${endpoint}/ipfs/${f.Hash}?filename=${f.Name}`;
 }
-
-const shortStr = (name: string, count = 6): string => {
-  if (name.length > (count * 2)) {
-    return `${name.substr(0, count)}...${name.substr(name.length - count)}`;
-  }
-
-  return name;
-};
 
 //
 const FailedTime = 2 * 60 * 60 * 1000

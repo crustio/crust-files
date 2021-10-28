@@ -246,6 +246,7 @@ function Home({className}: { className?: string }) {
     <div className={className}>
       <BgAnim/>
       <Image className={'logo'} src={"/images/logo_2.png"}/>
+      <div className={'flex1'}/>
       <div className="slog">
         <Image src={"/images/crust_box2x.png"}
                className={classNames("slogIcon")}/>
@@ -302,6 +303,7 @@ function Home({className}: { className?: string }) {
         }
       </div>
       <span className="signTip">{'Sign-in with a Web3 wallet'}</span>
+      <div className={'flex1'}/>
     </div>
   )
 }
@@ -312,25 +314,27 @@ export default React.memo(styled(Home)`
   color: white;
   display: flex;
   width: 100%;
-  min-height: 600px;
   height: 100vh;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
   //background: #333333;
   .logo {
-    position: fixed;
-    left: 3.5rem;
-    top: 3rem;
-    z-index: 10;
+    margin-left: 3.5rem;
+    margin-top: 3rem;
+    align-self: flex-start;
+  }
+
+  .flex1 {
+    flex: 1;
   }
 
   .slog {
     display: flex;
     overflow: hidden;
-    padding-top: 4rem;
+    padding-top: 3rem;
     width: 875px;
     height: 400px;
+    flex-shrink: 0;
 
     .slogIcon {
       position: relative;
@@ -371,6 +375,7 @@ export default React.memo(styled(Home)`
     background: rgba(255, 255, 255, 0.1);
     border-radius: 100px;
     padding: 20px 40px;
+    flex-shrink: 0;
 
     .animStart {
       cursor: pointer;

@@ -13,6 +13,8 @@ export class Metamask implements BaseWallet {
     isMetaMask: boolean,
     request: <T>(option: MetamaskReqOptions) => Promise<T>,
     selectedAddress?: string,
+    isConnected: () => boolean,
+    on: (type: string, handler: (data: any) => void) => void,
   } = undefined;
   isAllowed = false;
   accounts: string[] = [];
@@ -32,6 +34,7 @@ export class Metamask implements BaseWallet {
         if (ethereum && ethereum.isMetaMask) {
           ethereum.request<string[]>({method: 'eth_accounts'})
             .then((accounts) => {
+              console.info('init-accounts:', accounts);
               this.isInstalled = true;
               this.isInit = true;
               this.ethereum = ethereum;

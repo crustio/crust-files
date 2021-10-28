@@ -8,6 +8,7 @@ import {SolanaM} from './SolanaM';
 import {Crust} from './Crust'
 import {PolkadotJs} from "./PolkadotJs";
 import {Elrond} from "./Elrond";
+import {useRouter} from "next/router";
 
 // eslint-disable-next-line
 const fcl = require('@onflow/fcl');
@@ -39,6 +40,7 @@ export class LoginUser {
 
 export interface WrapLoginUser extends LoginUser {
   isLoad: boolean
+  accounts?: string[]
   setLoginUser: (u: LoginUser) => void
   logout: () => void
   sign?: (data: string, account?: string) => Promise<string>
@@ -154,6 +156,7 @@ const defLoginUser: LoginUser = {account: '', wallet: 'crust', key: 'files:login
 
 export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
   const [account, setAccount] = useState<LoginUser>(defLoginUser);
+  const [accounts, setAccounts] = useState<WrapLoginUser['accounts']>()
   const [isLoad, setIsLoad] = useState(true);
   const crust = useMemo(() => new Crust(), [])
   const polkadotJs = useMemo(() => new PolkadotJs(), [])
@@ -162,11 +165,26 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
   const flow = useMemo(() => new FlowM(), []);
   const solana = useMemo(() => new SolanaM(), []);
   const elrond = useMemo(() => new Elrond(), []);
+  const r = useRouter()
+
+  const setLoginUser = useCallback((loginUser: LoginUser) => {
+    const nAccount = {...loginUser, key};
+
+    setAccount((old) => {
+      if (old.wallet === 'near') {
+        // eslint-disable-next-line
+        near.wallet?.signOut();
+      }
+
+      return nAccount;
+    });
+    store.set(key, nAccount);
+  }, [near, key]);
 
   useEffect(() => {
     try {
       const f = store.get(key, defLoginUser) as LoginUser;
-
+      setAccounts(undefined)
       if (f === defLoginUser || f.account === '') {
         setIsLoad(false)
         return;
@@ -175,24 +193,37 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
         crust.init().then(() => crust.getAccounts())
           .then((accounts) => {
             if (accounts.includes(f.account)) {
+              setAccounts(accounts)
               setAccount(f)
             }
           })
           .then(() => setIsLoad(false))
       } else if (f.wallet === 'polkadot-js') {
-        polkadotJs.init().then(() => crust.getAccounts())
+        polkadotJs.init().then(() => polkadotJs.getAccounts())
           .then((accounts) => {
             if (accounts.includes(f.account)) {
+              setAccounts(accounts)
               setAccount(f)
             }
           })
           .then(() => setIsLoad(false))
       } else if (f.wallet === 'metamask') {
-        console.info('metalkasjkljfklajs')
         metamask.init()
           .then(() => {
+            console.info('doInit::', metamask)
             if (metamask.isAllowed && metamask.accounts.includes(f.account)) {
               setAccount(f);
+              metamask.ethereum.on("accountsChanged", (data) => {
+                const accounts = data as string[]
+                if (accounts.length !== 0) {
+                  setLoginUser({
+                    account: accounts[0],
+                    wallet: 'metamask'
+                  })
+                } else {
+                  setLoginUser(defLoginUser)
+                }
+              })
             }
           })
           .then(() => setIsLoad(false))
@@ -223,21 +254,7 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
       setIsLoad(false);
       console.error(e);
     }
-  }, [metamask, near, flow, solana, key]);
-
-  const setLoginUser = useCallback((loginUser: LoginUser) => {
-    const nAccount = {...loginUser, key};
-
-    setAccount((old) => {
-      if (old.wallet === 'near') {
-        // eslint-disable-next-line
-        near.wallet?.signOut();
-      }
-
-      return nAccount;
-    });
-    store.set(key, nAccount);
-  }, [near, key]);
+  }, [metamask, near, flow, solana, key, r]);
 
   const logout = useCallback(async () => {
     if (account.wallet === 'flow') {
@@ -260,6 +277,7 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
   const wUser: WrapLoginUser = useMemo(() => {
     const wrapLoginUser: WrapLoginUser = {
       ...account,
+      accounts,
       key,
       isLoad,
       setLoginUser,
@@ -280,7 +298,7 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
     // }
 
     return wrapLoginUser;
-  }, [account, isLoad, setLoginUser, logout, crust, polkadotJs, metamask, near, flow, solana, key]);
+  }, [account, accounts, isLoad, setLoginUser, logout, crust, polkadotJs, metamask, near, flow, solana, key]);
   const uSign = useSign(wUser);
   wUser.sign = uSign.sign;
   return wUser;

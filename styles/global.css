@@ -4,6 +4,9 @@
     --line-color: #EEEEEE;
 
     --primary-color: #FF8D00;
+
+    /* for TypeIt */
+    --ti-cursor-margin-left: 0;
 }
 
 html,
