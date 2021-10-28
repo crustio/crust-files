@@ -42,8 +42,11 @@ function Setting(props: Props) {
         <div className={'btns'}>
           {
             uc.secret ? <Btn content={t('Copy')} onClick={() => copy(uc.seeds)}/> :
-              <Btn content={t('Generate new')} onClick={uc.generate}/>}
-          <Btn content={t('Input a new key')} onClick={() => toggleOpen(true)}/>
+              <>
+                <Btn content={t('Generate new')} onClick={uc.generate}/>
+                <Btn content={t('Input a new key')} onClick={() => toggleOpen(true)}/>
+              </>
+          }
         </div>
       </Segment>
     </Segment>
