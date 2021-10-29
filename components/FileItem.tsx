@@ -1,7 +1,7 @@
 import React, {useCallback, useContext} from "react";
 import {SaveFile} from "../lib/wallet/types";
 import {AuthIpfsEndpoint} from "../lib/config";
-import {Icon, Table} from "semantic-ui-react";
+import {Icon, Popup, Table} from "semantic-ui-react";
 import filesize from "filesize";
 import {saveAs} from 'file-saver';
 import {useClipboard} from "../lib/hooks/useClipboard";
@@ -13,6 +13,8 @@ import {WrapUserCrypto} from "../lib/crypto/useUserCrypto";
 import axios from "axios";
 import {decryptFile} from "../lib/crypto/encryption";
 import _ from 'lodash';
+import {shortStr} from "../lib/utils";
+import {BlockNumber} from "@polkadot/types/interfaces/types";
 
 export interface Props {
   className?: string,
@@ -39,13 +41,19 @@ function createUrl(f: SaveFile, endpoints: AuthIpfsEndpoint[]) {
   return `${endpoint}/ipfs/${f.Hash}?filename=${f.Name}`;
 }
 
-const shortStr = (name: string, count = 6): string => {
-  if (name.length > (count * 2)) {
-    return `${name.substr(0, count)}...${name.substr(name.length - count)}`;
+function parseStat(stat: any) {
+  try {
+    return JSON.parse(JSON.stringify(stat))
+  } catch (e) {
+    return {
+      expired_at: 0,
+      reported_replica_count: 0,
+      amount: 0,
+      file_size: 0,
+      prepaid: false,
+    }
   }
-
-  return name;
-};
+}
 
 //
 const FailedTime = 2 * 60 * 60 * 1000
@@ -85,50 +93,62 @@ function FileItem(props: Props) {
 
   const queryFileApi = api && api.query?.market && api.query?.market.files
   const hasQueryFileApi = !!queryFileApi
-  const stat = useCall(queryFileApi, [file.Hash])
-  let bestNumber = useCall(api && api.derive.chain.bestNumber);
-  bestNumber = bestNumber && JSON.parse(JSON.stringify(bestNumber));
+  const stat = useCall<{ isEmpty: boolean } | undefined | null>(queryFileApi, [file.Hash])
+  const bestNum = useCall<BlockNumber>(api?.derive?.chain?.bestNumber);
+  const bestNumber = bestNum && bestNum.toNumber()
   const fileStat: FileStat = {status: 'Loading'}
-  if (stat) {
-    const statObj = JSON.parse(JSON.stringify(stat))
-    if (statObj) {
-      const {
-        expired_at,
-        reported_replica_count
-      } = statObj
-      fileStat.expireTime = statObj.expired_at;
-      fileStat.amount = statObj.amount;
-      fileStat.startTime = statObj.expired_at ? statObj.expired_at - 216000 : 0;
-      fileStat.fileSize = statObj.file_size;
-      fileStat.confirmedReplicas = statObj.reported_replica_count;
-      fileStat.prepaid = statObj.prepaid;
-      if (expired_at && expired_at < bestNumber) {
-        // expired
-        fileStat.status = 'Expired';
-      }
-      if (!expired_at && expired_at > bestNumber && reported_replica_count < 1) {
-        // pending
-        fileStat.status = 'Waiting';
-      }
-      if (expired_at && expired_at > bestNumber && reported_replica_count > 0) {
-        // success
-        fileStat.status = 'Success';
-      }
-    } else if (hasQueryFileApi && (file.PinTime - new Date().getTime()) >= FailedTime) {
-      // 'Failed or Waiting'
-      fileStat.status = 'Failed'
-    } else {
-      fileStat.status = 'Waiting'
+  if (stat && !stat.isEmpty) {
+    const {
+      expired_at,
+      reported_replica_count,
+      amount,
+      file_size,
+      prepaid,
+    } = parseStat(stat)
+    fileStat.expireTime = expired_at;
+    fileStat.amount = amount;
+    fileStat.startTime = expired_at ? expired_at - 216000 : 0;
+    fileStat.fileSize = file_size;
+    fileStat.confirmedReplicas = reported_replica_count;
+    fileStat.prepaid = prepaid;
+    if (expired_at && expired_at < bestNumber) {
+      // expired
+      fileStat.status = 'Expired';
     }
-
+    if (reported_replica_count < 1) {
+      // pending
+      fileStat.status = 'Waiting';
+    }
+    if (expired_at && expired_at > bestNumber && reported_replica_count > 0) {
+      // success
+      fileStat.status = 'Success';
+    }
+  } else if (hasQueryFileApi && (file.PinTime - new Date().getTime()) >= FailedTime) {
+    // 'Failed'
+    fileStat.status = 'Failed'
   }
+  if (!bestNumber) fileStat.status = 'Loading'
+
   return <Table.Row className={className}>
-    <Table.Cell>{shortStr(file.Name)} {file.Encrypted && <Icon name={'lock'}/>}</Table.Cell>
+    <Table.Cell className={'fileName'}>
+      {shortStr(file.Name)}
+      {file.items && <Icon name={'folder outline'}/>}
+      {file.Encrypted &&
+      <Popup trigger={<embed src={"/key.svg"}/>} position={"top center"} content={"Encrypted"}/>}
+    </Table.Cell>
     <Table.Cell textAlign={"center"}>
       {shortStr(file.Hash)}
-      <span onClick={() => copy(file.Hash)} style={{cursor: "pointer", paddingLeft: 10}}>
-                  <Icon name={'clone outline'}/>
-                </span>
+      <Popup
+        position={"top center"}
+        content={"Copy File CID"}
+        trigger={
+          <span
+            onClick={() => copy(file.Hash)}
+            style={{cursor: "pointer", paddingLeft: 10}}>
+            <Icon name={'clone outline'}/>
+          </span>
+        }
+      />
     </Table.Cell>
     <Table.Cell textAlign={"center"}>{filesize(Number(file.Size), {round: 2})}</Table.Cell>
     <Table.Cell textAlign={"center"}>
@@ -142,16 +162,48 @@ function FileItem(props: Props) {
       {fileStat.status === "Success" && `${fileStat.status} (${fileStat.confirmedReplicas} replicas)`}
     </Table.Cell>
     <Table.Cell textAlign={"center"}>
-      <span style={{cursor: "pointer", marginRight: '1rem'}} onClick={_onClickOpen}>
-        <Icon name={'external'}/>
-      </span>
-      <span style={{cursor: "pointer"}} onClick={_onClickCopy}>
-        <Icon name={'clone outline'}/>
-      </span>
+      <Popup
+        position={"top center"}
+        content={"Open File"}
+        trigger={
+          <span style={{cursor: "pointer", marginRight: '1rem'}} onClick={_onClickOpen}>
+            <Icon name={'external'}/>
+          </span>
+        }
+      />
+      <Popup
+        position={"top center"}
+        content={"Copy Download Link"}
+        trigger={
+          <span style={{cursor: "pointer"}} onClick={_onClickCopy}>
+            <Icon name={'clone outline'}/>
+          </span>
+        }
+      />
+
     </Table.Cell>
   </Table.Row>
 }
 
 export default React.memo<Props>(styled(FileItem)`
   color: var(--secend-color) !important;
+
+  .fileName {
+    i, embed {
+      margin-left: 0.6rem;
+    }
+
+    embed {
+      width: 1.2rem;
+      height: 1.2rem;
+      position: relative;
+      top: 0.3rem;
+      cursor: pointer;
+
+      path {
+        fill: var(--secend-color);
+      }
+    }
+  }
+
 `)

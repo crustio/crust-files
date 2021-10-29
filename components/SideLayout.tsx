@@ -21,7 +21,7 @@ interface MenuInfo {
 const menus: MenuInfo[] = [
   {path: "/files", icon: "file outline", name: 'Upload'},
   {path: "/docs", icon: "file alternate outline", name: 'Docs'},
-  {path: "/setting", icon: "setting", name: 'Setting'},
+  {path: "/setting", icon: "sun outline", name: 'Setting'},
 ]
 
 function SideLayout(props: Props) {

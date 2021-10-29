@@ -217,7 +217,8 @@ function Files(p: { className?: string }) {
               <Btn onClick={_export}>Export</Btn>
               <Popup
                 position={"top center"}
-                trigger={<Icon size={'large'} name={'question circle outline'}/>}
+                wide={'very'}
+                trigger={<Icon size={'large'} style={{fontSize: '1.3rem'}} name={'question circle outline'}/>}
                 content={"Crust Files is a decentralized Application, and it will NEVER store your Upload History and File Encryption Key on any remote server. Instead, they are cached on your local devices. If you want to migrate your Upload History and File Encryption Key to a new device, use Export & Import function."}/>
             </Table.HeaderCell>
             {
@@ -226,8 +227,8 @@ function Files(p: { className?: string }) {
                   totalPages={localFiles.totalPage} activePage={localFiles.page}
                   firstItem={{content: <Icon name={"angle double left"}/>, icon: true}}
                   lastItem={{content: <Icon name={"angle double right"}/>, icon: true}}
-                  prevItem={{content: <Icon name={"angle left"} />, icon: true}}
-                  nextItem={{content: <Icon name={"angle right"} />, icon: true}}
+                  prevItem={{content: <Icon name={"angle left"}/>, icon: true}}
+                  nextItem={{content: <Icon name={"angle right"}/>, icon: true}}
                   secondary
                   onPageChange={(_, {activePage}) => localFiles.setPage(activePage as number)}
                 />

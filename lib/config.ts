@@ -45,7 +45,7 @@ export function createAuthIpfsEndpoints(t: TFunction): AuthIpfsEndpoint[] {
       text: t('️⚡ Thunder Gateway'),
       value: 'https://gw.crustapps.net',
       group: "Thunder Gateway"
-    },
+    }
   ];
 }
 
@@ -72,3 +72,5 @@ export function createAuthIpfsPinner(t: TFunction): AuthIpfsPinner[] {
     }
   ];
 }
+
+export const MOBILE_WIDTH = 960;

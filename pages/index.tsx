@@ -1,32 +1,69 @@
-import {Image, Popup} from "semantic-ui-react";
+import {Image} from "semantic-ui-react";
 import classNames from "classnames";
 import {useTranslation} from "react-i18next";
 import BgAnim from '../components/effect/BgAnim';
 import useParallax from "../lib/hooks/useParallax";
-import React, {useCallback, useContext, useEffect, useMemo, useState} from "react";
+import React, {useCallback, useEffect, useMemo, useState} from "react";
 import {useContextWrapLoginUser} from "../lib/wallet/hooks";
 import {nearConfig} from "../lib/wallet/config";
 import styled from "styled-components";
-import {AppContext} from "../lib/AppContext";
+import TypeIt from "typeit-react";
 
 const {Cypher} = require("@zheeno/mnemonic-cypher");
 
-interface Wallet {
-  name: string
+interface ItemWallet {
+  name: 'Crust Wallet' | 'Polkadot (.js Extension)' | 'MetaMask' | 'Near Wallet' | 'Flow (Blocto Wallet)' |
+    'Solana (Phantom Wallet)' | 'Elrond (Maiar Wallet)'
   image: string
+}
+
+interface Wallet extends ItemWallet {
   onClick: () => void
 }
+
+const WALLETS: ItemWallet[] = [
+  {
+    name: 'Crust Wallet',
+    image: '/images/wallet_crust.png',
+  },
+  {
+    name: 'Polkadot (.js Extension)',
+    image: '/images/wallet_polkadot.png',
+  },
+  {
+    name: 'MetaMask',
+    image: '/images/wallet_metamask.png',
+  },
+  {
+    name: 'Near Wallet',
+    image: '/images/wallet_near.png',
+  },
+  {
+    name: 'Flow (Blocto Wallet)',
+    image: '/images/wallet_flow.png',
+  },
+  {
+    name: 'Solana (Phantom Wallet)',
+    image: '/images/wallet_solana.png',
+  },
+  {
+    name: 'Elrond (Maiar Wallet)',
+    image: '/images/wallet_elrond.png',
+  },
+]
 
 function Home({className}: { className?: string }) {
   const {t} = useTranslation()
   const {data} = useParallax(100, 7)
   const user = useContextWrapLoginUser()
-  const {alert} = useContext(AppContext)
+  const [error, setError] = useState('');
   const _onClickCrust = useCallback(async () => {
     try {
+      setError('')
       await user.crust.init()
       if (!user.crust.provider) {
-        return alert.alert({msg: 'Need install crust wallet', type: 'error'})
+        setError(`${WALLETS[0].name} not installed`)
+        return
       }
       const accounts = await user.crust.login()
       if (accounts.length > 0) {
@@ -36,29 +73,32 @@ function Home({className}: { className?: string }) {
         })
       }
     } catch (e) {
-      alert.alert({msg: 'Error', type: 'error'})
+      console.error(e)
     }
-  }, [user, t, alert])
+  }, [user, t])
 
   const _onClickPolkadotJs = useCallback(async () => {
     try {
+      setError('')
       await user.polkadotJs.init()
       if (!user.polkadotJs.provider) {
-        return alert.alert({msg: 'Need install polkadot-js wallet', type: 'error'})
+        setError(`${WALLETS[1].name} not installed`)
+        return
       }
       const accounts = await user.polkadotJs.login()
       if (accounts.length > 0) {
         user.setLoginUser({
           account: accounts[0],
-          wallet: 'polkadot-js',
+          wallet: 'polkadot-js'
         })
       }
     } catch (e) {
-      alert.alert({msg: 'Error', type: 'error'})
+      console.error(e)
     }
-  }, [user, t, alert])
+  }, [user, t])
 
   const _onClickMetamask = useCallback(async () => {
+    setError('')
     await user.metamask.init()
     const ethReq = user.metamask.ethereum?.request;
     if (user.metamask.isInstalled && ethReq) {
@@ -85,18 +125,15 @@ function Home({className}: { className?: string }) {
           console.error('accountsError:', error);
         });
     } else {
-      return alert.alert({msg: 'Need install Metamask', type: 'error'})
+      setError(`${WALLETS[2].name} not installed`)
     }
-  }, [user, t, alert]);
+  }, [user, t]);
 
   const _onClickNear = useCallback(async () => {
+    setError('')
     await user.near.init()
-    if (!user.near.wallet) {
-      return alert.alert({msg: 'Not Create NearConnection', type: 'error'});
-    }
-
     await user.near.wallet.requestSignIn(nearConfig.contractName, 'Crust Files');
-  }, [user, t, alert]);
+  }, [user, t]);
 
   useEffect(() => {
     user.near.init()
@@ -113,6 +150,7 @@ function Home({className}: { className?: string }) {
   }, [user])
 
   const _onClickFlow = useCallback(async () => {
+    setError('')
     await user.flow.init()
     const fcl = user.flow.fcl;
     if (!fcl) return;
@@ -133,9 +171,10 @@ function Home({className}: { className?: string }) {
   }, [user]);
 
   const _onClickSolana = useCallback(async () => {
+    setError('')
     await user.solana.init()
     if (!user.solana.isInstalled) {
-      return alert.alert({msg: 'Need install Phantom', type: 'error'});
+      setError(`${WALLETS[5].name} not installed`)
     }
 
     // eslint-disable-next-line
@@ -159,10 +198,15 @@ function Home({className}: { className?: string }) {
         wallet: 'solana'
       });
     });
-  }, [user, t, alert]);
+  }, [user, t]);
 
   const _onClickElrond = useCallback(async () => {
+    setError('')
     await user.elrond.init()
+    if (!user.elrond.provider) {
+      setError(`${WALLETS[6].name} not installed`)
+      return
+    }
     await user.elrond.provider.login({
       callbackUrl: encodeURIComponent(
         `${window.location.origin}/#/files`
@@ -177,6 +221,29 @@ function Home({className}: { className?: string }) {
     });
   }, [user, t])
 
+  const wallets: Wallet[] = useMemo(() => {
+    return WALLETS.map((item) => {
+      switch (item.name) {
+        case "Crust Wallet":
+          return {...item, onClick: _onClickCrust}
+        case "Polkadot (.js Extension)":
+          return {...item, onClick: _onClickPolkadotJs}
+        case "MetaMask":
+          return {...item, onClick: _onClickMetamask}
+        case "Near Wallet":
+          return {...item, onClick: _onClickNear}
+        case "Flow (Blocto Wallet)":
+          return {...item, onClick: _onClickFlow}
+        case "Solana (Phantom Wallet)":
+          return {...item, onClick: _onClickSolana}
+        case "Elrond (Maiar Wallet)":
+          return {...item, onClick: _onClickElrond}
+      }
+      return {...item, onClick: _onClickCrust}
+    })
+  }, [_onClickCrust, _onClickPolkadotJs, _onClickMetamask, _onClickNear, _onClickFlow, _onClickSolana, _onClickElrond])
+
+
   useEffect(() => {
     const cy = new Cypher()
     cy.setWordLength(5)
@@ -187,117 +254,97 @@ function Home({className}: { className?: string }) {
 
   }, [])
 
-  const wallets: Wallet[] = useMemo(() => {
-    return [
-      {
-        name: 'crust wallet',
-        image: '/images/wallet_crust.png',
-        onClick: _onClickCrust,
-      },
-      {
-        name: 'polkadot-js',
-        image: '/images/wallet_polkadot.png',
-        onClick: _onClickPolkadotJs,
-      },
-      {
-        name: 'metamask',
-        image: '/images/wallet_metamask.png',
-        onClick: _onClickMetamask,
-      },
-      {
-        name: 'near',
-        image: '/images/wallet_near.png',
-        onClick: _onClickNear,
-      },
-      {
-        name: 'flow',
-        image: '/images/wallet_flow.png',
-        onClick: _onClickFlow,
-      },
-      {
-        name: 'solana',
-        image: '/images/wallet_solana.png',
-        onClick: _onClickSolana,
-      },
-      {
-        name: 'maiar',
-        image: '/images/wallet_elrond.png',
-        onClick: _onClickElrond,
-      },
-    ]
-  }, [])
-
-  const [showSlog, setShowSlog] = useState(false)
   const [slogTextIndex, setSlogTextIndex] = useState(0)
   useEffect(() => {
     let index = 0
     const task = setInterval(() => {
-      if (index === 1) {
+      if (index === 3) setSlogTextIndex(1)
+      if (index === 9) setSlogTextIndex(2)
+      if (index === 14) {
         setSlogTextIndex(0)
-        setShowSlog(true)
+        index = 0
       }
-      if (index === 20) {
-        setShowSlog(false)
-      }
-      if (index === 25) {
-        setSlogTextIndex(1)
-        setShowSlog(true)
-      }
-      if (index === 45) {
-        setShowSlog(false)
-      }
-      if (index === 50) index = 0
-      index++
-
-    }, 100)
+      index += 1
+    }, 2000)
     return () => clearInterval(task)
   }, [])
+
+  const [hoverWallet, setHoverWallet] = useState(-1)
   return (
     <div className={className}>
       <BgAnim/>
       <Image className={'logo'} src={"/images/logo_2.png"}/>
+      <div className={'flex1'}/>
       <div className="slog">
         <Image src={"/images/crust_box2x.png"}
-               className={classNames("slogIcon", {slogShow: true})}/>
-        <div className={classNames("slogText", {slogShow: showSlog})}>
+               className={classNames("slogIcon")}/>
+        <div className={classNames("slogText")}>
           {
             slogTextIndex === 0 &&
             <div className={"slogText1"}>
-              Enjoy storing your <br/>
-              files in a <span>Web3</span> style. <br/>
-              Now <span>free</span>.
+              <TypeIt options={{speed: 60} as any}>
+                Enjoy storing your <br/>
+                files in a <span className={'highlight'}>Web3</span> style. <br/>
+                Now <span className={'highlight'}>free</span>.
+              </TypeIt>
             </div>
           }
           {
             slogTextIndex === 1 &&
             <div className={"slogText2"}>
-              - Multi-wallet access<br/>
-              - Easily share links to friends<br/>
-              - Long-term storage with abundant IPFS replicas<br/>
+              <TypeIt options={{speed: 60} as any}>
+                - Multi-wallet access with your Web3.0 identity<br/>
+                - Absolute data privacy by end-to-end file encryption<br/>
+                - IPFS storage with globally-distributed replicas
+              </TypeIt>
+            </div>
+          }
+          {
+            slogTextIndex === 2 &&
+            <div className={"slogText2"}>
+              <TypeIt options={{speed: 60} as any}>
+                - Easy share links to friends<br/>
+                - Retrieve your files anywhere, anytime<br/>
+                - Paid service with smart contract on public<br/> blockchains
+              </TypeIt>
             </div>
           }
         </div>
       </div>
       <div className={"wallets"}>
         {
-          wallets.map((w, index) => <Popup
-            key={`wallet_${index}`}
-            position={"top center"}
-            content={w.name}
-            trigger={
-              <Image
-                className={classNames({spaceLeft: index}, 'animStart', {animFinal: data[index].value})}
-                circular
-                inline
-                size={'tiny'}
-                src={w.image}
-                onClick={w.onClick}
-              />
-            }
-          />)
+          wallets.map((w, index) =>
+            <Image
+              key={`wallet_${index}`}
+              id={w.name}
+              className={classNames({spaceLeft: index}, 'animStart', {animFinal: data[index].value})}
+              circular
+              inline
+              size={'tiny'}
+              src={w.image}
+              onClick={w.onClick}
+              onMouseEnter={() => {
+                setError('')
+                setHoverWallet(() => index)
+              }}
+              onMouseLeave={() => {
+                setError('')
+                setHoverWallet(() => -1)
+              }}
+            />
+          )
         }
       </div>
-      <span className="signTip">{'Sign-in with a Web3 wallet'}</span>
+      <span
+        className={classNames("signTip", {errorInfo: !!error})}
+        dangerouslySetInnerHTML={
+          {
+            __html: error ? error :
+              hoverWallet === -1 ? 'Sign-in with a Web3 wallet' :
+                `Sign-in with a <span>${wallets[hoverWallet].name}</span>`
+          }
+        }/>
+      <div className={'flex1'}/>
     </div>
   )
 }
@@ -308,46 +355,39 @@ export default React.memo(styled(Home)`
   color: white;
   display: flex;
   width: 100%;
-  min-height: 600px;
   height: 100vh;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
   //background: #333333;
   .logo {
-    position: fixed;
-    left: 3.5rem;
-    top: 3rem;
-    z-index: 10;
+    margin-left: 3.5rem;
+    margin-top: 3rem;
+    align-self: flex-start;
+  }
+
+  .flex1 {
+    flex: 1;
   }
 
   .slog {
     display: flex;
     overflow: hidden;
-    padding-top: 4rem;
-    width: 875px;
+    padding-top: 3rem;
+    width: 935px;
     height: 400px;
+    flex-shrink: 0;
+    font-family: "ArialRoundedMTBold";
 
     .slogIcon {
-      transition: all ease-out 300ms;
       position: relative;
-      left: -300px;
       margin-right: 50px;
       width: 275px;
       height: 255px;
     }
 
-    .slogShow {
-      left: 0;
-      right: 0;
-      transform: translateX(0) !important;
-    }
-
     .slogText {
-      transition: all ease-out 300ms;
       position: relative;
-      width: 550px;
-      transform: translateX(550px);
+      width: 610px;
     }
 
     .slogText1 {
@@ -356,8 +396,8 @@ export default React.memo(styled(Home)`
       word-break: break-all;
       line-height: 86px;
 
-      span {
-        color: orange;
+      .highlight {
+        color: var(--primary-color);
       }
     }
 
@@ -377,6 +417,7 @@ export default React.memo(styled(Home)`
     background: rgba(255, 255, 255, 0.1);
     border-radius: 100px;
     padding: 20px 40px;
+    flex-shrink: 0;
 
     .animStart {
       cursor: pointer;
@@ -400,6 +441,15 @@ export default React.memo(styled(Home)`
 
   .signTip {
     line-height: 3rem;
+    font-size: 1.5rem;
+
+    span {
+      color: var(--primary-color);
+    }
+  }
+
+  .errorInfo {
+    color: #FF5B5B;
   }
 
 `)

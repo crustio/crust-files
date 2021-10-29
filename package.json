@@ -40,7 +40,8 @@
     "store": "^2.0.12",
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.2.0",
-    "styled-components": "^5.3.3"
+    "styled-components": "^5.3.3",
+    "typeit-react": "^2.0.7"
   },
   "devDependencies": {
     "@types/node": "^16.3.3",
