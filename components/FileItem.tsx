@@ -134,7 +134,7 @@ function FileItem(props: Props) {
       {shortStr(file.Name)}
       {file.items && <Icon name={'folder outline'}/>}
       {file.Encrypted &&
-      <Popup trigger={<embed src={"/images/key.svg"}/>} position={"top center"} content={"Encrypted"}/>}
+      <Popup trigger={<embed src={"/key.svg"}/>} position={"top center"} content={"Encrypted"}/>}
     </Table.Cell>
     <Table.Cell textAlign={"center"}>
       {shortStr(file.Hash)}

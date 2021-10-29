@@ -45,7 +45,7 @@ export function createAuthIpfsEndpoints(t: TFunction): AuthIpfsEndpoint[] {
       text: t('️⚡ Thunder Gateway'),
       value: 'https://gw.crustapps.net',
       group: "Thunder Gateway"
-    },
+    }
   ];
 }
 
