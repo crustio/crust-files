@@ -118,14 +118,15 @@ function FileItem(props: Props) {
   return <Table.Row className={className}>
     <Table.Cell className={'fileName'}>
       {shortStr(file.Name)}
-      {file.items && <Icon name={'folder'}/>}
-      {file.Encrypted && <Popup trigger={<Icon name={'lock'}/>} position={"top center"} content={"Encrypted"}/>}
+      {file.items && <Icon name={'folder outline'}/>}
+      {file.Encrypted &&
+      <Popup trigger={<embed src={"/images/key.svg"}/>} position={"top center"} content={"Encrypted"}/>}
     </Table.Cell>
     <Table.Cell textAlign={"center"}>
       {shortStr(file.Hash)}
       <Popup
         position={"top center"}
-        content={"Copy CID"}
+        content={"Copy File CID"}
         trigger={
           <span
             onClick={() => copy(file.Hash)}
@@ -149,7 +150,7 @@ function FileItem(props: Props) {
     <Table.Cell textAlign={"center"}>
       <Popup
         position={"top center"}
-        content={"Open"}
+        content={"Open File"}
         trigger={
           <span style={{cursor: "pointer", marginRight: '1rem'}} onClick={_onClickOpen}>
             <Icon name={'external'}/>
@@ -158,7 +159,7 @@ function FileItem(props: Props) {
       />
       <Popup
         position={"top center"}
-        content={"Copy Link"}
+        content={"Copy Download Link"}
         trigger={
           <span style={{cursor: "pointer"}} onClick={_onClickCopy}>
             <Icon name={'clone outline'}/>
@@ -173,7 +174,22 @@ function FileItem(props: Props) {
 export default React.memo<Props>(styled(FileItem)`
   color: var(--secend-color) !important;
 
-  .fileName > i {
-    margin-left: 0.6rem;
+  .fileName {
+    i, embed {
+      margin-left: 0.6rem;
+    }
+
+    embed {
+      width: 1.2rem;
+      height: 1.2rem;
+      position: relative;
+      top: 0.3rem;
+      cursor: pointer;
+
+      path {
+        fill: var(--secend-color);
+      }
+    }
   }
+
 `)

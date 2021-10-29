@@ -332,9 +332,10 @@ export default React.memo(styled(Home)`
     display: flex;
     overflow: hidden;
     padding-top: 3rem;
-    width: 875px;
+    width: 925px;
     height: 400px;
     flex-shrink: 0;
+    font-family: "ArialRoundedMTBold";
 
     .slogIcon {
       position: relative;
@@ -345,7 +346,7 @@ export default React.memo(styled(Home)`
 
     .slogText {
       position: relative;
-      width: 550px;
+      width: 600px;
     }
 
     .slogText1 {
@@ -399,6 +400,7 @@ export default React.memo(styled(Home)`
 
   .signTip {
     line-height: 3rem;
+    font-size: 1.5rem;
   }
 
 `)

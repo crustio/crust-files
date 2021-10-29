@@ -13,6 +13,7 @@ export default React.memo<Props>(styled(Btn)`
   border: 1px solid var(--primary-color) !important;
   color: var(--primary-color) !important;
   font-weight: normal !important;
+  border-radius: 10px !important;
 
   &:hover {
     background: var(--primary-color) !important;

@@ -52,3 +52,7 @@ img {
 .font1 {
     font-family: "ArialRoundedMTBold", -apple-system, BlinkMacSystemFont, sans-serif !important;
 }
+
+.ui.popup {
+    padding: 0.6rem 0.8rem !important;
+}
