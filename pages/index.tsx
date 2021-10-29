@@ -232,9 +232,9 @@ function Home({className}: { className?: string }) {
   useEffect(() => {
     let index = 0
     const task = setInterval(() => {
-      if (index === 4) setSlogTextIndex(1)
-      if (index === 10) setSlogTextIndex(2)
-      if (index === 18) {
+      if (index === 3) setSlogTextIndex(1)
+      if (index === 9) setSlogTextIndex(2)
+      if (index === 14) {
         setSlogTextIndex(0)
         index = 0
       }
@@ -254,7 +254,7 @@ function Home({className}: { className?: string }) {
           {
             slogTextIndex === 0 &&
             <div className={"slogText1"}>
-              <TypeIt options={{speed: 100} as any}>
+              <TypeIt options={{speed: 60} as any}>
                 Enjoy storing your <br/>
                 files in a <span className={'highlight'}>Web3</span> style. <br/>
                 Now <span className={'highlight'}>free</span>.
@@ -264,10 +264,10 @@ function Home({className}: { className?: string }) {
           {
             slogTextIndex === 1 &&
             <div className={"slogText2"}>
-              <TypeIt options={{speed: 80} as any}>
-                - Multi-wallet access<br/>
-                - Easily share links to friends<br/>
-                - Long-term storage with abundant IPFS replicas
+              <TypeIt options={{speed: 60} as any}>
+                - Multi-wallet access with your Web3.0 identity<br/>
+                - Absolute data privacy by end-to-end file encryption<br/>
+                - IPFS storage with globally-distributed replicas
               </TypeIt>
             </div>
           }
@@ -275,9 +275,9 @@ function Home({className}: { className?: string }) {
             slogTextIndex === 2 &&
             <div className={"slogText2"}>
               <TypeIt options={{speed: 60} as any}>
+                - Easy share links to friends<br/>
                 - Retrieve your files anywhere, anytime<br/>
-                - End-to-end file encryption<br/>
-                - Paid service with smart contract on Polygon, Ethereum, Near, Flow, Elrond and Solana
+                - Paid service with smart contract on public<br/> blockchains
               </TypeIt>
             </div>
           }
@@ -332,7 +332,7 @@ export default React.memo(styled(Home)`
     display: flex;
     overflow: hidden;
     padding-top: 3rem;
-    width: 925px;
+    width: 935px;
     height: 400px;
     flex-shrink: 0;
     font-family: "ArialRoundedMTBold";
@@ -346,7 +346,7 @@ export default React.memo(styled(Home)`
 
     .slogText {
       position: relative;
-      width: 600px;
+      width: 610px;
     }
 
     .slogText1 {

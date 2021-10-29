@@ -14,6 +14,7 @@ import axios from "axios";
 import {decryptFile} from "../lib/crypto/encryption";
 import _ from 'lodash';
 import {shortStr} from "../lib/utils";
+import {BlockNumber} from "@polkadot/types/interfaces/types";
 
 export interface Props {
   className?: string,
@@ -38,6 +39,20 @@ function createUrl(f: SaveFile, endpoints: AuthIpfsEndpoint[]) {
   const endpoint = (p && p.value) || endpoints[0].value;
 
   return `${endpoint}/ipfs/${f.Hash}?filename=${f.Name}`;
+}
+
+function parseStat(stat: any) {
+  try {
+    return JSON.parse(JSON.stringify(stat))
+  } catch (e) {
+    return {
+      expired_at: 0,
+      reported_replica_count: 0,
+      amount: 0,
+      file_size: 0,
+      prepaid: false,
+    }
+  }
 }
 
 //
@@ -78,43 +93,42 @@ function FileItem(props: Props) {
 
   const queryFileApi = api && api.query?.market && api.query?.market.files
   const hasQueryFileApi = !!queryFileApi
-  const stat = useCall(queryFileApi, [file.Hash])
-  let bestNumber = useCall(api && api.derive.chain.bestNumber);
-  bestNumber = bestNumber && JSON.parse(JSON.stringify(bestNumber));
+  const stat = useCall<{ isEmpty: boolean } | undefined | null>(queryFileApi, [file.Hash])
+  const bestNum = useCall<BlockNumber>(api?.derive?.chain?.bestNumber);
+  const bestNumber = bestNum && bestNum.toNumber()
   const fileStat: FileStat = {status: 'Loading'}
-  if (stat) {
-    const statObj = JSON.parse(JSON.stringify(stat))
-    if (statObj) {
-      const {
-        expired_at,
-        reported_replica_count
-      } = statObj
-      fileStat.expireTime = statObj.expired_at;
-      fileStat.amount = statObj.amount;
-      fileStat.startTime = statObj.expired_at ? statObj.expired_at - 216000 : 0;
-      fileStat.fileSize = statObj.file_size;
-      fileStat.confirmedReplicas = statObj.reported_replica_count;
-      fileStat.prepaid = statObj.prepaid;
-      if (expired_at && expired_at < bestNumber) {
-        // expired
-        fileStat.status = 'Expired';
-      }
-      if (!expired_at && expired_at > bestNumber && reported_replica_count < 1) {
-        // pending
-        fileStat.status = 'Waiting';
-      }
-      if (expired_at && expired_at > bestNumber && reported_replica_count > 0) {
-        // success
-        fileStat.status = 'Success';
-      }
-    } else if (hasQueryFileApi && (file.PinTime - new Date().getTime()) >= FailedTime) {
-      // 'Failed or Waiting'
-      fileStat.status = 'Failed'
-    } else {
-      fileStat.status = 'Waiting'
+  if (stat && !stat.isEmpty) {
+    const {
+      expired_at,
+      reported_replica_count,
+      amount,
+      file_size,
+      prepaid,
+    } = parseStat(stat)
+    fileStat.expireTime = expired_at;
+    fileStat.amount = amount;
+    fileStat.startTime = expired_at ? expired_at - 216000 : 0;
+    fileStat.fileSize = file_size;
+    fileStat.confirmedReplicas = reported_replica_count;
+    fileStat.prepaid = prepaid;
+    if (expired_at && expired_at < bestNumber) {
+      // expired
+      fileStat.status = 'Expired';
     }
-
+    if (reported_replica_count < 1) {
+      // pending
+      fileStat.status = 'Waiting';
+    }
+    if (expired_at && expired_at > bestNumber && reported_replica_count > 0) {
+      // success
+      fileStat.status = 'Success';
+    }
+  } else if (hasQueryFileApi && (file.PinTime - new Date().getTime()) >= FailedTime) {
+    // 'Failed'
+    fileStat.status = 'Failed'
   }
+  if (!bestNumber) fileStat.status = 'Loading'
+
   return <Table.Row className={className}>
     <Table.Cell className={'fileName'}>
       {shortStr(file.Name)}

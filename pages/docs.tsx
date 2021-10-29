@@ -25,35 +25,35 @@ const DOCS: DocsItem[] = [
   {
     title: 'More Detailed Features',
     sub: [
-      ">Multi-Wallet Access, Web3.0 Identity",
-      ">End-to-end File Encryption",
-      ">Share Links to Friends",
-      ">Long-term IPFS Storage with Replicas Worldwide",
-      ">Retrieve Anywhere & Anytime",
-      ">Open-source, Decentralized-hosted"
+      "> Multi-Wallet Access, Web3.0 Identity",
+      "> End-to-end File Encryption",
+      "> Share Links to Friends",
+      "> Long-term IPFS Storage with Replicas Worldwide",
+      "> Retrieve Anywhere & Anytime",
+      "> Open-source, Decentralized-hosted"
     ]
   },
   {
     title: 'What Wallet Does It Support?',
     sub: [
       "Crust Files supports multi-wallets as Web3.0 identity to sign-in the application and use its Web3.0 Auth IPFS Gateway & Web3.0 Auth Crust Pinner. ",
-      ">Crust Network – Browser Wallet",
-      ">Ethereum & Polygon – MetaMask",
-      ">Polkadot – Browser {.js} Extension",
-      ">NEAR",
-      ">Solana",
-      ">Elrond",
-      ">FLOW"
+      "> Crust Network – Browser Wallet",
+      "> Ethereum & Polygon – MetaMask",
+      "> Polkadot – Browser {.js} Extension",
+      "> NEAR",
+      "> Solana",
+      "> Elrond",
+      "> FLOW"
     ]
   },
   {
     title: 'What’s More to Expect in the Future',
     sub: [
-      ">More blockchain platforms and wallets sign-in supported.",
-      ">Smart Contract on various platforms, so that users are able to Deposit / Pay to use Crust Files.",
-      ">Customizable IPFS Gateways.",
-      ">Native folder structure management.",
-      ">On-chain storage for account info."
+      "> More blockchain platforms and wallets sign-in supported.",
+      "> Smart Contract on various platforms, so that users are able to Deposit / Pay to use Crust Files.",
+      "> Customizable IPFS Gateways.",
+      "> Native folder structure management.",
+      "> On-chain storage for account info."
     ]
   },
   {
