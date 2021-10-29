@@ -1,7 +1,7 @@
 import React, {useCallback, useContext} from "react";
 import {SaveFile} from "../lib/wallet/types";
 import {AuthIpfsEndpoint} from "../lib/config";
-import {Icon, Table} from "semantic-ui-react";
+import {Icon, Popup, Table} from "semantic-ui-react";
 import filesize from "filesize";
 import {saveAs} from 'file-saver';
 import {useClipboard} from "../lib/hooks/useClipboard";
@@ -116,12 +116,24 @@ function FileItem(props: Props) {
 
   }
   return <Table.Row className={className}>
-    <Table.Cell>{shortStr(file.Name)} {file.Encrypted && <Icon name={'lock'}/>}</Table.Cell>
+    <Table.Cell className={'fileName'}>
+      {shortStr(file.Name)}
+      {file.items && <Icon name={'folder'}/>}
+      {file.Encrypted && <Popup trigger={<Icon name={'lock'}/>} position={"top center"} content={"Encrypted"}/>}
+    </Table.Cell>
     <Table.Cell textAlign={"center"}>
       {shortStr(file.Hash)}
-      <span onClick={() => copy(file.Hash)} style={{cursor: "pointer", paddingLeft: 10}}>
-                  <Icon name={'clone outline'}/>
-                </span>
+      <Popup
+        position={"top center"}
+        content={"Copy CID"}
+        trigger={
+          <span
+            onClick={() => copy(file.Hash)}
+            style={{cursor: "pointer", paddingLeft: 10}}>
+            <Icon name={'clone outline'}/>
+          </span>
+        }
+      />
     </Table.Cell>
     <Table.Cell textAlign={"center"}>{filesize(Number(file.Size), {round: 2})}</Table.Cell>
     <Table.Cell textAlign={"center"}>
@@ -135,16 +147,33 @@ function FileItem(props: Props) {
       {fileStat.status === "Success" && `${fileStat.status} (${fileStat.confirmedReplicas} replicas)`}
     </Table.Cell>
     <Table.Cell textAlign={"center"}>
-      <span style={{cursor: "pointer", marginRight: '1rem'}} onClick={_onClickOpen}>
-        <Icon name={'external'}/>
-      </span>
-      <span style={{cursor: "pointer"}} onClick={_onClickCopy}>
-        <Icon name={'clone outline'}/>
-      </span>
+      <Popup
+        position={"top center"}
+        content={"Open"}
+        trigger={
+          <span style={{cursor: "pointer", marginRight: '1rem'}} onClick={_onClickOpen}>
+            <Icon name={'external'}/>
+          </span>
+        }
+      />
+      <Popup
+        position={"top center"}
+        content={"Copy Link"}
+        trigger={
+          <span style={{cursor: "pointer"}} onClick={_onClickCopy}>
+            <Icon name={'clone outline'}/>
+          </span>
+        }
+      />
+
     </Table.Cell>
   </Table.Row>
 }
 
 export default React.memo<Props>(styled(FileItem)`
   color: var(--secend-color) !important;
+
+  .fileName > i {
+    margin-left: 0.6rem;
+  }
 `)
