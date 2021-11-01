@@ -1,6 +1,7 @@
 import {BaseWallet} from "./types";
 import {InjectedExtension, InjectedWindowProvider} from "@polkadot/extension-inject/types";
 import {stringToHex} from "@polkadot/util";
+import {sleep} from "./tools";
 
 
 export class Crust implements BaseWallet {
@@ -14,6 +15,10 @@ export class Crust implements BaseWallet {
     const win = window as { injectedWeb3?: Record<string, InjectedWindowProvider> };
     win.injectedWeb3 = win.injectedWeb3 || {};
     this.provider = win.injectedWeb3['crust wallet'];
+    if (!this.provider) {
+      await sleep(2000)
+      this.provider = win.injectedWeb3['crust wallet'];
+    }
     this.isInit = true
   }
 

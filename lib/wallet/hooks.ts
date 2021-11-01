@@ -9,6 +9,7 @@ import {Crust} from './Crust'
 import {PolkadotJs} from "./PolkadotJs";
 import {Elrond} from "./Elrond";
 import {useRouter} from "next/router";
+import {MWalletConnect} from "./MWalletConnect";
 
 // eslint-disable-next-line
 const fcl = require('@onflow/fcl');
@@ -34,7 +35,7 @@ type KEYS = 'files:login' | 'pins:login'
 export class LoginUser {
   account = '';
   pubKey?: string;
-  wallet: 'crust' | 'polkadot-js' | 'metamask' | 'near' | 'flow' | 'solana' | 'elrond';
+  wallet: 'crust' | 'polkadot-js' | 'metamask' | 'near' | 'flow' | 'solana' | 'elrond' | 'wallet-connect';
   key?: KEYS = 'files:login';
 }
 
@@ -51,6 +52,7 @@ export interface WrapLoginUser extends LoginUser {
   flow: FlowM,
   solana: SolanaM,
   elrond: Elrond,
+  walletConnect: MWalletConnect,
 }
 
 const defFilesObj: Files = {files: [], isLoad: true};
@@ -147,6 +149,13 @@ export function useSign(wUser: WrapLoginUser): UseSign {
         }
       }))
     }
+    if (wUser.wallet === 'wallet-connect') {
+      setState((o) => ({
+        ...o, sign: async (data) => {
+          return wUser.walletConnect.sign(data, wUser.account)
+        }
+      }))
+    }
   }, [wUser]);
 
   return state;
@@ -165,6 +174,7 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
   const flow = useMemo(() => new FlowM(), []);
   const solana = useMemo(() => new SolanaM(), []);
   const elrond = useMemo(() => new Elrond(), []);
+  const walletConnect = useMemo(() => new MWalletConnect(), []);
   const r = useRouter()
 
   const setLoginUser = useCallback((loginUser: LoginUser) => {
@@ -247,6 +257,20 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
         elrond.init()
           .then(() => setAccount(f))
           .then(() => setIsLoad(false))
+      } else if (f.wallet === 'wallet-connect') {
+        walletConnect.init()
+          .then(() => {
+            setAccount(f)
+            console.info('wc::', walletConnect.connect)
+            walletConnect.connect?.on("session_update", (_, payload) => {
+              const {accounts} = payload.params[0]
+              setLoginUser({
+                wallet: 'wallet-connect',
+                account: accounts[0]
+              })
+            })
+          })
+          .then(() => setIsLoad(false))
       } else {
         setIsLoad(false)
       }
@@ -269,6 +293,8 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
       if (solana.solana && solana.solana?.isConnected) {
         solana.solana.disconnect();
       }
+    } else if (account.wallet === 'wallet-connect') {
+      await walletConnect.connect?.killSession()
     }
 
     setLoginUser({...defLoginUser});
@@ -289,6 +315,7 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
       flow,
       solana,
       elrond,
+      walletConnect,
     };
 
     // if (window.location.hostname === 'localhost') {
@@ -298,7 +325,7 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
     // }
 
     return wrapLoginUser;
-  }, [account, accounts, isLoad, setLoginUser, logout, crust, polkadotJs, metamask, near, flow, solana, key]);
+  }, [account, accounts, isLoad, setLoginUser, logout, crust, polkadotJs, metamask, near, flow, solana, walletConnect, key]);
   const uSign = useSign(wUser);
   wUser.sign = uSign.sign;
   return wUser;
@@ -311,7 +338,7 @@ export function useContextWrapLoginUser(): WrapLoginUser {
 }
 
 export const getPerfix = (user: LoginUser): string => {
-  if (user.wallet === 'metamask') {
+  if (user.wallet === 'metamask' || user.wallet === 'wallet-connect') {
     return 'eth';
   }
 

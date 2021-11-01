@@ -13,7 +13,7 @@ const {Cypher} = require("@zheeno/mnemonic-cypher");
 
 interface ItemWallet {
   name: 'Crust Wallet' | 'Polkadot (.js Extension)' | 'MetaMask' | 'Near Wallet' | 'Flow (Blocto Wallet)' |
-    'Solana (Phantom Wallet)' | 'Elrond (Maiar Wallet)'
+    'Solana (Phantom Wallet)' | 'Elrond (Maiar Wallet)' | 'Wallet Connect'
   image: string
 }
 
@@ -50,11 +50,15 @@ const WALLETS: ItemWallet[] = [
     name: 'Elrond (Maiar Wallet)',
     image: '/images/wallet_elrond.png',
   },
+  // {
+  //   name: 'Wallet Connect',
+  //   image: '/images/wallet_elrond.png',
+  // }
 ]
 
 function Home({className}: { className?: string }) {
   const {t} = useTranslation()
-  const {data} = useParallax(100, 7)
+  const {data} = useParallax(100, WALLETS.length)
   const user = useContextWrapLoginUser()
   const [error, setError] = useState('');
   const _onClickCrust = useCallback(async () => {
@@ -221,6 +225,19 @@ function Home({className}: { className?: string }) {
     });
   }, [user, t])
 
+  const _onClickWalletConnect = useCallback(async () => {
+    await user.walletConnect.init()
+    await user.walletConnect.connect.killSession()
+    await user.walletConnect.connect?.createSession()
+    user.walletConnect.connect?.on("connect", (_, payload) => {
+      const { accounts } = payload.params[0];
+      user.setLoginUser({
+        account: accounts[0],
+        wallet: 'wallet-connect'
+      })
+    })
+  }, [user])
+
   const wallets: Wallet[] = useMemo(() => {
     return WALLETS.map((item) => {
       switch (item.name) {
@@ -238,10 +255,12 @@ function Home({className}: { className?: string }) {
           return {...item, onClick: _onClickSolana}
         case "Elrond (Maiar Wallet)":
           return {...item, onClick: _onClickElrond}
+        case "Wallet Connect":
+          return {...item, onClick: _onClickWalletConnect}
       }
       return {...item, onClick: _onClickCrust}
     })
-  }, [_onClickCrust, _onClickPolkadotJs, _onClickMetamask, _onClickNear, _onClickFlow, _onClickSolana, _onClickElrond])
+  }, [_onClickCrust, _onClickPolkadotJs, _onClickMetamask, _onClickNear, _onClickFlow, _onClickSolana, _onClickElrond, _onClickWalletConnect])
 
 
   useEffect(() => {
