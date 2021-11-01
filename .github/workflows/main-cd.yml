@@ -13,6 +13,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v1
 
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '14'
+          always-auth: true
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Build bundle
+        run: yarn export
+
       - name: Build and push docker
         run: |
           docker build -t coderyashiro/crust-files:latest .
