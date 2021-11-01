@@ -22,7 +22,7 @@ export default function Redirect(props: { children: any }) {
     return null
   }
   if (wUser.account && (router.pathname === '' || router.pathname === '/')) {
-    router.replace('/files')
+    router.replace('/#/files')
     return null
   }
   return props.children;
