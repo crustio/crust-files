@@ -27,17 +27,17 @@ jobs:
 
       - name: Build and push docker
         run: |
-          docker build -t coderyashiro/crust-files:latest .
+          docker build -t crustio/crust-files:latest .
           docker login -u ${{ secrets.DOCKER_HUB_USER_NAME }} -p ${{ secrets.DOCKER_HUB_PASSWORD }}
-          docker push coderyashiro/crust-files:latest
-      - name: Upgrade home web
+          docker push crustio/crust-files:latest
+      - name: Upgrade crust files website
         uses: fifsky/ssh-action@master
         with:
           command: |
-            docker pull coderyashiro/crust-files:latest
+            sudo docker pull crustio/crust-files:latest
             cd /opt/compose
-            docker tag coderyashiro/crust-files:latest compose_crust-files
-            docker-compose up -d crust-files
+            sudo docker tag crustio/crust-files:latest crust-files
+            sudo docker-compose up -d crust-files
           host: ${{ secrets.SSH_HOST }}
           user: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
