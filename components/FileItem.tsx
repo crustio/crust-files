@@ -1,4 +1,4 @@
-import React, {useCallback, useContext} from "react";
+import React, {useCallback, useContext, useMemo} from "react";
 import {SaveFile} from "../lib/wallet/types";
 import {AuthIpfsEndpoint} from "../lib/config";
 import {Icon, Popup, Table} from "semantic-ui-react";
@@ -15,6 +15,7 @@ import {decryptFile} from "../lib/crypto/encryption";
 import _ from 'lodash';
 import {shortStr} from "../lib/utils";
 import {BlockNumber} from "@polkadot/types/interfaces/types";
+import {Key} from "./icons";
 
 export interface Props {
   className?: string,
@@ -90,51 +91,60 @@ function FileItem(props: Props) {
     }
   }, [uc, file, endpoints])
   const _onClickCopy = useCallback(() => copy(createUrl(file, endpoints)), [file, endpoints])
-
   const queryFileApi = api && api.query?.market && api.query?.market.files
   const hasQueryFileApi = !!queryFileApi
   const stat = useCall<{ isEmpty: boolean } | undefined | null>(queryFileApi, [file.Hash])
   const bestNum = useCall<BlockNumber>(api?.derive?.chain?.bestNumber);
   const bestNumber = bestNum && bestNum.toNumber()
-  const fileStat: FileStat = {status: 'Loading'}
-  if (stat && !stat.isEmpty) {
-    const {
-      expired_at,
-      reported_replica_count,
-      amount,
-      file_size,
-      prepaid,
-    } = parseStat(stat)
-    fileStat.expireTime = expired_at;
-    fileStat.amount = amount;
-    fileStat.startTime = expired_at ? expired_at - 216000 : 0;
-    fileStat.fileSize = file_size;
-    fileStat.confirmedReplicas = reported_replica_count;
-    fileStat.prepaid = prepaid;
-    if (expired_at && expired_at < bestNumber) {
-      // expired
-      fileStat.status = 'Expired';
+  const fileStat = useMemo<FileStat>(() => {
+    const fStat: FileStat = {status: 'Loading'}
+    if (stat && !stat.isEmpty) {
+      const {
+        expired_at,
+        reported_replica_count,
+        amount,
+        file_size,
+        prepaid,
+      } = parseStat(stat)
+      fStat.expireTime = expired_at;
+      fStat.amount = amount;
+      fStat.startTime = expired_at ? expired_at - 216000 : 0;
+      fStat.fileSize = file_size;
+      fStat.confirmedReplicas = reported_replica_count;
+      fStat.prepaid = prepaid;
+      if (expired_at && expired_at < bestNumber) {
+        // expired
+        fStat.status = 'Expired';
+      }
+      if (reported_replica_count < 1) {
+        // pending
+        fStat.status = 'Waiting';
+      }
+      if (expired_at && expired_at > bestNumber && reported_replica_count > 0) {
+        // success
+        fStat.status = 'Success';
+      }
+    } else if (hasQueryFileApi && (file.PinTime - new Date().getTime()) >= FailedTime) {
+      // 'Failed'
+      fStat.status = 'Failed'
     }
-    if (reported_replica_count < 1) {
-      // pending
-      fileStat.status = 'Waiting';
-    }
-    if (expired_at && expired_at > bestNumber && reported_replica_count > 0) {
-      // success
-      fileStat.status = 'Success';
-    }
-  } else if (hasQueryFileApi && (file.PinTime - new Date().getTime()) >= FailedTime) {
-    // 'Failed'
-    fileStat.status = 'Failed'
-  }
-  if (!bestNumber) fileStat.status = 'Loading'
+    if (!bestNumber) fStat.status = 'Loading'
+    return fStat
+  }, [stat, bestNumber])
+
 
   return <Table.Row className={className}>
     <Table.Cell className={'fileName'}>
       {shortStr(file.Name)}
       {file.items && <Icon name={'folder outline'}/>}
-      {file.Encrypted &&
-      <Popup trigger={<embed src={"/key.svg"}/>} position={"top center"} content={"Encrypted"}/>}
+      {
+        file.Encrypted &&
+        <Popup
+          trigger={<Key/>}
+          position={"top center"}>
+          {"Encrypted"}
+        </Popup>
+      }
     </Table.Cell>
     <Table.Cell textAlign={"center"}>
       {shortStr(file.Hash)}
@@ -189,11 +199,11 @@ export default React.memo<Props>(styled(FileItem)`
   color: var(--secend-color) !important;
 
   .fileName {
-    i, embed {
+    i, svg {
       margin-left: 0.6rem;
     }
 
-    embed {
+    svg {
       width: 1.2rem;
       height: 1.2rem;
       position: relative;

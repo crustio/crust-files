@@ -269,6 +269,9 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
                 account: accounts[0]
               })
             })
+            walletConnect.connect?.on("disconnect", () => {
+              setLoginUser(defLoginUser)
+            })
           })
           .then(() => setIsLoad(false))
       } else {
@@ -278,7 +281,7 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
       setIsLoad(false);
       console.error(e);
     }
-  }, [metamask, near, flow, solana, key, r]);
+  }, [metamask, near, flow, solana, walletConnect, key, r]);
 
   const logout = useCallback(async () => {
     if (account.wallet === 'flow') {

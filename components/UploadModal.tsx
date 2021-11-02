@@ -146,10 +146,9 @@ function UploadModal(p: Props): React.ReactElement<Props> {
 
       console.info('upResult:', upResult);
       setCancelUp(null);
-      setUpState({progress: 100, up: false});
+      setUpState({progress: 99, up: true})
       // remote pin order
       const PinEndpoint = pinner.value;
-
       await axios.request({
         data: {
           cid: upRes.Hash,
@@ -159,6 +158,8 @@ function UploadModal(p: Props): React.ReactElement<Props> {
         method: 'POST',
         url: `${PinEndpoint}/psa/pins`
       });
+
+      setUpState({progress: 100, up: false});
       onSuccess({
         ...upRes,
         PinEndpoint,
