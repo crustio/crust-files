@@ -20,7 +20,7 @@ jobs:
         id: upload
         uses: crustio/ipfs-upload-action@v2.0.2
         with:
-          path: './crust-files/out'
+          path: './out'
           seeds: ${{ secrets.CRUST_SEEDS }}
 
       - name: Place storage order on Crust
