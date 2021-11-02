@@ -1,24 +1,24 @@
 import React, {useCallback, useContext, useRef, useState} from "react";
-import {useContextWrapLoginUser, useFiles} from "../lib/wallet/hooks";
+import {useContextWrapLoginUser, useFiles} from "../../lib/wallet/hooks";
 import {Icon, Pagination, Popup, Segment, Table, Transition} from "semantic-ui-react";
 import {useTranslation} from "react-i18next";
-import {DirFile, FileInfo, SaveFile} from "../lib/wallet/types";
-import SideLayout from "../components/SideLayout";
+import {DirFile, FileInfo, SaveFile} from "../../lib/wallet/types";
+import SideLayout from "../../components/SideLayout";
 import FileSaver from 'file-saver';
-import UploadModal from "../components/UploadModal";
-import Btn from "../components/Btn"
-import {AppContext} from "../lib/AppContext";
-import User from "../components/User";
-import {usePage} from "../lib/hooks/usePage";
-import FileItem from "../components/FileItem";
+import UploadModal from "../../components/UploadModal";
+import Btn from "../../components/Btn"
+import {AppContext} from "../../lib/AppContext";
+import User from "../../components/User";
+import {usePage} from "../../lib/hooks/usePage";
+import FileItem from "../../components/FileItem";
 import styled from "styled-components";
-import {useUserCrypto} from "../lib/crypto/useUserCrypto";
-import {useAutoToggle} from "../lib/hooks/useAutoToggle";
+import {useUserCrypto} from "../../lib/crypto/useUserCrypto";
+import {useAutoToggle} from "../../lib/hooks/useAutoToggle";
 
 type FunInputFile = (e: React.ChangeEvent<HTMLInputElement>) => void
 
 
-function Files(p: { className?: string }) {
+function Index(p: { className?: string }) {
   const user = useContextWrapLoginUser()
   const {t} = useTranslation();
   const {alert} = useContext(AppContext)
@@ -253,7 +253,7 @@ function Files(p: { className?: string }) {
   </SideLayout>
 }
 
-export default React.memo(styled(Files)`
+export default React.memo(styled(Index)`
   padding: unset !important;
 
   .table {

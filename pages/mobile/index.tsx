@@ -1,12 +1,12 @@
 import React from "react";
 import styled from "styled-components";
-import BgAnim from "../components/effect/BgAnim";
+import BgAnim from "../../components/effect/BgAnim";
 
 export interface Props {
   className?: string
 }
 
-function Mobile(props: Props) {
+function Index(props: Props) {
   const {className} = props
   return <div className={className}>
     <BgAnim/>
@@ -20,7 +20,7 @@ function Mobile(props: Props) {
 }
 
 
-export default React.memo<Props>(styled(Mobile)`
+export default React.memo<Props>(styled(Index)`
   color: white;
   display: flex;
   width: 100%;

@@ -1,21 +1,21 @@
 import React, {useContext} from "react";
 import styled from "styled-components";
-import SideLayout from "../components/SideLayout";
+import SideLayout from "../../components/SideLayout";
 import {Segment} from "semantic-ui-react";
-import User from "../components/User";
-import {useUserCrypto} from "../lib/crypto/useUserCrypto";
-import Btn from "../components/Btn";
+import User from "../../components/User";
+import {useUserCrypto} from "../../lib/crypto/useUserCrypto";
+import Btn from "../../components/Btn";
 import {useTranslation} from "react-i18next";
-import {useToggle} from "../lib/hooks/useToggle";
-import {AppContext} from "../lib/AppContext";
-import ModalNewKey from "../components/ModalNewKey";
-import {useClipboard} from "../lib/hooks/useClipboard";
+import {useToggle} from "../../lib/hooks/useToggle";
+import {AppContext} from "../../lib/AppContext";
+import ModalNewKey from "../../components/ModalNewKey";
+import {useClipboard} from "../../lib/hooks/useClipboard";
 
 export interface Props {
   className?: string
 }
 
-function Setting(props: Props) {
+function Index(props: Props) {
   const {className} = props
   const {t} = useTranslation()
   const uc = useUserCrypto()
@@ -53,7 +53,7 @@ function Setting(props: Props) {
   </SideLayout>
 }
 
-export default React.memo<Props>(styled(Setting)`
+export default React.memo<Props>(styled(Index)`
   padding: unset !important;
 
 
