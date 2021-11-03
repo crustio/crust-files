@@ -1,10 +1,12 @@
 name: Crust Files Deploy
 on:
+  push:
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
   build-and-deploy:
-    if: github.repository == 'decooio/crust-files'
+    if: github.repository == 'crustio/crust-files'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -33,7 +35,7 @@ jobs:
       - name: Update DNS with new IPFS hash
         env:
           CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
-          RECORD_DOMAIN: 'ipfs-files.decoo.io'
+          RECORD_DOMAIN: 'files.crust.network'
           RECORD_NAME: '_dnslink'
           CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
         uses: textileio/cloudflare-update-dnslink@0fe7b7a1ffc865db3a4da9773f0f987447ad5848
