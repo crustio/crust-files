@@ -5,13 +5,14 @@ import styled from "styled-components";
 import {shortStr} from "../lib/utils";
 import {useToggle} from "../lib/hooks/useToggle";
 import ModalSelectAccount from "./ModalSelectAccount";
+import _ from 'lodash';
 
 export interface Props {
   className?: string,
 }
 
-function getWalletIcon(wallet: WrapLoginUser['wallet']): string {
-  switch (wallet) {
+function getWalletIcon(user: WrapLoginUser): string {
+  switch (user.wallet) {
     case "crust":
       return '/images/wallet_crust.png';
     case "polkadot-js":
@@ -26,6 +27,13 @@ function getWalletIcon(wallet: WrapLoginUser['wallet']): string {
       return '/images/wallet_elrond.png';
     case "flow":
       return '/images/wallet_flow.png';
+    case "wallet-connect": {
+      const icons = _.get(user.walletConnect.connect, 'peerMeta.icons')
+      if (_.size(icons)) {
+        return icons[0]
+      }
+      return '/images/wallet_connect.png';
+    }
     default:
       return ''
   }
@@ -47,7 +55,7 @@ function User(props: Props) {
     }
     <Item.Group>
       <Item style={{justifyContent: 'flex-end'}}>
-        <Item.Image src={getWalletIcon(user.wallet)} size={'tiny'}/>
+        <Item.Image src={getWalletIcon(user)} size={'tiny'}/>
         <Item.Content verticalAlign={"middle"} style={{flex: 'unset', paddingLeft: '0.5rem'}}>
           <Dropdown
             pointing={"top right"}
@@ -65,7 +73,7 @@ function User(props: Props) {
 }
 
 export default React.memo(styled(User)`
-  border-bottom: 2px solid #eeeeee;
+  border-bottom: 1px solid var(--line-color);
   margin: unset !important;
 
   .ui.dropdown {

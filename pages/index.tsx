@@ -9,11 +9,9 @@ import {nearConfig} from "../lib/wallet/config";
 import styled from "styled-components";
 import TypeIt from "typeit-react";
 
-const {Cypher} = require("@zheeno/mnemonic-cypher");
-
 interface ItemWallet {
   name: 'Crust Wallet' | 'Polkadot (.js Extension)' | 'MetaMask' | 'Near Wallet' | 'Flow (Blocto Wallet)' |
-    'Solana (Phantom Wallet)' | 'Elrond (Maiar Wallet)'
+    'Solana (Phantom Wallet)' | 'Elrond (Maiar Wallet)' | 'WalletConnect'
   image: string
 }
 
@@ -50,11 +48,19 @@ const WALLETS: ItemWallet[] = [
     name: 'Elrond (Maiar Wallet)',
     image: '/images/wallet_elrond.png',
   },
+
+]
+
+const WALLETS2: ItemWallet[] = [
+  {
+    name: 'WalletConnect',
+    image: '/images/wallet_connect.png',
+  }
 ]
 
 function Home({className}: { className?: string }) {
   const {t} = useTranslation()
-  const {data} = useParallax(100, 7)
+  const {data} = useParallax(100, WALLETS.length + WALLETS2.length)
   const user = useContextWrapLoginUser()
   const [error, setError] = useState('');
   const _onClickCrust = useCallback(async () => {
@@ -221,6 +227,23 @@ function Home({className}: { className?: string }) {
     });
   }, [user, t])
 
+  const _onClickWalletConnect = useCallback(async () => {
+    await user.walletConnect.init()
+    try {
+      await user.walletConnect.connect.killSession()
+    } catch (e) {
+      console.error(e)
+    }
+    await user.walletConnect.connect?.createSession()
+    user.walletConnect.connect?.on("connect", (_, payload) => {
+      const {accounts} = payload.params[0];
+      user.setLoginUser({
+        account: accounts[0],
+        wallet: 'wallet-connect'
+      })
+    })
+  }, [user])
+
   const wallets: Wallet[] = useMemo(() => {
     return WALLETS.map((item) => {
       switch (item.name) {
@@ -243,16 +266,11 @@ function Home({className}: { className?: string }) {
     })
   }, [_onClickCrust, _onClickPolkadotJs, _onClickMetamask, _onClickNear, _onClickFlow, _onClickSolana, _onClickElrond])
 
-
-  useEffect(() => {
-    const cy = new Cypher()
-    cy.setWordLength(5)
-    const {mnemonics, secret} = cy.genMnemonics()
-    // const secret = cy.genSecret()
-    console.info('m:', mnemonics)
-    console.info('s:', secret)
-
-  }, [])
+  const wallets2: Wallet[] = useMemo(() => {
+    return WALLETS2.map((item) => {
+      return {...item, onClick: _onClickWalletConnect}
+    })
+  }, [_onClickWalletConnect])
 
   const [slogTextIndex, setSlogTextIndex] = useState(0)
   useEffect(() => {
@@ -269,7 +287,24 @@ function Home({className}: { className?: string }) {
     return () => clearInterval(task)
   }, [])
 
-  const [hoverWallet, setHoverWallet] = useState(-1)
+  // const [signSlogIndex, setSignSlogIndex] = useState(0)
+  // const signSlog = [
+  //   "Sign-in with a Web wallet",
+  //   "Sign-in with a Mobile Wallet",
+  //   "Sign-in with a Browser Extension"
+  // ]
+  // useEffect(() => {
+  //   let index = 0
+  //   const task = setInterval(() => {
+  //     index += 1
+  //     if (index === signSlog.length)
+  //       index = 0
+  //     setSignSlogIndex(index)
+  //   }, 2000)
+  //   return () => clearInterval(task)
+  // })
+
+  const [hoverWallet, setHoverWallet] = useState<ItemWallet | null>(null)
   return (
     <div className={className}>
       <BgAnim/>
@@ -311,37 +346,63 @@ function Home({className}: { className?: string }) {
           }
         </div>
       </div>
-      <div className={"wallets"}>
-        {
-          wallets.map((w, index) =>
-            <Image
-              key={`wallet_${index}`}
-              id={w.name}
-              className={classNames({spaceLeft: index}, 'animStart', {animFinal: data[index].value})}
-              circular
-              inline
-              size={'tiny'}
-              src={w.image}
-              onClick={w.onClick}
-              onMouseEnter={() => {
-                setError('')
-                setHoverWallet(() => index)
-              }}
-              onMouseLeave={() => {
-                setError('')
-                setHoverWallet(() => -1)
-              }}
-            />
-          )
-        }
+      <div className={'wallets_panel'}>
+        <div className={"wallets"}>
+          {
+            wallets.map((w, index) =>
+              <Image
+                key={`wallet_${index}`}
+                id={w.name}
+                className={classNames({spaceLeft: index}, 'animStart', {animFinal: data[index].value})}
+                circular
+                inline
+                size={'tiny'}
+                src={w.image}
+                onClick={w.onClick}
+                onMouseEnter={() => {
+                  setError('')
+                  setHoverWallet(() => wallets[index])
+                }}
+                onMouseLeave={() => {
+                  setError('')
+                  setHoverWallet(() => null)
+                }}
+              />
+            )
+          }
+        </div>
+        <div className={"wallets"}>
+          {
+            wallets2.map((w, index) =>
+              <Image
+                key={`wallet_${index}`}
+                id={w.name}
+                className={classNames({spaceLeft: index}, 'animStart', {animFinal: data[index + wallets.length].value})}
+                circular
+                inline
+                size={'tiny'}
+                src={w.image}
+                onClick={w.onClick}
+                onMouseEnter={() => {
+                  setError('')
+                  setHoverWallet(() => wallets2[index])
+                }}
+                onMouseLeave={() => {
+                  setError('')
+                  setHoverWallet(() => null)
+                }}
+              />
+            )
+          }
+        </div>
       </div>
       <span
         className={classNames("signTip", {errorInfo: !!error})}
         dangerouslySetInnerHTML={
           {
             __html: error ? error :
-              hoverWallet === -1 ? 'Sign-in with a Web3 wallet' :
-                `Sign-in with a <span>${wallets[hoverWallet].name}</span>`
+              hoverWallet === null ? "Sign-in with Web/Browser/Mobile Wallets" :
+                `Sign-in with <span>${hoverWallet.name}</span>`
           }
         }/>
       <div className={'flex1'}/>
@@ -358,7 +419,8 @@ export default React.memo(styled(Home)`
   height: 100vh;
   flex-direction: column;
   align-items: center;
-  //background: #333333;
+  overflow: auto;
+
   .logo {
     margin-left: 3.5rem;
     margin-top: 3rem;
@@ -411,8 +473,18 @@ export default React.memo(styled(Home)`
 
   }
 
+  .wallets_panel {
+    height: auto;
+    flex-shrink: 0;
+
+    .wallets:first-child {
+      margin-right: 1rem;
+    }
+  }
+
   .wallets {
     height: min-content;
+    display: inline-block;
     overflow: hidden;
     background: rgba(255, 255, 255, 0.1);
     border-radius: 100px;

@@ -1,24 +1,24 @@
 import React, {useCallback, useContext, useRef, useState} from "react";
-import {useContextWrapLoginUser, useFiles} from "../lib/wallet/hooks";
+import {useContextWrapLoginUser, useFiles} from "../../lib/wallet/hooks";
 import {Icon, Pagination, Popup, Segment, Table, Transition} from "semantic-ui-react";
 import {useTranslation} from "react-i18next";
-import {DirFile, FileInfo, SaveFile} from "../lib/wallet/types";
-import SideLayout from "../components/SideLayout";
+import {DirFile, FileInfo, SaveFile} from "../../lib/wallet/types";
+import SideLayout from "../../components/SideLayout";
 import FileSaver from 'file-saver';
-import UploadModal from "../components/UploadModal";
-import Btn from "../components/Btn"
-import {AppContext} from "../lib/AppContext";
-import User from "../components/User";
-import {usePage} from "../lib/hooks/usePage";
-import FileItem from "../components/FileItem";
+import UploadModal from "../../components/UploadModal";
+import Btn from "../../components/Btn"
+import {AppContext} from "../../lib/AppContext";
+import User from "../../components/User";
+import {usePage} from "../../lib/hooks/usePage";
+import FileItem from "../../components/FileItem";
 import styled from "styled-components";
-import {useUserCrypto} from "../lib/crypto/useUserCrypto";
-import {useAutoToggle} from "../lib/hooks/useAutoToggle";
+import {useUserCrypto} from "../../lib/crypto/useUserCrypto";
+import {useAutoToggle} from "../../lib/hooks/useAutoToggle";
 
 type FunInputFile = (e: React.ChangeEvent<HTMLInputElement>) => void
 
 
-function Files(p: { className?: string }) {
+function Index(p: { className?: string }) {
   const user = useContextWrapLoginUser()
   const {t} = useTranslation();
   const {alert} = useContext(AppContext)
@@ -175,15 +175,20 @@ function Files(p: { className?: string }) {
           style={{display: 'none'}}
           type={'file'}
         />
-        <span>{'Upload'}</span>
-        <Transition animation={'pulse'} duration={500} visible={visibleFile}>
-          <span className={"btn file"} onClick={onClickUpFile}>File</span>
-        </Transition>
-        <span>{'or'}</span>
-        <Transition animation={'pulse'} duration={500} visible={visibleFolder}>
-          <span className={"btn folder"} onClick={onClickUpFolder}>Folder</span>
-        </Transition>
-        <span>{'to IPFS.'}</span>
+        <div className={'upSlog'}>
+          Upload and Store<br/>
+          your File or Folder to IPFS<br/>
+          via <a target='_blank' href={"https://apps.crust.network"} rel="noreferrer">Crust</a>’s decentralized<br/>
+          storage network.
+        </div>
+        <div style={{display: 'inline-block'}}>
+          <Transition animation={'pulse'} duration={500} visible={visibleFile}>
+            <span className={"btn file"} onClick={onClickUpFile}>File</span>
+          </Transition>
+          <Transition animation={'pulse'} duration={500} visible={visibleFolder}>
+            <span className={"btn folder"} onClick={onClickUpFolder}>Folder</span>
+          </Transition>
+        </div>
         {
           showUpMode && <UploadModal
             file={file}
@@ -207,7 +212,14 @@ function Files(p: { className?: string }) {
         </Table.Header>
 
         <Table.Body>
-          {localFiles.pageList.map((f, index) => <FileItem uc={uc} file={f} key={`files_${index}`}/>)}
+          {
+            localFiles.pageList.map((f, index) =>
+              <FileItem
+                key={`files_item_${index}`}
+                uc={uc}
+                file={f}
+              />)
+          }
         </Table.Body>
 
         <Table.Footer>
@@ -241,7 +253,7 @@ function Files(p: { className?: string }) {
   </SideLayout>
 }
 
-export default React.memo(styled(Files)`
+export default React.memo(styled(Index)`
   padding: unset !important;
 
   .table {
@@ -273,13 +285,34 @@ export default React.memo(styled(Files)`
   .uploadPanel {
     font-size: 4rem !important;
     line-height: 14rem;
-    white-space: nowrap;
+    white-space: pre-wrap;
     padding: 2rem 1rem;
+    color: var(--main-color);
+    border-bottom: solid 1px var(--line-color) !important;
+
+    .upSlog {
+      margin: unset !important;
+
+      display: inline-block;
+      cursor: default;
+      font-size: 2.8rem;
+      padding-right: 1rem;
+      white-space: pre-wrap;
+      line-height: 3.8rem;
+      text-align: left;
+      vertical-align: top;
+
+      a {
+        text-decoration: unset;
+        color: var(--primary-color);
+      }
+    }
 
     .btn {
+      vertical-align: top;
       display: inline-block;
-      width: 15rem;
-      height: 14rem;
+      width: 16rem;
+      height: 15rem;
       text-align: center;
       margin: 0 10px;
       border-radius: 50px;
@@ -289,6 +322,7 @@ export default React.memo(styled(Files)`
 
     .file {
       background: rgba(255, 141, 0, 0.1);
+      margin-right: 1rem;
 
       &:hover {
         background: rgba(255, 141, 0, 0.2);

@@ -1,4 +1,5 @@
 import {BaseWallet} from './types';
+import {sleep} from "./tools";
 
 export class SolanaM implements BaseWallet {
   isInit = false;
@@ -16,9 +17,13 @@ export class SolanaM implements BaseWallet {
 
   async init() {
     if (this.isInit) return
-    const sWin = window as { solana?: SolanaM['solana'] }
-    this.solana = sWin.solana;
-    this.isInstalled = sWin.solana && sWin.solana.isPhantom;
+    this.solana = (window as { solana?: SolanaM['solana'] }).solana
+    this.isInstalled = this.solana && this.solana.isPhantom;
+    if (!this.solana) {
+      await sleep(2000);
+      this.solana = (window as { solana?: SolanaM['solana'] }).solana
+      this.isInstalled = this.solana && this.solana.isPhantom;
+    }
     this.isInit = true
   }
 

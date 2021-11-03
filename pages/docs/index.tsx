@@ -1,9 +1,9 @@
 import React from "react";
 import styled from "styled-components";
-import SideLayout from "../components/SideLayout";
+import SideLayout from "../../components/SideLayout";
 import {Accordion, Icon, Segment} from "semantic-ui-react";
-import User from "../components/User";
-import {useToggle} from "../lib/hooks/useToggle";
+import User from "../../components/User";
+import {useToggle} from "../../lib/hooks/useToggle";
 
 export interface Props {
   className?: string
@@ -14,7 +14,7 @@ interface DocsItem {
   sub: string[]
 }
 
-const DOCS: DocsItem[] = [
+const Index: DocsItem[] = [
   {
     title: 'What is Crust Files?',
     sub: [
@@ -114,7 +114,7 @@ function Docs(props: Props) {
       <User/>
       <Accordion>
         {
-          DOCS.map((item, index) =>
+          Index.map((item, index) =>
             <Item
               key={`docs_item_${index}`}
               item={item}
