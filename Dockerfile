@@ -1,11 +1,9 @@
-FROM nginx:stable-alpine
+FROM node:alpine AS runner
 
-# The following is mainly for doc purpose to show which ENV is supported
-ENV WS_URL=
+WORKDIR /app
 
-WORKDIR /usr/share/nginx/html
+COPY . .
 
-COPY docker/nginx.conf /etc/nginx/nginx.conf
-COPY ./out /usr/share/nginx/html
+EXPOSE 3000
 
-EXPOSE 80
+CMD ["yarn", "start"]
