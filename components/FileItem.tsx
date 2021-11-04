@@ -23,7 +23,7 @@ export interface Props {
   uc: WrapUserCrypto,
 }
 
-type Status = 'Loading' | 'Waiting' | 'Expired' | 'Success' | 'Failed';
+type Status = 'Loading' | 'Submitted' | 'Expired' | 'Success' | 'Failed';
 
 export interface FileStat {
   status: Status
@@ -118,7 +118,7 @@ function FileItem(props: Props) {
       }
       if (reported_replica_count < 1) {
         // pending
-        fStat.status = 'Waiting';
+        fStat.status = 'Submitted';
       }
       if (expired_at && expired_at > bestNumber && reported_replica_count > 0) {
         // success
@@ -140,10 +140,9 @@ function FileItem(props: Props) {
       {
         file.Encrypted &&
         <Popup
-          trigger={<Key/>}
-          position={"top center"}>
-          {"Encrypted"}
-        </Popup>
+          trigger={<span><Key/></span>}
+          content={"Encrypted"}
+          position={"top center"}/>
       }
     </Table.Cell>
     <Table.Cell textAlign={"center"}>
@@ -154,7 +153,7 @@ function FileItem(props: Props) {
         trigger={
           <span
             onClick={() => copy(file.Hash)}
-            style={{cursor: "pointer", paddingLeft: 10}}>
+            style={{cursor: "pointer", marginLeft: '0.6rem'}}>
             <Icon name={'clone outline'}/>
           </span>
         }
@@ -166,7 +165,7 @@ function FileItem(props: Props) {
         fileStat.status === 'Loading' &&
         <Icon loading name="spinner"/>
       }
-      {fileStat.status === "Waiting" && fileStat.status}
+      {fileStat.status === "Submitted" && fileStat.status}
       {fileStat.status === "Expired" && fileStat.status}
       {fileStat.status === "Failed" && fileStat.status}
       {fileStat.status === "Success" && `${fileStat.status} (${fileStat.confirmedReplicas} replicas)`}
@@ -176,7 +175,7 @@ function FileItem(props: Props) {
         position={"top center"}
         content={"Open File"}
         trigger={
-          <span style={{cursor: "pointer", marginRight: '1rem'}} onClick={_onClickOpen}>
+          <span style={{cursor: "pointer", marginRight: '0.6rem'}} onClick={_onClickOpen}>
             <Icon name={'external'}/>
           </span>
         }
@@ -199,7 +198,7 @@ export default React.memo<Props>(styled(FileItem)`
   color: var(--secend-color) !important;
 
   .fileName {
-    i, svg {
+    span {
       margin-left: 0.6rem;
     }
 

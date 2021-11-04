@@ -10,9 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-        with:
-          token: ${{ secrets.DECOO_PAT }}
-
       - name: install and export
         run: |
           yarn install
@@ -27,6 +24,7 @@ jobs:
 
       - name: Place storage order on Crust
         uses: crustio/ipfs-crust-action@v2.0.3
+        continue-on-error: true
         timeout-minutes: 2
         with:
           cid: ${{ steps.upload.outputs.hash }}
