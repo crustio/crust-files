@@ -23,7 +23,7 @@ export interface Props {
   uc: WrapUserCrypto,
 }
 
-type Status = 'Loading' | 'Waiting' | 'Expired' | 'Success' | 'Failed';
+type Status = 'Loading' | 'Submitted' | 'Expired' | 'Success' | 'Failed';
 
 export interface FileStat {
   status: Status
@@ -118,7 +118,7 @@ function FileItem(props: Props) {
       }
       if (reported_replica_count < 1) {
         // pending
-        fStat.status = 'Waiting';
+        fStat.status = 'Submitted';
       }
       if (expired_at && expired_at > bestNumber && reported_replica_count > 0) {
         // success
@@ -166,7 +166,7 @@ function FileItem(props: Props) {
         fileStat.status === 'Loading' &&
         <Icon loading name="spinner"/>
       }
-      {fileStat.status === "Waiting" && fileStat.status}
+      {fileStat.status === "Submitted" && fileStat.status}
       {fileStat.status === "Expired" && fileStat.status}
       {fileStat.status === "Failed" && fileStat.status}
       {fileStat.status === "Success" && `${fileStat.status} (${fileStat.confirmedReplicas} replicas)`}

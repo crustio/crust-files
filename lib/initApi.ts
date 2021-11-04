@@ -7,7 +7,7 @@ export function initApi(): ApiPromise | null {
   useEffect(() => {
     let task = null
     const init = () => {
-      const provider = new WsProvider(['wss://rpc-subscan.crust.network', 'wss://rpc-crust-mainnet.decoo.io'])
+      const provider = new WsProvider(['wss://rpc-crust-mainnet.decoo.io', 'wss://rpc-subscan.crust.network'])
       return ApiPromise.create({
         provider,
         typesBundle: typesBundleForPolkadot,

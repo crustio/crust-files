@@ -27,6 +27,8 @@ export interface Props {
 
 const NOOP = (): void => undefined;
 
+const MAX = 100 * 1024 * 1024;
+
 function UploadModal(p: Props): React.ReactElement<Props> {
   const {className, uc, file, onClose = NOOP, onSuccess = NOOP, user} = p;
   const {t} = useTranslation();
@@ -34,7 +36,6 @@ function UploadModal(p: Props): React.ReactElement<Props> {
   const {onChangePinner, pinner, pins} = useAuthPinner();
   const [isBusy, setBusy] = useState(false);
   const fileSizeError = useMemo(() => {
-    const MAX = 100 * 1024 * 1024;
 
     if (file.file) {
       return file.file.size > MAX;
@@ -92,6 +93,7 @@ function UploadModal(p: Props): React.ReactElement<Props> {
         if (file.file) {
           const time1 = new Date().getTime()
           const fileData = await readFileAsync(file.file)
+          console.info('readFile::', (new Date().getTime() - time1) / 1000)
           const encryptedData = await encryptFile(fileData, uc.secret)
           console.info('encrypted::', (new Date().getTime() - time1) / 1000)
           const encryptedFile = new Blob([encryptedData], {type: file.file.type})
@@ -119,7 +121,7 @@ function UploadModal(p: Props): React.ReactElement<Props> {
         cancelToken: cancel.token,
         data: form,
         headers: {Authorization: AuthBasic},
-        maxContentLength: 100 * 1024 * 1024,
+        maxContentLength: MAX,
         method: 'POST',
         onUploadProgress: (p: { loaded: number, total: number }) => {
           const percent = p.loaded / p.total;
