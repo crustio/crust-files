@@ -140,10 +140,9 @@ function FileItem(props: Props) {
       {
         file.Encrypted &&
         <Popup
-          trigger={<Key/>}
-          position={"top center"}>
-          {"Encrypted"}
-        </Popup>
+          trigger={<span><Key/></span>}
+          content={"Encrypted"}
+          position={"top center"}/>
       }
     </Table.Cell>
     <Table.Cell textAlign={"center"}>
@@ -154,7 +153,7 @@ function FileItem(props: Props) {
         trigger={
           <span
             onClick={() => copy(file.Hash)}
-            style={{cursor: "pointer", paddingLeft: 10}}>
+            style={{cursor: "pointer", marginLeft: '0.6rem'}}>
             <Icon name={'clone outline'}/>
           </span>
         }
@@ -176,7 +175,7 @@ function FileItem(props: Props) {
         position={"top center"}
         content={"Open File"}
         trigger={
-          <span style={{cursor: "pointer", marginRight: '1rem'}} onClick={_onClickOpen}>
+          <span style={{cursor: "pointer", marginRight: '0.6rem'}} onClick={_onClickOpen}>
             <Icon name={'external'}/>
           </span>
         }
@@ -199,7 +198,7 @@ export default React.memo<Props>(styled(FileItem)`
   color: var(--secend-color) !important;
 
   .fileName {
-    i, svg {
+    span {
       margin-left: 0.6rem;
     }
 
