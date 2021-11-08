@@ -36,9 +36,12 @@ function Index(props: Props) {
         />
       }
       <Segment basic className={"crypto"}>
-        <div className={"title font1"}>{t('File Encryption')}</div>
-        {uc.secret && <div className={"key"}>{`${t('Your File Encryption Key:')} ${uc.secret}`}</div>}
-        {uc.seeds && <div className={"seeds"}>{`${t('Seed Phrase:')} ${uc.seeds}`}</div>}
+        <div className="title font-sans-semibold">
+          <span className="cru-fo cru-fo-key"/>
+          {t('File Encryption')}
+        </div>
+        {uc.secret && <div className="key font-sans-regular">{`${t('Your File Encryption Key:')} ${uc.secret}`}</div>}
+        {uc.seeds && <div className="seeds font-sans-regular">{`${t('Seed Phrase:')} ${uc.seeds}`}</div>}
         <div className={'btns'}>
           {
             uc.secret ? <Btn content={t('Copy')} onClick={() => copy(uc.seeds)}/> :
@@ -58,24 +61,30 @@ export default React.memo<Props>(styled(Index)`
 
 
   .crypto {
-    margin: unset !important;
-    padding: 2rem 2rem !important;
+    margin: 2.21rem 2.29rem !important;
+    padding: 1.71rem !important;
+    box-shadow: 0 0.71rem 1.71rem 0 rgba(0, 0, 0, 0.06) !important;
+    border-radius: 1.14rem !important;
+    border: 0.07rem solid #EEEEEE !important;
 
     .title {
-      line-height: 3.29rem;
-      font-size: 2.86rem;
+      font-size: 1.3rem;
+      font-weight: 600;
       color: var(--main-color);
+      padding-bottom: 1.14rem;
+      .cru-fo {
+        margin-right: 0.8rem;
+      }
     }
 
     .key, .seeds {
       font-size: 1rem;
       color: var(--secend-color);
-      margin-top: 0.6rem;
       line-height: 1.57rem;
     }
 
     .btns {
-      margin-top: 1rem;
+      margin-top: 1.7rem;
 
       button:first-child {
         margin-right: 1rem;

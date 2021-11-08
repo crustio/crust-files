@@ -16,7 +16,7 @@ export function useAuthGateway(): AuthGateway {
   const {t} = useTranslation();
   const endpoints = useMemo(
     () => createAuthIpfsEndpoints(t)
-      .map((item) => ({...item, text: `${item.text ?? ''}(${item.location ?? ''})`})),
+      .map((item) => ({...item, text: `${item.text ?? ''} (${item.location ?? ''})`})),
     [t]
   );
   const defaultIndex = useMemo(() => Math.floor(Math.random() * (endpoints.length - 2)),[])

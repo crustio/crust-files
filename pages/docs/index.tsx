@@ -3,7 +3,6 @@ import styled from "styled-components";
 import SideLayout from "../../components/SideLayout";
 import {Accordion, Icon, Segment} from "semantic-ui-react";
 import User from "../../components/User";
-import {useToggle} from "../../lib/hooks/useToggle";
 
 export interface Props {
   className?: string
@@ -12,6 +11,10 @@ export interface Props {
 interface DocsItem {
   title: string
   sub: string[]
+}
+
+function asOption(data: string) {
+  return `<span class='dot'></span> ${data}`
 }
 
 const Index: DocsItem[] = [
@@ -25,58 +28,55 @@ const Index: DocsItem[] = [
   {
     title: 'More Detailed Features',
     sub: [
-      "> Multi-Wallet Access, Web3.0 Identity",
-      "> End-to-end File Encryption",
-      "> Share Links to Friends",
-      "> Long-term IPFS Storage with Replicas Worldwide",
-      "> Retrieve Anywhere & Anytime",
-      "> Open-source, Decentralized-hosted"
+      asOption("Multi-Wallet Access, Web3.0 Identity"),
+      asOption("End-to-end File Encryption"),
+      asOption("Share Links to Friends"),
+      asOption("Long-term IPFS Storage with Replicas Worldwide"),
+      asOption("Retrieve Anywhere & Anytime"),
+      asOption("Open-source, Decentralized-hosted")
     ]
   },
   {
     title: 'What Wallet Does It Support?',
     sub: [
       "Crust Files supports multi-wallets as Web3.0 identity to sign-in the application and use its Web3.0 Auth IPFS Gateway & Web3.0 Auth Crust Pinner. ",
-      "> Crust Network – Browser Wallet",
-      "> Ethereum & Polygon – MetaMask",
-      "> Polkadot – Browser {.js} Extension",
-      "> NEAR",
-      "> Solana",
-      "> Elrond",
-      "> FLOW"
+      asOption("Crust Network – Browser Wallet"),
+      asOption("Ethereum & Polygon – MetaMask"),
+      asOption("Polkadot – Browser {.js} Extension"),
+      asOption("Near"),
+      asOption("Solana"),
+      asOption("Elrond"),
+      asOption("Flow")
     ]
   },
   {
     title: 'What’s More to Expect in the Future',
     sub: [
-      "> More blockchain platforms and wallets sign-in supported.",
-      "> Smart Contract on various platforms, so that users are able to Deposit / Pay to use Crust Files.",
-      "> Customizable IPFS Gateways.",
-      "> Native folder structure management.",
-      "> On-chain storage for account info."
+      asOption("More blockchain platforms and wallets sign-in supported."),
+      asOption("Smart Contract on various platforms, so that users are able to Deposit / Pay to use Crust Files."),
+      asOption("Customizable IPFS Gateways."),
+      asOption("Native folder structure management."),
+      asOption("On-chain storage for account info.")
     ]
   },
   {
     title: 'Developer’s Guide',
     sub: [
-      "Please refer to this link:",
-      "<a target='_blank' href='https://wiki.crust.network/docs/en/buildGettingStarted'>https://wiki.crust.network/docs/en/buildGettingStarted<a/>"
+      "Please refer to this link : <a target='_blank' href='https://wiki.crust.network/docs/en/buildGettingStarted'>https://wiki.crust.network/docs/en/buildGettingStarted<a/>",
     ]
   },
   {
     title: 'About IPFS Web3-Auth Gateway',
     sub: [
       "IPFS W3Auth Gateway is a lightweight Web3-based authentication service based on IPFS gateway and reverse proxy.",
-      "For detailed information, Please refer to this link:",
-      "<a target='_blank' href='https://wiki.crust.network/docs/en/buildIPFSWeb3AuthGW'>https://wiki.crust.network/docs/en/buildIPFSWeb3AuthGW</a>",
+      "For detailed information, Please refer to this link : <a target='_blank' href='https://wiki.crust.network/docs/en/buildIPFSWeb3AuthGW'>https://wiki.crust.network/docs/en/buildIPFSWeb3AuthGW</a>",
     ]
   },
   {
     title: 'About IPFS Web3-Auth Crust Pinner',
     sub: [
       "IPFS W3Auth Pinning Service is a lightweight Web3-based authentication service based on IPFS remote pinning service and Crust Network.",
-      "For detailed information, Please refer to this link:",
-      "<a target='_blank' href='https://wiki.crust.network/docs/en/buildIPFSW3AuthPin'>https://wiki.crust.network/docs/en/buildIPFSW3AuthPin</a>",
+      "For detailed information, Please refer to this link : <a target='_blank' href='https://wiki.crust.network/docs/en/buildIPFSW3AuthPin'>https://wiki.crust.network/docs/en/buildIPFSW3AuthPin</a>",
     ]
   },
   {
@@ -92,13 +92,13 @@ const Index: DocsItem[] = [
 ]
 
 const Item = ({item, index}: { item: DocsItem, index: number }) => {
-  const [active, toggleActive] = useToggle(index < 1)
+  // const [active, toggleActive] = useToggle(index < 1)
   return <>
-    <Accordion.Title index={index} active={active} onClick={() => toggleActive()}>
+    <Accordion.Title index={index} active={true} icon={() => null}>
       {item.title}
       <Icon name={'dropdown'}/>
     </Accordion.Title>
-    <Accordion.Content active={active}>
+    <Accordion.Content active={true}>
       {
         item.sub.map((str, i) =>
           <div key={`str_${index}_${i}`} dangerouslySetInnerHTML={{__html: str}}/>)
@@ -130,16 +130,38 @@ export default React.memo<Props>(styled(Docs)`
   padding: unset !important;
 
   .ui.accordion {
-    padding: 3rem 2.8rem;
+    padding: 0.9rem 2.3rem;
 
     .title {
-      font-family: "ArialRoundedMTBold";
-      font-size: 1.6rem;
+      padding: 0.7rem 0 0.2rem;
+      font-family: OpenSans-SemiBold;
+      font-size: 1.3rem;
+      line-height: 1.7rem;
+      font-weight: 600;
+
+      .icon {
+        display: none;
+      }
     }
 
     .content {
-      font-size: 1.2rem;
       color: var(--secend-color);
+      font-size: 1rem;
+      font-family: OpenSans-Regular;
+      font-weight: 400;
+      line-height: 1.57rem;
+
+      .dot {
+        position: relative;
+        top: -0.15rem;
+        left: 0.3rem;
+        display: inline-block;
+        width: 0.29rem;
+        height: 0.29rem;
+        margin-right: 0.6rem;
+        border-radius: 0.2rem;
+        background: #333333;
+      }
     }
   }
 `)

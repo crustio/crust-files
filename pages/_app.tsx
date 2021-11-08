@@ -1,5 +1,6 @@
 import 'semantic-ui-css/semantic.min.css'
 import '../styles/global.css'
+import '@decooio/crust-fonts/style.css'
 import {AppProps} from 'next/app'
 import i18next from "i18next";
 import I18NextHttpBackend from "i18next-http-backend";
@@ -10,7 +11,7 @@ import {Container, Dimmer, Loader} from "semantic-ui-react";
 import {ContextWrapLoginUser, useLoginUser} from "../lib/wallet/hooks";
 import Redirect from "../components/Redirect";
 import {AppProvider, AppType} from '../lib/AppContext'
-import {AlertMessage} from "../components/AlertMessage";
+import AlertMessage from "../components/AlertMessage";
 import {initAlert} from "../lib/initAlert"
 import {initApi} from "../lib/initApi";
 import Head from "next/head";

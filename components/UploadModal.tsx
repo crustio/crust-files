@@ -180,13 +180,14 @@ function UploadModal(p: Props): React.ReactElement<Props> {
 
   return (
     <Modal
-      closeIcon
+      closeIcon={<span className="close icon cru-fo-x"/>}
       onClose={_onClose}
       open={true}
       size={'large'}
       className={className}
     >
-      <Modal.Header>{t<string>(file.dir ? 'Upload Folder' : 'Upload File')}</Modal.Header>
+      <Modal.Header
+        className="font-sans-semisold">{t<string>(file.dir ? 'Upload Folder' : 'Upload File')}</Modal.Header>
       <Modal.Content>
         <Card.Group>
           <Card fluid>
@@ -204,6 +205,7 @@ function UploadModal(p: Props): React.ReactElement<Props> {
             <MDropdown
               fluid
               selection
+              className="clear-border"
               help={t<string>('File streaming and wallet authentication will be processed by the chosen gateway.')}
               disabled={isBusy}
               label={t<string>('Select a Web3 IPFS Gateway')}
@@ -217,6 +219,7 @@ function UploadModal(p: Props): React.ReactElement<Props> {
             <MDropdown
               fluid
               selection
+              className="clear-border"
               help={t<string>('Your file will be pinned to IPFS for long-term storage.')}
               disabled={pins.length === 0}
               label={t<string>('Select a Web3 IPFS Pinner')}
@@ -271,13 +274,14 @@ function UploadModal(p: Props): React.ReactElement<Props> {
 }
 
 export default React.memo<Props>(styled(UploadModal)`
+  width: 51.43rem !important;
 
   .header:nth-child(2) {
-    height: 3.36rem;
-    font-size: 1rem !important;
-    padding: 0 1rem !important;
-    font-weight: unset !important;
-    line-height: 3.36rem !important;
+    height: 3.93rem;
+    font-size: 1.3rem !important;
+    padding: 0 1.14rem !important;
+    font-weight: 600 !important;
+    line-height: 3.93rem !important;
   }
 
 
@@ -295,12 +299,17 @@ export default React.memo<Props>(styled(UploadModal)`
     margin: 0.5rem !important;
 
     .content > .header {
-      font-size: 1.14rem;
+      font-size: 1rem;
       font-weight: unset !important;
+      color: var(--main-color);
+      font-weight: 600;
+      font-family: OpenSans-SemiBold;
     }
 
     .content > .description {
       font-size: 1rem;
+      color: #999999;
+      font-family: OpenSans-Regular;
     }
   }
 

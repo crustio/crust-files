@@ -1,8 +1,9 @@
 import React, {useCallback} from "react";
-import {Grid, Icon, Image, Menu, Segment, SemanticICONS, Sidebar} from 'semantic-ui-react'
+import {Grid, Menu, Segment, Sidebar} from 'semantic-ui-react'
 import {useRouter} from "next/router";
 import classNames from "classnames";
 import styled from "styled-components";
+import Logo from "./Logo";
 
 type Path = '/files' | '/docs' | '/setting'
 
@@ -14,14 +15,14 @@ export interface Props {
 
 interface MenuInfo {
   path: Path,
-  icon: SemanticICONS,
+  icon: string,
   name: string,
 }
 
 const menus: MenuInfo[] = [
-  {path: "/files", icon: "file outline", name: 'Upload'},
-  {path: "/docs", icon: "file alternate outline", name: 'Docs'},
-  {path: "/setting", icon: "sun outline", name: 'Setting'},
+  {path: "/files", icon: "cru-fo-file", name: 'Upload'},
+  {path: "/docs", icon: "cru-fo-file-text", name: 'Docs'},
+  {path: "/setting", icon: "cru-fo-settings", name: 'Settings'},
 ]
 
 function SideLayout(props: Props) {
@@ -40,11 +41,11 @@ function SideLayout(props: Props) {
       animation={"push"}
       direction={"left"}
       visible={true}
-      className={'font1 basic'}
+      className="basic"
     >
       <Grid textAlign='center'>
         <Grid.Row columns={1} className={"logoPanel"}>
-          <Image size={'small'} src={"/images/logo_1.png"}/>
+          <Logo src="/images/logo_12x.png"/>
         </Grid.Row>
         <Grid.Row columns={1}>
           <Menu fluid vertical borderless>
@@ -54,10 +55,9 @@ function SideLayout(props: Props) {
                 key={`side_menu_${index}`}
                 index={index}
                 active={mInfo.path === props.path}
-                icon={<Icon name={mInfo.icon}/>}
+                icon={<span className={mInfo.icon}/>}
                 name={mInfo.name}
                 onClick={_onTabClick}
-                className="font1"
               />)
             }
           </Menu>
@@ -83,7 +83,11 @@ export default React.memo<Props>(styled(SideLayout)`
     width: ${sideWidth};
 
     .logoPanel {
-      padding: 2rem 0;
+      padding: 4.7rem 0;
+
+      img {
+        height: 1.7rem;
+      }
     }
 
     .menu {
@@ -93,18 +97,24 @@ export default React.memo<Props>(styled(SideLayout)`
       background: unset !important;
 
       .item {
-        border-radius: 0;
+        border-radius: 0 !important;
         text-align: left;
         padding-left: 2rem !important;
         font-weight: 500;
         font-size: 1.3rem;
         color: var(--secend-color);
+        font-family: "OpenSans-Regular";
 
         &.active {
+          position: relative;
           color: var(--main-color);
+          font-family: "OpenSans-Medium";
+          border-right: solid 0.2rem var(--primary-color);
+          border-right-style: dot-dash;
         }
 
-        .icon {
+
+        span {
           float: left;
           margin-right: 10px;
         }

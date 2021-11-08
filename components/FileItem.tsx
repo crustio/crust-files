@@ -15,7 +15,6 @@ import {decryptFile} from "../lib/crypto/encryption";
 import _ from 'lodash';
 import {shortStr} from "../lib/utils";
 import {BlockNumber} from "@polkadot/types/interfaces/types";
-import {Key} from "./icons";
 
 export interface Props {
   className?: string,
@@ -84,7 +83,7 @@ function FileItem(props: Props) {
         loading.hide()
       } catch (e) {
         loading.hide()
-        alert.error("decrypt error")
+        alert.error("Decrypt error")
       }
     } else {
       window.open(createUrl(file, endpoints), '_blank')
@@ -136,11 +135,11 @@ function FileItem(props: Props) {
   return <Table.Row className={className}>
     <Table.Cell className={'fileName'}>
       {shortStr(file.Name)}
-      {file.items && <Icon name={'folder outline'}/>}
+      {file.items && <span className="icon cru-fo-folder"/>}
       {
         file.Encrypted &&
         <Popup
-          trigger={<span><Key/></span>}
+          trigger={<span className="icon cru-fo-key"/>}
           content={"Encrypted"}
           position={"top center"}/>
       }
@@ -152,14 +151,14 @@ function FileItem(props: Props) {
         content={"Copy File CID"}
         trigger={
           <span
+            className="cru-fo cru-fo-copy"
             onClick={() => copy(file.Hash)}
-            style={{cursor: "pointer", marginLeft: '0.6rem'}}>
-            <Icon name={'clone outline'}/>
-          </span>
+            style={{marginLeft: '1.8rem'}}/>
         }
       />
     </Table.Cell>
-    <Table.Cell textAlign={"center"}>{filesize(Number(file.Size), {round: 2})}</Table.Cell>
+    <Table.Cell textAlign={"center"}
+                style={{textTransform: 'uppercase'}}>{filesize(Number(file.Size), {round: 2})}</Table.Cell>
     <Table.Cell textAlign={"center"}>
       {
         fileStat.status === 'Loading' &&
@@ -168,25 +167,23 @@ function FileItem(props: Props) {
       {fileStat.status === "Submitted" && fileStat.status}
       {fileStat.status === "Expired" && fileStat.status}
       {fileStat.status === "Failed" && fileStat.status}
-      {fileStat.status === "Success" && `${fileStat.status} (${fileStat.confirmedReplicas} replicas)`}
+      {fileStat.status === "Success" && `${fileStat.status} (${fileStat.confirmedReplicas} Replicas)`}
     </Table.Cell>
     <Table.Cell textAlign={"center"}>
       <Popup
         position={"top center"}
         content={"Open File"}
         trigger={
-          <span style={{cursor: "pointer", marginRight: '0.6rem'}} onClick={_onClickOpen}>
-            <Icon name={'external'}/>
-          </span>
+          <span
+            className="cru-fo cru-fo-external-link"
+            style={{marginRight: '1.14rem'}} onClick={_onClickOpen}/>
         }
       />
       <Popup
-        position={"top center"}
+        position={"left center"}
         content={"Copy Download Link"}
         trigger={
-          <span style={{cursor: "pointer"}} onClick={_onClickCopy}>
-            <Icon name={'clone outline'}/>
-          </span>
+          <span className="cru-fo cru-fo-copy" onClick={_onClickCopy}/>
         }
       />
 
@@ -197,21 +194,16 @@ function FileItem(props: Props) {
 export default React.memo<Props>(styled(FileItem)`
   color: var(--secend-color) !important;
 
+  .cru-fo, .icon {
+    cursor: pointer;
+    font-size: 1.3rem;
+    position: relative;
+    top: 0.3rem;
+  }
+
   .fileName {
-    span {
+    .icon {
       margin-left: 0.6rem;
-    }
-
-    svg {
-      width: 1.2rem;
-      height: 1.2rem;
-      position: relative;
-      top: 0.3rem;
-      cursor: pointer;
-
-      path {
-        fill: var(--secend-color);
-      }
     }
   }
 
