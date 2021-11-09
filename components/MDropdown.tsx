@@ -1,5 +1,5 @@
-import React, {useMemo, useState, MouseEvent} from "react";
-import {DropdownItemProps, DropdownProps, Icon, Popup} from "semantic-ui-react";
+import React, {MouseEvent, useMemo, useState} from "react";
+import {DropdownItemProps, DropdownProps, Popup} from "semantic-ui-react";
 import styled from "styled-components";
 import {useToggle} from "../lib/hooks/useToggle";
 import useOnClickOutside from "../lib/hooks/useOnClickOut";
@@ -37,7 +37,7 @@ const RenderGroup = (
       group !== NULL_GROUP &&
       (renderGroupTitle && renderGroupTitle({group, select, onClickGroup}) ||
         <div className={classNames("title", {active: groupActive})} onClick={onClickGroup}>
-          {group} <Icon className={"dropIcon"} name={'dropdown'}/>
+          {group} <span className="dropIcon cru-fo-chevron-down"/>
         </div>)
     }
     {
@@ -79,18 +79,19 @@ function MDropdown(props: Props) {
 
   return <div className={className} onClick={() => toggleVisible()} ref={ref}>
     {
-      label && <div className="label">
+      label && <div className="label font-sans-semibold">
         {label}
         {
           help && <Popup
             position={"top center"}
-            trigger={<Icon name={'question circle outline'}/>}
+            trigger={<span className="icon cru-fo-question"/>}
             content={help}/>
         }
-        <Icon name={"dropdown"} className={"dropIcon"}/>
+
       </div>
     }
-    <div className={"text"}>{selectOption?.text ?? ''}</div>
+    <span className={classNames("dropIcon", "cru-fo-chevron-down")}/>
+    <div className="text font-sans-regular">{selectOption?.text ?? ''}</div>
     {
       visible && <div className={"options"}>
         {groups.map((group, index) =>
@@ -119,31 +120,38 @@ function MDropdown(props: Props) {
 export default React.memo<Props>(styled(MDropdown)`
   position: relative;
   width: 100%;
-  border-radius: 4px;
+  border-radius: 0.57rem;
   border: 1px solid var(--line-color);
   padding: 0.8rem 1rem;
   cursor: pointer;
 
   .label {
-    font-size: 1.3rem;
+    font-size: 1rem;
+    font-weight: 600;
     white-space: nowrap;
     color: var(--main-color);
     margin-bottom: 0.6rem;
 
     .icon {
-      margin-left: 0.5rem;
+      font-size: 1.3rem;
+      position: relative;
+      top: 0.2rem;
+      margin-left: 0.86rem;
       cursor: pointer;
+      color: var(--secend-color);
     }
+  }
 
-    .dropIcon {
-      float: right;
-      right: 0.6rem;
-    }
+  .dropIcon {
+    float: right;
+    position: relative;
+    top: -0.9rem;
+    right: 0;
   }
 
   .text {
     font-size: 1rem;
-    color: var(--secend-color);
+    color: #999999;
   }
 
   .options {
@@ -173,6 +181,7 @@ export default React.memo<Props>(styled(MDropdown)`
         .dropIcon {
           float: right;
           right: 0.6rem;
+          top: 0rem;
         }
       }
 

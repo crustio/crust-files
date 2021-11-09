@@ -34,7 +34,7 @@ function ModalNewKey(props: Props) {
     toggleOpen(false)
   }, [])
 
-  return <Modal closeIcon={true} onClose={_onCloseInputKey} {...other}>
+  return <Modal closeIcon={<span className="close icon cru-fo-x"/>} onClose={_onCloseInputKey} {...other}>
     <Modal.Header content={'Input a new key'}/>
     <Modal.Content>
       <Input
@@ -50,12 +50,14 @@ function ModalNewKey(props: Props) {
 }
 
 export default React.memo<Props>(styled(ModalNewKey)`
+  width: 34.3rem !important;
+
   .header {
-    height: 3.36rem;
-    font-size: 1rem !important;
-    padding: 0 1rem !important;
-    font-weight: unset !important;
-    line-height: 3.36rem !important;
+    height: 3.93rem;
+    font-size: 1.3rem !important;
+    padding: 0 1.14rem !important;
+    font-weight: 600 !important;
+    line-height: 3.93rem !important;
   }
 
 
@@ -68,8 +70,13 @@ export default React.memo<Props>(styled(ModalNewKey)`
   .content {
     padding: 1rem !important;
 
+    input {
+      border: 0.07rem solid #CCCCCC !important;
+      border-radius: 0.57rem !important;
+    }
+
     .btns {
-      padding-top: 1rem;
+      padding-top: 2.3rem;
 
       button {
         width: calc(50% - 0.5rem) !important;

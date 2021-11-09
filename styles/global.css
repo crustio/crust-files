@@ -7,6 +7,9 @@
 
     /* for TypeIt */
     --ti-cursor-margin-left: 0;
+
+    /* for modal*/
+    --modal-radius: 0.57rem
 }
 
 html,
@@ -15,8 +18,6 @@ body {
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
-    line-height: 1.6;
-    /*font-size: 14px;*/
     color: var(--main-color);
 }
 
@@ -25,12 +26,12 @@ body {
 }
 
 a {
-    color: #0070f3;
+    color: var(--primary-color);
     text-decoration: none;
 }
 
 a:hover {
-    text-decoration: underline;
+    text-decoration: none;
 }
 
 img {
@@ -43,16 +44,69 @@ img {
 }
 
 @font-face {
-    font-family: "ArialRoundedMTBold";
-    src: url("../public/fonts/arlrdbd.ttf") format("truetype");
+    font-family: "OpenSans-Medium";
+    src: url("../public/fonts/OpenSans-Medium.ttf") format("truetype");
     font-weight: normal;
     font-style: normal;
 }
 
-.font1 {
-    font-family: "ArialRoundedMTBold", -apple-system, BlinkMacSystemFont, sans-serif !important;
+@font-face {
+    font-family: "OpenSans-Regular";
+    src: url("../public/fonts/OpenSans-Regular.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
 }
+
+@font-face {
+    font-family: "OpenSans-SemiBold";
+    src: url("../public/fonts/OpenSans-SemiBold.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+.font-sans-regular {
+    font-family: "OpenSans-Regular", -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+
+.font-sans-medium {
+    font-family: "OpenSans-Medium", -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+
+.font-sans-semibold {
+    font-family: "OpenSans-SemiBold", -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+
 
 .ui.popup {
     padding: 0.6rem 0.8rem !important;
 }
+
+.ui.modal {
+    border-radius: var(--modal-radius);
+    box-shadow: unset;
+}
+.ui.modal > .header {
+    border-top-left-radius: var(--modal-radius) !important;
+    border-top-right-radius: var(--modal-radius) !important;
+}
+
+.ui.modal > .content:last-child, .ui.modal > .actions {
+    border-bottom-left-radius: var(--modal-radius) !important;
+    border-bottom-right-radius: var(--modal-radius) !important;
+}
+
+
+.ui.page.dimmer {
+    background: rgba(0, 0, 0, 0.5) !important;
+}
+
+.ui.card {
+    border-radius: 0.57rem !important;
+    border: 0.07rem solid #EEEEEE !important;
+    box-shadow: unset !important;
+}
+
+.clear-border {
+    border: unset !important;
+}
+

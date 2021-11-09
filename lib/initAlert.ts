@@ -16,15 +16,26 @@ export interface WrapAlert {
   success: (msg: string, title?: string) => void,
 }
 
+const Tasks: any = {
+  last: 0
+}
+
 export function initAlert(): WrapAlert {
   const [alerts, setAlerts] = useState<AlertMsg[]>([])
   const alert = useCallback((msg: AlertMsg) => {
+    if (Tasks.last) {
+      clearTimeout(Tasks.last)
+      Tasks.last = 0
+    }
     setAlerts((old) => {
-      return _.concat(old, msg)
+      // return _.concat(old, msg)
+      return [msg]
     })
-    setTimeout(() => {
+    Tasks.last = setTimeout(() => {
+      Tasks.last = 0
       setAlerts((old) => {
-        return _.drop(old)
+        // return _.drop(old)
+        return []
       })
     }, 5000)
   }, [])

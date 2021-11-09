@@ -44,7 +44,7 @@ function User(props: Props) {
   const _onClickLogout = useCallback(user.logout, [user])
   const [open, toggleOpen] = useToggle()
 
-  return <Segment basic textAlign={"right"} className={props.className} style={{borderBottom: '2px solid #eeeeee'}}>
+  return <Segment basic textAlign={"right"} className={props.className}>
     {
       open && <ModalSelectAccount
         size={'tiny'}
@@ -56,9 +56,10 @@ function User(props: Props) {
     <Item.Group>
       <Item style={{justifyContent: 'flex-end'}}>
         <Item.Image src={getWalletIcon(user)} size={'tiny'}/>
-        <Item.Content verticalAlign={"middle"} style={{flex: 'unset', paddingLeft: '0.5rem'}}>
+        <Item.Content verticalAlign={"middle"} style={{flex: 'unset', paddingLeft: '0.7rem'}}>
           <Dropdown
             pointing={"top right"}
+            icon={<span className="cru-fo cru-fo-chevron-down"/>}
             basic
             text={shortStr(user.account)}>
             <Dropdown.Menu>
@@ -73,13 +74,50 @@ function User(props: Props) {
 }
 
 export default React.memo(styled(User)`
-  border-bottom: 1px solid var(--line-color);
+  border-bottom: 1px solid var(--line-color) !important;
   margin: unset !important;
+  padding: 1.3rem !important;
+  width: 100%;
+
+  .tiny.image {
+    width: 4.3rem;
+    height: 4.3rem;
+  }
+
+  .items > .item.tiny {
+    width: 4.3rem;
+  }
 
   .ui.dropdown {
-    .text {
-      font-family: "ArialRoundedMTBold";
+    .cru-fo {
       font-size: 1.3rem;
+      margin-left: 1.1rem;
+    }
+
+    .text {
+      font-family: OpenSans-Medium;
+      font-size: 1.3rem;
+    }
+
+    .menu::after {
+      display: none;
+    }
+
+    .menu {
+      background: #FFFFFF;
+      box-shadow: 0 0.57rem 1.43rem 0 rgba(0, 0, 0, 0.1);
+      border-radius: 0.86rem;
+      border: 0.07rem solid #EEEEEE;
+      padding: 0.57rem;
+
+      .item {
+        padding: 0.78rem 0.57rem !important;
+        border-radius: 0.57rem;
+
+        &:active {
+          background-color: #EEEEEE;
+        }
+      }
     }
   }
 `)

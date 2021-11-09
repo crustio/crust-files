@@ -168,6 +168,11 @@
   dependencies:
     "@open-web3/orml-type-definitions" "^0.8.2-9"
 
+"@decooio/crust-fonts@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@decooio/crust-fonts/-/crust-fonts-1.1.0.tgz#fa57b8d2030f99d0b2dc04feef78caf98e914330"
+  integrity sha512-V7dQZDtU1JMOoRQDaOZx3nFAvFiSG3sWyePIN1/XtEh2P+8AST0ZDSA8AV3tVtUpoJiiJituwVUe4c2sx3Q91w==
+
 "@elrondnetwork/bls-wasm@0.3.3":
   version "0.3.3"
   resolved "https://registry.yarnpkg.com/@elrondnetwork/bls-wasm/-/bls-wasm-0.3.3.tgz#5164a95f39727c53dba877bf43c0374bca9f01eb"

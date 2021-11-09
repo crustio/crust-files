@@ -24,7 +24,7 @@ function Index(p: { className?: string }) {
   const {alert} = useContext(AppContext)
   const [showUpMode, setShowUpMode] = useState(false);
   const wFiles = useFiles();
-  const localFiles = usePage(wFiles.files, 5)
+  const localFiles = usePage(wFiles.files, 7)
   const [file, setFile] = useState<FileInfo | undefined>(undefined);
   const inputRef = useRef<HTMLInputElement>(null);
   const uc = useUserCrypto()
@@ -73,11 +73,7 @@ function Index(p: { className?: string }) {
       setFile({file: files[0]});
       setShowUpMode(true);
     } else if (files.length >= 1) {
-      // eslint-disable-next-line
-      // @ts-ignore eslint-disable-next-line
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       const dirFiles: DirFile[] = [];
-
       for (let index = 0; index < files.length; index++) {
         // console.info('f:', files[index]);
         dirFiles.push(files[index] as DirFile);
@@ -161,111 +157,178 @@ function Index(p: { className?: string }) {
   return <SideLayout path={'/files'}>
     <Segment basic className={p.className}>
       <User/>
-
-      <Segment basic textAlign={'center'} className={"font1 uploadPanel"}>
-        <input
-          onChange={_onInputFile}
-          ref={inputRef}
-          style={{display: 'none'}}
-          type={'file'}
-        />
-        <input
-          onChange={_onInputImportFile}
-          ref={importInputRef}
-          style={{display: 'none'}}
-          type={'file'}
-        />
-        <div className={'upSlog'}>
-          Upload and Store<br/>
-          your File or Folder to IPFS<br/>
-          via <a target='_blank' href={"https://apps.crust.network"} rel="noreferrer">Crust</a>’s decentralized<br/>
-          storage network.
-        </div>
-        <div style={{display: 'inline-block'}}>
-          <Transition animation={'pulse'} duration={500} visible={visibleFile}>
-            <span className={"btn file"} onClick={onClickUpFile}>File</span>
-          </Transition>
-          <Transition animation={'pulse'} duration={500} visible={visibleFolder}>
-            <span className={"btn folder"} onClick={onClickUpFolder}>Folder</span>
-          </Transition>
-        </div>
-        {
-          showUpMode && <UploadModal
-            file={file}
-            user={user}
-            onClose={_onClose}
-            onSuccess={_onSuccess}
-            uc={uc}
+      <Segment basic className="contentPanel">
+        <Segment basic textAlign={'center'} className={"font-sans-semibold uploadPanel"}>
+          <input
+            onChange={_onInputFile}
+            ref={inputRef}
+            style={{display: 'none'}}
+            type={'file'}
           />
-        }
-      </Segment>
-      <span className={'font1 filesTitle'}>Upload History</span>
-      <Table basic={'very'} singleLine>
-        <Table.Header>
-          <Table.Row>
-            <Table.HeaderCell>File Name</Table.HeaderCell>
-            <Table.HeaderCell textAlign={"center"}>File CID</Table.HeaderCell>
-            <Table.HeaderCell textAlign={"center"}>File Size</Table.HeaderCell>
-            <Table.HeaderCell textAlign={"center"}>Status</Table.HeaderCell>
-            <Table.HeaderCell textAlign={"center"}>Action</Table.HeaderCell>
-          </Table.Row>
-        </Table.Header>
-
-        <Table.Body>
+          <input
+            onChange={_onInputImportFile}
+            ref={importInputRef}
+            style={{display: 'none'}}
+            type={'file'}
+          />
+          <div className={'upSlog'}>
+            Upload and Store
+            your File or Folder to IPFS
+            via <a target='_blank' href={"https://apps.crust.network"} rel="noreferrer">Crust</a>’s decentralized
+            storage network.
+          </div>
+          <div className="btns">
+            <Transition animation={'pulse'} duration={500} visible={visibleFile}>
+            <span className={"btn file"} onClick={onClickUpFile}>
+              <span className="cru-fo cru-fo-file"/> <br/>
+              File
+          </span>
+            </Transition>
+            <Transition animation={'pulse'} duration={500} visible={visibleFolder}>
+            <span className={"btn folder"} onClick={onClickUpFolder}>
+              <span className="cru-fo cru-fo-folder"/> <br/>
+              Folder
+            </span>
+            </Transition>
+          </div>
           {
-            localFiles.pageList.map((f, index) =>
-              <FileItem
-                key={`files_item_${index}`}
-                uc={uc}
-                file={f}
-              />)
+            showUpMode && <UploadModal
+              file={file}
+              user={user}
+              onClose={_onClose}
+              onSuccess={_onSuccess}
+              uc={uc}
+            />
           }
-        </Table.Body>
+        </Segment>
+        <div className="line"/>
+        <Table basic={'very'}>
+          <Table.Header className="font-sans-semibold">
+            <Table.Row>
+              <Table.HeaderCell>File Name</Table.HeaderCell>
+              <Table.HeaderCell textAlign={"center"}>File CID</Table.HeaderCell>
+              <Table.HeaderCell textAlign={"center"}>File Size</Table.HeaderCell>
+              <Table.HeaderCell textAlign={"center"}>Status</Table.HeaderCell>
+              <Table.HeaderCell textAlign={"center"}>Action</Table.HeaderCell>
+            </Table.Row>
+          </Table.Header>
 
-        <Table.Footer>
-          <Table.Row>
-            <Table.HeaderCell colSpan={localFiles.totalPage > 1 ? 2 : 5} className={"btns"}>
-              <Btn onClick={_clickImport}>Import</Btn>
-              <Btn onClick={_export}>Export</Btn>
-              <Popup
-                position={"top center"}
-                wide={'very'}
-                trigger={<Icon size={'large'} style={{fontSize: '1.3rem'}} name={'question circle outline'}/>}
-                content={"Crust Files is a decentralized Application, and it will NEVER store your Upload History and File Encryption Key on any remote server. Instead, they are cached on your local devices. If you want to migrate your Upload History and File Encryption Key to a new device, use Export & Import function."}/>
-            </Table.HeaderCell>
+          <Table.Body className="font-sans-regular">
             {
-              localFiles.totalPage > 1 && <Table.HeaderCell colSpan='3' textAlign={"right"}>
-                <Pagination
-                  totalPages={localFiles.totalPage} activePage={localFiles.page}
-                  firstItem={{content: <Icon name={"angle double left"}/>, icon: true}}
-                  lastItem={{content: <Icon name={"angle double right"}/>, icon: true}}
-                  prevItem={{content: <Icon name={"angle left"}/>, icon: true}}
-                  nextItem={{content: <Icon name={"angle right"}/>, icon: true}}
-                  secondary
-                  onPageChange={(_, {activePage}) => localFiles.setPage(activePage as number)}
-                />
-              </Table.HeaderCell>
+              localFiles.pageList.map((f, index) =>
+                <FileItem
+                  key={`files_item_${index}`}
+                  uc={uc}
+                  file={f}
+                />)
             }
-          </Table.Row>
-        </Table.Footer>
-      </Table>
+          </Table.Body>
+
+          <Table.Footer>
+            <Table.Row>
+              <Table.HeaderCell colSpan={localFiles.totalPage > 1 ? 2 : 5} className={"btns"}>
+                <Btn onClick={_clickImport}>Import</Btn>
+                <Btn onClick={_export}>Export</Btn>
+                <Popup
+                  position={"top center"}
+                  wide={'very'}
+                  trigger={<span className="cru-fo-help-circle" style={{fontSize: '1.3rem'}}/>}
+                  content={"Crust Files is a decentralized Application, and it will NEVER store your Upload History and File Encryption Key on any remote server. Instead, they are cached on your local devices. If you want to migrate your Upload History and File Encryption Key to a new device, use Export & Import function."}/>
+              </Table.HeaderCell>
+              {
+                localFiles.totalPage > 1 && <Table.HeaderCell colSpan='3' textAlign={"right"}>
+                  <Pagination
+                    totalPages={localFiles.totalPage} activePage={localFiles.page}
+                    // firstItem={{content: <Icon name={"angle double left"}/>, icon: true}}
+                    // lastItem={{content: <Icon name={"angle double right"}/>, icon: true}}
+                    firstItem={null}
+                    lastItem={null}
+                    prevItem={{content: <Icon name="angle left"/>, icon: true}}
+                    nextItem={{content: <Icon name="angle right"/>, icon: true}}
+                    secondary
+                    onPageChange={(_, {activePage}) => localFiles.setPage(activePage as number)}
+                  />
+                </Table.HeaderCell>
+              }
+            </Table.Row>
+          </Table.Footer>
+        </Table>
+      </Segment>
     </Segment>
   </SideLayout>
 }
 
 export default React.memo(styled(Index)`
   padding: unset !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .contentPanel {
+    max-width: 100rem;
+    width: 100%;
+    margin: unset !important;
+    padding: unset !important;
+  }
 
   .table {
     padding: 1rem 2rem;
-
+    width: 100%;
     thead {
-      font-size: 1.3rem;
+      font-size: 1.29rem;
+      font-weight: 600;
+
+      th:first-child {
+        padding-left: 0.57rem !important;
+      }
+
+      th {
+        border-bottom: unset !important;
+      }
+    }
+
+    tbody {
+      color: var(--secend-color);
+
+      tr, td {
+        border-top: unset !important;
+      }
+
+      tr > td:first-child {
+        padding-left: 0.57rem !important;
+      }
+
+      tr:nth-child(2n - 1) {
+        background-color: #f8f8f8;
+
+        td:first-child {
+          overflow: hidden;
+          border-top-left-radius: 0.57rem;
+          border-bottom-left-radius: 0.57rem;
+        }
+
+        td:last-child {
+          overflow: hidden;
+          border-top-right-radius: 0.57rem;
+          border-bottom-right-radius: 0.57rem;
+        }
+      }
     }
 
     tfoot {
       .btns > button {
         margin-right: 1rem !important;
+      }
+
+      th {
+        border-top: unset !important;
+      }
+
+      .btns {
+        span {
+          cursor: pointer;
+          color: #808080;
+        }
       }
 
       .btns > i {
@@ -275,28 +338,39 @@ export default React.memo(styled(Index)`
 
       .pagination > .item {
         color: var(--secend-color);
-        padding: 0.928rem 1.143rem;
+        padding: 0.8rem 1rem !important;
+        min-width: unset !important;
+        border-radius: 5rem !important;
         margin: unset;
       }
     }
   }
 
-
-  .uploadPanel {
-    font-size: 4rem !important;
-    line-height: 14rem;
-    white-space: pre-wrap;
-    padding: 2rem 1rem;
-    color: var(--main-color);
+  .line {
+    margin: 0 2.3rem;
     border-bottom: solid 1px var(--line-color) !important;
+  }
+  
+  .uploadPanel {
+    width: 100%;
+    justify-content: space-between;
+    font-size: 4rem !important;
+    font-weight: 600;
+    margin: unset !important;
+    white-space: pre-wrap;
+    padding: 2.5rem 2.3rem;
+    color: var(--main-color);
+    display: flex;
+    align-items: center;
 
     .upSlog {
       margin: unset !important;
-
       display: inline-block;
       cursor: default;
       font-size: 2.8rem;
       padding-right: 1rem;
+      max-width: 50rem;
+      min-width: 24rem;
       white-space: pre-wrap;
       line-height: 3.8rem;
       text-align: left;
@@ -308,16 +382,30 @@ export default React.memo(styled(Index)`
       }
     }
 
+    .btns {
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
     .btn {
       vertical-align: top;
+      line-height: 4.43rem;
       display: inline-block;
       width: 16rem;
       height: 15rem;
+      font-size: 3.3rem;
       text-align: center;
-      margin: 0 10px;
       border-radius: 50px;
       cursor: pointer;
+      padding: 3rem 0;
       //transition: all ease-in-out 2s;
+      .cru-fo {
+        font-size: 4rem;
+      }
+    }
+
+    .btn:first-child {
+      margin-right: 1.6rem;
     }
 
     .file {
@@ -326,6 +414,7 @@ export default React.memo(styled(Index)`
 
       &:hover {
         background: rgba(255, 141, 0, 0.2);
+        box-shadow: 0 0.14rem 1.43rem 0 rgba(0, 0, 0, 0.1);
       }
     }
 
@@ -334,14 +423,9 @@ export default React.memo(styled(Index)`
 
       &:hover {
         background: rgba(86, 203, 143, 0.2);
+        box-shadow: 0 0.14rem 1.43rem 0 rgba(0, 0, 0, 0.1);
       }
     }
-  }
-
-  .filesTitle {
-    font-size: 2rem;
-    margin-left: 2rem;
-    line-height: 60px;
   }
 
 `)

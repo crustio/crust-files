@@ -3,11 +3,13 @@ import classNames from "classnames";
 import {useTranslation} from "react-i18next";
 import BgAnim from '../components/effect/BgAnim';
 import useParallax from "../lib/hooks/useParallax";
-import React, {useCallback, useEffect, useMemo, useState} from "react";
+import React, {useCallback, useContext, useEffect, useMemo, useState} from "react";
 import {useContextWrapLoginUser} from "../lib/wallet/hooks";
 import {nearConfig} from "../lib/wallet/config";
 import styled from "styled-components";
 import TypeIt from "typeit-react";
+import Logo from "../components/Logo";
+import {AppContext} from "../lib/AppContext";
 
 interface ItemWallet {
   name: 'Crust Wallet' | 'Polkadot (.js Extension)' | 'MetaMask' | 'Near Wallet' | 'Flow (Blocto Wallet)' |
@@ -62,7 +64,13 @@ function Home({className}: { className?: string }) {
   const {t} = useTranslation()
   const {data} = useParallax(100, WALLETS.length + WALLETS2.length)
   const user = useContextWrapLoginUser()
-  const [error, setError] = useState('');
+  const {alert} = useContext(AppContext)
+  // const [error, setError] = useState('');
+  const setError = useCallback((data: string) => {
+    if (data) {
+      alert.error(data)
+    }
+  }, [])
   const _onClickCrust = useCallback(async () => {
     try {
       setError('')
@@ -308,9 +316,9 @@ function Home({className}: { className?: string }) {
   return (
     <div className={className}>
       <BgAnim/>
-      <Image className={'logo'} src={"/images/logo_2.png"}/>
-      <div className={'flex1'}/>
-      <div className="slog">
+      <Logo className={"logo"}/>
+      <div className="flexN"/>
+      <div className="slog font-sans-semibold">
         <Image src={"/images/crust_box2x.png"}
                className={classNames("slogIcon")}/>
         <div className={classNames("slogText")}>
@@ -346,6 +354,7 @@ function Home({className}: { className?: string }) {
           }
         </div>
       </div>
+      <div className="flex1"/>
       <div className={'wallets_panel'}>
         <div className={"wallets"}>
           {
@@ -397,15 +406,14 @@ function Home({className}: { className?: string }) {
         </div>
       </div>
       <span
-        className={classNames("signTip", {errorInfo: !!error})}
+        className={classNames("signTip font-sans-medium")}
         dangerouslySetInnerHTML={
           {
-            __html: error ? error :
-              hoverWallet === null ? "Sign-in with Web/Browser/Mobile Wallets" :
+            __html: hoverWallet === null ? "Sign-in with Web/Browser/Mobile Wallets" :
                 `Sign-in with <span>${hoverWallet.name}</span>`
           }
         }/>
-      <div className={'flex1'}/>
+      <div className={'flexN'}/>
     </div>
   )
 }
@@ -427,29 +435,32 @@ export default React.memo(styled(Home)`
     align-self: flex-start;
   }
 
-  .flex1 {
+  .flexN {
     flex: 1;
+  }
+
+  .flex1 {
+    height: 7.8rem;
   }
 
   .slog {
     display: flex;
     overflow: hidden;
-    padding-top: 3rem;
-    width: 935px;
-    height: 400px;
+    padding-top: 1rem;
+    font-weight: 600;
     flex-shrink: 0;
-    font-family: "ArialRoundedMTBold";
+    height: 19.8rem;
 
     .slogIcon {
       position: relative;
-      margin-right: 50px;
-      width: 275px;
-      height: 255px;
+      margin-right: 4.3rem;
+      width: 19.6rem;
+      height: 18.2rem;
     }
 
     .slogText {
       position: relative;
-      width: 610px;
+      width: 44.5rem;
     }
 
     .slogText1 {
@@ -476,6 +487,7 @@ export default React.memo(styled(Home)`
   .wallets_panel {
     height: auto;
     flex-shrink: 0;
+    white-space: nowrap;
 
     .wallets:first-child {
       margin-right: 1rem;
@@ -487,11 +499,13 @@ export default React.memo(styled(Home)`
     display: inline-block;
     overflow: hidden;
     background: rgba(255, 255, 255, 0.1);
-    border-radius: 100px;
-    padding: 20px 40px;
+    border-radius: 6rem;
+    padding: 1.4rem 4rem 0.8rem 4rem;
     flex-shrink: 0;
 
     .animStart {
+      width: 8.4rem !important;
+      height: 8.4rem !important;
       cursor: pointer;
       transition: all cubic-bezier(.41, .19, .21, 1.25) 1.2s;
       position: relative;
@@ -503,7 +517,7 @@ export default React.memo(styled(Home)`
     }
 
     .spaceLeft {
-      margin-left: 18px;
+      margin-left: 1.4rem;
     }
 
     .animFinal {
