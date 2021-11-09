@@ -138,6 +138,7 @@ export default React.memo<Props>(styled(Docs)`
       font-size: 1.3rem;
       line-height: 1.7rem;
       font-weight: 600;
+      cursor: auto !important;
 
       .icon {
         display: none;
