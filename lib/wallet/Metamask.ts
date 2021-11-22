@@ -30,7 +30,7 @@ export class Metamask implements BaseWallet {
         window.removeEventListener('ethereum#initialized', handleEthereum);
         const mWin = window as { ethereum?: Metamask['ethereum'] }
         const ethereum = mWin.ethereum
-
+        console.info('ethereum::', mWin.ethereum)
         if (ethereum && ethereum.isMetaMask) {
           ethereum.request<string[]>({method: 'eth_accounts'})
             .then((accounts) => {

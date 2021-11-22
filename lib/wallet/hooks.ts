@@ -35,7 +35,8 @@ type KEYS = 'files:login' | 'pins:login'
 export class LoginUser {
   account = '';
   pubKey?: string;
-  wallet: 'crust' | 'polkadot-js' | 'metamask' | 'near' | 'flow' | 'solana' | 'elrond' | 'wallet-connect';
+  wallet: 'crust' | 'polkadot-js' | 'metamask' | 'metamask-Moonriver' | 'metamask-Polygon' |
+    'near' | 'flow' | 'solana' | 'elrond' | 'wallet-connect';
   key?: KEYS = 'files:login';
 }
 
@@ -121,7 +122,7 @@ export function useSign(wUser: WrapLoginUser): UseSign {
       }))
     }
 
-    if (wUser.wallet === 'metamask') {
+    if (wUser.wallet.startsWith('metamask')) {
       setState((o) => ({
         ...o, sign: async (data) => {
           return wUser.metamask.sign(data, wUser.account)
@@ -217,7 +218,7 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
             }
           })
           .then(() => setIsLoad(false))
-      } else if (f.wallet === 'metamask') {
+      } else if (f.wallet.startsWith('metamask')) {
         metamask.init()
           .then(() => {
             console.info('doInit::', metamask)
@@ -228,7 +229,7 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
                 if (accounts.length !== 0) {
                   setLoginUser({
                     account: accounts[0],
-                    wallet: 'metamask'
+                    wallet: f.wallet
                   })
                 } else {
                   setLoginUser(defLoginUser)
@@ -341,7 +342,7 @@ export function useContextWrapLoginUser(): WrapLoginUser {
 }
 
 export const getPerfix = (user: LoginUser): string => {
-  if (user.wallet === 'metamask' || user.wallet === 'wallet-connect') {
+  if (user.wallet.startsWith('metamask') || user.wallet === 'wallet-connect') {
     return 'eth';
   }
 

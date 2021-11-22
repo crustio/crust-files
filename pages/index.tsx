@@ -1,10 +1,10 @@
-import {Image} from "semantic-ui-react";
+import {Icon, Image} from "semantic-ui-react";
 import classNames from "classnames";
 import {useTranslation} from "react-i18next";
 import BgAnim from '../components/effect/BgAnim';
 import useParallax from "../lib/hooks/useParallax";
-import React, {useCallback, useContext, useEffect, useMemo, useState} from "react";
-import {useContextWrapLoginUser} from "../lib/wallet/hooks";
+import React, {useCallback, useContext, useEffect, useMemo, useRef, useState} from "react";
+import {LoginUser, useContextWrapLoginUser} from "../lib/wallet/hooks";
 import {nearConfig} from "../lib/wallet/config";
 import styled from "styled-components";
 import TypeIt from "typeit-react";
@@ -12,13 +12,15 @@ import Logo from "../components/Logo";
 import {AppContext} from "../lib/AppContext";
 
 interface ItemWallet {
-  name: 'Crust Wallet' | 'Polkadot (.js Extension)' | 'MetaMask' | 'Near Wallet' | 'Flow (Blocto Wallet)' |
+  name: 'Crust Wallet' | 'Polkadot (.js Extension)' | 'MetaMask' |
+    'Moonriver' | 'Polygon' |
+    'Near Wallet' | 'Flow (Blocto Wallet)' |
     'Solana (Phantom Wallet)' | 'Elrond (Maiar Wallet)' | 'WalletConnect'
   image: string
 }
 
 interface Wallet extends ItemWallet {
-  onClick: () => void
+  onClick: (w: Wallet) => void
 }
 
 const WALLETS: ItemWallet[] = [
@@ -33,6 +35,14 @@ const WALLETS: ItemWallet[] = [
   {
     name: 'MetaMask',
     image: '/images/wallet_metamask.png',
+  },
+  {
+    name: 'Polygon',
+    image: '/images/wallet_polygon.png',
+  },
+  {
+    name: 'Moonriver',
+    image: '/images/wallet_moonriver.png',
   },
   {
     name: 'Near Wallet',
@@ -111,7 +121,7 @@ function Home({className}: { className?: string }) {
     }
   }, [user, t])
 
-  const _onClickMetamask = useCallback(async () => {
+  const _onClickMetamask = useCallback(async (w: Wallet) => {
     setError('')
     await user.metamask.init()
     const ethReq = user.metamask.ethereum?.request;
@@ -122,16 +132,19 @@ function Home({className}: { className?: string }) {
         .then((res) => {
           console.info('accounts:', res);
           const selectedAddress = user.metamask.ethereum?.selectedAddress;
-
+          const wallet: LoginUser['wallet'] =
+            w.name === 'Polygon' ? 'metamask-Polygon' :
+              w.name === 'Moonriver' ? 'metamask-Moonriver' :
+                'metamask'
           if (selectedAddress && res.includes(selectedAddress)) {
             user.setLoginUser({
               account: selectedAddress,
-              wallet: 'metamask'
+              wallet
             });
           } else if (res.length) {
             user.setLoginUser({
               account: res[0],
-              wallet: 'metamask'
+              wallet
             });
           }
         })
@@ -260,6 +273,8 @@ function Home({className}: { className?: string }) {
         case "Polkadot (.js Extension)":
           return {...item, onClick: _onClickPolkadotJs}
         case "MetaMask":
+        case "Polygon":
+        case "Moonriver":
           return {...item, onClick: _onClickMetamask}
         case "Near Wallet":
           return {...item, onClick: _onClickNear}
@@ -295,24 +310,21 @@ function Home({className}: { className?: string }) {
     return () => clearInterval(task)
   }, [])
 
-  // const [signSlogIndex, setSignSlogIndex] = useState(0)
-  // const signSlog = [
-  //   "Sign-in with a Web wallet",
-  //   "Sign-in with a Mobile Wallet",
-  //   "Sign-in with a Browser Extension"
-  // ]
-  // useEffect(() => {
-  //   let index = 0
-  //   const task = setInterval(() => {
-  //     index += 1
-  //     if (index === signSlog.length)
-  //       index = 0
-  //     setSignSlogIndex(index)
-  //   }, 2000)
-  //   return () => clearInterval(task)
-  // })
-
   const [hoverWallet, setHoverWallet] = useState<ItemWallet | null>(null)
+
+  const walletsDiv = useRef<HTMLDivElement>()
+  const doScroll = (direction: 'l' | 'r') => {
+    if (walletsDiv.current && walletsDiv.current.children && walletsDiv.current.children.length) {
+      const children = walletsDiv.current.children
+      if (direction === 'l') {
+        children.item(0).scrollIntoView({behavior: 'smooth'})
+      }
+      if (direction === 'r') {
+        children.item(children.length - 1).scrollIntoView({behavior: 'smooth'})
+      }
+    }
+  }
+
   return (
     <div className={className}>
       <BgAnim/>
@@ -357,28 +369,32 @@ function Home({className}: { className?: string }) {
       <div className="flex1"/>
       <div className={'wallets_panel'}>
         <div className={"wallets"}>
-          {
-            wallets.map((w, index) =>
-              <Image
-                key={`wallet_${index}`}
-                id={w.name}
-                className={classNames({spaceLeft: index}, 'animStart', {animFinal: data[index].value})}
-                circular
-                inline
-                size={'tiny'}
-                src={w.image}
-                onClick={w.onClick}
-                onMouseEnter={() => {
-                  setError('')
-                  setHoverWallet(() => wallets[index])
-                }}
-                onMouseLeave={() => {
-                  setError('')
-                  setHoverWallet(() => null)
-                }}
-              />
-            )
-          }
+          <Icon className="btn_scroll left" name="caret left" onClick={() => doScroll('l')}/>
+          <div className="wallets_content" ref={walletsDiv}>
+            {
+              wallets.map((w, index) =>
+                <Image
+                  key={`wallet_${index}`}
+                  id={w.name}
+                  className={classNames({spaceLeft: index}, 'animStart', {animFinal: data[index].value})}
+                  circular
+                  inline
+                  size={'tiny'}
+                  src={w.image}
+                  onClick={() => w.onClick(w)}
+                  onMouseEnter={() => {
+                    setError('')
+                    setHoverWallet(() => wallets[index])
+                  }}
+                  onMouseLeave={() => {
+                    setError('')
+                    setHoverWallet(() => null)
+                  }}
+                />
+              )
+            }
+          </div>
+          <Icon className="btn_scroll right" name="caret right" onClick={() => doScroll('r')}/>
         </div>
         <div className={"wallets"}>
           {
@@ -410,7 +426,7 @@ function Home({className}: { className?: string }) {
         dangerouslySetInnerHTML={
           {
             __html: hoverWallet === null ? "Sign-in with Web/Browser/Mobile Wallets" :
-                `Sign-in with <span>${hoverWallet.name}</span>`
+              `Sign-in with <span>${hoverWallet.name}</span>`
           }
         }/>
       <div className={'flexN'}/>
@@ -485,12 +501,54 @@ export default React.memo(styled(Home)`
   }
 
   .wallets_panel {
+    overflow-x: auto;
+    display: flex;
     height: auto;
     flex-shrink: 0;
     white-space: nowrap;
 
     .wallets:first-child {
       margin-right: 1rem;
+      width: 60rem;
+      overflow: hidden;
+
+      .btn_scroll {
+        display: inline-block;
+        font-size: 30px;
+        line-height: 2.86rem;
+        border-radius: 1.5rem;
+        cursor: pointer;
+        color: #cccccc;
+        width: 2.86rem;
+        height: 2.86rem;
+        background: rgba(255, 255, 255, 0.15);
+        vertical-align: bottom;
+        margin-bottom: 4rem;
+      }
+
+      .left {
+        margin-left: 2.14rem;
+        margin-right: 1.4rem;
+        padding-right: 5px;
+      }
+
+      .right {
+        margin-left: 1.4rem;
+        margin-right: 2.14rem;
+        padding-left: 5px;
+      }
+
+      .wallets_content {
+        width: 47.6rem;
+        overflow: hidden;
+        display: inline-block;
+        padding-top: 1.4rem;
+        padding-bottom: 0.8rem;
+      }
+    }
+
+    .wallets:last-child {
+      padding: 1.4rem 4rem 0.8rem 4rem;
     }
   }
 
@@ -500,7 +558,6 @@ export default React.memo(styled(Home)`
     overflow: hidden;
     background: rgba(255, 255, 255, 0.1);
     border-radius: 6rem;
-    padding: 1.4rem 4rem 0.8rem 4rem;
     flex-shrink: 0;
 
     .animStart {

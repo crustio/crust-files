@@ -3,7 +3,7 @@ import store from 'store';
 import {useToggle} from "../hooks/useToggle";
 
 const {Cypher} = require("@zheeno/mnemonic-cypher");
-const WordsCount = 4
+const WordsCount = 8
 const myCypher = new Cypher(WordsCount)
 
 export interface UserCrypto {
@@ -42,12 +42,12 @@ export function parseUserCrypto(value?: string): UserCrypto | null {
         const secret = mWords[0]
         const bSecret = window.atob(secret)
         const seeds = myCypher.phraseFromSecret(bSecret)
-        if (seeds && seeds.split(' ').length === WordsCount) {
+        if (seeds && seeds.split(' ').length >= 4) {
           return {secret, seeds}
         }
-      } else if (mWords.length === WordsCount) {// words
+      } else if (mWords.length >= 4) {// words
         const secret = myCypher.secretFromPhrase(tValue)
-        if (secret && secret.split('-').length === WordsCount) {
+        if (secret && secret.split('-').length >= 4) {
           return {secret: window.btoa(secret), seeds: tValue}
         }
       }

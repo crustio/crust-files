@@ -19,6 +19,10 @@ function getWalletIcon(user: WrapLoginUser): string {
       return '/images/wallet_polkadot.png';
     case "metamask":
       return '/images/wallet_metamask.png';
+    case "metamask-Polygon":
+      return '/images/wallet_polygon.png';
+    case "metamask-Moonriver":
+      return '/images/wallet_moonriver.png';
     case "near":
       return '/images/wallet_near.png';
     case "solana":
