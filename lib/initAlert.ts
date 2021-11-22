@@ -1,5 +1,4 @@
 import {useCallback, useMemo, useState} from "react";
-import _ from 'lodash';
 
 export interface AlertMsg {
   title?: string;
