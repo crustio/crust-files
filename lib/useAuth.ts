@@ -1,39 +1,62 @@
 // Copyright 2017-2021 @polkadot/app-files authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import {useCallback, useMemo, useState} from 'react';
+import {Dispatch, SetStateAction, useCallback, useMemo, useState} from 'react';
 import {AuthIpfsEndpoint, AuthIpfsPinner, createAuthIpfsEndpoints, createAuthIpfsPinner} from './config';
 import {useTranslation} from 'react-i18next';
+import store from 'store';
 
 export interface AuthGateway {
   endpoint: AuthIpfsEndpoint,
-  setEndpoint: (p: AuthIpfsEndpoint) => void,
+  setEndpoint: Dispatch<SetStateAction<AuthIpfsEndpoint>>,
   onChangeEndpoint: (_: any, {value}: { value: string }) => void,
   endpoints: AuthIpfsEndpoint[],
 }
 
-export function useAuthGateway(): AuthGateway {
+
+export interface LastGateway {
+  value: string
+}
+
+export function useAuthGateway(key = 'upload:last-gateway'): AuthGateway {
   const {t} = useTranslation();
-  const endpoints = useMemo(
+  const endpoints = useMemo<AuthIpfsEndpoint[]>(
     () => createAuthIpfsEndpoints(t)
       .map((item) => ({...item, text: `${item.text ?? ''} (${item.location ?? ''})`})),
     [t]
   );
-  const defaultIndex = useMemo(() => Math.floor(Math.random() * (endpoints.length - 2)),[])
+
+  const defaultIndex = useMemo<number>(() => {
+    const lg = store.get(key) as LastGateway
+    if (lg) {
+      const index = endpoints.findIndex(item => item.value === lg.value)
+      if (index >= 0) return index
+    }
+    return 0
+  }, [key, endpoints])
+
   const [endpoint, setEndpoint] = useState<AuthIpfsEndpoint>(endpoints[defaultIndex]);
+
+  const _setEndpoint = useCallback((action: SetStateAction<AuthIpfsEndpoint>) => {
+    setEndpoint((old) => {
+      const data = typeof action === 'function' ? action(old) : action as AuthIpfsEndpoint
+      store.set(key, {value: data.value})
+      return data;
+    })
+  }, [])
 
   const onChangeEndpoint = useCallback((_: any, {value}: { value: string }) => {
     const find = endpoints.find((item) => item.value === value);
+    if (find) _setEndpoint(find);
+  }, [endpoints, _setEndpoint]);
 
-    if (find) setEndpoint(find);
-  }, [endpoints]);
 
   return useMemo(() => ({
     endpoints,
     endpoint,
-    setEndpoint,
+    setEndpoint: _setEndpoint,
     onChangeEndpoint
-  }), [endpoints, endpoint, onChangeEndpoint]);
+  }), [endpoints, endpoint, _setEndpoint, onChangeEndpoint]);
 }
 
 export interface AuthPinner {
