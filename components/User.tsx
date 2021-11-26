@@ -84,8 +84,9 @@ export default React.memo(styled(User)`
   width: 100%;
 
   .tiny.image {
-    width: 4.3rem;
-    height: 4.3rem;
+    width: 4.3rem !important;
+    height: 4.3rem !important;
+    margin-right: 1rem !important;
     filter: drop-shadow(0px 4px 5px rgba(0, 0, 0, 0.15));
   }
 

@@ -38,6 +38,8 @@ export class LoginUser {
   wallet: 'crust' | 'polkadot-js' | 'metamask' | 'metamask-Moonriver' | 'metamask-Polygon' |
     'near' | 'flow' | 'solana' | 'elrond' | 'wallet-connect';
   key?: KEYS = 'files:login';
+  nickName?: string;
+  userType?: string;
 }
 
 export interface WrapLoginUser extends LoginUser {

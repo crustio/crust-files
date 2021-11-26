@@ -1,27 +1,26 @@
-import React, {useCallback, useContext, useRef, useState} from "react";
-import {useContextWrapLoginUser, useFiles} from "../../lib/wallet/hooks";
-import {Icon, Pagination, Popup, Segment, Table, Transition} from "semantic-ui-react";
-import {useTranslation} from "react-i18next";
-import {DirFile, FileInfo, SaveFile} from "../../lib/wallet/types";
-import SideLayout from "../../components/SideLayout";
-import FileSaver from 'file-saver';
-import UploadModal from "../../components/UploadModal";
-import Btn from "../../components/Btn"
-import {AppContext} from "../../lib/AppContext";
-import User from "../../components/User";
-import {usePage} from "../../lib/hooks/usePage";
-import FileItem from "../../components/FileItem";
+import React, { useCallback, useContext, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Icon, Pagination, Popup, Segment, Table, Transition } from "semantic-ui-react";
 import styled from "styled-components";
-import {useUserCrypto} from "../../lib/crypto/useUserCrypto";
-import {useAutoToggle} from "../../lib/hooks/useAutoToggle";
+import Btn from "../../components/Btn";
+import FileItem from "../../components/FileItem";
+import SideLayout from "../../components/SideLayout";
+import UploadModal from "../../components/UploadModal";
+import User from "../../components/User";
+import { AppContext } from "../../lib/AppContext";
+import { useUserCrypto } from "../../lib/crypto/useUserCrypto";
+import { useAutoToggle } from "../../lib/hooks/useAutoToggle";
+import { usePage } from "../../lib/hooks/usePage";
+import { useContextWrapLoginUser, useFiles } from "../../lib/wallet/hooks";
+import { DirFile, FileInfo, SaveFile } from "../../lib/wallet/types";
 
 type FunInputFile = (e: React.ChangeEvent<HTMLInputElement>) => void
 
 
 function Index(p: { className?: string }) {
   const user = useContextWrapLoginUser()
-  const {t} = useTranslation();
-  const {alert} = useContext(AppContext)
+  const { t } = useTranslation();
+  const { alert } = useContext(AppContext)
   const [showUpMode, setShowUpMode] = useState(false);
   const wFiles = useFiles();
   const localFiles = usePage(wFiles.files, 7)
@@ -70,7 +69,7 @@ function Index(p: { className?: string }) {
     const isDirectory = e.target.webkitdirectory;
 
     if (!isDirectory) {
-      setFile({file: files[0]});
+      setFile({ file: files[0] });
       setShowUpMode(true);
     } else if (files.length >= 1) {
       const dirFiles: DirFile[] = [];
@@ -83,56 +82,12 @@ function Index(p: { className?: string }) {
 
       const [dir] = dirFiles[0].webkitRelativePath.split('/');
 
-      setFile({files: dirFiles, dir});
+      setFile({ files: dirFiles, dir });
       setShowUpMode(true);
     }
 
     e.target.value = '';
   }, [setFile, setShowUpMode, alert, t]);
-
-  const importInputRef = useRef<HTMLInputElement>(null);
-  const _clickImport = useCallback(() => {
-    if (!importInputRef.current) return;
-    importInputRef.current.click();
-  }, [importInputRef]);
-  const _onInputImportFile = useCallback<FunInputFile>((e) => {
-    try {
-      const fileReader = new FileReader();
-      const files = e.target.files;
-
-      if (!files) return;
-      fileReader.readAsText(files[0], 'UTF-8');
-
-      if (!(/(.json)$/i.test(e.target.value))) {
-        return alert.alert({msg: t('File error'), type: 'error'});
-      }
-
-      fileReader.onload = (e) => {
-        const _list = JSON.parse(e.target?.result as string) as SaveFile[];
-
-        if (!Array.isArray(_list)) {
-          return alert.alert({msg: t('File content error'), type: 'error'});
-        }
-
-        const fitter: SaveFile[] = [];
-        const mapImport: { [key: string]: boolean } = {};
-
-        for (const item of _list) {
-          if (item.Hash && item.Name && item.UpEndpoint && item.PinEndpoint) {
-            fitter.push(item);
-            mapImport[item.Hash] = true;
-          }
-        }
-
-        const filterOld = wFiles.files.filter((item) => !mapImport[item.Hash]);
-
-        wFiles.setFiles([...fitter, ...filterOld]);
-        alert.alert({msg: t('Import Success'), type: "success"})
-      };
-    } catch (e) {
-      alert.alert({msg: t('File content error'), type: "error"})
-    }
-  }, [wFiles, alert, t]);
 
   const _onClose = useCallback(() => {
     setShowUpMode(false);
@@ -146,9 +101,8 @@ function Index(p: { className?: string }) {
   }, [wFiles]);
 
   const _export = useCallback(() => {
-    const blob = new Blob([JSON.stringify(wFiles.files)], {type: 'application/json; charset=utf-8'});
-
-    FileSaver.saveAs(blob, 'files.json');
+    //ToDo
+    console.error('TODO: _export')
   }, [wFiles]);
 
   const visibleFile = useAutoToggle(2000)
@@ -156,19 +110,13 @@ function Index(p: { className?: string }) {
 
   return <SideLayout path={'/files'}>
     <Segment basic className={p.className}>
-      <User/>
+      <User />
       <Segment basic className="contentPanel">
         <Segment basic textAlign={'center'} className={"font-sans-semibold uploadPanel"}>
           <input
             onChange={_onInputFile}
             ref={inputRef}
-            style={{display: 'none'}}
-            type={'file'}
-          />
-          <input
-            onChange={_onInputImportFile}
-            ref={importInputRef}
-            style={{display: 'none'}}
+            style={{ display: 'none' }}
             type={'file'}
           />
           <div className={'upSlog'}>
@@ -179,14 +127,14 @@ function Index(p: { className?: string }) {
           </div>
           <div className="btns">
             <Transition animation={'pulse'} duration={500} visible={visibleFile}>
-            <span className={"btn file"} onClick={onClickUpFile}>
-              <span className="cru-fo cru-fo-file"/> <br/>
+              <span className={"btn file"} onClick={onClickUpFile}>
+                <span className="cru-fo cru-fo-file" /> <br />
               File
           </span>
             </Transition>
             <Transition animation={'pulse'} duration={500} visible={visibleFolder}>
-            <span className={"btn folder"} onClick={onClickUpFolder}>
-              <span className="cru-fo cru-fo-folder"/> <br/>
+              <span className={"btn folder"} onClick={onClickUpFolder}>
+                <span className="cru-fo cru-fo-folder" /> <br />
               Folder
             </span>
             </Transition>
@@ -201,7 +149,7 @@ function Index(p: { className?: string }) {
             />
           }
         </Segment>
-        <div className="line"/>
+        <div className="line" />
         <Table basic={'very'}>
           <Table.Header className="font-sans-semibold">
             <Table.Row>
@@ -227,13 +175,12 @@ function Index(p: { className?: string }) {
           <Table.Footer>
             <Table.Row>
               <Table.HeaderCell colSpan={localFiles.totalPage > 1 ? 2 : 5} className={"btns"}>
-                <Btn onClick={_clickImport}>Import</Btn>
                 <Btn onClick={_export}>Export</Btn>
                 <Popup
                   position={"top center"}
                   wide={'very'}
-                  trigger={<span className="cru-fo-help-circle" style={{fontSize: '1.3rem'}}/>}
-                  content={"Crust Files is a decentralized Application, and it will NEVER store your Upload History and File Encryption Key on any remote server. Instead, they are cached on your local devices. If you want to migrate your Upload History and File Encryption Key to a new device, use Export & Import function."}/>
+                  trigger={<span className="cru-fo-help-circle" style={{ fontSize: '1.3rem' }} />}
+                  content={"Crust Files is a decentralized Application, and it will NEVER store your Upload History and File Encryption Key on any remote server. Instead, they are cached on your local devices. If you want to migrate your Upload History and File Encryption Key to a new device, use Export & Import function."} />
               </Table.HeaderCell>
               {
                 localFiles.totalPage > 1 && <Table.HeaderCell colSpan='3' textAlign={"right"}>
@@ -243,10 +190,10 @@ function Index(p: { className?: string }) {
                     // lastItem={{content: <Icon name={"angle double right"}/>, icon: true}}
                     firstItem={null}
                     lastItem={null}
-                    prevItem={{content: <Icon name="angle left"/>, icon: true}}
-                    nextItem={{content: <Icon name="angle right"/>, icon: true}}
+                    prevItem={{ content: <Icon name="angle left" />, icon: true }}
+                    nextItem={{ content: <Icon name="angle right" />, icon: true }}
                     secondary
-                    onPageChange={(_, {activePage}) => localFiles.setPage(activePage as number)}
+                    onPageChange={(_, { activePage }) => localFiles.setPage(activePage as number)}
                   />
                 </Table.HeaderCell>
               }
