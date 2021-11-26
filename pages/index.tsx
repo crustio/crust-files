@@ -1,92 +1,79 @@
-import {Icon, Image} from "semantic-ui-react";
 import classNames from "classnames";
-import {useTranslation} from "react-i18next";
-import BgAnim from '../components/effect/BgAnim';
-import useParallax from "../lib/hooks/useParallax";
-import React, {useCallback, useContext, useEffect, useMemo, useRef, useState} from "react";
-import {LoginUser, useContextWrapLoginUser} from "../lib/wallet/hooks";
-import {nearConfig} from "../lib/wallet/config";
+import _ from 'lodash';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Image } from "semantic-ui-react";
 import styled from "styled-components";
 import TypeIt from "typeit-react";
+import BgAnim from '../components/effect/BgAnim';
 import Logo from "../components/Logo";
-import {AppContext} from "../lib/AppContext";
-
+import { AppContext } from "../lib/AppContext";
+import useParallax from "../lib/hooks/useParallax";
+import { nearConfig } from "../lib/wallet/config";
+import { LoginUser, useContextWrapLoginUser } from "../lib/wallet/hooks";
 interface ItemWallet {
-  name: 'Crust Wallet' | 'Polkadot (.js Extension)' | 'MetaMask' |
-    'Moonriver' | 'Polygon' |
-    'Near Wallet' | 'Flow (Blocto Wallet)' |
-    'Solana (Phantom Wallet)' | 'Elrond (Maiar Wallet)' | 'WalletConnect'
-  image: string
+  name: string,
+  image: string,
+  group: 'Crust' | 'Polkadot' | 'MetaMask' | 'Other' | 'WalletConnect'
 }
 
 interface Wallet extends ItemWallet {
   onClick: (w: Wallet) => void
 }
 
-const WALLETS: ItemWallet[] = [
-  {
-    name: 'Crust Wallet',
-    image: '/images/wallet_crust.png',
-  },
-  {
-    name: 'Polkadot (.js Extension)',
-    image: '/images/wallet_polkadot.png',
-  },
-  {
-    name: 'MetaMask',
-    image: '/images/wallet_metamask.png',
-  },
-  {
-    name: 'Polygon',
-    image: '/images/wallet_polygon.png',
-  },
-  {
-    name: 'Moonriver',
-    image: '/images/wallet_moonriver.png',
-  },
-  {
-    name: 'Near Wallet',
-    image: '/images/wallet_near.png',
-  },
-  {
-    name: 'Flow (Blocto Wallet)',
-    image: '/images/wallet_flow.png',
-  },
-  {
-    name: 'Solana (Phantom Wallet)',
-    image: '/images/wallet_solana.png',
-  },
-  {
-    name: 'Elrond (Maiar Wallet)',
-    image: '/images/wallet_elrond.png',
-  },
+const IMGS = {
+  'Crust': '/images/group_wallet_crust.png',
+  'Polkadot': '/images/group_wallet_polkadot.png',
+  'MetaMask': '/images/group_wallet_metamask.png',
+  'Other': '/images/group_wallet_other.png',
+  'WalletConnect': '/images/group_wallet_connect.png',
+}
 
-]
+interface WalletGroup {
+  items: Wallet[],
+  group: ItemWallet['group'],
+  img: string,
+  onClick?: Wallet['onClick'],
+}
 
-const WALLETS2: ItemWallet[] = [
-  {
-    name: 'WalletConnect',
-    image: '/images/wallet_connect.png',
-  }
-]
 
-function Home({className}: { className?: string }) {
-  const {t} = useTranslation()
-  const {data} = useParallax(100, WALLETS.length + WALLETS2.length)
+function WalletItems(p: { gw: WalletGroup }) {
+  const { gw } = p
+  const count = gw.items.length
+  const { data } = useParallax(100, count)
+  return <div
+    className="wallet_items"
+    style={{ left: `${6.39 - (5.857 * count) / 2}rem` }}>
+    {
+      gw.items.map((w, index) =>
+        <div
+          key={`wallet_item_${index}`}
+          onClick={() => w.onClick(w)}
+          className={classNames("wallet_item", { animFinal: data[count - 1 - index].value })}>
+          <img className="item_image" src={w.image} />
+          <span className="item_name">{w.name}</span>
+        </div>)
+    }
+  </div>
+}
+
+function Home({ className }: { className?: string }) {
+  const { t } = useTranslation()
   const user = useContextWrapLoginUser()
-  const {alert} = useContext(AppContext)
+  const { alert } = useContext(AppContext)
   // const [error, setError] = useState('');
-  const setError = useCallback((data: string) => {
+  const setError = (data: string) => {
     if (data) {
       alert.error(data)
     }
-  }, [])
+  }
+
   const _onClickCrust = useCallback(async () => {
     try {
       setError('')
       await user.crust.init()
       if (!user.crust.provider) {
-        setError(`${WALLETS[0].name} not installed`)
+        setError(`Crust Wallet not installed`)
         return
       }
       const accounts = await user.crust.login()
@@ -101,12 +88,21 @@ function Home({className}: { className?: string }) {
     }
   }, [user, t])
 
+  const _onClickCrustDown = useCallback(() => {
+    window.open('https://chrome.google.com/webstore/detail/crust-wallet/jccapkebeeiajkkdemacblkjhhhboiek', '_blank')
+  }, [])
+
+  const _onClickCrustGetCru = useCallback(() => {
+    // TODO
+    console.error('Todo: _onClickCrustGetCru')
+  }, [])
+
   const _onClickPolkadotJs = useCallback(async () => {
     try {
       setError('')
       await user.polkadotJs.init()
       if (!user.polkadotJs.provider) {
-        setError(`${WALLETS[1].name} not installed`)
+        setError(`Polkadot (.js Extension) not installed`)
         return
       }
       const accounts = await user.polkadotJs.login()
@@ -152,7 +148,7 @@ function Home({className}: { className?: string }) {
           console.error('accountsError:', error);
         });
     } else {
-      setError(`${WALLETS[2].name} not installed`)
+      setError(`MetaMask not installed`)
     }
   }, [user, t]);
 
@@ -201,7 +197,7 @@ function Home({className}: { className?: string }) {
     setError('')
     await user.solana.init()
     if (!user.solana.isInstalled) {
-      setError(`${WALLETS[5].name} not installed`)
+      setError(`Solana (Phantom Wallet) not installed`)
     }
 
     // eslint-disable-next-line
@@ -231,7 +227,7 @@ function Home({className}: { className?: string }) {
     setError('')
     await user.elrond.init()
     if (!user.elrond.provider) {
-      setError(`${WALLETS[6].name} not installed`)
+      setError(`Elrond (Maiar Wallet) not installed`)
       return
     }
     await user.elrond.provider.login({
@@ -239,7 +235,7 @@ function Home({className}: { className?: string }) {
         `${window.location.origin}/#/files`
       )
     });
-    const {address} = user.elrond.provider.account;
+    const { address } = user.elrond.provider.account;
 
     user.setLoginUser({
       // eslint-disable-next-line
@@ -257,7 +253,7 @@ function Home({className}: { className?: string }) {
     }
     await user.walletConnect.connect?.createSession()
     user.walletConnect.connect?.on("connect", (_, payload) => {
-      const {accounts} = payload.params[0];
+      const { accounts } = payload.params[0];
       user.setLoginUser({
         account: accounts[0],
         wallet: 'wallet-connect'
@@ -265,35 +261,100 @@ function Home({className}: { className?: string }) {
     })
   }, [user])
 
-  const wallets: Wallet[] = useMemo(() => {
-    return WALLETS.map((item) => {
-      switch (item.name) {
-        case "Crust Wallet":
-          return {...item, onClick: _onClickCrust}
-        case "Polkadot (.js Extension)":
-          return {...item, onClick: _onClickPolkadotJs}
-        case "MetaMask":
-        case "Polygon":
-        case "Moonriver":
-          return {...item, onClick: _onClickMetamask}
-        case "Near Wallet":
-          return {...item, onClick: _onClickNear}
-        case "Flow (Blocto Wallet)":
-          return {...item, onClick: _onClickFlow}
-        case "Solana (Phantom Wallet)":
-          return {...item, onClick: _onClickSolana}
-        case "Elrond (Maiar Wallet)":
-          return {...item, onClick: _onClickElrond}
+  const wallets = useMemo<Wallet[]>(() => {
+    return [
+      {
+        group: 'Crust',
+        name: 'Crust Wallet',
+        image: '/images/wallet_crust.png',
+        onClick: _onClickCrust,
+      },
+      {
+        group: 'Crust',
+        name: 'Download',
+        image: '/images/crust_down.png',
+        onClick: _onClickCrustDown,
+      },
+      {
+        group: 'Crust',
+        name: 'Get CRU',
+        image: '/images/crust_get_cru.png',
+        onClick: _onClickCrustGetCru,
+      },
+      {
+        group: 'Polkadot',
+        name: 'Polkadot',
+        image: '/images/wallet_polkadot.png',
+        onClick: _onClickPolkadotJs,
+      },
+      {
+        group: 'MetaMask',
+        name: 'Ethereum',
+        image: '/images/wallet_ethereum.png',
+        onClick: _onClickMetamask,
+      },
+      {
+        group: 'MetaMask',
+        name: 'Polygon',
+        image: '/images/wallet_polygon.png',
+        onClick: _onClickMetamask,
+      },
+      {
+        group: 'MetaMask',
+        name: 'Moonriver',
+        image: '/images/wallet_moonriver.png',
+        onClick: _onClickMetamask,
+      },
+      {
+        group: 'Other',
+        name: 'Near',
+        image: '/images/wallet_near.png',
+        onClick: _onClickNear,
+      },
+      {
+        group: 'Other',
+        name: 'Elrond',
+        image: '/images/wallet_elrond.png',
+        onClick: _onClickElrond,
+      },
+      {
+        group: 'Other',
+        name: 'Solana',
+        image: '/images/wallet_solana.png',
+        onClick: _onClickSolana,
+      },
+      {
+        group: 'Other',
+        name: 'Flow',
+        image: '/images/wallet_flow.png',
+        onClick: _onClickFlow,
+      },
+      {
+        group: 'WalletConnect',
+        name: 'WalletConnect',
+        image: '/images/wallet_connect.png',
+        onClick: _onClickWalletConnect,
       }
-      return {...item, onClick: _onClickCrust}
-    })
-  }, [_onClickCrust, _onClickPolkadotJs, _onClickMetamask, _onClickNear, _onClickFlow, _onClickSolana, _onClickElrond])
+    ]
+  }, [_onClickCrust, _onClickCrustDown, _onClickCrustGetCru, _onClickPolkadotJs, _onClickMetamask, _onClickNear, _onClickFlow, _onClickSolana, _onClickElrond, _onClickWalletConnect])
 
-  const wallets2: Wallet[] = useMemo(() => {
-    return WALLETS2.map((item) => {
-      return {...item, onClick: _onClickWalletConnect}
+  const groupWallets = useMemo<WalletGroup[]>(() => {
+    const groupObj = _.groupBy(wallets, 'group')
+    const keys = _.keys(groupObj)
+    return _.map(keys, (key) => {
+      const items = groupObj[key]
+      const group = key
+      const g: WalletGroup = {
+        items,
+        group,
+        img: IMGS[key]
+      }
+      if (g.items.length === 1) {
+        g.onClick = g.items[0].onClick
+      }
+      return g
     })
-  }, [_onClickWalletConnect])
+  }, [wallets])
 
   const [slogTextIndex, setSlogTextIndex] = useState(0)
   useEffect(() => {
@@ -310,36 +371,38 @@ function Home({className}: { className?: string }) {
     return () => clearInterval(task)
   }, [])
 
-  const [hoverWallet, setHoverWallet] = useState<ItemWallet | null>(null)
+  const [hoverWalletGroup, setHoverWalletGroup] = useState<WalletGroup | null>(null)
 
-  const walletsDiv = useRef<HTMLDivElement>()
-  const doScroll = (direction: 'l' | 'r') => {
-    if (walletsDiv.current && walletsDiv.current.children && walletsDiv.current.children.length) {
-      const children = walletsDiv.current.children
-      if (direction === 'l') {
-        children.item(0).scrollIntoView({behavior: 'smooth'})
-      }
-      if (direction === 'r') {
-        children.item(children.length - 1).scrollIntoView({behavior: 'smooth'})
-      }
-    }
-  }
+  // const walletsDiv = useRef<HTMLDivElement>()
+  // const doScroll = (direction: 'l' | 'r') => {
+  //   if (walletsDiv.current && walletsDiv.current.children && walletsDiv.current.children.length) {
+  //     const children = walletsDiv.current.children
+  //     if (direction === 'l') {
+  //       children.item(0).scrollIntoView({ behavior: 'smooth' })
+  //     }
+  //     if (direction === 'r') {
+  //       children.item(children.length - 1).scrollIntoView({ behavior: 'smooth' })
+  //     }
+  //   }
+  // }
+
+  const { data } = useParallax(100, 5)
 
   return (
     <div className={className}>
-      <BgAnim/>
-      <Logo className={"logo"}/>
-      <div className="flexN"/>
+      <BgAnim />
+      <Logo className={"logo"} />
+      <div className="flexN" />
       <div className="slog font-sans-semibold">
         <Image src={"/images/crust_box2x.png"}
-               className={classNames("slogIcon")}/>
+          className={classNames("slogIcon")} />
         <div className={classNames("slogText")}>
           {
             slogTextIndex === 0 &&
             <div className={"slogText1"}>
-              <TypeIt options={{speed: 60} as any}>
-                Enjoy storing your <br/>
-                files in a <span className={'highlight'}>Web3</span> style. <br/>
+              <TypeIt options={{ speed: 60 } as any}>
+                Enjoy storing your <br />
+                files in a <span className={'highlight'}>Web3</span> style. <br />
                 Now <span className={'highlight'}>free</span>.
               </TypeIt>
             </div>
@@ -347,9 +410,9 @@ function Home({className}: { className?: string }) {
           {
             slogTextIndex === 1 &&
             <div className={"slogText2"}>
-              <TypeIt options={{speed: 60} as any}>
-                - Multi-wallet access with your Web3.0 identity<br/>
-                - Absolute data privacy by end-to-end file encryption<br/>
+              <TypeIt options={{ speed: 60 } as any}>
+                - Multi-wallet access with your Web3.0 identity<br />
+                - Absolute data privacy by end-to-end file encryption<br />
                 - IPFS storage with globally-distributed replicas
               </TypeIt>
             </div>
@@ -357,79 +420,51 @@ function Home({className}: { className?: string }) {
           {
             slogTextIndex === 2 &&
             <div className={"slogText2"}>
-              <TypeIt options={{speed: 60} as any}>
-                - Easy share links to friends<br/>
-                - Retrieve your files anywhere, anytime<br/>
-                - Paid service with smart contract on public<br/> blockchains
+              <TypeIt options={{ speed: 60 } as any}>
+                - Easy share links to friends<br />
+                - Retrieve your files anywhere, anytime<br />
+                - Paid service with smart contract on public<br /> blockchains
               </TypeIt>
             </div>
           }
         </div>
       </div>
-      <div className="flex1"/>
-      <div className={'wallets_panel'}>
-        <div className={"wallets"}>
-          <Icon className="btn_scroll left" name="caret left" onClick={() => doScroll('l')}/>
-          <div className="wallets_content" ref={walletsDiv}>
-            {
-              wallets.map((w, index) =>
-                <Image
-                  key={`wallet_${index}`}
-                  id={w.name}
-                  className={classNames({spaceLeft: index}, 'animStart', {animFinal: data[index].value})}
-                  circular
-                  inline
-                  size={'tiny'}
-                  src={w.image}
-                  onClick={() => w.onClick(w)}
-                  onMouseEnter={() => {
-                    setError('')
-                    setHoverWallet(() => wallets[index])
-                  }}
-                  onMouseLeave={() => {
-                    setError('')
-                    setHoverWallet(() => null)
-                  }}
-                />
-              )
-            }
-          </div>
-          <Icon className="btn_scroll right" name="caret right" onClick={() => doScroll('r')}/>
-        </div>
-        <div className={"wallets"}>
-          {
-            wallets2.map((w, index) =>
-              <Image
-                key={`wallet_${index}`}
-                id={w.name}
-                className={classNames({spaceLeft: index}, 'animStart', {animFinal: data[index + wallets.length].value})}
-                circular
-                inline
-                size={'tiny'}
-                src={w.image}
-                onClick={w.onClick}
-                onMouseEnter={() => {
-                  setError('')
-                  setHoverWallet(() => wallets2[index])
-                }}
-                onMouseLeave={() => {
-                  setError('')
-                  setHoverWallet(() => null)
-                }}
-              />
-            )
-          }
-        </div>
+      <div className="flex1" />
+
+      <div className={"wallets"}>
+        {
+          groupWallets.map((gw, index) =>
+            <div
+              key={`wallet_group_${index}`}
+              onClick={() => {
+                if (gw.onClick) {
+                  gw.onClick(gw.items[0])
+                }
+              }}
+              onMouseEnter={() => setHoverWalletGroup(() => gw)}
+              onMouseLeave={() => setHoverWalletGroup(() => null)}
+              className={classNames("wallet_group", { animFinal: data[index].value })}>
+              <img className="image" src={gw.img} />
+              <span className="text">{gw.group}</span>
+              {
+                gw.items.length > 1 && hoverWalletGroup && hoverWalletGroup.group === gw.group &&
+                <WalletItems gw={gw} />
+              }
+            </div>
+          )
+        }
+        {/* <Icon className="btn_scroll left" name="caret left" onClick={() => doScroll('l')}/> */}
+        {/* <Icon className="btn_scroll right" name="caret right" onClick={() => doScroll('r')}/> */}
       </div>
       <span
         className={classNames("signTip font-sans-medium")}
         dangerouslySetInnerHTML={
           {
-            __html: hoverWallet === null ? "Sign-in with Web/Browser/Mobile Wallets" :
-              `Sign-in with <span>${hoverWallet.name}</span>`
+            __html: "Sign-in with Web/Browser/Mobile Wallets"
+            // `Sign-in with <span>${hoverWallet.name}</span>`
           }
-        }/>
-      <div className={'flexN'}/>
+        } />
+      <div className={'flexN'} />
     </div>
   )
 }
@@ -500,76 +535,72 @@ export default React.memo(styled(Home)`
 
   }
 
-  .wallets_panel {
-    overflow-x: auto;
-    display: flex;
-    height: auto;
-    flex-shrink: 0;
-    white-space: nowrap;
-
-    .wallets:first-child {
-      margin-right: 1rem;
-      width: 60rem;
-      overflow: hidden;
-
-      .btn_scroll {
-        display: inline-block;
-        font-size: 30px;
-        line-height: 2.86rem;
-        border-radius: 1.5rem;
-        cursor: pointer;
-        color: #cccccc;
-        width: 2.86rem;
-        height: 2.86rem;
-        background: rgba(255, 255, 255, 0.15);
-        vertical-align: bottom;
-        margin-bottom: 4rem;
-      }
-
-      .left {
-        margin-left: 2.14rem;
-        margin-right: 1.4rem;
-        padding-right: 5px;
-      }
-
-      .right {
-        margin-left: 1.4rem;
-        margin-right: 2.14rem;
-        padding-left: 5px;
-      }
-
-      .wallets_content {
-        width: 47.6rem;
-        overflow: hidden;
-        display: inline-block;
-        padding-top: 1.4rem;
-        padding-bottom: 0.8rem;
-      }
-    }
-
-    .wallets:last-child {
-      padding: 1.4rem 4rem 0.8rem 4rem;
-    }
-  }
-
   .wallets {
     height: min-content;
     display: inline-block;
-    overflow: hidden;
+    overflow: visible;
     background: rgba(255, 255, 255, 0.1);
     border-radius: 6rem;
     flex-shrink: 0;
+    padding: 0 3rem;
 
-    .animStart {
-      width: 8.4rem !important;
-      height: 8.4rem !important;
-      cursor: pointer;
-      transition: all cubic-bezier(.41, .19, .21, 1.25) 1.2s;
+    .wallet_group {
+      display: inline-block;
+      overflow: visible;
+      height: 12.14rem;
+      width: 12.7857rem;
+      text-align: center;
+      padding-top: 1.857rem;
       position: relative;
-      transform: translateX(-800px) rotateZ(-900deg);
+      cursor: pointer;
+      /* transition: all cubic-bezier(.41, .19, .21, 1.25) 1.2s; */
+      /* transform: translateX(-800px); */
 
       &:hover {
-        filter: drop-shadow(0 2px 6px rgba(255, 255, 255, 0.5));
+        .image,.text {
+          filter: drop-shadow(0px 4px 16px rgba(255, 255, 255, 0.5));
+          position: relative;
+          top: -1rem;
+        }
+        .wallet_items {
+          display: flex;
+        }
+      }
+      .image {
+        width: 7rem;
+        height: 7rem;
+        margin-left: 2.89rem;
+        display: block;
+      }
+      .text {
+        font-size: 1.2857rem;
+        line-height: 2.357rem;
+      }
+
+      .wallet_items {
+        position: absolute;
+        display: none;
+        overflow: hidden;
+        height: 6.86rem;
+        padding-top: 1rem;
+        top: -6.85rem;
+      }
+    }
+    .wallet_item {
+      display: inline-block;
+      width: 5.857rem;
+      text-align: center;
+      cursor: pointer;
+      transform: translateY(90px);
+      transition: all cubic-bezier(.41, .19, .21, 1.25) 300ms;
+      .item_image {
+        margin-left: 1.14rem;
+        width: 3.57rem;
+        height: 3.57rem;
+      }
+      .item_text {
+        font-size: 0.857rem;
+        line-height: 1.43rem;
       }
     }
 

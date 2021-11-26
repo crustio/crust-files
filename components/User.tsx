@@ -16,9 +16,9 @@ function getWalletIcon(user: WrapLoginUser): string {
     case "crust":
       return '/images/wallet_crust.png';
     case "polkadot-js":
-      return '/images/wallet_polkadot.png';
+      return '/images/group_wallet_polkadot.png';
     case "metamask":
-      return '/images/wallet_metamask.png';
+      return '/images/wallet_ethereum.png';
     case "metamask-Polygon":
       return '/images/wallet_polygon.png';
     case "metamask-Moonriver":
@@ -86,6 +86,7 @@ export default React.memo(styled(User)`
   .tiny.image {
     width: 4.3rem;
     height: 4.3rem;
+    filter: drop-shadow(0px 4px 5px rgba(0, 0, 0, 0.15));
   }
 
   .items > .item.tiny {
