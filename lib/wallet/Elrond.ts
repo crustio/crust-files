@@ -1,13 +1,8 @@
 import {BaseWallet} from "./types";
 import {
-  ExtensionProvider, Address,
-  Balance,
-  ChainID,
-  GasLimit,
-  GasPrice,
-  Transaction,
-  TransactionPayload,
-  TransactionVersion
+  ExtensionProvider,
+  Address,
+  SignableMessage
 } from '@elrondnetwork/erdjs';
 
 export class Elrond implements BaseWallet {
@@ -27,35 +22,18 @@ export class Elrond implements BaseWallet {
 
 
   sign(): Promise<string> {
-    const rawTransaction = {
-      receiver: Address.Zero().hex(),
-      data: 'Sign message for crust files',
-      value: '0.1'
-    };
-    const transaction = new Transaction({
-      value: Balance.egld(rawTransaction.value),
-      data: new TransactionPayload(rawTransaction.data),
-      receiver: new Address(rawTransaction.receiver),
-      gasLimit: new GasLimit(50000),
-      gasPrice: new GasPrice(1000000000),
-      chainID: new ChainID('D'),
-      version: new TransactionVersion(1)
+    const address = this.provider.account.address;
+    const signableMessage = new SignableMessage({
+      address: new Address(address),
+      message: Buffer.from('0x' + Buffer.from(address).toString('hex'), 'ascii')
     });
-
-    return this.provider.signTransaction(transaction)
-      .then((e) => {
-        // elrond-addr-txMsg:sig
-        const signature = e.getSignature();
-        const sender = e.getSender();
-        const transMessage = transaction.serializeForSigning(new Address(sender));
-
-        /* eslint-disable @typescript-eslint/restrict-template-expressions */
-        return `elrond-${sender}-${transMessage.toString('hex')}:${signature.hex()}`;
-      })
-      .catch((err) => {
-        console.error('Elrond wallet signTransaction error', err);
-        return '';
-      });
+    return this.provider.signMessage(signableMessage).then(message => {
+      return `elrond-${address}-${signableMessage.serializeForSigning().toString('hex')}:${message.signature.hex()}`;
+    })
+    .catch((err) => {
+      console.error('Elrond wallet signMessage error', err);
+      return '';
+    });
   }
 
 }
