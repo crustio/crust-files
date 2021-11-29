@@ -23,6 +23,7 @@ export interface Props {
   onSuccess?: (res: SaveFile) => void,
   user: WrapLoginUser,
   uc: WrapUserCrypto,
+  type: 'public' | 'vault'
 }
 
 const NOOP = (): void => undefined;
@@ -30,7 +31,9 @@ const NOOP = (): void => undefined;
 const MAX = 100 * 1024 * 1024;
 
 function UploadModal(p: Props): React.ReactElement<Props> {
-  const {className, uc, file, onClose = NOOP, onSuccess = NOOP, user} = p;
+  const {className, uc, file, onClose = NOOP, onSuccess = NOOP, user, type} = p;
+  const isPublic = type === 'public'
+  const isVault = type === 'vault'
   const {t} = useTranslation();
   const {endpoint, endpoints, onChangeEndpoint} = useAuthGateway();
   const {onChangePinner, pinner, pins} = useAuthPinner();
@@ -56,7 +59,7 @@ function UploadModal(p: Props): React.ReactElement<Props> {
   const errorText = fileSizeError ? t<string>('Do not upload files larger than 100MB!') : error;
   const [upState, setUpState] = useState({progress: 0, up: false});
   const [cancelUp, setCancelUp] = useState<CancelTokenSource | null>(null);
-  const [encrypt, toggleEncrypt] = useToggle()
+  const [encrypt, toggleEncrypt] = useToggle(isVault)
 
   const _onClose = useCallback(() => {
     if (cancelUp) cancelUp.cancel();
@@ -238,7 +241,7 @@ function UploadModal(p: Props): React.ReactElement<Props> {
                       content={"Please go to the 'Setting' page and set encryption key before activating this function."}
                     />
                 }
-                <Radio toggle defaultChecked={encrypt} disabled={!uc.secret} onChange={() => toggleEncrypt()}/>
+                <Radio toggle defaultChecked={encrypt} disabled={true} onChange={() => toggleEncrypt()}/>
               </Card.Content>
             </Card>
           }
