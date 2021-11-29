@@ -367,7 +367,7 @@ export default React.memo(styled(Index)`
 
     .folder {
       background: rgba(86, 203, 143, 0.1);
-
+      
       &:hover {
         background: rgba(86, 203, 143, 0.2);
         box-shadow: 0 0.14rem 1.43rem 0 rgba(0, 0, 0, 0.1);

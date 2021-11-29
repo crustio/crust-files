@@ -14,7 +14,7 @@ import { LoginUser, useContextWrapLoginUser } from "../lib/wallet/hooks";
 interface ItemWallet {
   name: string,
   image: string,
-  group: 'Crust' | 'Polkadot' | 'MetaMask' | 'Other' | 'WalletConnect'
+  group: 'Crust' | 'Polkadot' | 'MetaMask' | 'Web 3' | 'WalletConnect'
 }
 
 interface Wallet extends ItemWallet {
@@ -25,7 +25,7 @@ const IMGS = {
   'Crust': '/images/group_wallet_crust.png',
   'Polkadot': '/images/group_wallet_polkadot.png',
   'MetaMask': '/images/group_wallet_metamask.png',
-  'Other': '/images/group_wallet_other.png',
+  'Web 3': '/images/group_wallet_other.png',
   'WalletConnect': '/images/group_wallet_connect.png',
 }
 
@@ -306,25 +306,25 @@ function Home({ className }: { className?: string }) {
         onClick: _onClickMetamask,
       },
       {
-        group: 'Other',
+        group: 'Web 3',
         name: 'Near',
         image: '/images/wallet_near.png',
         onClick: _onClickNear,
       },
       {
-        group: 'Other',
+        group: 'Web 3',
         name: 'Elrond',
         image: '/images/wallet_elrond.png',
         onClick: _onClickElrond,
       },
       {
-        group: 'Other',
+        group: 'Web 3',
         name: 'Solana',
         image: '/images/wallet_solana.png',
         onClick: _onClickSolana,
       },
       {
-        group: 'Other',
+        group: 'Web 3',
         name: 'Flow',
         image: '/images/wallet_flow.png',
         onClick: _onClickFlow,

@@ -126,11 +126,13 @@ function Index(props: Props) {
           </div>
           <div className="text font-sans-regular">
             {`${t('Nick Name:')} `}
-            {<span className="bold-text font-sans-semibold">{user.nickName}</span>}
+            {user.nickName && <span className="bold-text font-sans-semibold">{user.nickName}</span>}
+            {!user.nickName && <a className="" target="_blank" href="https://hhhhhh" rel="noreferrer">Get a Nick Name</a>}
           </div>
           <div className="text font-sans-regular">
             {`${t('User Type:')} `}
-            <span className="bold-text font-sans-semibold">{user.userType}</span>
+            {<span className="bold-text font-sans-semibold">{user.userType}</span>}
+            {!user.userType && <a target="_blank" href="https://hhhhh" rel="noreferrer">Get a Premium</a>}
           </div>
         </Segment>
         <Segment basic className={"mcard"}>
@@ -208,6 +210,11 @@ export default React.memo<Props>(styled(Index)`
 
     .bold-text {
       color: var(--main-color);
+    }
+    
+    a {
+      text-decoration: underline;
+      line-height: 1.2rem;
     }
 
     .btns {
