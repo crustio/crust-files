@@ -1,13 +1,14 @@
-name: main-cd
+name: Prod Release to Docker Hub
 
 on:
   push:
     branches: [ main ]
-# manual trigger
+  # manual trigger
   workflow_dispatch:
 
 jobs:
   build:
+    if: github.repository == 'crustio/crust-files'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
