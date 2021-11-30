@@ -112,6 +112,10 @@ img {
     border: unset !important;
 }
 
+.no-padding {
+    padding: unset !important;
+}
+
 
 @keyframes fadeIn {
     from {

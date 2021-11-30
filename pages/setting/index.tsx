@@ -1,7 +1,8 @@
+import classNames from 'classnames';
 import FileSaver from 'file-saver';
 import React, { useCallback, useContext, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { Segment } from "semantic-ui-react";
+import { Accordion, AccordionContent, AccordionTitle, Segment } from "semantic-ui-react";
 import styled from "styled-components";
 import Btn from "../../components/Btn";
 import ModalNewKey from "../../components/ModalNewKey";
@@ -39,6 +40,7 @@ function Index(props: Props) {
   const uc = useUserCrypto()
   const { alert } = useContext(AppContext)
   const [open, toggleOpen] = useToggle(false)
+  const [showFileEncryption, toggleFileEncryption] = useToggle()
   const copy = useClipboard()
   const user = useContextWrapLoginUser()
   const wFiles = useFiles();
@@ -142,35 +144,37 @@ function Index(props: Props) {
           <div className="text font-sans-regular">
             {`${t('Your user data (including three File Lists and one File Encryption Key) are cached on your local devices. If you want to migrate your user data to a new device, use Export & Import function.')} `}
           </div>
+          <Accordion>
+            <AccordionTitle active={showFileEncryption} onClick={() => toggleFileEncryption()}>
+              <div className="title font-sans-semibold">
+                {t('File Encryption')}<span className={classNames('icon', showFileEncryption? 'cru-fo-chevron-up':'cru-fo-chevron-down')} />
+              </div>
+            </AccordionTitle>
+            <AccordionContent active={showFileEncryption} className="no-padding">
+              <div className="text font-sans-regular">
+                {`${t('Your File Encryption Key:')} `}
+                {
+                  uc.secret && <span className="bold-text font-sans-semibold">
+                    {uc.secret}
+                    <span className="icon cru-fo-copy" onClick={() => copy(uc.secret)} />
+                  </span>}
+                {
+                  !uc.secret && <a onClick={uc.generate}>Generate a New</a>
+                }
+              </div>
+              {
+                uc.seeds && <div className="text font-sans-regular">
+                  {`${t('Seed Phrase:')} `}
+                  <span className="bold-text font-sans-semibold">
+                    {uc.seeds}
+                  </span>
+                </div>
+              }
+            </AccordionContent>
+          </Accordion>
           <div className={'btns'}>
             <Btn content={t('Export')} onClick={_clickExport} />
             <Btn content={t('Import')} onClick={_clickImport} />
-          </div>
-        </Segment>
-        <Segment basic className={"mcard"}>
-          <div className="title font-sans-semibold">
-            {t('File Encryption')}
-          </div>
-          {
-            uc.secret && <div className="text font-sans-regular">
-              {`${t('Your File Encryption Key:')} `}
-              <span className="bold-text font-sans-semibold">{uc.secret}</span>
-            </div>
-          }
-          {
-            uc.seeds && <div className="text font-sans-regular">
-              {`${t('Seed Phrase:')} `}
-              <span className="bold-text font-sans-semibold">{uc.seeds}</span>
-            </div>
-          }
-          <div className={'btns'}>
-            {
-              uc.secret ? <Btn content={t('Copy')} onClick={() => copy(uc.seeds)} /> :
-                <>
-                  <Btn content={t('Generate new')} onClick={uc.generate} />
-                  <Btn content={t('Input a new key')} onClick={() => toggleOpen(true)} />
-                </>
-            }
           </div>
         </Segment>
       </Segment>
@@ -193,7 +197,7 @@ export default React.memo<Props>(styled(Index)`
     margin: 2.21rem 2.29rem 0 2.39rem !important;
   
     .title {
-      font-size: 1.3rem;
+      font-size: 1.3rem !important;
       font-weight: 600;
       color: var(--main-color);
       padding-bottom: 1.14rem;
@@ -207,7 +211,13 @@ export default React.memo<Props>(styled(Index)`
       color: var(--secend-color);
       line-height: 1.57rem;
     }
-
+    .icon {
+      margin-left: 1rem;
+      font-size: 1.428571rem;
+      position: relative;
+      top: 3px;
+      cursor: pointer;
+    }
     .bold-text {
       color: var(--main-color);
     }
@@ -215,6 +225,7 @@ export default React.memo<Props>(styled(Index)`
     a {
       text-decoration: underline;
       line-height: 1.2rem;
+      cursor: pointer;
     }
 
     .btns {

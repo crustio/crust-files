@@ -27,7 +27,7 @@ const menus: MenuInfo[] = [
   { path: "/files/vault", name: 'Vault' },
   { path: "/setting", icon: "cru-fo-settings", name: 'Settings' },
   { path: "/docs", icon: "cru-fo-file-text", name: 'Docs' },
-  { path: "/user", icon: "cru-fo-user", name: 'Perminum User' },
+  { path: "/user", icon: "cru-fo-user", name: 'Premium User' },
 ]
 
 function SideLayout(props: Props) {
