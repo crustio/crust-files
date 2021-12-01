@@ -32,7 +32,6 @@ const MAX = 100 * 1024 * 1024;
 
 function UploadModal(p: Props): React.ReactElement<Props> {
   const {className, uc, file, onClose = NOOP, onSuccess = NOOP, user, type} = p;
-  const isPublic = type === 'public'
   const isVault = type === 'vault'
   const {t} = useTranslation();
   const {endpoint, endpoints, onChangeEndpoint} = useAuthGateway();
@@ -114,7 +113,7 @@ function UploadModal(p: Props): React.ReactElement<Props> {
           form.append('file', file.file, file.file.name);
         } else if (file.files) {
           for (const f of file.files) {
-            form.append('file', f, f.webkitRelativePath);
+            form.append('file', f, f._webkitRelativePath || f.webkitRelativePath);
           }
         }
       }

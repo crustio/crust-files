@@ -10,7 +10,8 @@ import styled from 'styled-components'
 export interface Props extends BaseProps {
     pageCount?: number,
     files: SaveFile[],
-    type?: 'public' | 'vault'
+    type?: 'public' | 'vault',
+    onDeleteItem: (f: SaveFile) => void
 }
 
 export function filesTable(props: Props) {
@@ -18,21 +19,26 @@ export function filesTable(props: Props) {
         className,
         pageCount = 7,
         files,
-        type = 'public'
+        type = 'public',
+        onDeleteItem
     } = props
+    const isPublic = type === 'public'
     const mFiles = useMemo<SaveFile[]>(() => files.filter(
         (file) => type === 'public' ? !file.Encrypted : file.Encrypted
     ), [files, type])
     const localFiles = usePage(mFiles, pageCount)
     const uc = useUserCrypto()
+    const footSpan = localFiles.totalPage > 1 ? 2 : 5
+    const footerSpan = isPublic ? footSpan + 1 : footSpan
     return <Table basic={'very'} className={className}>
         <Table.Header className="font-sans-semibold">
             <Table.Row>
                 <Table.HeaderCell>File Name</Table.HeaderCell>
-                <Table.HeaderCell textAlign={"center"}>File CID</Table.HeaderCell>
-                <Table.HeaderCell textAlign={"center"}>File Size</Table.HeaderCell>
-                <Table.HeaderCell textAlign={"center"}>Status</Table.HeaderCell>
-                <Table.HeaderCell textAlign={"center"}>Action</Table.HeaderCell>
+                <Table.HeaderCell width="2" textAlign={"center"}>File CID</Table.HeaderCell>
+                <Table.HeaderCell width="2" textAlign={"center"}>File Size</Table.HeaderCell>
+                <Table.HeaderCell width="2" textAlign={"center"}>Status</Table.HeaderCell>
+                <Table.HeaderCell width="2" textAlign={"center"}>Action</Table.HeaderCell>
+                {isPublic && <Table.HeaderCell width="2" />}
             </Table.Row>
         </Table.Header>
 
@@ -40,6 +46,8 @@ export function filesTable(props: Props) {
             {
                 localFiles.pageList.map((f, index) =>
                     <FileItem
+                        type={type}
+                        onDelete={onDeleteItem}
                         key={`files_item_${index}`}
                         uc={uc}
                         file={f}
@@ -49,7 +57,7 @@ export function filesTable(props: Props) {
 
         <Table.Footer>
             <Table.Row>
-                <Table.HeaderCell colSpan={localFiles.totalPage > 1 ? 2 : 5} className={"btns"}>
+                <Table.HeaderCell colSpan={footerSpan} className={"btns"}>
                     {/* <Popup
                   position={"top center"}
                   wide={'very'}

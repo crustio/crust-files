@@ -2,10 +2,11 @@ import React from "react";
 import { BaseProps } from "./types";
 import styled from 'styled-components'
 import { Dropdown } from "semantic-ui-react";
+import classNames from "classnames";
 
 export interface Props extends BaseProps {
     onClickUpFile: () => void,
-    onClickUpFolder: () => void,
+    onClickUpFolder?: () => void,
 }
 function btnUpload(props: Props) {
     const {
@@ -13,6 +14,9 @@ function btnUpload(props: Props) {
         onClickUpFile,
         onClickUpFolder,
     } = props
+    if (!onClickUpFolder) {
+        return <div className={classNames("btn-upload", className)} onClick={onClickUpFile}>Upload</div>
+    }
     return <Dropdown
         className={className}
         pointing={"top"}
@@ -26,13 +30,23 @@ function btnUpload(props: Props) {
     </Dropdown>
 }
 export const BtnUpload = React.memo<Props>(styled(btnUpload)`
+ &.btn-upload, &.ui.dropdown>.text.divider {
+    padding: 0 4.285714rem;
+    font-family: OpenSans-Medium;
+    font-size: 2.571429rem;
+    line-height: 6.428571rem;
+    cursor: pointer;
+    border: 2px solid #000000;
+    box-sizing: border-box;
+    border-radius: 1.714286rem;
+ }
  &.ui.dropdown {
     .cru-fo {
       font-size: 1.3rem;
       margin-left: 1.1rem;
     }
 
-    .text.divider {
+    /* .text.divider {
         padding: 0 4.285714rem;
         font-family: OpenSans-Medium;
         font-size: 2.571429rem;
@@ -41,7 +55,7 @@ export const BtnUpload = React.memo<Props>(styled(btnUpload)`
         border: 2px solid #000000;
         box-sizing: border-box;
         border-radius: 1.714286rem;
-    }
+    } */
 
     .menu::after {
       display: none;

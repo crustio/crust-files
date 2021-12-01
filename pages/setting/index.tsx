@@ -9,10 +9,10 @@ import ModalNewKey from "../../components/ModalNewKey";
 import SideLayout from "../../components/SideLayout";
 import User from "../../components/User";
 import { AppContext } from "../../lib/AppContext";
-import { useUserCrypto } from "../../lib/crypto/useUserCrypto";
+import { parseUserCrypto, useUserCrypto } from "../../lib/crypto/useUserCrypto";
 import { useClipboard } from "../../lib/hooks/useClipboard";
 import { useToggle } from "../../lib/hooks/useToggle";
-import { SaveFile } from "../../lib/types";
+import { ExportObj, SaveFile } from "../../lib/types";
 import { LoginUser, useContextWrapLoginUser, useFiles } from "../../lib/wallet/hooks";
 
 export interface Props {
@@ -59,20 +59,36 @@ function Index(props: Props) {
       fileReader.readAsText(files[0], 'UTF-8');
 
       if (!(/(.json)$/i.test(e.target.value))) {
-        return alert.alert({ msg: t('File error'), type: 'error' });
+        return alert.error(t('File error'));
       }
 
       fileReader.onload = (e) => {
-        const _list = JSON.parse(e.target?.result as string) as SaveFile[];
 
-        if (!Array.isArray(_list)) {
-          return alert.alert({ msg: t('File content error'), type: 'error' });
+        const data = JSON.parse(e.target?.result as string) as (SaveFile[] | ExportObj);
+        const nExportObj: ExportObj = { files: [] }
+        if (Array.isArray(data)) {
+          nExportObj.files = data
+        } else if (data.files && Array.isArray(data.files)) {
+          nExportObj.secret = data.secret
+          nExportObj.files = data.files
+        } else {
+          return alert.error(t('File content error'));
+        }
+
+        if (uc.secret && nExportObj.secret && nExportObj.secret !== uc.secret) {
+          return alert.error("Two secrets were found, and they are different.")
+        }
+        if (nExportObj.secret) {
+          const userCrypto = parseUserCrypto(nExportObj.secret)
+          if (userCrypto) {
+            uc.set(userCrypto)
+          }
         }
 
         const fitter: SaveFile[] = [];
         const mapImport: { [key: string]: boolean } = {};
 
-        for (const item of _list) {
+        for (const item of nExportObj.files) {
           if (item.Hash && item.Name && item.UpEndpoint && item.PinEndpoint) {
             fitter.push(item);
             mapImport[item.Hash] = true;
@@ -87,13 +103,17 @@ function Index(props: Props) {
     } catch (e) {
       alert.alert({ msg: t('File content error'), type: "error" })
     }
-  }, [wFiles, alert, t]);
+  }, [wFiles, uc.set, alert, t]);
 
   const _clickExport = useCallback(() => {
-    const blob = new Blob([JSON.stringify(wFiles.files)], { type: 'application/json; charset=utf-8' });
+    const exportObj: ExportObj = {
+      files: wFiles.files,
+      secret: uc.secret
+    }
+    const blob = new Blob([JSON.stringify(exportObj)], { type: 'application/json; charset=utf-8' });
 
-    FileSaver.saveAs(blob, 'files.json');
-  }, [wFiles]);
+    FileSaver.saveAs(blob, 'backup.json');
+  }, [wFiles, uc]);
 
   return <SideLayout path={'/setting'}>
     <Segment basic className={className}>
@@ -147,7 +167,7 @@ function Index(props: Props) {
           <Accordion>
             <AccordionTitle active={showFileEncryption} onClick={() => toggleFileEncryption()}>
               <div className="title font-sans-semibold">
-                {t('File Encryption')}<span className={classNames('icon', showFileEncryption? 'cru-fo-chevron-up':'cru-fo-chevron-down')} />
+                {t('File Encryption')}<span className={classNames('icon', showFileEncryption ? 'cru-fo-chevron-up' : 'cru-fo-chevron-down')} />
               </div>
             </AccordionTitle>
             <AccordionContent active={showFileEncryption} className="no-padding">

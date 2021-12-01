@@ -3,13 +3,14 @@ import { Segment } from "semantic-ui-react";
 import styled from "styled-components";
 import { BtnUpload } from "../../components/BtnUpload";
 import FilesTable from "../../components/FilesTable";
+import { OnDrapDropFrame } from "../../components/OnDrapDropFrame";
 import SideLayout from "../../components/SideLayout";
 import UploadModal from "../../components/UploadModal";
 import User from "../../components/User";
 import { useUserCrypto } from "../../lib/crypto/useUserCrypto";
 import useInputFile from "../../lib/hooks/useInputFile";
 import { useContextWrapLoginUser, useFiles } from "../../lib/wallet/hooks";
-import { SaveFile } from "../../lib/wallet/types";
+import { FileInfo, SaveFile } from "../../lib/wallet/types";
 
 function Index(p: { className?: string }) {
   const user = useContextWrapLoginUser()
@@ -26,8 +27,17 @@ function Index(p: { className?: string }) {
     wFiles.setFiles([res, ...filterFiles]);
   }, [wFiles]);
 
+  const _onDrop = (info: FileInfo) => {
+    if (!info) return
+    if (!info.dir && info.files && info.files.length > 1) {
+      return
+    }
+    wInputFile.setFile(info)
+  }
+
   return <SideLayout path={'/files'}>
     <Segment basic className={p.className}>
+      <OnDrapDropFrame onDrop={_onDrop} />
       <User />
       <Segment basic className="contentPanel">
         <Segment basic textAlign={'center'} className={"font-sans-semibold uploadPanel"}>
@@ -57,7 +67,7 @@ function Index(p: { className?: string }) {
           }
         </Segment>
         <div className="line" />
-        <FilesTable files={wFiles.files} />
+        <FilesTable files={wFiles.files} onDeleteItem={wFiles.deleteItem} />
       </Segment>
     </Segment>
   </SideLayout>

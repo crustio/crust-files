@@ -1,25 +1,28 @@
-import React, {useCallback, useContext, useMemo} from "react";
-import {SaveFile} from "../lib/wallet/types";
-import {AuthIpfsEndpoint} from "../lib/config";
-import {Icon, Popup, Table} from "semantic-ui-react";
-import filesize from "filesize";
-import {saveAs} from 'file-saver';
-import {useClipboard} from "../lib/hooks/useClipboard";
-import {AppContext} from "../lib/AppContext";
-import {useCall} from "../lib/hooks/useCall";
-import styled from "styled-components";
-import {useAuthGateway} from "../lib/useAuth";
-import {WrapUserCrypto} from "../lib/crypto/useUserCrypto";
+import { BlockNumber } from "@polkadot/types/interfaces/types";
 import axios from "axios";
-import {decryptFile} from "../lib/crypto/encryption";
+import { saveAs } from 'file-saver';
+import filesize from "filesize";
 import _ from 'lodash';
-import {shortStr} from "../lib/utils";
-import {BlockNumber} from "@polkadot/types/interfaces/types";
+import React, { useCallback, useContext, useMemo } from "react";
+import { Icon, Popup, Table } from "semantic-ui-react";
+import styled from "styled-components";
+import { AppContext } from "../lib/AppContext";
+import { AuthIpfsEndpoint } from "../lib/config";
+import { decryptFile } from "../lib/crypto/encryption";
+import { WrapUserCrypto } from "../lib/crypto/useUserCrypto";
+import { useCall } from "../lib/hooks/useCall";
+import { useClipboard } from "../lib/hooks/useClipboard";
+import { useAuthGateway } from "../lib/useAuth";
+import { shortStr } from "../lib/utils";
+import { SaveFile } from "../lib/wallet/types";
+import Btn from "./Btn";
 
 export interface Props {
+  type?: 'public' | 'vault',
   className?: string,
   file: SaveFile,
   uc: WrapUserCrypto,
+  onDelete: (f: SaveFile) => void
 }
 
 type Status = 'Loading' | 'Submitted' | 'Expired' | 'Success' | 'Failed';
@@ -59,17 +62,18 @@ function parseStat(stat: any) {
 const FailedTime = 2 * 60 * 60 * 1000
 
 function FileItem(props: Props) {
-  const {file, className, uc} = props;
+  const { file, className, uc, onDelete, type = 'public' } = props;
+  const isPublic = type === 'public';
   const copy = useClipboard();
-  const {api, alert, loading} = useContext(AppContext)
-  const {endpoints} = useAuthGateway()
-
+  const { api, alert, loading } = useContext(AppContext)
+  const { endpoints } = useAuthGateway()
+  const _onClickDelete = () => { onDelete(file) }
   const _onClickOpen = useCallback(async () => {
     if (file.Encrypted && _.size(file.items) === 0) {
       try {
         if (!uc.secret) return;
         loading.show()
-        const res = await axios.get<ArrayBuffer>(createUrl(file, endpoints), {responseType: "arraybuffer"})
+        const res = await axios.get<ArrayBuffer>(createUrl(file, endpoints), { responseType: "arraybuffer" })
         console.info('res::', res)
         const time1 = new Date().getTime()
         const decryptData = await decryptFile(res.data, uc.secret)
@@ -78,7 +82,7 @@ function FileItem(props: Props) {
           throw 'error'
         }
         console.info('de:', decryptData)
-        const saveFile = new File([decryptData], file.Name, {type: res.headers['content-type']})
+        const saveFile = new File([decryptData], file.Name, { type: res.headers['content-type'] })
         saveAs(saveFile, file.Name)
         loading.hide()
       } catch (e) {
@@ -96,7 +100,7 @@ function FileItem(props: Props) {
   const bestNum = useCall<BlockNumber>(api?.derive?.chain?.bestNumber);
   const bestNumber = bestNum && bestNum.toNumber()
   const fileStat = useMemo<FileStat>(() => {
-    const fStat: FileStat = {status: 'Loading'}
+    const fStat: FileStat = { status: 'Loading' }
     if (stat && !stat.isEmpty) {
       const {
         expired_at,
@@ -135,16 +139,16 @@ function FileItem(props: Props) {
   return <Table.Row className={className}>
     <Table.Cell className={'fileName'}>
       {shortStr(file.Name)}
-      {file.items && <span className="icon cru-fo-folder"/>}
+      {file.items && <span className="icon cru-fo-folder" />}
       {
         file.Encrypted &&
         <Popup
-          trigger={<span className="icon cru-fo-key"/>}
+          trigger={<span className="icon cru-fo-key" />}
           content={"Encrypted"}
-          position={"top center"}/>
+          position={"top center"} />
       }
     </Table.Cell>
-    <Table.Cell textAlign={"center"}>
+    <Table.Cell textAlign={"right"}>
       {shortStr(file.Hash)}
       <Popup
         position={"top center"}
@@ -153,16 +157,16 @@ function FileItem(props: Props) {
           <span
             className="cru-fo cru-fo-copy"
             onClick={() => copy(file.Hash)}
-            style={{marginLeft: '1.8rem'}}/>
+            style={{ marginLeft: '1.8rem' }} />
         }
       />
     </Table.Cell>
     <Table.Cell textAlign={"center"}
-                style={{textTransform: 'uppercase'}}>{filesize(Number(file.Size), {round: 2})}</Table.Cell>
+      style={{ textTransform: 'uppercase' }}>{filesize(Number(file.Size), { round: 2 })}</Table.Cell>
     <Table.Cell textAlign={"center"}>
       {
         fileStat.status === 'Loading' &&
-        <Icon loading name="spinner"/>
+        <Icon loading name="spinner" />
       }
       {fileStat.status === "Submitted" && fileStat.status}
       {fileStat.status === "Expired" && fileStat.status}
@@ -170,24 +174,38 @@ function FileItem(props: Props) {
       {fileStat.status === "Success" && `${fileStat.status} (${fileStat.confirmedReplicas} Replicas)`}
     </Table.Cell>
     <Table.Cell textAlign={"center"}>
+
       <Popup
         position={"top center"}
-        content={"Open File"}
+        content={"Copy Download Link"}
         trigger={
-          <span
-            className="cru-fo cru-fo-external-link"
-            style={{marginRight: '1.14rem'}} onClick={_onClickOpen}/>
+          <span className="cru-fo cru-fo-copy" onClick={_onClickCopy} />
         }
       />
       <Popup
-        position={"left center"}
-        content={"Copy Download Link"}
+        position={"top center"}
+        content={"Open"}
         trigger={
-          <span className="cru-fo cru-fo-copy" onClick={_onClickCopy}/>
+          <span
+            className="cru-fo cru-fo-external-link"
+            style={{ marginLeft: '1rem' }} onClick={_onClickOpen} />
+        }
+      />
+      <Popup
+        position={"top center"}
+        content={"Delete"}
+        trigger={
+          <span
+            className="cru-fo cru-fo-trash-2"
+            style={{ marginLeft: '1rem' }} onClick={_onClickDelete} />
         }
       />
 
     </Table.Cell>
+    {
+      isPublic && <Table.Cell textAlign={"center"}>
+        <Btn className="item-share-btn">Share</Btn>
+      </Table.Cell>}
   </Table.Row>
 }
 
@@ -205,6 +223,11 @@ export default React.memo<Props>(styled(FileItem)`
     .icon {
       margin-left: 0.6rem;
     }
+  }
+
+  .item-share-btn {
+    padding: 5px 11px !important;
+    border-radius: 8px !important;
   }
 
 `)

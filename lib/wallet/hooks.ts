@@ -1,15 +1,15 @@
-import React, {useCallback, useContext, useEffect, useMemo, useState} from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import store from 'store';
-import {SaveFile} from './types';
-import {FlowM} from './Flow';
-import {Metamask} from './Metamask';
-import {NearM} from './Near';
-import {SolanaM} from './SolanaM';
-import {Crust} from './Crust'
-import {PolkadotJs} from "./PolkadotJs";
-import {Elrond} from "./Elrond";
-import {useRouter} from "next/router";
-import {MWalletConnect} from "./MWalletConnect";
+import { SaveFile } from './types';
+import { FlowM } from './Flow';
+import { Metamask } from './Metamask';
+import { NearM } from './Near';
+import { SolanaM } from './SolanaM';
+import { Crust } from './Crust'
+import { PolkadotJs } from "./PolkadotJs";
+import { Elrond } from "./Elrond";
+import { useRouter } from "next/router";
+import { MWalletConnect } from "./MWalletConnect";
 
 // eslint-disable-next-line
 const fcl = require('@onflow/fcl');
@@ -23,6 +23,7 @@ type KEYS_FILES = 'files' | 'pins:files'
 
 export interface WrapFiles extends Files {
   setFiles: (files: SaveFile[]) => void,
+  deleteItem: (f: SaveFile) => void,
   key: KEYS_FILES,
 }
 
@@ -58,7 +59,7 @@ export interface WrapLoginUser extends LoginUser {
   walletConnect: MWalletConnect,
 }
 
-const defFilesObj: Files = {files: [], isLoad: true};
+const defFilesObj: Files = { files: [], isLoad: true };
 
 const initPinTime = (fileObj: Files) => {
   fileObj.files.forEach((file) => {
@@ -85,14 +86,20 @@ export function useFiles(key: KEYS_FILES = 'files'): WrapFiles {
     }
   }, [key]);
   const setFiles = useCallback((nFiles: SaveFile[]) => {
-    const nFilesObj = {...filesObj, files: nFiles};
+    const nFilesObj = { ...filesObj, files: nFiles };
     // init file.PinTime
     initPinTime(nFilesObj)
     setFilesObj(nFilesObj);
     store.set(key, nFilesObj);
   }, [filesObj, key]);
 
-  return useMemo(() => ({...filesObj, setFiles, key}), [filesObj, setFiles, key]);
+  const deleteItem = useCallback((f: SaveFile) => {
+    if (f.Hash) {
+      setFiles(filesObj.files.filter(file => file.Hash !== f.Hash))
+    }
+  }, [filesObj, setFiles])
+
+  return useMemo(() => ({ ...filesObj, setFiles, deleteItem, key }), [filesObj, setFiles, deleteItem, key]);
 }
 
 export function useSign(wUser: WrapLoginUser): UseSign {
@@ -164,7 +171,7 @@ export function useSign(wUser: WrapLoginUser): UseSign {
   return state;
 }
 
-const defLoginUser: LoginUser = {account: '', wallet: 'crust', key: 'files:login'};
+const defLoginUser: LoginUser = { account: '', wallet: 'crust', key: 'files:login' };
 
 export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
   const [account, setAccount] = useState<LoginUser>(defLoginUser);
@@ -181,7 +188,7 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
   const r = useRouter()
 
   const setLoginUser = useCallback((loginUser: LoginUser) => {
-    const nAccount = {...loginUser, key};
+    const nAccount = { ...loginUser, key };
 
     setAccount((old) => {
       if (old.wallet === 'near') {
@@ -266,7 +273,7 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
             setAccount(f)
             console.info('wc::', walletConnect.connect)
             walletConnect.connect?.on("session_update", (_, payload) => {
-              const {accounts} = payload.params[0]
+              const { accounts } = payload.params[0]
               setLoginUser({
                 wallet: 'wallet-connect',
                 account: accounts[0]
@@ -284,7 +291,7 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
       setIsLoad(false);
       console.error(e);
     }
-  }, [metamask, near, flow, solana, walletConnect, key, r]);
+  }, [key, r]);
 
   const logout = useCallback(async () => {
     if (account.wallet === 'flow') {
@@ -303,7 +310,7 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
       await walletConnect.connect?.killSession()
     }
 
-    setLoginUser({...defLoginUser});
+    setLoginUser({ ...defLoginUser });
   }, [setLoginUser, account]);
 
   const wUser: WrapLoginUser = useMemo(() => {

@@ -3,13 +3,14 @@ import { Segment } from "semantic-ui-react";
 import styled from "styled-components";
 import { BtnUpload } from "../../components/BtnUpload";
 import FilesTable from "../../components/FilesTable";
+import { OnDrapDropFrame } from "../../components/OnDrapDropFrame";
 import SideLayout from "../../components/SideLayout";
 import UploadModal from "../../components/UploadModal";
 import User from "../../components/User";
 import { useUserCrypto } from "../../lib/crypto/useUserCrypto";
 import useInputFile from "../../lib/hooks/useInputFile";
 import { useContextWrapLoginUser, useFiles } from "../../lib/wallet/hooks";
-import { SaveFile } from "../../lib/wallet/types";
+import { FileInfo, SaveFile } from "../../lib/wallet/types";
 
 function Vault(p: { className?: string }) {
     const user = useContextWrapLoginUser()
@@ -25,9 +26,17 @@ function Vault(p: { className?: string }) {
 
         wFiles.setFiles([res, ...filterFiles]);
     }, [wFiles]);
-
+    const _onDrop = (info: FileInfo) => {
+        if (!info) return
+        if (!info.dir && info.files && info.files.length > 1) {
+            return
+        }
+        if (!info.file) return
+        wInputFile.setFile(info)
+    }
     return <SideLayout path={'/files/vault'}>
         <Segment basic className={p.className}>
+            <OnDrapDropFrame onDrop={_onDrop} />
             <User />
             <Segment basic className="contentPanel">
                 <Segment basic textAlign={'center'} className={"font-sans-semibold uploadPanel"}>
@@ -43,7 +52,7 @@ function Vault(p: { className?: string }) {
                     </div>
                     <BtnUpload
                         onClickUpFile={wInputFile._onClickUpFile}
-                        onClickUpFolder={wInputFile._onClickUpFolder}
+                        // onClickUpFolder={wInputFile._onClickUpFolder}
                     />
                     {
                         wInputFile.file && <UploadModal
@@ -57,7 +66,7 @@ function Vault(p: { className?: string }) {
                     }
                 </Segment>
                 <div className="line" />
-                <FilesTable type="vault" files={wFiles.files} />
+                <FilesTable type="vault" files={wFiles.files} onDeleteItem={wFiles.deleteItem} />
             </Segment>
         </Segment>
     </SideLayout>
