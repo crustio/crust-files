@@ -1,20 +1,20 @@
 // Copyright 2017-2021 @polkadot/app-files authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import axios, {CancelTokenSource} from 'axios';
-import React, {useCallback, useMemo, useState} from 'react';
+import axios, { CancelTokenSource } from 'axios';
+import React, { useCallback, useMemo, useState } from 'react';
 
-import {getPerfix, WrapLoginUser} from '../lib/wallet/hooks';
-import {useAuthGateway, useAuthPinner} from '../lib/useAuth';
-import {Card, Modal, Progress, Radio} from 'semantic-ui-react';
-import {useTranslation} from 'react-i18next';
-import {FileInfo, SaveFile, UploadRes} from '../lib/wallet/types';
+import { getPerfix, WrapLoginUser } from '../lib/wallet/hooks';
+import { useAuthGateway, useAuthPinner } from '../lib/useAuth';
+import { Card, Modal, Progress, Radio } from 'semantic-ui-react';
+import { useTranslation } from 'react-i18next';
+import { FileInfo, SaveFile, UploadRes } from '../lib/wallet/types';
 import styled from "styled-components";
 import MDropdown from "./MDropdown";
 import Btn from "./Btn";
-import {useToggle} from "../lib/hooks/useToggle";
-import {readFileAsync, WrapUserCrypto} from "../lib/crypto/useUserCrypto";
-import {encryptFile} from "../lib/crypto/encryption";
+import { useToggle } from "../lib/hooks/useToggle";
+import { readFileAsync, WrapUserCrypto } from "../lib/crypto/useUserCrypto";
+import { encryptFile } from "../lib/crypto/encryption";
 
 export interface Props {
   className?: string,
@@ -31,34 +31,32 @@ const NOOP = (): void => undefined;
 const MAX = 100 * 1024 * 1024;
 
 function UploadModal(p: Props): React.ReactElement<Props> {
-  const {className, uc, file, onClose = NOOP, onSuccess = NOOP, user, type} = p;
+  const { className, uc, file, onClose = NOOP, onSuccess = NOOP, user, type } = p;
   const isVault = type === 'vault'
-  const {t} = useTranslation();
-  const {endpoint, endpoints, onChangeEndpoint} = useAuthGateway();
-  const {onChangePinner, pinner, pins} = useAuthPinner();
+  const { t } = useTranslation();
+  const { endpoint, endpoints, onChangeEndpoint } = useAuthGateway();
+  const { onChangePinner, pinner, pins } = useAuthPinner();
   const [isBusy, setBusy] = useState(false);
   const fileSizeError = useMemo(() => {
-
     if (file.file) {
       return file.file.size > MAX;
     } else if (file.files) {
       let sum = 0;
-
       for (const f of file.files) {
         sum += f.size;
       }
-
       return sum > MAX;
     }
-
     return false;
   }, [file]);
   // const fileSizeError = file.size > 100 * 1024 * 1024;
   const [error, setError] = useState('');
   const errorText = fileSizeError ? t<string>('Do not upload files larger than 100MB!') : error;
-  const [upState, setUpState] = useState({progress: 0, up: false});
+  const [upState, setUpState] = useState({ progress: 0, up: false });
   const [cancelUp, setCancelUp] = useState<CancelTokenSource | null>(null);
-  const [encrypt, toggleEncrypt] = useToggle(isVault)
+  // const [encrypt, toggleEncrypt] = useToggle(isVault)
+  const encrypt = isVault;
+  const [showOptions, toggleShowOptions] = useToggle()
 
   const _onClose = useCallback(() => {
     if (cancelUp) cancelUp.cancel();
@@ -87,7 +85,7 @@ function UploadModal(p: Props): React.ReactElement<Props> {
       const cancel = axios.CancelToken.source();
 
       setCancelUp(cancel);
-      setUpState({progress: 0, up: true});
+      setUpState({ progress: 0, up: true });
       // 2.**** : encrypt
       const form = new FormData();
       const isEncrypt = !!(encrypt && uc.secret)
@@ -98,13 +96,13 @@ function UploadModal(p: Props): React.ReactElement<Props> {
           console.info('readFile::', (new Date().getTime() - time1) / 1000)
           const encryptedData = await encryptFile(fileData, uc.secret)
           console.info('encrypted::', (new Date().getTime() - time1) / 1000)
-          const encryptedFile = new Blob([encryptedData], {type: file.file.type})
+          const encryptedFile = new Blob([encryptedData], { type: file.file.type })
           form.append('file', encryptedFile, file.file.name)
         } else if (file.files) {
           for (const f of file.files) {
             const fileData = await readFileAsync(f)
             const encryptedData = await encryptFile(fileData, uc.secret)
-            const encryptedFile = new Blob([encryptedData], {type: f.type})
+            const encryptedFile = new Blob([encryptedData], { type: f.type })
             form.append('file', encryptedFile, f.webkitRelativePath)
           }
         }
@@ -122,15 +120,15 @@ function UploadModal(p: Props): React.ReactElement<Props> {
       const upResult = await axios.request<UploadRes | string>({
         cancelToken: cancel.token,
         data: form,
-        headers: {Authorization: AuthBasic},
+        headers: { Authorization: AuthBasic },
         maxContentLength: MAX,
         method: 'POST',
         onUploadProgress: (p: { loaded: number, total: number }) => {
           const percent = p.loaded / p.total;
 
-          setUpState({progress: Math.round(percent * 99), up: true});
+          setUpState({ progress: Math.round(percent * 99), up: true });
         },
-        params: {pin: true},
+        params: { pin: true },
         url: `${UpEndpoint}/api/v0/add`
       });
 
@@ -150,7 +148,7 @@ function UploadModal(p: Props): React.ReactElement<Props> {
 
       console.info('upResult:', upResult);
       setCancelUp(null);
-      setUpState({progress: 99, up: true})
+      setUpState({ progress: 99, up: true })
       // remote pin order
       const PinEndpoint = pinner.value;
       await axios.request({
@@ -158,12 +156,12 @@ function UploadModal(p: Props): React.ReactElement<Props> {
           cid: upRes.Hash,
           name: upRes.Name
         },
-        headers: {Authorization: AuthBearer},
+        headers: { Authorization: AuthBearer },
         method: 'POST',
         url: `${PinEndpoint}/psa/pins`
       });
 
-      setUpState({progress: 100, up: false});
+      setUpState({ progress: 100, up: false });
       onSuccess({
         ...upRes,
         PinEndpoint,
@@ -172,7 +170,7 @@ function UploadModal(p: Props): React.ReactElement<Props> {
         Encrypted: isEncrypt,
       });
     } catch (e) {
-      setUpState({progress: 0, up: false});
+      setUpState({ progress: 0, up: false });
       setBusy(false);
       console.error(e);
       setError(t('Network Error,Please try to switch a Gateway.'));
@@ -182,7 +180,7 @@ function UploadModal(p: Props): React.ReactElement<Props> {
 
   return (
     <Modal
-      closeIcon={<span className="close icon cru-fo-x"/>}
+      closeIcon={<span className="close icon cru-fo-x" />}
       onClose={_onClose}
       open={true}
       size={'large'}
@@ -194,7 +192,7 @@ function UploadModal(p: Props): React.ReactElement<Props> {
         <Card.Group>
           <Card fluid>
             <Card.Content>
-              <Card.Header content={file.dir ? 'Folder' : 'File'}/>
+              <Card.Header content={file.dir ? 'Folder' : 'File'} />
               <Card.Description
                 content={file.dir ?
                   `${file.dir} (${file.files.length} files)` :
@@ -203,47 +201,52 @@ function UploadModal(p: Props): React.ReactElement<Props> {
               />
             </Card.Content>
           </Card>
-          <Card fluid>
-            <MDropdown
-              fluid
-              selection
-              className="clear-border"
-              help={t<string>('File streaming and wallet authentication will be processed by the chosen gateway.')}
-              disabled={isBusy}
-              label={t<string>('Select a Web3 IPFS Gateway')}
-              onChange={onChangeEndpoint}
-              options={endpoints}
-              defaultGroup={endpoint.group}
-              defaultValue={endpoint.value}
-            />
-          </Card>
-          <Card fluid>
-            <MDropdown
-              fluid
-              selection
-              className="clear-border"
-              help={t<string>('Your file will be pinned to IPFS for long-term storage.')}
-              disabled={pins.length === 0}
-              label={t<string>('Select a Web3 IPFS Pinner')}
-              onChange={onChangePinner}
-              options={pins}
-              defaultValue={pinner.value}
-            />
-          </Card>
+          {
+            showOptions && <>
+              <Card fluid>
+                <MDropdown
+                  fluid
+                  selection
+                  className="clear-border"
+                  help={t<string>('File streaming and wallet authentication will be processed by the chosen gateway.')}
+                  disabled={isBusy}
+                  label={t<string>('Select a Web3 IPFS Gateway')}
+                  onChange={onChangeEndpoint}
+                  options={endpoints}
+                  defaultGroup={endpoint.group}
+                  defaultValue={endpoint.value}
+                />
+              </Card>
+              <Card fluid>
+                <MDropdown
+                  fluid
+                  selection
+                  className="clear-border"
+                  help={t<string>('Your file will be pinned to IPFS for long-term storage.')}
+                  disabled={pins.length === 0}
+                  label={t<string>('Select a Web3 IPFS Pinner')}
+                  onChange={onChangePinner}
+                  options={pins}
+                  defaultValue={pinner.value}
+                />
+              </Card>
+            </>
+          }
           {
             file.file && <Card fluid className="encryption">
               <Card.Content>
-                <Card.Header content={"File Encryption"}/>
+                <Card.Header content={"File Encryption"} />
                 {
-                  uc.secret ? <Card.Description content={encrypt ? 'Yes' : 'No'}/> :
+                  uc.secret ? <Card.Description content={encrypt ? 'Yes' : 'File encryption is disabled in Public Mode.'} /> :
                     <Card.Description
                       content={"Please go to the 'Setting' page and set encryption key before activating this function."}
                     />
                 }
-                <Radio toggle defaultChecked={encrypt} disabled={true} onChange={() => toggleEncrypt()}/>
+                <Radio toggle defaultChecked={encrypt} disabled={true} />
               </Card.Content>
             </Card>
           }
+          <div className="toggle-options" onClick={() => toggleShowOptions()}>{showOptions ? 'Put Away' : 'See More'}</div>
         </Card.Group>
         {
           errorText &&
@@ -317,6 +320,15 @@ export default React.memo<Props>(styled(UploadModal)`
 
   .ui.cards > .card:first-child {
     margin-top: 1rem !important;
+  }
+
+  .toggle-options {
+    cursor: pointer;
+    font-size: 10px;
+    color: #999999;
+    line-height: 14px;
+    margin-top: 8px;
+    margin-left: 1.51rem;
   }
 
   .actions {
