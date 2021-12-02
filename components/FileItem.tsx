@@ -3,6 +3,7 @@ import axios from "axios";
 import { saveAs } from 'file-saver';
 import filesize from "filesize";
 import _ from 'lodash';
+import { useRouter } from "next/router";
 import React, { useCallback, useContext, useMemo } from "react";
 import { Icon, Popup, Table } from "semantic-ui-react";
 import styled from "styled-components";
@@ -12,8 +13,9 @@ import { decryptFile } from "../lib/crypto/encryption";
 import { WrapUserCrypto } from "../lib/crypto/useUserCrypto";
 import { useCall } from "../lib/hooks/useCall";
 import { useClipboard } from "../lib/hooks/useClipboard";
+import { ShareOptions } from "../lib/types";
 import { useAuthGateway } from "../lib/useAuth";
-import { shortStr } from "../lib/utils";
+import { shortStr, strToHex } from "../lib/utils";
 import { SaveFile } from "../lib/wallet/types";
 import Btn from "./Btn";
 
@@ -94,6 +96,17 @@ function FileItem(props: Props) {
     }
   }, [uc, file, endpoints])
   const _onClickCopy = useCallback(() => copy(createUrl(file, endpoints)), [file, endpoints])
+  const r = useRouter()
+  const _onClickShare = () => {
+    const options: ShareOptions = {
+      name: file.Name,
+      encrypted: file.Encrypted,
+      gateway: file.UpEndpoint,
+    }
+    const str = strToHex(JSON.stringify(options))
+    r.push(`${window.location.origin}/files/share?cid=${file.Hash}&options=${str}`)
+  }
+
   const queryFileApi = api && api.query?.market && api.query?.market.files
   const hasQueryFileApi = !!queryFileApi
   const stat = useCall<{ isEmpty: boolean } | undefined | null>(queryFileApi, [file.Hash])
@@ -203,8 +216,8 @@ function FileItem(props: Props) {
 
     </Table.Cell>
     {
-      isPublic && <Table.Cell textAlign={"center"}>
-        <Btn className="item-share-btn">Share</Btn>
+      isPublic && !file.items && <Table.Cell textAlign={"center"}>
+        <Btn className="item-share-btn" onClick={_onClickShare}>Share</Btn>
       </Table.Cell>}
   </Table.Row>
 }
