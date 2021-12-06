@@ -1,7 +1,8 @@
-import React, { useCallback } from "react";
-import { Grid, Menu, Segment, Sidebar } from 'semantic-ui-react'
-import { useRouter } from "next/router";
 import classNames from "classnames";
+import _ from 'lodash';
+import { useRouter } from "next/router";
+import React, { useCallback, useMemo } from "react";
+import { Grid, Menu, Segment, Sidebar } from 'semantic-ui-react';
 import styled from "styled-components";
 import Logo from "./Logo";
 
@@ -27,6 +28,7 @@ const menus: MenuInfo[] = [
   { path: "/files/vault", name: 'Vault' },
   { path: "/setting", icon: "cru-fo-settings", name: 'Settings' },
   { path: "/docs", icon: "cru-fo-file-text", name: 'Docs' },
+  { path: "/share-earn", icon: "cru-fo-share-2", name: 'Share-and-Earn' },
   { path: "/user", icon: "cru-fo-user", name: 'Premium User' },
 ]
 
@@ -37,7 +39,7 @@ function SideLayout(props: Props) {
     if (m.path !== props.path)
       r.push(m.path)
   }, [props.path])
-
+  const shareEarnIndex = useMemo(() => _.findIndex(menus, m => m.path === '/share-earn'), [])
   const isActive = (info: MenuInfo) => props.path === info.path
   const isActive2 = (info: MenuInfo) => props.path.startsWith(info.path) && info.isParent
 
@@ -71,10 +73,9 @@ function SideLayout(props: Props) {
             }
           </Menu>
         </Grid.Row>
-        <Grid.Row columns={1}>
-            
-        </Grid.Row>
       </Grid>
+      <div className="flex1" />
+      <img className="share_earn" onClick={() => _onTabClick({}, { index: shareEarnIndex })} src="/images/share_earn.png" />
     </Sidebar>
 
     <Sidebar.Pusher>
@@ -85,15 +86,23 @@ function SideLayout(props: Props) {
 
 const sideWidth = '15.7rem'
 export default React.memo<Props>(styled(SideLayout)`
-  overflow: hidden;
   height: 100vh;
   background: white;
+  overflow-y: auto;
 
   .ui.sidebar {
+    padding: unset !important;
     background: #F5F5F5;
     box-shadow: unset !important;
     width: ${sideWidth};
-
+    min-height: 821px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    .ui.grid {
+      margin: unset !important;
+      width: 100%;
+    }
     .logoPanel {
       padding: 4.7rem 0;
 
@@ -136,11 +145,19 @@ export default React.memo<Props>(styled(SideLayout)`
         }
       }
     }
+
+    .share_earn {
+      cursor: pointer;
+      width: 15rem;
+      height: auto;
+      margin-bottom: 1rem;
+    }
   }
 
   .pusher {
     width: calc(100vw - ${sideWidth});
     height: 100vh;
+    min-height: 821px;
     transform: translate3d(${sideWidth}, 0, 0) !important;
     overflow: auto !important;
     background: white;

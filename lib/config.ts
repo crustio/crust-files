@@ -74,3 +74,5 @@ export function createAuthIpfsPinner(t: TFunction): AuthIpfsPinner[] {
 }
 
 export const MOBILE_WIDTH = 960;
+
+export const BASE_API = 'https://files-api.decoo.io'

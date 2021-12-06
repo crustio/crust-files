@@ -29,8 +29,9 @@ export default function Redirect(props: { children: any }) {
     router.replace('/')
     return null
   }
+  
   if (wUser.account && (router.pathname === '' || router.pathname === '/')) {
-    router.replace('/files')
+    router.replace(`/home/${window.location.search}`)
     return null
   }
   return props.children;

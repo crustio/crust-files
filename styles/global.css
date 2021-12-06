@@ -66,6 +66,10 @@ img {
     height: 100vh;
 }
 
+.flex1 {
+    flex: 1;
+}
+
 .font-sans-regular {
     font-family: OpenSans-Regular, -apple-system, BlinkMacSystemFont, sans-serif !important;
 }

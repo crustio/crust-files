@@ -9,6 +9,7 @@ import { initReactI18next } from "react-i18next";
 import 'semantic-ui-css/semantic.min.css';
 import { Container, Dimmer, Loader } from "semantic-ui-react";
 import AlertMessage from "../components/AlertMessage";
+import { GetNickname } from '../components/GetNickname';
 import Layout, { siteTitle } from "../components/layout";
 import Redirect from "../components/Redirect";
 import { AppProvider, AppType } from '../lib/AppContext';
@@ -40,16 +41,16 @@ function initI18n() {
   return init;
 }
 
-export default function App({Component, pageProps}: AppProps) {
+export default function App({ Component, pageProps }: AppProps) {
   const wUser = useLoginUser()
   const init = initI18n()
   const alert = initAlert()
   const api = initApi()
   const loading = initLoading()
-  const appType = useMemo<AppType>(() => ({alert, api, loading}), [alert, api, loading])
+  const appType = useMemo<AppType>(() => ({ alert, api, loading }), [alert, api, loading])
   if (!init || wUser.isLoad) return <Container className="hFull">
     <Dimmer active inverted>
-      <Loader size='large' inverted content="Loading"/>
+      <Loader size='large' inverted content="Loading" />
     </Dimmer>
   </Container>
   return <ContextWrapLoginUser.Provider value={wUser}>
@@ -60,12 +61,13 @@ export default function App({Component, pageProps}: AppProps) {
       <Redirect>
         <Layout>
           <Component {...pageProps} />
+          <GetNickname />
           <Dimmer active={loading.isLoading} inverted>
-            <Loader size='large' inverted content="Loading"/>
+            <Loader size='large' inverted content="Loading" />
           </Dimmer>
         </Layout>
       </Redirect>
-      <AlertMessage/>
+      <AlertMessage />
     </AppProvider>
 
   </ContextWrapLoginUser.Provider>

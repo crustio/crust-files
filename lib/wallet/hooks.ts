@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { Dispatch, SetStateAction, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import store from 'store';
 import { SaveFile } from './types';
 import { FlowM } from './Flow';
@@ -39,11 +39,13 @@ export class LoginUser {
   wallet: 'crust' | 'polkadot-js' | 'metamask' | 'metamask-Moonriver' | 'metamask-Polygon' |
     'near' | 'flow' | 'solana' | 'elrond' | 'wallet-connect';
   key?: KEYS = 'files:login';
-  nickName?: string;
-  userType?: string;
+
 }
 
 export interface WrapLoginUser extends LoginUser {
+  nickName?: string;
+  setNickName: Dispatch<SetStateAction<string>>;
+  userType?: string;
   isLoad: boolean
   accounts?: string[]
   setLoginUser: (u: LoginUser) => void
@@ -176,6 +178,8 @@ const defLoginUser: LoginUser = { account: '', wallet: 'crust', key: 'files:logi
 export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
   const [account, setAccount] = useState<LoginUser>(defLoginUser);
   const [accounts, setAccounts] = useState<WrapLoginUser['accounts']>()
+  const [nickName, setNickName] = useState('')
+
   const [isLoad, setIsLoad] = useState(true);
   const crust = useMemo(() => new Crust(), [])
   const polkadotJs = useMemo(() => new PolkadotJs(), [])
@@ -329,6 +333,8 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
       solana,
       elrond,
       walletConnect,
+      nickName,
+      setNickName
     };
 
     // if (window.location.hostname === 'localhost') {
@@ -338,7 +344,7 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
     // }
 
     return wrapLoginUser;
-  }, [account, accounts, isLoad, setLoginUser, logout, crust, polkadotJs, metamask, near, flow, solana, walletConnect, key]);
+  }, [account, accounts, isLoad, setLoginUser, logout, crust, polkadotJs, metamask, near, flow, solana, walletConnect, nickName, key]);
   const uSign = useSign(wUser);
   wUser.sign = uSign.sign;
   return wUser;
