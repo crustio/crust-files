@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Segment } from "semantic-ui-react";
 import styled from "styled-components";
@@ -8,7 +8,11 @@ import { MCard } from '../components/MCard';
 import SideLayout from "../components/SideLayout";
 import User from "../components/User";
 import { useUserCrypto } from "../lib/crypto/useUserCrypto";
-import { useFiles } from "../lib/wallet/hooks";
+import { useClaimRewards } from "../lib/hooks/useClaimRewards";
+import { useGet } from "../lib/hooks/useGet";
+import { getDeposit, getReward } from "../lib/http/share_earn";
+import { trimZero } from "../lib/utils";
+import { useContextWrapLoginUser, useFiles } from "../lib/wallet/hooks";
 
 export interface Props {
   className?: string
@@ -19,13 +23,27 @@ type FunInputFile = (e: React.ChangeEvent<HTMLInputElement>) => void
 function Index(props: Props) {
   const { className } = props
   const { t } = useTranslation()
-  const uc = useUserCrypto()
-  const wFiles = useFiles();
+  const user = useContextWrapLoginUser()
+  const isCrust = user.wallet === 'crust'
+  const [deposit, doGetDeposit] = useGet(() => getDeposit(user.account), [user.account])
+  const hasDeposit = deposit && deposit.deposit && deposit.deposit.id
+  const isPremiumUser = isCrust && ((user.member && user.member.member_state === 1) || hasDeposit)
+  // const isPremiumUser = true;
+  const uClaimRewards = useClaimRewards()
+  const _clickClaimRewards = () => {
+    uClaimRewards.start()
+  }
+  const [reward, doGetReward] = useGet(() => getReward(user.account), [user.account])
+  useEffect(() => { doGetReward() }, [uClaimRewards.finish])
+  const hasReward = reward && reward.pendingReward
+  const totalRewards = useMemo(() => trimZero(`${reward?.pendingReward || '0'}`), [reward])
+  const claimedRewards = useMemo(() => trimZero(`${reward?.claimedReward || '0'}`), [reward])
+  const validCount = useMemo(() => reward && reward.totalInvition, [reward])
+  const onGoingClaim = uClaimRewards.finish || (reward && reward.claimOngoing)
+  const disabledClaimRewards = !uClaimRewards.ready || !hasReward || onGoingClaim
+  const _clickGetPremium = () => {
 
-  const _clickClaimRewards = useCallback(() => {
-
-  }, [wFiles, uc]);
-
+  }
   return <SideLayout path={'/share-earn'}>
     <Segment basic className={className}>
       <User />
@@ -52,18 +70,34 @@ function Index(props: Props) {
             title="Get Crust Wallet and CRU"
           />
         </MCard>
-        <MCard>
-          <div className="title font-sans-semibold">
-            {t('My REwards')}
-          </div>
-          <div className="text font-sans-regular">
-            Total Rewards : <span className="b-text">{"3.2CRU"}</span>
-            Valid Invition : <span className="b-text">{0}</span>
-          </div>
-          <div className={'btns mbtns'}>
-            <Btn content={t('Claim Rewards')} onClick={_clickClaimRewards} />
-          </div>
-        </MCard>
+        {
+          isPremiumUser && <MCard>
+            <div className="title font-sans-semibold">
+              {t('My REwards')}
+            </div>
+            <div className="text font-sans-regular">
+              Pending Claim Rewards : <span className="b-text">{`${totalRewards} CRU`}</span>
+              Claimed Rewards : <span className="b-text">{`${claimedRewards} CRU`}</span>
+              Valid Invition : <span className="b-text">{validCount}</span>
+            </div>
+            <div className={'btns mbtns'}>
+              <Btn content={t(onGoingClaim ? 'Ongoing Claim...' : 'Claim Rewards')} disabled={disabledClaimRewards} onClick={_clickClaimRewards} />
+              {onGoingClaim && <span className="tip">Claim will be done on a daily basis, please check your balance in 24 hours.</span>}
+            </div>
+          </MCard>}
+        {
+          !isPremiumUser && <MCard>
+            <div className="title font-sans-semibold">
+              {t('My REwards')}
+            </div>
+            <div className="text font-sans-regular">
+              Total Rewards : <span className="b-text">{`${totalRewards} CRU`}</span>
+              Valid Invition : <span className="b-text">{validCount}</span>
+            </div>
+            <div className={'btns mbtns'}>
+              <Btn content={t('Get Premium')} onClick={_clickGetPremium} />
+            </div>
+          </MCard>}
       </Segment>
     </Segment>
   </SideLayout>
@@ -111,6 +145,11 @@ export default React.memo<Props>(styled(Index)`
       .mbtns {
         button {
           min-width: 16.428571rem;
+        }
+        .tip {
+          margin-left: 9px;
+          font-size: 10px;
+          color: #999999;
         }
       }
     }

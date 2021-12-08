@@ -8,6 +8,7 @@ import TypeIt from "typeit-react";
 import BgAnim from '../components/effect/BgAnim';
 import Logo from "../components/Logo";
 import { AppContext } from "../lib/AppContext";
+import { CrustWalletDownUrl } from "../lib/config";
 import useParallax from "../lib/hooks/useParallax";
 import { nearConfig } from "../lib/wallet/config";
 import { LoginUser, useContextWrapLoginUser } from "../lib/wallet/hooks";
@@ -89,7 +90,7 @@ function Home({ className }: { className?: string }) {
   }, [user, t])
 
   const _onClickCrustDown = useCallback(() => {
-    window.open('https://chrome.google.com/webstore/detail/crust-wallet/jccapkebeeiajkkdemacblkjhhhboiek', '_blank')
+    window.open(CrustWalletDownUrl, '_blank')
   }, [])
 
   const _onClickCrustGetCru = useCallback(() => {

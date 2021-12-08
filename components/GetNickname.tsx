@@ -4,6 +4,7 @@ import _ from 'lodash';
 import React, { ChangeEvent, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { useApp } from "../lib/AppContext";
+import { checkNickName, getNickNameByAccount, setMyNickName } from '../lib/http/share_earn';
 import { useContextWrapLoginUser } from "../lib/wallet/hooks";
 import { BaseProps } from "./types";
 
@@ -13,22 +14,35 @@ function _GetNickname(props: BaseProps) {
 
     const { loading } = useApp()
     const wUser = useContextWrapLoginUser()
+    const { account, wallet } = wUser
     useEffect(() => {
-        if (wUser.account && wUser.wallet === 'crust') {
+        if (account && wallet === 'crust') {
+            wUser.setNickName('')
             loading.show()
-            // check register
-            wUser.setNickName('123')
-            loading.hide()
+            getNickNameByAccount(account)
+                .then(name => wUser.setNickName(name))
+                .catch(console.error)
+                .then(loading.hide)
         }
-    }, [wUser.account, wUser.wallet, loading])
+    }, [account, wallet])
 
     const [nickName, setNickName] = useState("")
     const _onChange = (e: ChangeEvent<HTMLInputElement>) => {
         setNickName(e.target.value)
     }
-    const _onClickContinue = () => {
+    const _onClickContinue = async () => {
         if (nickStat !== 1) return
-        wUser.setNickName(nickName)
+        try {
+            const msg = wUser.account
+            const signature = await wUser.sign(msg, wUser.account)
+            const perSignData = `crust-${msg}:${signature}`;
+            const base64Signature = window.btoa(perSignData);
+            const member = await setMyNickName(nickName, base64Signature)
+            wUser.setMember(member)
+            wUser.setNickName(member.nick_name)
+        } catch (e) {
+            setErrorInfo('Register Error')
+        }
     }
     //check nickname  (0: init)(-1: false)(1: true)
     const [nickStat, setNickStat] = useState(0)
@@ -37,15 +51,25 @@ function _GetNickname(props: BaseProps) {
     const doCheckNickName = useMemo(() => {
         let task: CancelTokenSource = null
         return _.debounce((nickName: string) => {
-            if (task) task.cancel
+            if (nickName) {
+                const length = nickName.length
+                if (length < 6 || length > 32) {
+                    setNickStat(-1)
+                    setErrorInfo('Nickname length need 6-32')
+                    return
+                }
+            }
+            try {
+                if (task) task.cancel()
+            } catch (error) {
+                console.info(error)
+            }
             task = axios.CancelToken.source()
-            if (nickName === "123") {
-                setNickStat(1)
-            }
-            if (nickName === "1") {
-                setNickStat(-1)
-                setErrorInfo('This name is occupied, try another one.')
-            }
+            checkNickName(nickName, { cancelToken: task.token })
+                .then(valid => {
+                    setNickStat(valid ? 1 : -1)
+                    if (!valid) setErrorInfo('This name is occupied, try another one.')
+                })
         }, 300)
     }, [])
 
@@ -53,7 +77,7 @@ function _GetNickname(props: BaseProps) {
         setErrorInfo('')
         if (nickName) doCheckNickName(nickName)
     }, [nickName])
-    const showGetNickname = wUser.account && wUser.wallet === 'crust' && !wUser.nickName
+    const showGetNickname = !wUser.member && wUser.account && wUser.wallet === 'crust' && !wUser.nickName
     if (!showGetNickname) return null
     return <div className={className} onClick={() => { }}>
         <img className="logo" src="/images/logo_12x.png" />

@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import FileSaver from 'file-saver';
-import React, { useCallback, useContext, useRef } from "react";
+import React, { useCallback, useContext, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Accordion, AccordionContent, AccordionTitle, Segment } from "semantic-ui-react";
 import styled from "styled-components";
@@ -43,6 +43,11 @@ function Index(props: Props) {
   const [showFileEncryption, toggleFileEncryption] = useToggle()
   const copy = useClipboard()
   const user = useContextWrapLoginUser()
+  const userType = useMemo(() => {
+    if(user.member && user.member.member_state === 1) return 'Premium'
+    return 'Trial' 
+  }, [user])
+  const isCrust = user.wallet === 'crust'
   const wFiles = useFiles();
 
   const importInputRef = useRef<HTMLInputElement>(null);
@@ -149,12 +154,12 @@ function Index(props: Props) {
           <div className="text font-sans-regular">
             {`${t('Nick Name:')} `}
             {user.nickName && <span className="bold-text font-sans-semibold">{user.nickName}</span>}
-            {!user.nickName && <a className="" target="_blank" href="https://hhhhhh" rel="noreferrer">Get a Nick Name</a>}
+            {!isCrust && <a className="" target="_blank" href="https://hhhhhh" rel="noreferrer">Get a Nick Name</a>}
           </div>
           <div className="text font-sans-regular">
             {`${t('User Type:')} `}
-            {<span className="bold-text font-sans-semibold">{user.userType}</span>}
-            {!user.userType && <a target="_blank" href="https://hhhhh" rel="noreferrer">Get a Premium</a>}
+            {isCrust && <span className="bold-text font-sans-semibold">{userType}</span>}
+            {!isCrust && <a target="_blank" href="https://hhhhh" rel="noreferrer">Get a Premium</a>}
           </div>
         </Segment>
         <Segment basic className={"mcard"}>

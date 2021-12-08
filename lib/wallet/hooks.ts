@@ -10,6 +10,8 @@ import { PolkadotJs } from "./PolkadotJs";
 import { Elrond } from "./Elrond";
 import { useRouter } from "next/router";
 import { MWalletConnect } from "./MWalletConnect";
+import { Member } from '../http/types';
+import { getMemberByAccount } from '../http/share_earn';
 
 // eslint-disable-next-line
 const fcl = require('@onflow/fcl');
@@ -45,7 +47,8 @@ export class LoginUser {
 export interface WrapLoginUser extends LoginUser {
   nickName?: string;
   setNickName: Dispatch<SetStateAction<string>>;
-  userType?: string;
+  member?: Member;
+  setMember: Dispatch<SetStateAction<Member>>
   isLoad: boolean
   accounts?: string[]
   setLoginUser: (u: LoginUser) => void
@@ -179,6 +182,7 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
   const [account, setAccount] = useState<LoginUser>(defLoginUser);
   const [accounts, setAccounts] = useState<WrapLoginUser['accounts']>()
   const [nickName, setNickName] = useState('')
+  const [member, setMember] = useState<Member>()
 
   const [isLoad, setIsLoad] = useState(true);
   const crust = useMemo(() => new Crust(), [])
@@ -217,8 +221,13 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
         crust.init().then(() => crust.getAccounts())
           .then((accounts) => {
             if (accounts.includes(f.account)) {
-              setAccounts(accounts)
-              setAccount(f)
+              return getMemberByAccount(f.account)
+                .then(setMember)
+                .catch(console.error)
+                .then(() => {
+                  setAccounts(accounts)
+                  setAccount(f)
+                })
             }
           })
           .then(() => setIsLoad(false))
@@ -334,17 +343,16 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
       elrond,
       walletConnect,
       nickName,
-      setNickName
+      setNickName,
+      setMember,
+      member,
     };
-
-    // if (window.location.hostname === 'localhost') {
-    //   // eslint-disable-next-line
-    //   // @ts-ignore
-    //   window.wrapLU = wrapLoginUser;
-    // }
-
     return wrapLoginUser;
-  }, [account, accounts, isLoad, setLoginUser, logout, crust, polkadotJs, metamask, near, flow, solana, walletConnect, nickName, key]);
+  }, [
+    account, accounts, isLoad, setLoginUser, logout,
+    crust, polkadotJs, metamask, near, flow, solana,
+    walletConnect, nickName, member, key
+  ]);
   const uSign = useSign(wUser);
   wUser.sign = uSign.sign;
   return wUser;
