@@ -1,10 +1,10 @@
 # Share-and-Earn
 
 <font size={6}>Share files to your friends and invite them to use Crust Files.</font>
-<BR/>
+
 <font size={6}>Enjoy and Earn $CRU !!!</font>
 
-Basically:
+## Basically:
 1. Share files to your friends and invite them to use Crust Files.
 2. For every effective invitation (as your friend becomes a Premium User), you get <font color="red">**1 $CRU**</font> reward.
 

@@ -77,7 +77,7 @@ export function useDeposit(dest: string, value: string, share_from?: string): Us
         // console.info('human', batch.toHuman(), batch.toJSON())
         const statusCb: Callback<ISubmittableResult> = (res) => {
             api.setSigner(undefined)
-            if (res.status.isInBlock) {
+            if (res.status.isFinalized) {
                 // const blockHash = res.status.asInBlock.toString()
                 // signature = batch.signature.toString()
                 // const exHash = batch.hash.toString()
@@ -150,7 +150,7 @@ export function useClaim(): UseClaim {
         }))
         const statusCb: Callback<ISubmittableResult> = (res) => {
             api.setSigner(undefined)
-            if (res.status.isInBlock) {
+            if (res.status.isFinalized) {
                 // const blockHash = res.status.asInBlock.toString()
                 // signature = ex.signature.toString()
                 // const exHash = ex.hash.toString()

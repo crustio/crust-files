@@ -11,7 +11,7 @@ import { CrustWalletDownUrl } from '../lib/config';
 import { useClaim, useDeposit } from "../lib/hooks/useDeposit";
 import { useGet } from "../lib/hooks/useGet";
 import { getAccountByNickName, getDeposit, getDepositAddress, getShareEarnConfig } from "../lib/http/share_earn";
-import { formatCRU } from '../lib/utils';
+import { formatCRU, trimZero } from '../lib/utils';
 import { useContextWrapLoginUser } from "../lib/wallet/hooks";
 export interface Props {
   className?: string
@@ -57,12 +57,12 @@ function Index(props: Props) {
   const fValue = useMemo(() => formatCRU(value), [value])
   const fCalimValue = useMemo(() => {
     if (!hasDeposit) return '-'
-    const s = new Date().getSeconds()
+    const s = new Date().getTime() / 1000
     // 提前赎回
-    if (deposit.deposit.expire_timestamp <= s) {
-      return formatCRU(deposit.deposit.claim_amount)
+    if (deposit.deposit.expire_timestamp > s) {
+      return trimZero(deposit.deposit.claim_amount)
     }
-    return formatCRU(deposit.deposit.deposit_amount)
+    return trimZero(deposit.deposit.deposit_amount)
   }, [hasDeposit])
   const guaranteeAmount = useMemo(() => formatCRU(config?.guaranteeAmount || ''), [config])
   const guaranteeDiscountWithReferer = useMemo(() => formatCRU(config?.guaranteeDiscountWithReferer || ''), [config])
@@ -85,8 +85,22 @@ function Index(props: Props) {
   }, [config, shareFrom])
 
   const uDeposit = useDeposit(dest, value, shareFrom)
-  useEffect(() => { doGetDeposit() }, [uDeposit.finish])
   const uClaim = useClaim()
+  useEffect(() => {
+    let task
+    if (uDeposit.finish || uClaim.finish) {
+      let count = 3
+      task = setInterval(() => {
+        if (count <= 0) {
+          clearInterval(task)
+          return;
+        }
+        count -= 1;
+        doGetDeposit()
+      }, 5000)
+    }
+    return () => task && clearInterval(task)
+  }, [uDeposit.finish, uClaim.finish])
   const onGoingDeposit = uDeposit.finish || (deposit && deposit.depositOngoing)
   const disabledDeposit = !uDeposit.ready || !value || onGoingDeposit
   const onGoingClaim = uClaim.finish || (deposit && deposit.claimOngoing)

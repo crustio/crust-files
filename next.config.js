@@ -1,11 +1,16 @@
-const remarkParse = require('remark-parse')
+// const remarkParse = require('remark-parse')
+// const remarkGfm = require.resolve('remark-gfm')
+// const remarkHtml = require.resolve('remark-html')
+// import remarkParse from 'remark-parse';
+// import remarkGfm from 'remark-gfm';
+// import remarkHtml from 'remark-html';
 
 const withMDX = require('@next/mdx')({
   extension: /\.(md|mdx)$/,
-  options: {
-    remarkPlugins: [remarkParse],
-    rehypePlugins: [],
-  },
+  // options: {
+  //   remarkPlugins: [],
+  //   rehypePlugins: [],
+  // },
 })
 
 module.exports = withMDX({
@@ -23,6 +28,10 @@ module.exports = withMDX({
     return config
   },
   trailingSlash: true,
+  experimental: {
+    // ssr and displayName are configured by default
+    styledComponents: true,
+  },
   // mdx 
   pageExtensions: ['js', 'tsx', 'md', 'mdx'],
 })

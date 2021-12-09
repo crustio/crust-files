@@ -24,7 +24,7 @@ export interface DepositDTO {
     deposit_amount: string,
     claim_amount: string,
     share_from: string,
-    deposit_state: number,
+    deposit_state: number,// 1 deposited, 2 pendingRedeem
     expire_timestamp: number
 }
 
