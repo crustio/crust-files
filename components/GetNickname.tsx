@@ -4,7 +4,7 @@ import _ from 'lodash';
 import React, { ChangeEvent, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { useApp } from "../lib/AppContext";
-import { checkNickName, getNickNameByAccount, setMyNickName } from '../lib/http/share_earn';
+import { checkNickName, getMemberByAccount, getNickNameByAccount, setMyNickName } from '../lib/http/share_earn';
 import { useContextWrapLoginUser } from "../lib/wallet/hooks";
 import { BaseProps } from "./types";
 
@@ -14,12 +14,16 @@ function _GetNickname(props: BaseProps) {
 
     const { loading } = useApp()
     const wUser = useContextWrapLoginUser()
-    const { account, wallet } = wUser
+    const { account, wallet, member } = wUser
     useEffect(() => {
         if (account && wallet === 'crust') {
             wUser.setNickName('')
+            wUser.setMember(undefined)
             loading.show()
-            getNickNameByAccount(account)
+            getMemberByAccount(account)
+                .then(wUser.setMember)
+                .catch(console.error)
+                .then(() => getNickNameByAccount(account))
                 .then(name => wUser.setNickName(name))
                 .catch(console.error)
                 .then(loading.hide)
@@ -77,7 +81,8 @@ function _GetNickname(props: BaseProps) {
         setErrorInfo('')
         if (nickName) doCheckNickName(nickName)
     }, [nickName])
-    const showGetNickname = !wUser.member && wUser.account && wUser.wallet === 'crust' && !wUser.nickName
+
+    const showGetNickname = _.isEmpty(member) && account && wallet === 'crust' && !wUser.nickName
     if (!showGetNickname) return null
     return <div className={className} onClick={() => { }}>
         <img className="logo" src="/images/logo_12x.png" />

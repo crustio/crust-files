@@ -45,7 +45,7 @@ export function useDeposit(dest: string, value: string, share_from?: string): Us
         if (!api) return;
         if (!user.crust.wallet) return;
         setReady(true)
-    }, [api, user, dest])
+    }, [api, user, dest, value])
     const start = () => {
         if (!ready) return
         // if (onGoing) return
@@ -63,7 +63,8 @@ export function useDeposit(dest: string, value: string, share_from?: string): Us
         }
         api.setSigner(signer)
         // setOnGoing(true)
-        const amount = strToBn(value).toString()
+        // const amount = strToBn(value).toString()
+        const amount = value
         console.info('deposit:', dest, value, amount)
         const tx = api.tx.balances.transfer(dest, amount)
         const remark = api.tx.system.remark(JSON.stringify({

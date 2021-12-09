@@ -55,7 +55,7 @@ export const trimZero = (str: string): string => {
 
 export const formatCRU = (cru: string | BN): string => {
   if(!cru) return '-'
-  const f = formatBalance(cru, { decimals: 12, forceUnit: "Unit", withSi: false }, 12)
+  const f = formatBalance(cru, { decimals: 12, forceUnit: "Unit", withSi: false })
   return trimZero(f)
 }
 // window._formatCRU = formatCRU

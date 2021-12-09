@@ -1,5 +1,5 @@
 import axios, { AxiosResponse, AxiosRequestConfig } from 'axios';
-import { CommonResponse, Deposit, Member, Reward } from './types';
+import { CommonResponse, Deposit, Member, Reward, ShareEarnConfig } from './types';
 import _ from 'lodash';
 
 const base_url = 'https://files-api.decoo.io'
@@ -73,6 +73,11 @@ export function getShareAndEarnPerUserReward(): Promise<string> {
 export function getPreclaimPercentage(): Promise<number> {
     return axios.get<CommonResponse<any>>(createUrl('/common/preclaimPercentage'))
         .then(getData).then(data => new Number(data.value as string).valueOf())
+}
+
+export function getShareEarnConfig() {
+    return axios.get<CommonResponse<ShareEarnConfig>>(createUrl('/common/configs'))
+        .then(getData)
 }
 
 // Deposit address

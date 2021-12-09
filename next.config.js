@@ -1,4 +1,14 @@
-module.exports = {
+const remarkParse = require('remark-parse')
+
+const withMDX = require('@next/mdx')({
+  extension: /\.(md|mdx)$/,
+  options: {
+    remarkPlugins: [remarkParse],
+    rehypePlugins: [],
+  },
+})
+
+module.exports = withMDX({
   webpack: (config) => {
     config.resolve.fallback = {
       crypto: require.resolve('crypto-browserify'),
@@ -13,4 +23,6 @@ module.exports = {
     return config
   },
   trailingSlash: true,
-}
+  // mdx 
+  pageExtensions: ['js', 'tsx', 'md', 'mdx'],
+})

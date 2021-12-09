@@ -40,3 +40,11 @@ export interface Reward {
     pendingReward: string,
     claimedReward: string
 }
+
+export interface ShareEarnConfig {
+    guaranteeAmount: string // 原价 
+    guaranteeDiscountWithReferer: string // 邀请码价
+    guaranteePeriod: string // 过期秒数
+    preclaimPercentage: string // 提前赎回比例
+    shareAndEarnPerUserReward: string // 每邀请获利
+}

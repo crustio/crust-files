@@ -1,17 +1,16 @@
+import { useRouter } from "next/router";
 import React, { Dispatch, SetStateAction, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import store from 'store';
-import { SaveFile } from './types';
+import { Member } from '../http/types';
+import { Crust } from './Crust';
+import { Elrond } from "./Elrond";
 import { FlowM } from './Flow';
 import { Metamask } from './Metamask';
-import { NearM } from './Near';
-import { SolanaM } from './SolanaM';
-import { Crust } from './Crust'
-import { PolkadotJs } from "./PolkadotJs";
-import { Elrond } from "./Elrond";
-import { useRouter } from "next/router";
 import { MWalletConnect } from "./MWalletConnect";
-import { Member } from '../http/types';
-import { getMemberByAccount } from '../http/share_earn';
+import { NearM } from './Near';
+import { PolkadotJs } from "./PolkadotJs";
+import { SolanaM } from './SolanaM';
+import { SaveFile } from './types';
 
 // eslint-disable-next-line
 const fcl = require('@onflow/fcl');
@@ -221,13 +220,8 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
         crust.init().then(() => crust.getAccounts())
           .then((accounts) => {
             if (accounts.includes(f.account)) {
-              return getMemberByAccount(f.account)
-                .then(setMember)
-                .catch(console.error)
-                .then(() => {
-                  setAccounts(accounts)
-                  setAccount(f)
-                })
+              setAccounts(accounts)
+              setAccount(f)
             }
           })
           .then(() => setIsLoad(false))

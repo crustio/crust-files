@@ -6,7 +6,7 @@ import { Grid, Menu, Segment, Sidebar } from 'semantic-ui-react';
 import styled from "styled-components";
 import Logo from "./Logo";
 
-type Path = '/files' | '/docs' | '/setting' | '/home' | '/files/vault' | '/share-earn' | '/user'
+type Path = '/files' | '/setting' | '/home' | '/files/vault' | '/share-earn' | '/user'
 
 export interface Props {
   className?: string
@@ -27,7 +27,7 @@ const menus: MenuInfo[] = [
   { path: "/files", name: 'Public' },
   { path: "/files/vault", name: 'Vault' },
   { path: "/setting", icon: "cru-fo-settings", name: 'Settings' },
-  { path: "/docs", icon: "cru-fo-file-text", name: 'Docs' },
+  // { path: "/docs", icon: "cru-fo-file-text", name: 'Docs' },
   { path: "/share-earn", icon: "cru-fo-share-2", name: 'Share-and-Earn' },
   { path: "/user", icon: "cru-fo-user", name: 'Premium User' },
 ]

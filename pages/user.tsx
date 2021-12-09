@@ -1,3 +1,4 @@
+import { format } from 'date-fns';
 import _ from 'lodash';
 import React, { useEffect, useMemo, useState } from "react";
 import { Segment } from "semantic-ui-react";
@@ -6,12 +7,11 @@ import Btn from "../components/Btn";
 import { MCard } from "../components/MCard";
 import SideLayout from "../components/SideLayout";
 import User from "../components/User";
-import { useApp } from '../lib/AppContext';
 import { CrustWalletDownUrl } from '../lib/config';
 import { useClaim, useDeposit } from "../lib/hooks/useDeposit";
 import { useGet } from "../lib/hooks/useGet";
-import { getAccountByNickName, getDeposit, getDepositAddress, getGuaranteeAmount, getGuaranteeDiscountWithReferer, getGuaranteePeriod, setMyNickName } from "../lib/http/share_earn";
-import { trimZero } from "../lib/utils";
+import { getAccountByNickName, getDeposit, getDepositAddress, getShareEarnConfig } from "../lib/http/share_earn";
+import { formatCRU } from '../lib/utils';
 import { useContextWrapLoginUser } from "../lib/wallet/hooks";
 export interface Props {
   className?: string
@@ -44,26 +44,45 @@ function Index(props: Props) {
     }, 300)
   }, [user.account])
 
+  //
   const [value, setValue] = useState<string>()
-  const [guaranteeAmount] = useGet(() => getGuaranteeAmount().then(trimZero))
-  const [guaranteeDiscountWithReferer] = useGet(() => getGuaranteeDiscountWithReferer().then(trimZero))
-  const [guaranteePeriod] = useGet(() => getGuaranteePeriod())
+  const [config] = useGet(() => getShareEarnConfig())
   const [deposit, doGetDeposit] = useGet(() => getDeposit(user.account), [user.account])
+
   const hasDeposit = deposit && deposit.deposit && deposit.deposit.id
   const showDeposit = isCrust && !hasDeposit
   const showClaim = isCrust && hasDeposit
   const isPremiumUser = isCrust && ((user.member && user.member.member_state === 1) || hasDeposit)
   const [dest] = useGet(() => getDepositAddress())
-
-  useEffect(() => {
-    if (shareFrom) {
-      if (!guaranteeDiscountWithReferer) return
-      setValue(guaranteeDiscountWithReferer)
-    } else {
-      if (!guaranteeAmount) return
-      setValue(guaranteeAmount)
+  const fValue = useMemo(() => formatCRU(value), [value])
+  const fCalimValue = useMemo(() => {
+    if (!hasDeposit) return '-'
+    const s = new Date().getSeconds()
+    // 提前赎回
+    if (deposit.deposit.expire_timestamp <= s) {
+      return formatCRU(deposit.deposit.claim_amount)
     }
-  }, [guaranteeAmount, guaranteeDiscountWithReferer, shareFrom])
+    return formatCRU(deposit.deposit.deposit_amount)
+  }, [hasDeposit])
+  const guaranteeAmount = useMemo(() => formatCRU(config?.guaranteeAmount || ''), [config])
+  const guaranteeDiscountWithReferer = useMemo(() => formatCRU(config?.guaranteeDiscountWithReferer || ''), [config])
+  const months = useMemo(() => {
+    if (!config || !showClaim) return 6
+    const s = new Number(config.guaranteePeriod).valueOf()
+    return Math.round(s / 60 / 60 / 24 / 30)
+  }, [showClaim, config])
+  const periodTime = useMemo(() => {
+    if (!hasDeposit) return '--:--:--'
+    return format(deposit.deposit.expire_timestamp * 1000, "yyyy-MM-dd")
+  }, [hasDeposit])
+  useEffect(() => {
+    if (!config) return
+    if (shareFrom) {
+      setValue(config.guaranteeDiscountWithReferer)
+    } else {
+      setValue(config.guaranteeAmount)
+    }
+  }, [config, shareFrom])
 
   const uDeposit = useDeposit(dest, value, shareFrom)
   useEffect(() => { doGetDeposit() }, [uDeposit.finish])
@@ -128,7 +147,7 @@ function Index(props: Props) {
                 onChange={_onChangeNickname} />
               <span className="input-NickError">{nickError}</span>
               <br />
-              <Btn content={onGoingDeposit ? 'Please wait for transaction finalization…' : `Deposit ${value} CRU`} disabled={disabledDeposit} onClick={_onClickDeposit} />
+              <Btn content={onGoingDeposit ? 'Please wait for transaction finalization…' : `Deposit ${fValue} CRU`} disabled={disabledDeposit} onClick={_onClickDeposit} />
               <a href="" target="_blank">How to deposit?</a>
             </div>
           </MCard>}
@@ -136,11 +155,11 @@ function Index(props: Props) {
           showClaim && <MCard>
             <div className="title font-sans-semibold">Redeem Your Deposit</div>
             <div className="text font-sans-regular">
-              You can redeem back your full deposit after 6 months from your deposit date or half of the deposit in no more than 6 months from your deposit date.<br />
-              Full Redeem on <span className="font-sans-semibold" style={{ color: '#333333' }}>2022-05-28</span> (6 months after your deposit)
+              You can redeem back your full deposit after {months} months from your deposit date or half of the deposit in no more than {months} months from your deposit date.<br />
+              Full Redeem on <span className="font-sans-semibold" style={{ color: '#333333' }}>{periodTime}</span> ({months} months after your deposit)
             </div>
             <div className={'btns mbtns'}>
-              <Btn content={onGoingClaim ? 'Ongoing Redeem...' : `Redeem ${value} CRU`} disabled={disabledClaim} onClick={_onClickClaim} />
+              <Btn content={onGoingClaim ? 'Ongoing Redeem...' : `Redeem ${fCalimValue} CRU`} disabled={disabledClaim} onClick={_onClickClaim} />
               <a href="" target="_blank">Learn more about Redeem Rules.</a>
             </div>
             {onGoingClaim && <div className="tip">Redeem will be done in less than 24 hours. Check your balance later.</div>}

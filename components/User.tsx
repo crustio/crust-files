@@ -1,11 +1,12 @@
-import React, {useCallback} from "react";
-import {Dropdown, Item, Segment} from "semantic-ui-react";
-import {useContextWrapLoginUser, WrapLoginUser} from "../lib/wallet/hooks";
-import styled from "styled-components";
-import {shortStr} from "../lib/utils";
-import {useToggle} from "../lib/hooks/useToggle";
-import ModalSelectAccount from "./ModalSelectAccount";
 import _ from 'lodash';
+import { useRouter } from "next/router";
+import React, { useCallback } from "react";
+import { Dropdown, Item, Segment } from "semantic-ui-react";
+import styled from "styled-components";
+import { useToggle } from "../lib/hooks/useToggle";
+import { shortStr } from "../lib/utils";
+import { useContextWrapLoginUser, WrapLoginUser } from "../lib/wallet/hooks";
+import ModalSelectAccount from "./ModalSelectAccount";
 
 export interface Props {
   className?: string,
@@ -47,6 +48,7 @@ function User(props: Props) {
   const user = useContextWrapLoginUser();
   const _onClickLogout = useCallback(user.logout, [user])
   const [open, toggleOpen] = useToggle()
+  const r = useRouter()
 
   return <Segment basic textAlign={"right"} className={props.className}>
     {
@@ -58,17 +60,20 @@ function User(props: Props) {
       />
     }
     <Item.Group>
-      <Item style={{justifyContent: 'flex-end'}}>
-        <Item.Image src={getWalletIcon(user)} size={'tiny'}/>
-        <Item.Content verticalAlign={"middle"} style={{flex: 'unset', paddingLeft: '0.7rem'}}>
+      <Item style={{ justifyContent: 'flex-end' }}>
+        <div className="docs" onClick={() => {r.push("/docs/CrustFiles_Welcome")}}>
+          <span className="cru-fo cru-fo-file-text" /> Docs
+        </div>
+        <Item.Image src={getWalletIcon(user)} size={'tiny'} />
+        <Item.Content verticalAlign={"middle"} style={{ flex: 'unset', paddingLeft: '0.7rem' }}>
           <Dropdown
             pointing={"top right"}
-            icon={<span className="cru-fo cru-fo-chevron-down"/>}
+            icon={<span className="cru-fo cru-fo-chevron-down" />}
             basic
             text={shortStr(user.account)}>
             <Dropdown.Menu>
-              {user.accounts && <Dropdown.Item text={'Switch Account'} onClick={() => toggleOpen()}/>}
-              <Dropdown.Item text={'Logout'} onClick={_onClickLogout}/>
+              {user.accounts && <Dropdown.Item text={'Switch Account'} onClick={() => toggleOpen()} />}
+              <Dropdown.Item text={'Logout'} onClick={_onClickLogout} />
             </Dropdown.Menu>
           </Dropdown>
         </Item.Content>
@@ -82,6 +87,21 @@ export default React.memo(styled(User)`
   margin: unset !important;
   padding: 1.3rem !important;
   width: 100%;
+
+  .docs {
+    margin-top: 20px;
+    display: inline-block;
+    color: var(--main-color);
+    height: 24px;
+    margin-right: 30px;
+    cursor: pointer;
+    font-size: 18px;
+    .cru-fo {
+      margin-right: 10px;
+    }
+    padding-right: 30px;
+    border-right: 1px solid #EEEEEE;
+  }
 
   .tiny.image {
     width: 4.3rem !important;
