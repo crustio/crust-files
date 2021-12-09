@@ -23,21 +23,21 @@ export function createAuthIpfsEndpoints(t: TFunction): AuthIpfsEndpoint[] {
     // },
     // for prod
     {
-      location: t('️2.5x speed up'),
+      location: t('️Shanghai'),
       text: t('️⚡ Thunder Gateway'),
       value: 'https://gw.crustapps.net',
       // group: "Thunder Gateway"
     },
     {
-      location: t('Singapore'),
-      text: t('DCF'),
-      value: 'https://crustipfs.xyz',
+      location: t('Seattle'),
+      text: t('⚡ Thunder Gateway'),
+      value: 'https://crustwebsites.net',
       // group: "Public Gateway"
     },
     {
-      location: t('United States'),
-      text: t('Crust Network'),
-      value: 'https://crustwebsites.net',
+      location: t('Singapore'),
+      text: t('DCF'),
+      value: 'https://crustipfs.xyz',
       // group: "Public Gateway"
     },
     {
