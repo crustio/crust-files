@@ -97,10 +97,15 @@ export default React.memo(styled(User)`
     cursor: pointer;
     font-size: 18px;
     .cru-fo {
+      position: relative;
+      top: 1px;
       margin-right: 10px;
     }
     padding-right: 30px;
     border-right: 1px solid #EEEEEE;
+    &:hover {
+      color: black;
+    }
   }
 
   .tiny.image {

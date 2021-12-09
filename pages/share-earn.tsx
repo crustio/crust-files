@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Segment } from "semantic-ui-react";
@@ -23,6 +24,7 @@ type FunInputFile = (e: React.ChangeEvent<HTMLInputElement>) => void
 function Index(props: Props) {
   const { className } = props
   const { t } = useTranslation()
+  const r = useRouter()
   const user = useContextWrapLoginUser()
   const isCrust = user.wallet === 'crust'
   const [deposit, doGetDeposit] = useGet(() => getDeposit(user.account), [user.account])
@@ -34,16 +36,29 @@ function Index(props: Props) {
     uClaimRewards.start()
   }
   const [reward, doGetReward] = useGet(() => getReward(user.account), [user.account])
-  useEffect(() => { doGetReward() }, [uClaimRewards.finish])
+  useEffect(() => {
+    let task
+    if (uClaimRewards.finish) {
+      let count = 3
+      task = setInterval(() => {
+        if (count <= 0) {
+          clearInterval(task)
+          task = null
+          return
+        }
+        count -= 1
+        doGetReward()
+      }, 5000)
+    }
+    return () => task && clearInterval(task)
+  }, [uClaimRewards.finish])
   const hasReward = reward && reward.pendingReward
   const totalRewards = useMemo(() => trimZero(`${reward?.pendingReward || '0'}`), [reward])
   const claimedRewards = useMemo(() => trimZero(`${reward?.claimedReward || '0'}`), [reward])
   const validCount = useMemo(() => reward && reward.totalInvition, [reward])
   const onGoingClaim = uClaimRewards.finish || (reward && reward.claimOngoing)
   const disabledClaimRewards = !uClaimRewards.ready || !hasReward || onGoingClaim
-  const _clickGetPremium = () => {
-
-  }
+  const _clickGetPremium = () => r.push('/docs/CrustFiles_Users')
   return <SideLayout path={'/share-earn'}>
     <Segment basic className={className}>
       <User />

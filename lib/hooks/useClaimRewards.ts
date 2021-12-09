@@ -46,7 +46,7 @@ export function useClaimRewards(): UseClaimRewards {
         }))
         const statusCb: Callback<ISubmittableResult> = (res) => {
             api.setSigner(undefined)
-            if (res.status.isInBlock) {
+            if (res.status.isFinalized) {
                 // const blockHash = res.status.asInBlock.toString()
                 // signature = ex.signature.toString()
                 // const exHash = ex.hash.toString()
