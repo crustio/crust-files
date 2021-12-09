@@ -3,18 +3,18 @@
 ## User Account and Sign-in
 
 All users are asked to sign in Crust Files with a supported crypto wallet.
-<br/>
+
 No user account. No password. Your wallet address is your unique identifier in Crust Files.
-<br/>
+
 If you have no wallet, just get a <font color="red">Crust Wallet</font>.
 
 ## User Plan
 
-There are two types of users defined by Crust Files's User Plan: <font color="blue">**Premium User**</font> and <font color="blue">**Trial User**</font>.
+There are two types of users defined by Crust Files's User Plan: <font color="blue">Premium User</font> and <font color="blue">Trial User</font>.
 
 ### Benefits
-<font color="blue">**Premium User**</font>
-<BR/>
+<font color="blue">Premium User</font>
+
 - More Space
 - Maximum Upload Size = 1GB
 - File Encryption ('Vault' Mode available)
@@ -23,8 +23,8 @@ There are two types of users defined by Crust Files's User Plan: <font color="bl
   - Place 'permanent storage oder'
 - Enjoy CRU Rewards from the 'Share-and-Earn' activity
 
-<font color="blue">**Trial User**</font>
-<BR/>
+<font color="blue">Trial User</font>
+
 - Limited Space
 - Maximum Upload Size = 40MB
 - No File Encryption ('Vault' Mode not available)

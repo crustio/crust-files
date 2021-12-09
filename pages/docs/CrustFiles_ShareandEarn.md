@@ -1,8 +1,6 @@
 # Share-and-Earn
 
-<font size={6}>Share files to your friends and invite them to use Crust Files.</font>
-
-<font size={6}>Enjoy and Earn $CRU !!!</font>
+<font size={4}>Share files to your friends and invite them to use Crust Files. Enjoy and Earn $CRU !!!</font>
 
 ## Basically:
 1. Share files to your friends and invite them to use Crust Files.
@@ -18,7 +16,7 @@ Just sign in with your crypto wallet, store a file, create a share link and give
 
 ## Prerequisites
 
-To join Share-and-Earn and get rewards, sign in with a <font color="red">Crust Wallet</font>. The activity is not open for any other wallets.
+To join Share-and-Earn and get rewards, sign in with a <font color="red">**Crust Wallet**</font>. The activity is not open for any other wallets.
 
 ## Rewards
 

@@ -45,6 +45,7 @@ function _MDocs({ Component, pageProps, className }: AppProps & BaseProps) {
 }
 
 export const MDocs = styled(_MDocs)`
+    font-family: ---apple-system, BlinkMacSystemFont, "微软雅黑", 'Open Sans', sans-serif;
     .docs_head{
         width: 100vw;
         height: 68px;
@@ -83,6 +84,7 @@ export const MDocs = styled(_MDocs)`
             }
             &.active {
                 color: #333333;
+                border-right: solid 0.2rem var(--primary-color);
                 background-color: #eeeeee;
             }
         }

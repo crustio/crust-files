@@ -1,20 +1,18 @@
-// const remarkParse = require('remark-parse')
-// const remarkGfm = require.resolve('remark-gfm')
-// const remarkHtml = require.resolve('remark-html')
-// import remarkParse from 'remark-parse';
-// import remarkGfm from 'remark-gfm';
-// import remarkHtml from 'remark-html';
+const nextMdx = require('@next/mdx')
 
-const withMDX = require('@next/mdx')({
+const withMDX = nextMdx({
   extension: /\.(md|mdx)$/,
-  // options: {
-  //   remarkPlugins: [],
-  //   rehypePlugins: [],
-  // },
+  options: {
+    remarkPlugins: [require('remark-gfm')],
+    rehypePlugins: [],
+  },
 })
 
-module.exports = withMDX({
-  webpack: (config) => {
+/**
+ * @type {import('next').NextConfig}
+ */
+const nextConfig = withMDX({
+  webpack: (config, options) => {
     config.resolve.fallback = {
       crypto: require.resolve('crypto-browserify'),
       path: require.resolve('path-browserify'),
@@ -25,6 +23,7 @@ module.exports = withMDX({
       assert: false,
       fs: false,
     }
+    // console.info("config::", config)
     return config
   },
   trailingSlash: true,
@@ -33,5 +32,8 @@ module.exports = withMDX({
     styledComponents: true,
   },
   // mdx 
-  pageExtensions: ['js', 'tsx', 'md', 'mdx'],
+  pageExtensions: ['tsx', 'md', 'mdx'],
 })
+
+// export default nextConfig
+module.exports = nextConfig
