@@ -148,7 +148,7 @@ function Index(props: Props) {
               <span className="input-NickError">{nickError}</span>
               <br />
               <Btn content={onGoingDeposit ? 'Please wait for transaction finalization…' : `Deposit ${fValue} CRU`} disabled={disabledDeposit} onClick={_onClickDeposit} />
-              <a href="" target="_blank">How to deposit?</a>
+              <a href="/docs/CrustFiles_ShareandEarn" target="_blank">How to deposit?</a>
             </div>
           </MCard>}
         {
@@ -160,7 +160,7 @@ function Index(props: Props) {
             </div>
             <div className={'btns mbtns'}>
               <Btn content={onGoingClaim ? 'Ongoing Redeem...' : `Redeem ${fCalimValue} CRU`} disabled={disabledClaim} onClick={_onClickClaim} />
-              <a href="" target="_blank">Learn more about Redeem Rules.</a>
+              <a href="/docs/CrustFiles_ShareandEarn" target="_blank">Learn more about Redeem Rules.</a>
             </div>
             {onGoingClaim && <div className="tip">Redeem will be done in less than 24 hours. Check your balance later.</div>}
           </MCard>}

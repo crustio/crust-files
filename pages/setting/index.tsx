@@ -154,12 +154,12 @@ function Index(props: Props) {
           <div className="text font-sans-regular">
             {`${t('Nick Name:')} `}
             {user.nickName && <span className="bold-text font-sans-semibold">{user.nickName}</span>}
-            {!isCrust && <a className="" target="_blank" href="https://hhhhhh" rel="noreferrer">Get a Nick Name</a>}
+            {!isCrust && <a className="" target="_blank" href="/docs/CrustFiles_Users" rel="noreferrer">Get a Nick Name</a>}
           </div>
           <div className="text font-sans-regular">
             {`${t('User Type:')} `}
             {isCrust && <span className="bold-text font-sans-semibold">{userType}</span>}
-            {!isCrust && <a target="_blank" href="https://hhhhh" rel="noreferrer">Get a Premium</a>}
+            {!isCrust && <a target="_blank" href="/docs/CrustFiles_Users" rel="noreferrer">Get a Premium</a>}
           </div>
         </Segment>
         <Segment basic className={"mcard"}>

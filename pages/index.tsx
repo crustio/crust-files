@@ -94,8 +94,7 @@ function Home({ className }: { className?: string }) {
   }, [])
 
   const _onClickCrustGetCru = useCallback(() => {
-    // TODO
-    console.error('Todo: _onClickCrustGetCru')
+    window.open('https://swap.crust.run', '_blank')
   }, [])
 
   const _onClickPolkadotJs = useCallback(async () => {

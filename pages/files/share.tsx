@@ -10,7 +10,7 @@ import { useContextWrapLoginUser } from '../../lib/wallet/hooks';
 
 function _share(props: BaseProps) {
     const { className } = props
-    const { query } = useRouter()
+    const { query, push } = useRouter()
     const cid = query.cid;
     const wUser = useContextWrapLoginUser()
 
@@ -79,7 +79,7 @@ function _share(props: BaseProps) {
                         </div>
                 }
             </div>
-            <div className="btn-share-earn">Learn more about Share-and-Earn</div>
+            <div className="btn-share-earn" onClick={() => push('/docs/CrustFiles_ShareandEarn')}>Learn more about Share-and-Earn</div>
             <div className="share--flex1" />
         </div>
     </div>

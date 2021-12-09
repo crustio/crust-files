@@ -35,9 +35,7 @@ function _share(props: BaseProps) {
         return `You are receiving a shared file from Crust Files.`
     }, [wUser])
     const _onClickToCrustFiles = () => push('/')
-    const _onClickAboutCrustFiles = () => { 
-        window.open('https://hhhhhh', "_blank")
-    }
+    const _onClickAboutCrustFiles = () => push('/docs/CrustFiles_ShareandEarn')
 
     return <div className={classNames(className)}>
         <div className="share--flex1" />
