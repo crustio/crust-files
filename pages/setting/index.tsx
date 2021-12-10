@@ -1,5 +1,6 @@
 import classNames from 'classnames';
 import FileSaver from 'file-saver';
+import { useRouter } from 'next/router';
 import React, { useCallback, useContext, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Accordion, AccordionContent, AccordionTitle, Segment } from "semantic-ui-react";
@@ -38,14 +39,15 @@ function Index(props: Props) {
   const { className } = props
   const { t } = useTranslation()
   const uc = useUserCrypto()
+  const r = useRouter()
   const { alert } = useContext(AppContext)
   const [open, toggleOpen] = useToggle(false)
   const [showFileEncryption, toggleFileEncryption] = useToggle()
   const copy = useClipboard()
   const user = useContextWrapLoginUser()
   const userType = useMemo(() => {
-    if(user.member && user.member.member_state === 1) return 'Premium'
-    return 'Trial' 
+    if (user.member && user.member.member_state === 1) return 'Premium'
+    return 'Trial'
   }, [user])
   const isCrust = user.wallet === 'crust'
   const wFiles = useFiles();
@@ -151,15 +153,17 @@ function Index(props: Props) {
             {`${t('Logged-in Wallet:')} `}
             <span className="bold-text font-sans-semibold">{WalletName[user.wallet]}</span>
           </div>
-          <div className="text font-sans-regular">
-            {`${t('Nick Name:')} `}
-            {user.nickName && <span className="bold-text font-sans-semibold">{user.nickName}</span>}
-            {!isCrust && <a className="" target="_blank" href="/docs/CrustFiles_Users" rel="noreferrer">Get a Nick Name</a>}
-          </div>
+          {
+            isCrust && user.nickName && <div className="text font-sans-regular">
+              {`${t('Nick Name:')} `}
+              {<span className="bold-text font-sans-semibold">{user.nickName}</span>}
+              {/* {!isCrust && <a className="" target="_blank" href="/docs/CrustFiles_Users" rel="noreferrer">Get a Nick Name</a>} */}
+            </div>
+          }
           <div className="text font-sans-regular">
             {`${t('User Type:')} `}
             {isCrust && <span className="bold-text font-sans-semibold">{userType}</span>}
-            {!isCrust && <a href="/user" rel="noreferrer">Get a Premium</a>}
+            {!isCrust && <a onClick={() => r.push('/user')} rel="noreferrer">Get a Premium</a>}
           </div>
         </Segment>
         <Segment basic className={"mcard"}>

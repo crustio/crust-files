@@ -95,7 +95,7 @@ function FileItem(props: Props) {
       window.open(createUrl(file, endpoints), '_blank')
     }
   }, [uc, file, endpoints])
-  const _onClickCopy = useCallback(() => copy(createUrl(file, endpoints)), [file, endpoints])
+  // const _onClickCopy = useCallback(() => copy(createUrl(file, endpoints)), [file, endpoints])
   const r = useRouter()
   const _onClickShare = () => {
     const options: ShareOptions = {
@@ -189,13 +189,13 @@ function FileItem(props: Props) {
     </Table.Cell>
     <Table.Cell textAlign={"center"}>
 
-      <Popup
+      {/* <Popup
         position={"top center"}
         content={"Copy Download Link"}
         trigger={
           <span className="cru-fo cru-fo-copy" onClick={_onClickCopy} />
         }
-      />
+      /> */}
       <Popup
         position={"top center"}
         content={"Open"}

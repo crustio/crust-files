@@ -69,6 +69,7 @@ function _GetNickname(props: BaseProps) {
             }
             const nickMatch = nickName.match('[^a-z0-9)]')
             if (nickMatch) {
+                setNickStat(-1)
                 setErrorInfo("Only lower case letters and numbers are allowed!")
                 return
             }

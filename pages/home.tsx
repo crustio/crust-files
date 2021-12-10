@@ -35,7 +35,8 @@ function home(p: BaseProps) {
                         </div>
                         {
                             !isPremiumUser && <div className="home--CommingSoon">
-                                Comming soon...
+                                <div>Get a <span onClick={() => r.push('/user')}>Premium</span></div>
+                                to unlock.
                             </div>
                         }
                     </div>
@@ -124,14 +125,20 @@ export const Home = React.memo(styled(home)`
                 position: absolute;
                 left: 0;
                 top: 0;
+                line-height: 2.6rem;
                 background-color: white;
                 width: 100%;
                 height: 100%;
+                flex-direction: column;
                 justify-content: center;
                 align-items: center;
                 text-align: center;
                 font-size: 2.285714rem;
                 white-space: nowrap;
+                span {
+                    color: var(--primary-color);
+                    text-decoration: underline;
+                }
             }
         }
     }
