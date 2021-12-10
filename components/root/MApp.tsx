@@ -66,10 +66,7 @@ function SkipLoginPage({ Component, pageProps }: AppProps) {
       <title>{siteTitle}</title>
     </Head>
     <Layout>
-      <Redirect>
-        <Component {...pageProps} />
-      </Redirect>
-      <GetNickname />
+      <Component {...pageProps} />
       <MAppLoading />
     </Layout>
     <AlertMessage />
