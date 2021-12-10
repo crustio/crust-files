@@ -159,7 +159,7 @@ function Index(props: Props) {
           <div className="text font-sans-regular">
             {`${t('User Type:')} `}
             {isCrust && <span className="bold-text font-sans-semibold">{userType}</span>}
-            {!isCrust && <a target="_blank" href="/docs/CrustFiles_Users" rel="noreferrer">Get a Premium</a>}
+            {!isCrust && <a href="/user" rel="noreferrer">Get a Premium</a>}
           </div>
         </Segment>
         <Segment basic className={"mcard"}>

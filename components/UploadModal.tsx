@@ -23,15 +23,19 @@ export interface Props {
   onSuccess?: (res: SaveFile) => void,
   user: WrapLoginUser,
   uc: WrapUserCrypto,
-  type: 'public' | 'vault'
+  type: 'public' | 'vault',
+  isPremium?: boolean,
 }
 
 const NOOP = (): void => undefined;
 
-const MAX = 100 * 1024 * 1024;
+const M1 = 1024 * 1024;
+const MAX = 40;
+const MAX_PREMIUM = 1024;
 
 function UploadModal(p: Props): React.ReactElement<Props> {
-  const { className, uc, file, onClose = NOOP, onSuccess = NOOP, user, type } = p;
+  const { className, uc, file, onClose = NOOP, onSuccess = NOOP, user, type, isPremium } = p;
+  const mMax = useMemo(() => isPremium ? MAX_PREMIUM : MAX, [isPremium])
   const isVault = type === 'vault'
   const { t } = useTranslation();
   const { endpoint, endpoints, onChangeEndpoint } = useAuthGateway();
@@ -39,19 +43,18 @@ function UploadModal(p: Props): React.ReactElement<Props> {
   const [isBusy, setBusy] = useState(false);
   const fileSizeError = useMemo(() => {
     if (file.file) {
-      return file.file.size > MAX;
+      return file.file.size > mMax * M1;
     } else if (file.files) {
       let sum = 0;
       for (const f of file.files) {
         sum += f.size;
       }
-      return sum > MAX;
+      return sum > mMax * M1;
     }
     return false;
-  }, [file]);
-  // const fileSizeError = file.size > 100 * 1024 * 1024;
+  }, [file, mMax]);
   const [error, setError] = useState('');
-  const errorText = fileSizeError ? t<string>('Do not upload files larger than 100MB!') : error;
+  const errorText = fileSizeError ? t<string>(`Do not upload files larger than ${mMax}MB!`) : error;
   const [upState, setUpState] = useState({ progress: 0, up: false });
   const [cancelUp, setCancelUp] = useState<CancelTokenSource | null>(null);
   // const [encrypt, toggleEncrypt] = useToggle(isVault)
@@ -63,13 +66,11 @@ function UploadModal(p: Props): React.ReactElement<Props> {
     onClose();
   }, [cancelUp, onClose]);
 
-  const _onClickUp = useCallback(async () => {
+  const _onClickUp = async () => {
     setError('');
-
     if (fileSizeError || !user.account || !user.sign) {
       return;
     }
-
     try {
       // 1: sign
       setBusy(true);
@@ -121,7 +122,7 @@ function UploadModal(p: Props): React.ReactElement<Props> {
         cancelToken: cancel.token,
         data: form,
         headers: { Authorization: AuthBasic },
-        maxContentLength: MAX,
+        maxContentLength: mMax,
         method: 'POST',
         onUploadProgress: (p: { loaded: number, total: number }) => {
           const percent = p.loaded / p.total;
@@ -176,7 +177,7 @@ function UploadModal(p: Props): React.ReactElement<Props> {
       setError(t('Network Error,Please try to switch a Gateway.'));
       // setError((e as Error).message);
     }
-  }, [fileSizeError, user, file, pinner, endpoint, encrypt, onSuccess, t]);
+  }
 
   return (
     <Modal

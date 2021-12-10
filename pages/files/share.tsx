@@ -5,25 +5,26 @@ import styled from "styled-components";
 import { BaseProps } from "../../components/types";
 import { useClipboard } from '../../lib/hooks/useClipboard';
 import { ShareOptions } from '../../lib/types';
-import { strToHex } from '../../lib/utils';
+import { openDocs } from '../../lib/utils';
+// import { strToHex } from '../../lib/utils';
 import { useContextWrapLoginUser } from '../../lib/wallet/hooks';
 
 function _share(props: BaseProps) {
     const { className } = props
-    const { query, push } = useRouter()
+    const { query } = useRouter()
     const cid = query.cid;
     const wUser = useContextWrapLoginUser()
 
     const options = useMemo<ShareOptions>(() => {
-        const hexStr = query.options as string
-        console.info('options:', hexStr)
+        const optJson = query.options as string
+        console.info('options:', optJson)
         let options: ShareOptions = {
             name: 'share.file',
             encrypted: false,
             gateway: 'https://gw.crustapps.net',
         }
-        if (hexStr) {
-            options = JSON.parse(hexStr) as ShareOptions
+        if (optJson) {
+            options = JSON.parse(optJson) as ShareOptions
         }
         if (wUser.nickName) {
             options.from = wUser.nickName
@@ -32,7 +33,7 @@ function _share(props: BaseProps) {
     }, [query, wUser])
 
     const link = useMemo(() => {
-        return `${window.location.origin}/files/receive?cid=${cid}&options=${strToHex(JSON.stringify(options))}`
+        return `${window.location.origin}/files/receive?cid=${cid}&options=${encodeURI(JSON.stringify(options))}`
     }, [options])
 
     const copy = useClipboard()
@@ -79,7 +80,7 @@ function _share(props: BaseProps) {
                         </div>
                 }
             </div>
-            <div className="btn-share-earn" onClick={() => push('/docs/CrustFiles_ShareandEarn')}>Learn more about Share-and-Earn</div>
+            <div className="btn-share-earn" onClick={() => openDocs('/docs/CrustFiles_ShareandEarn')}>Learn more about Share-and-Earn</div>
             <div className="share--flex1" />
         </div>
     </div>

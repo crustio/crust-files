@@ -15,7 +15,7 @@ import { useCall } from "../lib/hooks/useCall";
 import { useClipboard } from "../lib/hooks/useClipboard";
 import { ShareOptions } from "../lib/types";
 import { useAuthGateway } from "../lib/useAuth";
-import { shortStr, strToHex } from "../lib/utils";
+import { shortStr } from "../lib/utils";
 import { SaveFile } from "../lib/wallet/types";
 import Btn from "./Btn";
 
@@ -103,7 +103,8 @@ function FileItem(props: Props) {
       encrypted: file.Encrypted,
       gateway: file.UpEndpoint,
     }
-    const str = strToHex(JSON.stringify(options))
+    
+    const str = encodeURI(JSON.stringify(options))
     r.push(`${window.location.origin}/files/share?cid=${file.Hash}&options=${str}`)
   }
 

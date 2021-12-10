@@ -8,68 +8,70 @@ import SideLayout from "../../components/SideLayout";
 import UploadModal from "../../components/UploadModal";
 import User from "../../components/User";
 import { useUserCrypto } from "../../lib/crypto/useUserCrypto";
+import { useGetDepost } from "../../lib/hooks/useGetDeposit";
 import useInputFile from "../../lib/hooks/useInputFile";
 import { useContextWrapLoginUser, useFiles } from "../../lib/wallet/hooks";
 import { FileInfo, SaveFile } from "../../lib/wallet/types";
 
 function Vault(p: { className?: string }) {
-    const user = useContextWrapLoginUser()
-    const wFiles = useFiles();
-    const uc = useUserCrypto()
-    const wInputFile = useInputFile()
+  const user = useContextWrapLoginUser()
+  const wFiles = useFiles();
+  const uc = useUserCrypto()
+  const wInputFile = useInputFile()
+  const { isPremiumUser } = useGetDepost()
 
-    const _onClose = () => wInputFile.setFile(undefined);
-
-    const _onSuccess = useCallback((res: SaveFile) => {
-        wInputFile.setFile(undefined)
-        const filterFiles = wFiles.files.filter((f) => f.Hash !== res.Hash);
-
-        wFiles.setFiles([res, ...filterFiles]);
-    }, [wFiles]);
-    const _onDrop = (info: FileInfo) => {
-        if (!info) return
-        if (!info.dir && info.files && info.files.length > 1) {
-            return
-        }
-        if (!info.file) return
-        wInputFile.setFile(info)
+  const _onClose = () => wInputFile.setFile(undefined);
+  const _onSuccess = useCallback((res: SaveFile) => {
+    wInputFile.setFile(undefined)
+    const filterFiles = wFiles.files.filter((f) => f.Hash !== res.Hash);
+    wFiles.setFiles([res, ...filterFiles]);
+  }, [wFiles]);
+  const _onDrop = (info: FileInfo) => {
+    if (!info) return
+    if (!info.dir && info.files && info.files.length > 1) {
+      return
     }
-    return <SideLayout path={'/files/vault'}>
-        <Segment basic className={p.className}>
-            <OnDrapDropFrame onDrop={_onDrop} />
-            <User />
-            <Segment basic className="contentPanel">
-                <Segment basic textAlign={'center'} className={"font-sans-semibold uploadPanel"}>
-                    <input
-                        onChange={wInputFile._onInputFile}
-                        ref={wInputFile.inputRef}
-                        style={{ display: 'none' }}
-                        type={'file'}
-                    />
-                    <div className={'upSlog'}>
-                        <div className="title">Vault</div>
-                        <div className="content font-sans-regular">This is your personal file vault which is 100% private, 100% secure and 100% owned by YOU. Every file will be encrypted by a locally-stored encryption key.</div>
-                    </div>
-                    <BtnUpload
-                        onClickUpFile={wInputFile._onClickUpFile}
-                        // onClickUpFolder={wInputFile._onClickUpFolder}
-                    />
-                    {
-                        wInputFile.file && <UploadModal
-                            type="vault"
-                            file={wInputFile.file}
-                            user={user}
-                            onClose={_onClose}
-                            onSuccess={_onSuccess}
-                            uc={uc}
-                        />
-                    }
-                </Segment>
-                <div className="line" />
-                <FilesTable type="vault" files={wFiles.files} onDeleteItem={wFiles.deleteItem} />
-            </Segment>
+    if (!info.file) return
+    wInputFile.setFile(info)
+  }
+
+  return <SideLayout path={'/files/vault'}>
+    <Segment basic className={p.className}>
+      <OnDrapDropFrame onDrop={_onDrop} />
+      <User />
+      <Segment basic className="contentPanel">
+        <Segment basic textAlign={'center'} className={"font-sans-semibold uploadPanel"}>
+          <input
+            onChange={wInputFile._onInputFile}
+            ref={wInputFile.inputRef}
+            style={{ display: 'none' }}
+            type={'file'}
+          />
+          <div className={'upSlog'}>
+            <div className="title">Vault</div>
+            <div className="content font-sans-regular">This is your personal file vault which is 100% private, 100% secure and 100% owned by YOU. Every file will be encrypted by a locally-stored encryption key.</div>
+          </div>
+          <BtnUpload
+            onClickUpFile={() => isPremiumUser && wInputFile._onClickUpFile()}
+          // onClickUpFolder={wInputFile._onClickUpFolder}
+          />
+          {
+            wInputFile.file && <UploadModal
+              isPremium={isPremiumUser}
+              type="vault"
+              file={wInputFile.file}
+              user={user}
+              onClose={_onClose}
+              onSuccess={_onSuccess}
+              uc={uc}
+            />
+          }
         </Segment>
-    </SideLayout>
+        <div className="line" />
+        <FilesTable type="vault" files={wFiles.files} onDeleteItem={wFiles.deleteItem} />
+      </Segment>
+    </Segment>
+  </SideLayout>
 }
 
 export default React.memo(styled(Vault)`

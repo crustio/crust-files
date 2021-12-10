@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Segment } from "semantic-ui-react";
 import styled from "styled-components";
@@ -8,34 +8,30 @@ import { MAccordion } from '../components/MAccordion';
 import { MCard } from '../components/MCard';
 import SideLayout from "../components/SideLayout";
 import User from "../components/User";
-import { useUserCrypto } from "../lib/crypto/useUserCrypto";
 import { useClaimRewards } from "../lib/hooks/useClaimRewards";
 import { useGet } from "../lib/hooks/useGet";
-import { getDeposit, getReward } from "../lib/http/share_earn";
+import { useGetDepost } from "../lib/hooks/useGetDeposit";
+import { getReward } from "../lib/http/share_earn";
 import { trimZero } from "../lib/utils";
-import { useContextWrapLoginUser, useFiles } from "../lib/wallet/hooks";
+import { useContextWrapLoginUser } from "../lib/wallet/hooks";
 
 export interface Props {
   className?: string
 }
 
-type FunInputFile = (e: React.ChangeEvent<HTMLInputElement>) => void
+// type FunInputFile = (e: React.ChangeEvent<HTMLInputElement>) => void
 
 function Index(props: Props) {
   const { className } = props
   const { t } = useTranslation()
   const r = useRouter()
-  const user = useContextWrapLoginUser()
-  const isCrust = user.wallet === 'crust'
-  const [deposit, doGetDeposit] = useGet(() => getDeposit(user.account), [user.account])
-  const hasDeposit = deposit && deposit.deposit && deposit.deposit.id
-  const isPremiumUser = isCrust && ((user.member && user.member.member_state === 1) || hasDeposit)
-  // const isPremiumUser = true;
+  const { account } = useContextWrapLoginUser()
+  const { isPremiumUser, isCrust } = useGetDepost()
   const uClaimRewards = useClaimRewards()
   const _clickClaimRewards = () => {
     uClaimRewards.start()
   }
-  const [reward, doGetReward] = useGet(() => getReward(user.account), [user.account])
+  const [reward, doGetReward] = useGet(() => getReward(account), [account, isCrust])
   useEffect(() => {
     let task
     if (uClaimRewards.finish) {
@@ -58,7 +54,7 @@ function Index(props: Props) {
   const validCount = useMemo(() => reward && reward.totalInvition, [reward])
   const onGoingClaim = uClaimRewards.finish || (reward && reward.claimOngoing)
   const disabledClaimRewards = !uClaimRewards.ready || !hasReward || onGoingClaim
-  const _clickGetPremium = () => r.push('/docs/CrustFiles_Users')
+  const _clickGetPremium = () => r.push('/user')
   return <SideLayout path={'/share-earn'}>
     <Segment basic className={className}>
       <User />
@@ -88,7 +84,7 @@ function Index(props: Props) {
         {
           isPremiumUser && <MCard>
             <div className="title font-sans-semibold">
-              {t('My REwards')}
+              {t('My Rewards')}
             </div>
             <div className="text font-sans-regular">
               Pending Claim Rewards : <span className="b-text">{`${totalRewards} CRU`}</span>
@@ -103,7 +99,7 @@ function Index(props: Props) {
         {
           !isPremiumUser && <MCard>
             <div className="title font-sans-semibold">
-              {t('My REwards')}
+              {t('My Rewards')}
             </div>
             <div className="text font-sans-regular">
               Total Rewards : <span className="b-text">{`${totalRewards} CRU`}</span>

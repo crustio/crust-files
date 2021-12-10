@@ -48,7 +48,9 @@ function User(props: Props) {
   const user = useContextWrapLoginUser();
   const _onClickLogout = useCallback(user.logout, [user])
   const [open, toggleOpen] = useToggle()
-  const r = useRouter()
+  const _onClickDocs = () => {
+    window.open(`${window.location.origin}/docs/CrustFiles_Welcome`, '_blank')
+  }
 
   return <Segment basic textAlign={"right"} className={props.className}>
     {
@@ -61,7 +63,7 @@ function User(props: Props) {
     }
     <Item.Group>
       <Item style={{ justifyContent: 'flex-end' }}>
-        <div className="docs" onClick={() => {r.push("/docs/CrustFiles_Welcome")}}>
+        <div className="docs" onClick={_onClickDocs}>
           <span className="cru-fo cru-fo-file-text" /> Docs
         </div>
         <Item.Image src={getWalletIcon(user)} size={'tiny'} />

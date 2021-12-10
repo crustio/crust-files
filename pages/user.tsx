@@ -10,20 +10,18 @@ import User from "../components/User";
 import { CrustWalletDownUrl } from '../lib/config';
 import { useClaim, useDeposit } from "../lib/hooks/useDeposit";
 import { useGet } from "../lib/hooks/useGet";
-import { getAccountByNickName, getDeposit, getDepositAddress, getShareEarnConfig } from "../lib/http/share_earn";
+import { useGetDepost } from '../lib/hooks/useGetDeposit';
+import { getAccountByNickName, getDepositAddress, getShareEarnConfig } from "../lib/http/share_earn";
 import { formatCRU, trimZero } from '../lib/utils';
 import { useContextWrapLoginUser } from "../lib/wallet/hooks";
 export interface Props {
   className?: string
 }
 
-type FunInputFile = (e: React.ChangeEvent<HTMLInputElement>) => void
-
-
 function Index(props: Props) {
   const { className } = props
   const user = useContextWrapLoginUser()
-  const isCrust = user.wallet === 'crust'
+  const { isCrust, isPremiumUser, deposit, doGetDeposit, hasDeposit } = useGetDepost()
   const [nickError, setNickError] = useState<string>()
   const [shareFrom, setShareFrom] = useState<string>()
   const _onChangeNickname = useMemo(() => {
@@ -47,12 +45,8 @@ function Index(props: Props) {
   //
   const [value, setValue] = useState<string>()
   const [config] = useGet(() => getShareEarnConfig())
-  const [deposit, doGetDeposit] = useGet(() => getDeposit(user.account), [user.account])
-
-  const hasDeposit = deposit && deposit.deposit && deposit.deposit.id
   const showDeposit = isCrust && !hasDeposit
   const showClaim = isCrust && hasDeposit
-  const isPremiumUser = isCrust && ((user.member && user.member.member_state === 1) || hasDeposit)
   const [dest] = useGet(() => getDepositAddress())
   const fValue = useMemo(() => formatCRU(value), [value])
   const fCalimValue = useMemo(() => {
@@ -162,7 +156,7 @@ function Index(props: Props) {
               <span className="input-NickError">{nickError}</span>
               <br />
               <Btn content={onGoingDeposit ? 'Please wait for transaction finalization…' : `Deposit ${fValue} CRU`} disabled={disabledDeposit} onClick={_onClickDeposit} />
-              <a href="/docs/CrustFiles_ShareandEarn" target="_blank">How to deposit?</a>
+              <a href="/docs/CrustFiles_Users" target="_blank">How to deposit?</a>
             </div>
           </MCard>}
         {
@@ -174,7 +168,7 @@ function Index(props: Props) {
             </div>
             <div className={'btns mbtns'}>
               <Btn content={onGoingClaim ? 'Ongoing Redeem...' : `Redeem ${fCalimValue} CRU`} disabled={disabledClaim} onClick={_onClickClaim} />
-              <a href="/docs/CrustFiles_ShareandEarn" target="_blank">Learn more about Redeem Rules.</a>
+              <a href="/docs/CrustFiles_Users" target="_blank">Learn more about Redeem Rules.</a>
             </div>
             {onGoingClaim && <div className="tip">Redeem will be done in less than 24 hours. Check your balance later.</div>}
           </MCard>}

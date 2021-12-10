@@ -4,7 +4,7 @@ import React, { useMemo } from 'react';
 import styled from "styled-components";
 import { BaseProps } from "../../components/types";
 import { ShareOptions } from '../../lib/types';
-import { useContextWrapLoginUser } from '../../lib/wallet/hooks';
+import { openDocs } from '../../lib/utils';
 
 function _share(props: BaseProps) {
     const { className } = props
@@ -17,6 +17,7 @@ function _share(props: BaseProps) {
             gateway: 'https://gw.crustapps.net',
         }
         if (hexStr) {
+            console.info('hexStr:', hexStr)
             options = JSON.parse(hexStr) as ShareOptions
         }
         return options
@@ -28,14 +29,13 @@ function _share(props: BaseProps) {
     const _onClickDown = () => {
         window.open(link, "_blank")
     }
-    const wUser = useContextWrapLoginUser()
     const title = useMemo(() => {
-        if (wUser.nickName)
-            return `${wUser.nickName}‘s is sharing you an file from Crust Files.`
+        if (options.from)
+            return `${options.from}‘s is sharing you an file from Crust Files.`
         return `You are receiving a shared file from Crust Files.`
-    }, [wUser])
+    }, [options])
     const _onClickToCrustFiles = () => push('/')
-    const _onClickAboutCrustFiles = () => push('/docs/CrustFiles_Welcome')
+    const _onClickAboutCrustFiles = () => openDocs('/docs/CrustFiles_Welcome')
 
     return <div className={classNames(className)}>
         <div className="share--flex1" />
@@ -47,7 +47,7 @@ function _share(props: BaseProps) {
                 <div className="title">{title}</div>
                 <div className="link-btn">
                     <span className="link">{link}</span>
-                    <span className="btn" onClick={_onClickDown}>Download File</span>
+                    <span className="btn" onClick={_onClickDown}>Open File</span>
                 </div>
             </div>
             <div className="share--flex1" />

@@ -7,6 +7,7 @@ import { useApp } from "../lib/AppContext";
 import { checkNickName, getMemberByAccount, getNickNameByAccount, setMyNickName } from '../lib/http/share_earn';
 import { useContextWrapLoginUser } from "../lib/wallet/hooks";
 import { BaseProps } from "./types";
+import User from './User';
 
 
 function _GetNickname(props: BaseProps) {
@@ -16,9 +17,9 @@ function _GetNickname(props: BaseProps) {
     const wUser = useContextWrapLoginUser()
     const { account, wallet, member } = wUser
     useEffect(() => {
+        wUser.setNickName('')
+        wUser.setMember(undefined)
         if (account && wallet === 'crust') {
-            wUser.setNickName('')
-            wUser.setMember(undefined)
             loading.show()
             getMemberByAccount(account)
                 .then(wUser.setMember)
@@ -44,6 +45,7 @@ function _GetNickname(props: BaseProps) {
             const member = await setMyNickName(nickName, base64Signature)
             wUser.setMember(member)
             wUser.setNickName(member.nick_name)
+            setNickName("")
         } catch (e) {
             setErrorInfo('Register Error')
         }
@@ -55,13 +57,20 @@ function _GetNickname(props: BaseProps) {
     const doCheckNickName = useMemo(() => {
         let task: CancelTokenSource = null
         return _.debounce((nickName: string) => {
-            if (nickName) {
-                const length = nickName.length
-                if (length < 6 || length > 32) {
-                    setNickStat(-1)
-                    setErrorInfo('Nickname length need 6-32')
-                    return
-                }
+            setErrorInfo('')
+            if (!nickName) {
+                return
+            }
+            const length = nickName.length
+            if (length < 3 || length > 15) {
+                setNickStat(-1)
+                setErrorInfo('Nickname should be 3-15 length.')
+                return
+            }
+            const nickMatch = nickName.match('[^a-z0-9)]')
+            if(nickMatch){
+                setErrorInfo("Only lower case letters and numbers are allowed!")
+                return
             }
             try {
                 if (task) task.cancel()
@@ -72,7 +81,7 @@ function _GetNickname(props: BaseProps) {
             checkNickName(nickName, { cancelToken: task.token })
                 .then(valid => {
                     setNickStat(valid ? 1 : -1)
-                    if (!valid) setErrorInfo('This name is occupied, try another one.')
+                    if (!valid) setErrorInfo('This name is occupied!')
                 })
         }, 300)
     }, [])
@@ -85,7 +94,10 @@ function _GetNickname(props: BaseProps) {
     const showGetNickname = _.isEmpty(member) && account && wallet === 'crust' && !wUser.nickName
     if (!showGetNickname) return null
     return <div className={className} onClick={() => { }}>
-        <img className="logo" src="/images/logo_12x.png" />
+        <div className="flex">
+            <img className="logo" src="/images/logo_12x.png" />
+            <User className="get_nickname_User" />
+        </div>
         <div className="flex1" />
         <span className="title">Get a Nickname first</span>
         <span className="sub-info">This Nickname is unique, linked to your Crust Account, and cannot be changed afterwards. Get a nice one!</span>
@@ -94,7 +106,7 @@ function _GetNickname(props: BaseProps) {
                 type={'text'}
                 value={nickName}
                 onChange={_onChange}
-                maxLength={10}
+                maxLength={15}
                 placeholder={"Enter your desired Nickname"}
             />
             {
@@ -124,6 +136,14 @@ export const GetNickname = React.memo<BaseProps>(styled(_GetNickname)`
     display: flex;
     flex-direction: column;
     align-items: center;
+    .flex {
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
+        .get_nickname_User {
+            border-bottom: unset !important;
+        }
+    }
     .logo {
         align-self: flex-start;
         height: 35px;

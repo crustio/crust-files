@@ -8,6 +8,7 @@ import SideLayout from "../../components/SideLayout";
 import UploadModal from "../../components/UploadModal";
 import User from "../../components/User";
 import { useUserCrypto } from "../../lib/crypto/useUserCrypto";
+import { useGetDepost } from "../../lib/hooks/useGetDeposit";
 import useInputFile from "../../lib/hooks/useInputFile";
 import { useContextWrapLoginUser, useFiles } from "../../lib/wallet/hooks";
 import { FileInfo, SaveFile } from "../../lib/wallet/types";
@@ -17,6 +18,7 @@ function Index(p: { className?: string }) {
   const wFiles = useFiles();
   const uc = useUserCrypto()
   const wInputFile = useInputFile()
+  const { isPremiumUser } = useGetDepost()
 
   const _onClose = () => wInputFile.setFile(undefined);
 
@@ -57,6 +59,7 @@ function Index(p: { className?: string }) {
           />
           {
             wInputFile.file && <UploadModal
+              isPremium={isPremiumUser}
               type="public"
               file={wInputFile.file}
               user={user}

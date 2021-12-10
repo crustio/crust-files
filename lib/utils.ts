@@ -8,28 +8,17 @@ export const shortStr = (name: string, count = 6): string => {
 };
 
 
-export const strToHex = (str: string): string => {
-  if (str) {
-    const charCode: string[] = []
-    for (let i = 0; i < str.length; i++) {
-      charCode.push(str.charCodeAt(i).toString(16))
-    }
-    return `%${charCode.join("%")}`
-  }
-  return str
-}
-
-// export const hexToStr = (hex?: string): string => {
-//   if (hex) {
-//     const hexs = hex.split('%')
-//     var charCode: number[] = []
-//     for (const h of hexs) {
-//       charCode.push(parseInt(h, 16))
+// export const strToHex = (str: string): string => {
+//   if (str) {
+//     const charCode: string[] = []
+//     for (let i = 0; i < str.length; i++) {
+//       charCode.push(str.charCodeAt(i).toString(16))
 //     }
-//     return String.fromCharCode(...charCode)
+//     return `0x${charCode.join(':')}`
 //   }
-//   return hex
+//   return str
 // }
+
 
 const createZero = (count: number) => {
   let z = ''
@@ -59,3 +48,8 @@ export const formatCRU = (cru: string | BN): string => {
   return trimZero(f)
 }
 // window._formatCRU = formatCRU
+
+
+export const openDocs = (path: string) => {
+  window.open(`${window.location.origin}${path}`,'_blank')
+}

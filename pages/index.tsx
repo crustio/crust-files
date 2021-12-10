@@ -94,7 +94,7 @@ function Home({ className }: { className?: string }) {
   }, [])
 
   const _onClickCrustGetCru = useCallback(() => {
-    window.open('https://swap.crust.run', '_blank')
+    window.open('https://swap.crustapps.net', '_blank')
   }, [])
 
   const _onClickPolkadotJs = useCallback(async () => {

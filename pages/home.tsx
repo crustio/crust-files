@@ -5,11 +5,13 @@ import SideLayout from '../components/SideLayout';
 import { Segment } from 'semantic-ui-react';
 import User from '../components/User';
 import { useRouter } from 'next/router';
+import { useGetDepost } from '../lib/hooks/useGetDeposit';
 
 function home(p: BaseProps) {
     const r = useRouter()
+    const { isPremiumUser } = useGetDepost()
     const _onClickPublick = () => r.push('/files')
-    const _onClickVault = () => r.push('/files/vault')
+    const _onClickVault = () => isPremiumUser && r.push('/files/vault')
 
     return <SideLayout path='/home'>
         <User />
@@ -31,6 +33,11 @@ function home(p: BaseProps) {
                         <div className="home--card-Content">
                             This is your personal file vault which is 100% private, 100% secure and 100% owned by YOU. Every file will be encrypted by a locally-stored encryption key.
                         </div>
+                        {
+                            !isPremiumUser && <div className="home--CommingSoon">
+                                Comming soon...
+                            </div>
+                        }
                     </div>
                     <div className="home--card">
                         <div className="home--card-Title home--borderBottom3">SecureShare</div>

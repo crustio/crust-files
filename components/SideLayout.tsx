@@ -23,7 +23,7 @@ interface MenuInfo {
 
 const menus: MenuInfo[] = [
   { path: "/home", icon: "cru-fo-home", name: 'Home' },
-  { path: "/files", icon: "cru-fo-file", isParent: true, name: 'My File' },
+  { path: "/files", icon: "cru-fo-file", isParent: true, name: 'My Files' },
   { path: "/files", name: 'Public' },
   { path: "/files/vault", name: 'Vault' },
   { path: "/setting", icon: "cru-fo-settings", name: 'Settings' },
