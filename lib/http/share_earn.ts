@@ -1,6 +1,6 @@
 import axios, { AxiosResponse, AxiosRequestConfig } from 'axios';
 import { CommonResponse, Deposit, Member, Reward, ShareEarnConfig } from './types';
-import _ from 'lodash';
+// import _ from 'lodash';
 
 const base_url = 'https://files-api.decoo.io'
 const createUrl = (path: string): string => {

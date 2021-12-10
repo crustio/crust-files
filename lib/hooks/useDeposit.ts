@@ -1,33 +1,32 @@
-import { ApiPromise } from "@polkadot/api";
 import type { Callback, ISubmittableResult, Signer } from '@polkadot/types/types';
 import { useEffect, useState } from "react";
 import { useApp } from "../AppContext";
 import { ShareEarnENV } from "../config";
-import { doPremark } from "../http/share_earn";
-import { strToBn } from "../utils";
+// import { doPremark } from "../http/share_earn";
+// import { strToBn } from "../utils";
 import { useContextWrapLoginUser } from "../wallet/hooks";
 
-export interface BlockExtrinsicInfo {
-    extrinsicIndex: number,
-    blockNumber: number,
-}
-function getBlockExtrinsicInfo(api: ApiPromise, blockHash: string, exHash: string): Promise<BlockExtrinsicInfo> {
-    return api.rpc.chain.getBlock(blockHash)
-        .then(block => {
-            const { block: { extrinsics, header: { number } } } = block
-            const blockNumber = number.toNumber()
-            let extrinsicIndex = -1
-            for (let index = 0; index < extrinsics.length; index++) {
-                const ex = extrinsics[index];
-                console.info('ex:', ex.hash && ex.hash.toString())
-                if (ex.hash && ex.hash.toString() === exHash) {
-                    extrinsicIndex = index
-                    break
-                }
-            }
-            return { blockNumber, extrinsicIndex }
-        })
-}
+// export interface BlockExtrinsicInfo {
+//     extrinsicIndex: number,
+//     blockNumber: number,
+// }
+// function getBlockExtrinsicInfo(api: ApiPromise, blockHash: string, exHash: string): Promise<BlockExtrinsicInfo> {
+//     return api.rpc.chain.getBlock(blockHash)
+//         .then(block => {
+//             const { block: { extrinsics, header: { number } } } = block
+//             const blockNumber = number.toNumber()
+//             let extrinsicIndex = -1
+//             for (let index = 0; index < extrinsics.length; index++) {
+//                 const ex = extrinsics[index];
+//                 console.info('ex:', ex.hash && ex.hash.toString())
+//                 if (ex.hash && ex.hash.toString() === exHash) {
+//                     extrinsicIndex = index
+//                     break
+//                 }
+//             }
+//             return { blockNumber, extrinsicIndex }
+//         })
+// }
 
 export interface UseDeposit {
     ready: boolean,
@@ -52,12 +51,12 @@ export function useDeposit(dest: string, value: string, share_from?: string): Us
         setFinish(false)
         loading.show()
         // const signer = user.crust.wallet.signer;
-        let msg, signature
+        // let msg, signature
         const signer: Signer = {
             ...user.crust.wallet.signer,
             signPayload: (data) => {
-                console.info('payload:', data)
-                msg = data
+                // console.info('payload:', data)
+                // msg = data
                 return user.crust.wallet.signer.signPayload(data)
             }
         }
@@ -132,12 +131,12 @@ export function useClaim(): UseClaim {
         loading.show()
         setFinish(false)
         //--setSigner
-        let msg, signature
+        // let msg, signature
         const signer: Signer = {
             ...user.crust.wallet.signer,
             signPayload: (data) => {
-                console.info('payload:', data)
-                msg = data
+                // console.info('payload:', data)
+                // msg = data
                 return user.crust.wallet.signer.signPayload(data)
             }
         }

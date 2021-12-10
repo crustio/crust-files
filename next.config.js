@@ -12,7 +12,7 @@ const withMDX = nextMdx({
  * @type {import('next').NextConfig}
  */
 const nextConfig = withMDX({
-  webpack: (config, options) => {
+  webpack: (config) => {
     config.resolve.fallback = {
       crypto: require.resolve('crypto-browserify'),
       path: require.resolve('path-browserify'),
@@ -23,7 +23,6 @@ const nextConfig = withMDX({
       assert: false,
       fs: false,
     }
-    // console.info("config::", config)
     return config
   },
   trailingSlash: true,

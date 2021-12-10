@@ -28,12 +28,12 @@ export function useClaimRewards(): UseClaimRewards {
         loading.show()
         setFinish(false)
         //--setSigner
-        let msg, signature
+        // let msg, signature
         const signer: Signer = {
             ...user.crust.wallet.signer,
             signPayload: (data) => {
-                console.info('payload:', data)
-                msg = data
+                // console.info('payload:', data)
+                // msg = data
                 return user.crust.wallet.signer.signPayload(data)
             }
         }

@@ -1,5 +1,4 @@
 import _ from 'lodash';
-import { useRouter } from "next/router";
 import React, { useCallback } from "react";
 import { Dropdown, Item, Segment } from "semantic-ui-react";
 import styled from "styled-components";

@@ -37,7 +37,7 @@ function Index(props: Props) {
             else
               setNickError(`It can't be your own`)
           })
-          .catch(e => setNickError('Not found'))
+          .catch(() => setNickError('Not found'))
       }
     }, 300)
   }, [user.account])

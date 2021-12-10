@@ -68,7 +68,7 @@ function _GetNickname(props: BaseProps) {
                 return
             }
             const nickMatch = nickName.match('[^a-z0-9)]')
-            if(nickMatch){
+            if (nickMatch) {
                 setErrorInfo("Only lower case letters and numbers are allowed!")
                 return
             }
@@ -93,7 +93,8 @@ function _GetNickname(props: BaseProps) {
 
     const showGetNickname = _.isEmpty(member) && account && wallet === 'crust' && !wUser.nickName
     if (!showGetNickname) return null
-    return <div className={className} onClick={() => { }}>
+    if (loading.isLoading) return <div className={className} />
+    return <div className={className} onClick={(e) => e.preventDefault()}>
         <div className="flex">
             <img className="logo" src="/images/logo_12x.png" />
             <User className="get_nickname_User" />
