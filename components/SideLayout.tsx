@@ -15,7 +15,7 @@ export interface Props {
 }
 
 interface MenuInfo {
-  path: Path,
+  path?: Path,
   icon?: string,
   name: string,
   isParent?: boolean,
@@ -23,7 +23,7 @@ interface MenuInfo {
 
 const menus: MenuInfo[] = [
   { path: "/home", icon: "cru-fo-home", name: 'Home' },
-  { path: "/files", icon: "cru-fo-file", isParent: true, name: 'My Files' },
+  { icon: "cru-fo-file", isParent: true, name: 'My Files' },
   { path: "/files", name: 'Public' },
   { path: "/files/vault", name: 'Vault' },
   { path: "/setting", icon: "cru-fo-settings", name: 'Settings' },
@@ -36,7 +36,7 @@ function SideLayout(props: Props) {
   const r = useRouter()
   const _onTabClick = useCallback((_: any, { index }: { index: number }) => {
     const m = menus[index]
-    if (m.path !== props.path)
+    if (m.path && m.path !== props.path)
       r.push(m.path)
   }, [props.path])
   const shareEarnIndex = useMemo(() => _.findIndex(menus, m => m.path === '/share-earn'), [])
@@ -129,7 +129,7 @@ export default React.memo<Props>(styled(SideLayout)`
         &.active {
           position: relative;
           color: var(--main-color);
-          font-family: OpenSans-Medium;
+          /* font-family: OpenSans-Medium; */
           border-right: solid 0.2rem var(--primary-color);
         }
 

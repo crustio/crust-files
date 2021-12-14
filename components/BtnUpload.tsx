@@ -5,29 +5,31 @@ import { Dropdown } from "semantic-ui-react";
 import classNames from "classnames";
 
 export interface Props extends BaseProps {
-    onClickUpFile: () => void,
-    onClickUpFolder?: () => void,
+  onClickUpFile: () => void,
+  onClickUpFolder?: () => void,
+  disabled?: boolean
 }
 function btnUpload(props: Props) {
-    const {
-        className,
-        onClickUpFile,
-        onClickUpFolder,
-    } = props
-    if (!onClickUpFolder) {
-        return <div className={classNames("btn-upload", className)} onClick={onClickUpFile}>Upload</div>
-    }
-    return <Dropdown
-        className={className}
-        pointing={"top"}
-        icon={null}
-        basic
-        text={"Upload"}>
-        <Dropdown.Menu>
-            <Dropdown.Item text={'File'} icon={<span className="icon cru-fo-file" />} onClick={onClickUpFile} />
-            <Dropdown.Item text={'Folder'} icon={<span className="icon cru-fo-folder" />} onClick={onClickUpFolder} />
-        </Dropdown.Menu>
-    </Dropdown>
+  const {
+    className,
+    onClickUpFile,
+    onClickUpFolder,
+    disabled,
+  } = props
+  if (!onClickUpFolder) {
+    return <div className={classNames("btn-upload", { disabled }, className)} onClick={onClickUpFile}>Upload</div>
+  }
+  return <Dropdown
+    className={classNames(className, { disabled })}
+    pointing={"top"}
+    icon={null}
+    basic
+    text={"Upload"}>
+    <Dropdown.Menu>
+      <Dropdown.Item text={'File'} icon={<span className="icon cru-fo-file" />} onClick={onClickUpFile} />
+      <Dropdown.Item text={'Folder'} icon={<span className="icon cru-fo-folder" />} onClick={onClickUpFolder} />
+    </Dropdown.Menu>
+  </Dropdown>
 }
 export const BtnUpload = React.memo<Props>(styled(btnUpload)`
  &.btn-upload, &.ui.dropdown>.text.divider {
@@ -39,6 +41,12 @@ export const BtnUpload = React.memo<Props>(styled(btnUpload)`
     border: 2px solid #000000;
     box-sizing: border-box;
     border-radius: 1.714286rem;
+ }
+ &.disabled {
+    background: #EEEEEE;
+    border: unset !important;
+    color: #AAAAAA;
+    cursor: not-allowed;
  }
  &.ui.dropdown {
     .cru-fo {

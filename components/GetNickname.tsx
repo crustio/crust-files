@@ -47,7 +47,7 @@ function _GetNickname(props: BaseProps) {
             wUser.setNickName(member.nick_name)
             setNickName("")
         } catch (e) {
-            setErrorInfo('Register Error')
+            setErrorInfo('This name is occupied!')
         }
     }
     //check nickname  (0: init)(-1: false)(1: true)
@@ -58,6 +58,7 @@ function _GetNickname(props: BaseProps) {
         let task: CancelTokenSource = null
         return _.debounce((nickName: string) => {
             setErrorInfo('')
+            setNickStat(0)
             if (!nickName) {
                 return
             }
@@ -89,6 +90,7 @@ function _GetNickname(props: BaseProps) {
 
     useEffect(() => {
         setErrorInfo('')
+        setNickStat(0)
         if (nickName) doCheckNickName(nickName)
     }, [nickName])
 
@@ -122,7 +124,7 @@ function _GetNickname(props: BaseProps) {
                 />}
             <span className={classNames("btn-continue", { enabled: nickStat === 1 })} onClick={_onClickContinue}>Continue</span>
         </div>
-        <div className="error-info"> {errorInfo}</div>
+        <div className="error-info">{errorInfo}</div>
         <div className="flex1" />
     </div>
 }

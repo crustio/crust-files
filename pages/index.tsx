@@ -10,8 +10,9 @@ import Logo from "../components/Logo";
 import { AppContext } from "../lib/AppContext";
 import { CrustWalletDownUrl } from "../lib/config";
 import useParallax from "../lib/hooks/useParallax";
+import { report } from "../lib/http/report";
 import { nearConfig } from "../lib/wallet/config";
-import { LoginUser, useContextWrapLoginUser } from "../lib/wallet/hooks";
+import { LoginUser, useContextWrapLoginUser, lastUser } from "../lib/wallet/hooks";
 interface ItemWallet {
   name: string,
   image: string,
@@ -68,7 +69,15 @@ function Home({ className }: { className?: string }) {
       alert.error(data)
     }
   }
-
+  const setLogined = (u: LoginUser) => {
+    user.setLoginUser(u)
+    report({
+      type: 1,
+      walletType: u.wallet,
+      address: u.account,
+      data: {}
+    })
+  }
   const _onClickCrust = useCallback(async () => {
     try {
       setError('')
@@ -78,8 +87,11 @@ function Home({ className }: { className?: string }) {
         return
       }
       const accounts = await user.crust.login()
-      if (accounts.length > 0) {
-        user.setLoginUser({
+      const last = lastUser('crust')
+      if (last && accounts.includes(last.account)) {
+        setLogined(last)
+      } else if (accounts.length > 0) {
+        setLogined({
           account: accounts[0],
           wallet: 'crust',
         })
@@ -106,8 +118,11 @@ function Home({ className }: { className?: string }) {
         return
       }
       const accounts = await user.polkadotJs.login()
-      if (accounts.length > 0) {
-        user.setLoginUser({
+      const last = lastUser('polkadot-js')
+      if (last && accounts.includes(last.account)) {
+        setLogined(last)
+      } else if (accounts.length > 0) {
+        setLogined({
           account: accounts[0],
           wallet: 'polkadot-js'
         })
@@ -133,12 +148,12 @@ function Home({ className }: { className?: string }) {
               w.name === 'Moonriver' ? 'metamask-Moonriver' :
                 'metamask'
           if (selectedAddress && res.includes(selectedAddress)) {
-            user.setLoginUser({
+            setLogined({
               account: selectedAddress,
               wallet
             });
           } else if (res.length) {
-            user.setLoginUser({
+            setLogined({
               account: res[0],
               wallet
             });
@@ -162,10 +177,10 @@ function Home({ className }: { className?: string }) {
     user.near.init()
       .then(() => {
         if (user.near.keyPair && user.near.wallet.isSignedIn()) {
-          user.setLoginUser({
+          setLogined({
             account: user.near.wallet.getAccountId() as string,
             wallet: 'near',
-            pubKey: user.near.keyPair.getPublicKey().toString().substr(8)
+            pubKey: user.near.keyPair.getPublicKey().toString().substring(8)
           })
         }
       })
@@ -186,7 +201,7 @@ function Home({ className }: { className?: string }) {
 
     // eslint-disable-next-line
     flowUser = await fcl.currentUser().snapshot();
-    user.setLoginUser({
+    setLogined({
       // eslint-disable-next-line
       account: flowUser.addr,
       wallet: 'flow'
@@ -202,7 +217,7 @@ function Home({ className }: { className?: string }) {
 
     // eslint-disable-next-line
     if (user.solana.solana.isConnected) {
-      user.setLoginUser({
+      setLogined({
         // eslint-disable-next-line
         account: user.solana.solana.publicKey.toBase58(),
         wallet: 'solana'
@@ -215,7 +230,7 @@ function Home({ className }: { className?: string }) {
     user.solana.solana.connect();
     // eslint-disable-next-line
     user.solana.solana.on('connect', () => {
-      user.setLoginUser({
+      setLogined({
         // eslint-disable-next-line
         account: user.solana.solana.publicKey.toBase58(),
         wallet: 'solana'
@@ -237,7 +252,7 @@ function Home({ className }: { className?: string }) {
     });
     const { address } = user.elrond.provider.account;
 
-    user.setLoginUser({
+    setLogined({
       // eslint-disable-next-line
       account: address,
       wallet: 'elrond'
@@ -254,7 +269,7 @@ function Home({ className }: { className?: string }) {
     await user.walletConnect.connect?.createSession()
     user.walletConnect.connect?.on("connect", (_, payload) => {
       const { accounts } = payload.params[0];
-      user.setLoginUser({
+      setLogined({
         account: accounts[0],
         wallet: 'wallet-connect'
       })

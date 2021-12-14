@@ -3,7 +3,7 @@ import { CommonResponse, Deposit, Member, Reward, ShareEarnConfig } from './type
 // import _ from 'lodash';
 
 const base_url = 'https://files-api.decoo.io'
-const createUrl = (path: string): string => {
+export const createUrl = (path: string): string => {
     return `${base_url}${path}`
 }
 

@@ -3,7 +3,6 @@ import axios from "axios";
 import { saveAs } from 'file-saver';
 import filesize from "filesize";
 import _ from 'lodash';
-import { useRouter } from "next/router";
 import React, { useCallback, useContext, useMemo } from "react";
 import { Icon, Popup, Table } from "semantic-ui-react";
 import styled from "styled-components";
@@ -13,9 +12,11 @@ import { decryptFile } from "../lib/crypto/encryption";
 import { WrapUserCrypto } from "../lib/crypto/useUserCrypto";
 import { useCall } from "../lib/hooks/useCall";
 import { useClipboard } from "../lib/hooks/useClipboard";
+import { report } from "../lib/http/report";
 import { ShareOptions } from "../lib/types";
 import { useAuthGateway } from "../lib/useAuth";
 import { shortStr } from "../lib/utils";
+import { useContextWrapLoginUser } from "../lib/wallet/hooks";
 import { SaveFile } from "../lib/wallet/types";
 import Btn from "./Btn";
 
@@ -96,16 +97,31 @@ function FileItem(props: Props) {
     }
   }, [uc, file, endpoints])
   // const _onClickCopy = useCallback(() => copy(createUrl(file, endpoints)), [file, endpoints])
-  const r = useRouter()
+  // const r = useRouter()
+  const user = useContextWrapLoginUser()
   const _onClickShare = () => {
     const options: ShareOptions = {
       name: file.Name,
       encrypted: file.Encrypted,
       gateway: file.UpEndpoint,
+      fromAccount: user.account,
+      fromWallet: user.wallet,
+      from: user.nickName,
+      isDir: !!file.items,
     }
-    
+    report({
+      type: 3,
+      walletType: user.wallet,
+      address: user.account,
+      data: {
+        cid: file.Hash,
+        fileType: file.items ? 1 : 0,
+        strategy: file.Encrypted ? 1 : 0,
+        shareType: 0
+      }
+    })
     const str = encodeURI(JSON.stringify(options))
-    r.push(`${window.location.origin}/files/share?cid=${file.Hash}&options=${str}`)
+    window.open(`${window.location.origin}/files/share?cid=${file.Hash}&options=${str}`, '_blank')
   }
 
   const queryFileApi = api && api.query?.market && api.query?.market.files

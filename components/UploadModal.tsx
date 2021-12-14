@@ -2,19 +2,20 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import axios, { CancelTokenSource } from 'axios';
+import _ from 'lodash';
 import React, { useCallback, useMemo, useState } from 'react';
-
-import { getPerfix, WrapLoginUser } from '../lib/wallet/hooks';
-import { useAuthGateway, useAuthPinner } from '../lib/useAuth';
-import { Card, Modal, Progress, Radio } from 'semantic-ui-react';
 import { useTranslation } from 'react-i18next';
-import { FileInfo, SaveFile, UploadRes } from '../lib/wallet/types';
+import { Card, Modal, Progress, Radio } from 'semantic-ui-react';
 import styled from "styled-components";
-import MDropdown from "./MDropdown";
-import Btn from "./Btn";
-import { useToggle } from "../lib/hooks/useToggle";
-import { readFileAsync, WrapUserCrypto } from "../lib/crypto/useUserCrypto";
 import { encryptFile } from "../lib/crypto/encryption";
+import { readFileAsync, WrapUserCrypto } from "../lib/crypto/useUserCrypto";
+import { useToggle } from "../lib/hooks/useToggle";
+import { report } from '../lib/http/report';
+import { useAuthGateway, useAuthPinner } from '../lib/useAuth';
+import { getPerfix, WrapLoginUser } from '../lib/wallet/hooks';
+import { FileInfo, SaveFile, UploadRes } from '../lib/wallet/types';
+import Btn from "./Btn";
+import MDropdown from "./MDropdown";
 
 export interface Props {
   className?: string,
@@ -58,7 +59,7 @@ function UploadModal(p: Props): React.ReactElement<Props> {
   const [upState, setUpState] = useState({ progress: 0, up: false });
   const [cancelUp, setCancelUp] = useState<CancelTokenSource | null>(null);
   // const [encrypt, toggleEncrypt] = useToggle(isVault)
-  const encrypt = isVault;
+  const encrypt = isVault && !!uc.secret;
   const [showOptions, toggleShowOptions] = useToggle()
 
   const _onClose = useCallback(() => {
@@ -66,9 +67,10 @@ function UploadModal(p: Props): React.ReactElement<Props> {
     onClose();
   }, [cancelUp, onClose]);
 
+  const disabledSingAndUpload = fileSizeError || (isVault && !uc.secret) || !user.account || !user.sign
   const _onClickUp = async () => {
     setError('');
-    if (fileSizeError || !user.account || !user.sign) {
+    if (disabledSingAndUpload) {
       return;
     }
     try {
@@ -163,6 +165,16 @@ function UploadModal(p: Props): React.ReactElement<Props> {
       });
 
       setUpState({ progress: 100, up: false });
+      report({
+        type: 2,
+        walletType: user.wallet,
+        address: user.account,
+        data: {
+          cid: upRes.Hash,
+          fileType: _.size(upRes.items) ? 1 : 0,
+          strategy: isEncrypt ? 1 : 0,
+        }
+      })
       onSuccess({
         ...upRes,
         PinEndpoint,
@@ -272,7 +284,7 @@ function UploadModal(p: Props): React.ReactElement<Props> {
             color={"orange"}
           />}
           {upState.up && <Btn onClick={_onClose}>{t('Cancel')}</Btn>}
-          {!upState.up && <Btn fluid onClick={_onClickUp} disabled={fileSizeError}>{t('Sign and Upload')}</Btn>}
+          {!upState.up && <Btn fluid onClick={_onClickUp} disabled={disabledSingAndUpload}>{t('Sign and Upload')}</Btn>}
         </div>
       </Modal.Actions>
     </Modal>

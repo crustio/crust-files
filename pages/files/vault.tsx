@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import React, { useCallback } from "react";
 import { Segment } from "semantic-ui-react";
 import styled from "styled-components";
@@ -19,6 +20,7 @@ function Vault(p: { className?: string }) {
   const uc = useUserCrypto()
   const wInputFile = useInputFile()
   const { isPremiumUser } = useGetDepost()
+  const r = useRouter()
 
   const _onClose = () => wInputFile.setFile(undefined);
   const _onSuccess = useCallback((res: SaveFile) => {
@@ -51,10 +53,15 @@ function Vault(p: { className?: string }) {
             <div className="title">Vault</div>
             <div className="content font-sans-regular">This is your personal file vault which is 100% private, 100% secure and 100% owned by YOU. Every file will be encrypted by a locally-stored encryption key.</div>
           </div>
-          <BtnUpload
-            onClickUpFile={() => isPremiumUser && wInputFile._onClickUpFile()}
-          // onClickUpFolder={wInputFile._onClickUpFolder}
-          />
+          <div className="btn-upload-panel">
+            <BtnUpload
+              disabled={!isPremiumUser}
+              onClickUpFile={() => isPremiumUser && wInputFile._onClickUpFile()}
+            // onClickUpFolder={wInputFile._onClickUpFolder}
+            />
+            {!isPremiumUser && <div className="unValut">Get a <span onClick={() => r.push('/user')}>Premium</span> to Unlock.</div>}
+          </div>
+
           {
             wInputFile.file && <UploadModal
               isPremium={isPremiumUser}
@@ -120,6 +127,19 @@ export default React.memo(styled(Vault)`
         line-height: 2.357143rem;
         white-space: pre-wrap;
         margin-top: 1.857143rem;
+      }
+    }
+    .btn-upload-panel {
+      .unValut {
+        font-size: 16px;
+        line-height: 18px;
+        font-family: OpenSans-SemiBold;
+        margin-top: 8px;
+        span {
+          cursor: pointer;
+          text-decoration: underline;
+          color: var(--primary-color)
+        }
       }
     }
   }

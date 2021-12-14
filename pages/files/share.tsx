@@ -6,44 +6,34 @@ import { BaseProps } from "../../components/types";
 import { useClipboard } from '../../lib/hooks/useClipboard';
 import { ShareOptions } from '../../lib/types';
 import { openDocs } from '../../lib/utils';
-// import { strToHex } from '../../lib/utils';
-import { useContextWrapLoginUser } from '../../lib/wallet/hooks';
 
 function _share(props: BaseProps) {
     const { className } = props
     const { query } = useRouter()
     const cid = query.cid;
-    const wUser = useContextWrapLoginUser()
-
-    const options = useMemo<ShareOptions>(() => {
+    const options = useMemo<ShareOptions | null>(() => {
         const optJson = query.options as string
         console.info('options:', optJson)
-        let options: ShareOptions = {
-            name: 'share.file',
-            encrypted: false,
-            gateway: 'https://gw.crustapps.net',
-        }
         if (optJson) {
-            options = JSON.parse(optJson) as ShareOptions
+            return JSON.parse(optJson) as ShareOptions
         }
-        if (wUser.nickName) {
-            options.from = wUser.nickName
-        }
-        return options
-    }, [query, wUser])
+        return null
+    }, [query])
 
     const link = useMemo(() => {
-        return `${window.location.origin}/files/receive?cid=${cid}&options=${encodeURI(JSON.stringify(options))}`
+        if (options)
+            return `${window.location.origin}/files/receive?cid=${cid}&options=${encodeURI(JSON.stringify(options))}`
+        return `${window.location.origin}/files/receive?cid=${cid}`
     }, [options])
 
     const copy = useClipboard()
     const _onClickCopy = () => copy(link)
-    const isCrustWallet = wUser.wallet === 'crust'
+    const isCrustWallet = options && options.fromWallet === 'crust'
     const title = useMemo(() => {
-        if (wUser.nickName)
-            return `${wUser.nickName}‘s Sharing Link is Successfully Created. `
+        if (options && options.from)
+            return `${options.from}‘s Sharing Link is Successfully Created. `
         return `Yours Sharing Link is Successfully Created. `
-    }, [wUser])
+    }, [options])
 
     return <div className={classNames(className)}>
         <div className="share--flex1" />

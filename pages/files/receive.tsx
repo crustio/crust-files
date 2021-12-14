@@ -1,8 +1,9 @@
 import classNames from 'classnames';
 import { useRouter } from 'next/router';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import styled from "styled-components";
 import { BaseProps } from "../../components/types";
+import { report } from '../../lib/http/report';
 import { ShareOptions } from '../../lib/types';
 import { openDocs } from '../../lib/utils';
 
@@ -14,14 +15,31 @@ function _share(props: BaseProps) {
         let options: ShareOptions = {
             name: 'file',
             encrypted: false,
+            isDir: false,
             gateway: 'https://gw.crustapps.net',
         }
         if (hexStr) {
             console.info('hexStr:', hexStr)
-            options = JSON.parse(hexStr) as ShareOptions
+            const opt = JSON.parse(hexStr) as ShareOptions
+            options = { ...options, ...opt }
         }
         return options
     }, [query])
+    useEffect(() => {
+        if (query.cid && options) {
+            report({
+                type: 3,
+                walletType: options.fromWallet,
+                address: options.fromAccount,
+                data: {
+                    cid: query.cid,
+                    fileType: options.isDir ? 1 : 0,
+                    strategy: options.encrypted ? 1 : 0,
+                    shareType: 1
+                }
+            })
+        }
+    }, [query.cid])
     const link = useMemo(() => {
         const base = options.gateway || "https://gw.crustapps.net"
         return `${base}/ipfs/${query.cid}?filename=${options.name}`

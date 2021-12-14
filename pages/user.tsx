@@ -302,6 +302,7 @@ export default React.memo<Props>(styled(Index)`
     height: 38px;
     line-height: 38px;
     border: 1px solid #999999;
+    font-family: OpenSans-Regular;
     outline: unset;
     border-radius: 8px;
     padding-left: 16px;

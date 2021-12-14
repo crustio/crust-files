@@ -43,6 +43,21 @@ export class LoginUser {
 
 }
 
+
+const NEED_REMEMBER_WALLET: LoginUser['wallet'][] = [
+  'crust',
+  'polkadot-js'
+]
+
+export function lastUser(wallet: LoginUser['wallet'], key: KEYS = 'files:login'): LoginUser | undefined {
+  return store.get(`${key}:${wallet}:last`) as LoginUser
+}
+
+export function saveLastUser(wallet: LoginUser['wallet'], data: LoginUser, key: KEYS = 'files:login') {
+  store.set(`${key}:${wallet}:last`, data)
+}
+
+
 export interface WrapLoginUser extends LoginUser {
   nickName?: string;
   setNickName: Dispatch<SetStateAction<string>>;
@@ -206,6 +221,9 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
       return nAccount;
     });
     store.set(key, nAccount);
+    if (NEED_REMEMBER_WALLET.includes(nAccount.wallet) && nAccount.account) {
+      saveLastUser(nAccount.wallet, nAccount)
+    }
   }, [near, key]);
 
   useEffect(() => {

@@ -96,7 +96,8 @@ function DefAppPage({ Component, pageProps }: AppProps) {
 }
 
 const SKIP_Login = [
-  '/files/receive'
+  '/files/receive',
+  '/files/share'
 ]
 
 export default function MApp(props: AppProps) {
