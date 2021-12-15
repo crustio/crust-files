@@ -227,6 +227,42 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
   }, [near, key]);
 
   useEffect(() => {
+    metamask.onAccountChange = (data) => {
+      console.info('accountsChange::', data, account)
+      if (!account.wallet.startsWith('metamask')) return
+      const accounts = data
+      if (accounts.length !== 0) {
+        setLoginUser({
+          account: accounts[0],
+          wallet: account.wallet
+        })
+      } else {
+        setLoginUser(defLoginUser)
+      }
+    }
+  }, [metamask, setLoginUser, account])
+
+  useEffect(() => {
+    walletConnect.onAccountChanged = (data) => {
+      if (account.wallet !== 'wallet-connect') return
+      if (data.length) {
+        console.info('wallet-connet:changed:', data)
+        setLoginUser({
+          account: data[0],
+          wallet: account.wallet
+        })
+      } else {
+        setLoginUser(defLoginUser)
+      }
+
+    }
+    walletConnect.onDisconnect = () => {
+      if (account.wallet !== 'wallet-connect') return
+      setLoginUser(defLoginUser)
+    }
+  }, [walletConnect, setLoginUser, account])
+
+  useEffect(() => {
     try {
       const f = store.get(key, defLoginUser) as LoginUser;
       setAccounts(undefined)
@@ -256,19 +292,11 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
         metamask.init()
           .then(() => {
             console.info('doInit::', metamask)
-            if (metamask.isAllowed && metamask.accounts.includes(f.account)) {
-              setAccount(f);
-              metamask.ethereum.on("accountsChanged", (data) => {
-                const accounts = data as string[]
-                if (accounts.length !== 0) {
-                  setLoginUser({
-                    account: accounts[0],
-                    wallet: f.wallet
-                  })
-                } else {
-                  setLoginUser(defLoginUser)
-                }
-              })
+            if (metamask.isAllowed && metamask.accounts.length) {
+              setAccount({
+                account: metamask.accounts[0],
+                wallet: f.wallet
+              });
             }
           })
           .then(() => setIsLoad(false))
@@ -294,20 +322,7 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
           .then(() => setIsLoad(false))
       } else if (f.wallet === 'wallet-connect') {
         walletConnect.init()
-          .then(() => {
-            setAccount(f)
-            console.info('wc::', walletConnect.connect)
-            walletConnect.connect?.on("session_update", (_, payload) => {
-              const { accounts } = payload.params[0]
-              setLoginUser({
-                wallet: 'wallet-connect',
-                account: accounts[0]
-              })
-            })
-            walletConnect.connect?.on("disconnect", () => {
-              setLoginUser(defLoginUser)
-            })
-          })
+          .then(() => setAccount(f))
           .then(() => setIsLoad(false))
       } else {
         setIsLoad(false)
