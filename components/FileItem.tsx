@@ -130,7 +130,7 @@ function FileItem(props: Props) {
   const bestNum = useCall<BlockNumber>(api?.derive?.chain?.bestNumber);
   const bestNumber = bestNum && bestNum.toNumber()
   const fileStat = useMemo<FileStat>(() => {
-    const fStat: FileStat = { status: 'Loading' }
+    const fStat: FileStat = { status: 'Submitted' }
     if (stat && !stat.isEmpty) {
       const {
         expired_at,
@@ -157,7 +157,7 @@ function FileItem(props: Props) {
         // success
         fStat.status = 'Success';
       }
-    } else if (hasQueryFileApi && (file.PinTime - new Date().getTime()) >= FailedTime) {
+    } else if (hasQueryFileApi && (new Date().getTime() - file.PinTime) >= FailedTime) {
       // 'Failed'
       fStat.status = 'Failed'
     }
