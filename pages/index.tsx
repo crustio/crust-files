@@ -2,17 +2,17 @@ import classNames from "classnames";
 import _ from 'lodash';
 import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Image } from "semantic-ui-react";
 import styled from "styled-components";
-import TypeIt from "typeit-react";
-import BgAnim from '../components/effect/BgAnim';
+import { Pixel } from "../components/effect/Pixels";
+// import BgAnim from '../components/effect/BgAnim';
 import Logo from "../components/Logo";
 import { AppContext } from "../lib/AppContext";
 import { CrustWalletDownUrl } from "../lib/config";
 import useParallax from "../lib/hooks/useParallax";
 import { report } from "../lib/http/report";
+import { openDocs } from "../lib/utils";
 import { nearConfig } from "../lib/wallet/config";
-import { LoginUser, useContextWrapLoginUser, lastUser } from "../lib/wallet/hooks";
+import { lastUser, LoginUser, useContextWrapLoginUser } from "../lib/wallet/hooks";
 interface ItemWallet {
   name: string,
   image: string,
@@ -45,7 +45,7 @@ function WalletItems(p: { gw: WalletGroup }) {
   const { data } = useParallax(100, count)
   return <div
     className="wallet_items"
-    style={{ left: `${6.39 - (5.857 * count) / 2}rem` }}>
+  >
     {
       gw.items.map((w, index) =>
         <div
@@ -371,129 +371,149 @@ function Home({ className }: { className?: string }) {
     })
   }, [wallets])
 
-  const [slogTextIndex, setSlogTextIndex] = useState(0)
-  useEffect(() => {
-    let index = 0
-    const task = setInterval(() => {
-      if (index === 3) setSlogTextIndex(1)
-      if (index === 9) setSlogTextIndex(2)
-      if (index === 14) {
-        setSlogTextIndex(0)
-        index = 0
-      }
-      index += 1
-    }, 2000)
-    return () => clearInterval(task)
-  }, [])
+  // const [slogTextIndex, setSlogTextIndex] = useState(0)
+  // useEffect(() => {
+  //   let index = 0
+  //   const task = setInterval(() => {
+  //     if (index === 3) setSlogTextIndex(1)
+  //     if (index === 9) setSlogTextIndex(2)
+  //     if (index === 14) {
+  //       setSlogTextIndex(0)
+  //       index = 0
+  //     }
+  //     index += 1
+  //   }, 2000)
+  //   return () => clearInterval(task)
+  // }, [])
 
   const [hoverWalletGroup, setHoverWalletGroup] = useState<WalletGroup | null>(null)
-
-  // const walletsDiv = useRef<HTMLDivElement>()
-  // const doScroll = (direction: 'l' | 'r') => {
-  //   if (walletsDiv.current && walletsDiv.current.children && walletsDiv.current.children.length) {
-  //     const children = walletsDiv.current.children
-  //     if (direction === 'l') {
-  //       children.item(0).scrollIntoView({ behavior: 'smooth' })
-  //     }
-  //     if (direction === 'r') {
-  //       children.item(children.length - 1).scrollIntoView({ behavior: 'smooth' })
-  //     }
-  //   }
-  // }
-
   const { data } = useParallax(100, 5)
 
   return (
+
     <div className={className}>
-      <BgAnim />
-      <Logo className={"logo"} />
-      <div className="flexN" />
-      <div className="slog font-sans-semibold">
-        <Image src={"/images/crust_box2x.png"}
-          className={classNames("slogIcon")} />
-        <div className={classNames("slogText")}>
-          {
-            slogTextIndex === 0 &&
-            <div className={"slogText1"}>
-              <TypeIt options={{ speed: 60 } as any}>
-                Enjoy storing your <br />
-                files in a <span className={'highlight'}>Web3</span> style. <br />
-                Now <span className={'highlight'}>free</span>.
-              </TypeIt>
-            </div>
-          }
-          {
-            slogTextIndex === 1 &&
-            <div className={"slogText2"}>
-              <TypeIt options={{ speed: 60 } as any}>
-                - Multi-wallet access with your Web3.0 identity<br />
-                - Absolute data privacy by end-to-end file encryption<br />
-                - IPFS storage with globally-distributed replicas
-              </TypeIt>
-            </div>
-          }
-          {
-            slogTextIndex === 2 &&
-            <div className={"slogText2"}>
-              <TypeIt options={{ speed: 60 } as any}>
-                - Easy share links to friends<br />
-                - Retrieve your files anywhere, anytime<br />
-                - Paid service with smart contract on public<br /> blockchains
-              </TypeIt>
-            </div>
-          }
+      <div className="left_panel">
+        {/* <BgAnim /> */}
+        <Logo className={"logo"} />
+        <div className="docs" onClick={() => openDocs('/docs/CrustFiles_Welcome')}>Docs</div>
+        <div style={{ flex: 1 }} />
+        <div className="slog font-sans-semibold">
+          Your<br />
+          first personal<br />
+          <span>Web3.0</span> storage<br />
+          in <span>Metaverse</span>.
+        </div>
+        <div style={{ flex: 1 }} />
+        <div className="links">
+          <a href="https://twitter" target="_blank" rel="noreferrer" />
+          <a href="https://telegram" target="_blank" rel="noreferrer" />
+          <a href="https://crust.network" target="_blank" rel="noreferrer" />
         </div>
       </div>
-      <div className="flex1" />
-
-      <div className={"wallets"}>
-        {
-          groupWallets.map((gw, index) =>
-            <div
-              key={`wallet_group_${index}`}
-              onClick={() => {
-                if (gw.onClick) {
-                  gw.onClick(gw.items[0])
-                }
-              }}
-              onMouseEnter={() => setHoverWalletGroup(() => gw)}
-              onMouseLeave={() => setHoverWalletGroup(() => null)}
-              className={classNames("wallet_group", { animFinal: data[index].value })}>
-              <img className="image" src={gw.img} />
-              <span className="text">{gw.group}</span>
-              {
-                gw.items.length > 1 && hoverWalletGroup && hoverWalletGroup.group === gw.group &&
-                <WalletItems gw={gw} />
-              }
-            </div>
-          )
-        }
-        {/* <Icon className="btn_scroll left" name="caret left" onClick={() => doScroll('l')}/> */}
-        {/* <Icon className="btn_scroll right" name="caret right" onClick={() => doScroll('r')}/> */}
+      <div className="center_panel">
+        <div className="cosmos" />
+        <Pixel className="pixel_left" position="left" fullH={true} />
+        <Pixel className="pixel_right" position="right" fullH={true} fillColor="#FF8D00" />
       </div>
-      <span
-        className={classNames("signTip font-sans-medium")}
-        dangerouslySetInnerHTML={
+      <div className="right_panel">
+        <div style={{ flex: 1 }} />
+        <div className="wallets_title">Sign-in with a Wallet</div>
+        <div className={"wallets"} style={{ alignItems: hoverWalletGroup ? 'flex-start' : 'center' }}>
           {
-            __html: "Sign-in with Web/Browser/Mobile Wallets"
-            // `Sign-in with <span>${hoverWallet.name}</span>`
+            groupWallets.map((gw, index) =>
+              <div
+                key={`wallet_group_${index}`}
+                onClick={() => {
+                  if (gw.onClick) {
+                    gw.onClick(gw.items[0])
+                  }
+                }}
+                style={{ opacity: hoverWalletGroup && hoverWalletGroup.group !== gw.group ? 0.4 : 1 }}
+                onMouseEnter={() => setHoverWalletGroup(() => gw)}
+                onMouseLeave={() => setHoverWalletGroup(() => null)}
+                className={classNames("wallet_group", { animFinal: data[index].value })}>
+                <img className="image" src={gw.img} />
+                <span className="text">{gw.group}</span>
+                {
+                  gw.items.length > 1 && hoverWalletGroup && hoverWalletGroup.group === gw.group &&
+                  <>
+                    <img className="arrow" src="/images/arrow_fill.png" />
+                    <WalletItems gw={gw} />
+                  </>
+                }
+              </div>
+            )
           }
-        } />
-      <div className={'flexN'} />
+        </div>
+        <div style={{ flex: 2 }} />
+      </div>
     </div>
+
   )
 }
 
 
-export default React.memo(styled(Home)`
+const pixels_size = 40
 
+export default React.memo(styled(Home)`
   color: white;
   display: flex;
   width: 100%;
   height: 100vh;
-  flex-direction: column;
-  align-items: center;
-  overflow: auto;
+  min-height: 960px;
+  .left_panel {
+    background-color: #000000;
+    display: flex;
+    flex: 1;
+    height: 100%;
+    flex-direction: column;
+    align-items: center;
+    overflow: auto;
+    position: relative;
+    .docs {
+      cursor: pointer;
+      position: absolute;
+      top: 50px;
+      right: 2.3rem;
+      font-size: 18px;
+      line-height: 25px;
+      font-weight: 600;
+    }
+  }
+  .center_panel {
+    width: 360px;
+    height: 100%;
+    flex-shrink: 0;
+    position: relative;
+    .cosmos {
+      width: calc(100% - ${pixels_size * 2}px);
+      margin-left: ${pixels_size}px;
+      height: 100%;
+      background: url("/images/cosmos.png");
+      background-size: contain;
+      background-position: center;
+      background-repeat: repeat-y;
+    }
+    .pixel_left {
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+    .pixel_right {
+      position: absolute;
+      right: 0;
+      top: 0;
+    }
+  }
+  .right_panel {
+    background-color: var(--primary-color);
+    width: 295px;
+    height: 100%;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 
   .logo {
     margin-left: 3.5rem;
@@ -501,104 +521,109 @@ export default React.memo(styled(Home)`
     align-self: flex-start;
   }
 
-  .flexN {
-    flex: 1;
-  }
-
-  .flex1 {
-    height: 7.8rem;
-  }
 
   .slog {
-    display: flex;
-    overflow: hidden;
-    padding-top: 1rem;
-    font-weight: 600;
-    flex-shrink: 0;
-    height: 19.8rem;
-
-    .slogIcon {
-      position: relative;
-      margin-right: 4.3rem;
-      width: 19.6rem;
-      height: 18.2rem;
+    font-size: 86px;
+    line-height: 117px;
+    width: 650px;
+    span{
+      color: var(--primary-color)
     }
-
-    .slogText {
-      position: relative;
-      width: 44.5rem;
-    }
-
-    .slogText1 {
-      font-size: 60px;
-      white-space: pre-wrap;
-      word-break: break-all;
-      line-height: 86px;
-
-      .highlight {
-        color: var(--primary-color);
-      }
-    }
-
-    .slogText2 {
-      padding-top: 40px;
-      line-height: 56px;
-      font-size: 24px;
-      white-space: pre-wrap;
-      word-break: break-all;
-    }
-
   }
-
+  .links {
+    width: 650px;
+    height: 100px;
+    align-items: flex-start;
+    flex-shrink: 0;
+    display: flex;
+    a {
+      margin-right: 40px;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      width: 32px;
+      height: 32px;
+    }
+    a:nth-child(1) {
+      background-image: url('/images/icon_twitter.png');
+    }
+    a:nth-child(2) {
+      background-image: url('/images/icon_telegram.png');
+    }
+    a:nth-child(3) {
+      background-image: url('/images/icon_crust.png');
+    }
+  }
+  .wallets_title {
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 33px;
+    padding-bottom: 32px;
+  }
   .wallets {
     height: min-content;
-    display: inline-block;
+    display: flex;
+    width: 100%;
+    flex-direction: column;
     overflow: visible;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 6rem;
     flex-shrink: 0;
-    padding: 0 3rem;
-
+    &:hover {
+      .wallet_group{
+        .image,.text {
+          position: relative;
+          transform: translateX(-55px);
+        }
+      }
+    }
     .wallet_group {
-      display: inline-block;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       overflow: visible;
-      height: 12.14rem;
-      width: 12.7857rem;
+      width: 100%;
       text-align: center;
-      padding-top: 1.857rem;
+      padding-top: 2.285714rem;
       position: relative;
       cursor: pointer;
       /* transition: all cubic-bezier(.41, .19, .21, 1.25) 1.2s; */
       /* transform: translateX(-800px); */
-
+      
       &:hover {
         .image,.text {
           filter: drop-shadow(0px 4px 16px rgba(255, 255, 255, 0.5));
           position: relative;
-          top: -1rem;
-        }
-        .wallet_items {
-          display: flex;
         }
       }
+
       .image {
-        width: 7rem;
-        height: 7rem;
-        margin-left: 2.89rem;
+        transition: all ease-in-out 300ms;
+        width: 5.142857rem;
+        height: 5.142857rem;
         display: block;
       }
       .text {
+        transition: all ease-in-out 300ms;
         font-size: 1.2857rem;
         line-height: 2.357rem;
       }
-
+      .arrow {
+        position: absolute;
+        top: 4.4rem;
+        right: 9.285714rem;
+        width: 10px;
+        height: 16px;
+      }
       .wallet_items {
         position: absolute;
-        display: none;
+        display: flex;
         overflow: hidden;
-        height: 6.86rem;
-        padding-top: 1rem;
-        top: -6.85rem;
+        flex-direction: column;
+        align-items: flex-start;
+        width: 6.86rem;
+        padding-right: 1rem;
+        top: 1.6rem;
+        right: 2rem;
+        z-index: 2;
       }
     }
     .wallet_item {
@@ -606,7 +631,8 @@ export default React.memo(styled(Home)`
       width: 5.857rem;
       text-align: center;
       cursor: pointer;
-      transform: translateY(90px);
+      padding-top: 1.714286rem;
+      transform: translateX(100px);
       transition: all cubic-bezier(.41, .19, .21, 1.25) 300ms;
       .item_image {
         margin-left: 1.14rem;
@@ -627,18 +653,4 @@ export default React.memo(styled(Home)`
       transform: none;
     }
   }
-
-  .signTip {
-    line-height: 3rem;
-    font-size: 1.5rem;
-
-    span {
-      color: var(--primary-color);
-    }
-  }
-
-  .errorInfo {
-    color: #FF5B5B;
-  }
-
 `)
