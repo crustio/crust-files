@@ -1,10 +1,14 @@
 import _ from 'lodash';
+import { useRouter } from 'next/router';
 import React, { useCallback } from "react";
 import { Dropdown, Item, Segment } from "semantic-ui-react";
 import styled from "styled-components";
+import { useClipboard } from '../lib/hooks/useClipboard';
+import { useGetDepost } from '../lib/hooks/useGetDeposit';
+import { useGetReward } from '../lib/hooks/useGetRewards';
 import { useToggle } from "../lib/hooks/useToggle";
 import { shortStr } from "../lib/utils";
-import { useContextWrapLoginUser, WrapLoginUser } from "../lib/wallet/hooks";
+import { useContextWrapLoginUser, WalletName, WrapLoginUser } from "../lib/wallet/hooks";
 import ModalSelectAccount from "./ModalSelectAccount";
 
 export interface Props {
@@ -43,12 +47,109 @@ function getWalletIcon(user: WrapLoginUser): string {
   }
 }
 
+const TwoText = styled.div`
+  .title-text{
+    font-size: 16px;
+    line-height: 24px;
+    font-family: OpenSans-Medium;
+    font-weight: 500;
+    color: var(--main-color);
+    strong {
+      font-family: OpenSans-SemiBold;
+      color: black;
+    }
+  }
+  .primary {
+    color: var(--primary-color);
+  }
+  .go-to {
+    cursor: pointer;
+    &:nth-child(n + 2){
+      margin-left: 6px;
+    }
+    text-decoration: underline;
+    color: var(--primary-color);
+    font-size: 10px;
+    font-weight: normal;
+  }
+  .sub-text {
+    font-size: 12px;
+    line-height: 24px;
+    font-family: OpenSans-Regular;
+    color: var(--secend-color);
+    strong {
+      color: black;
+      font-family: OpenSans-SemiBold;
+    }
+    .cru-fo{
+      cursor: pointer;
+      position: relative;
+      top: 4px;
+      margin-left: 8px;
+    }
+  }
+`
+
+const Line = styled.div`
+  width: 100%;
+  height: 1px;
+  background-color: #eeeeee;
+  margin: 12px 0;
+`
+
+const MBtns = styled.div`
+  display: flex;
+  margin-top: 24px;
+  .btn {
+    flex: 1;
+    height: 40px;
+    line-height: 40px;
+    border: 1px solid black;
+    border-radius: 8px;
+    color: var(--main-color);
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: center;
+  }
+  .btn:nth-child(2){
+    margin-left: 8px;
+  }
+`
+
 function User(props: Props) {
   const user = useContextWrapLoginUser();
   const _onClickLogout = useCallback(user.logout, [user])
+  const showSwitchAccount = user.wallet === 'crust' || user.wallet === 'polkadot-js'
   const [open, toggleOpen] = useToggle()
   const _onClickDocs = () => {
     window.open(`${window.location.origin}/docs/CrustFiles_Welcome`, '_blank')
+  }
+
+  const copy = useClipboard()
+  const { isPremiumUser, isCrust } = useGetDepost()
+  const { totalRewards } = useGetReward()
+  const r = useRouter()
+
+  const renderGoToGetPermium = () => {
+    return <span className='go-to' onClick={() => r.push('/user')}>Get a Premium</span>
+  }
+  const renderTitleText = () => {
+    if (isPremiumUser)
+      return <div className='title-text primary'>
+        <strong>{user.nickName}</strong> Premium User
+      </div>
+    if (isCrust)
+      return <div className='title-text'>
+        <strong>{user.nickName}</strong> Trial User {renderGoToGetPermium()}
+      </div>
+    return <div className='title-text'>Trial User</div>
+  }
+
+  const renderSubText = () => {
+    if (isCrust)
+      return <div className='sub-text'>Total Share-and-Earn Rewards: <strong>{totalRewards}</strong> CRU</div>
+    return <div className='sub-text'>{renderGoToGetPermium()}</div>
   }
 
   return <Segment basic textAlign={"right"} className={props.className}>
@@ -71,10 +172,23 @@ function User(props: Props) {
             pointing={"top right"}
             icon={<span className="cru-fo cru-fo-chevron-down" />}
             basic
-            text={shortStr(user.account)}>
+            text={ user.nickName || shortStr(user.account)}>
             <Dropdown.Menu>
-              {user.accounts && <Dropdown.Item text={'Switch Account'} onClick={() => toggleOpen()} />}
-              <Dropdown.Item text={'Logout'} onClick={_onClickLogout} />
+              <TwoText>
+                <div className='title-text'>Sign-in Wallet : {WalletName[user.wallet]}</div>
+                <div className='sub-text'>
+                  {shortStr(user.account, 14)}<span onClick={() => copy(user.account)} className='cru-fo cru-fo-copy' />
+                </div>
+              </TwoText>
+              <Line />
+              <TwoText>
+                {renderTitleText()}
+                {renderSubText()}
+              </TwoText>
+              <MBtns>
+                {showSwitchAccount && <div className='btn' onClick={() => toggleOpen(true)}>Switch Account</div>}
+                <div className='btn' onClick={_onClickLogout}>Log Out</div>
+              </MBtns>
             </Dropdown.Menu>
           </Dropdown>
         </Item.Content>
@@ -113,7 +227,7 @@ export default React.memo(styled(User)`
     width: 4.3rem !important;
     height: 4.3rem !important;
     margin-right: 1rem !important;
-    filter: drop-shadow(0px 4px 5px rgba(0, 0, 0, 0.15));
+    /* filter: drop-shadow(0px 4px 5px rgba(0, 0, 0, 0.15)); */
   }
 
   .items > .item.tiny {
@@ -139,17 +253,11 @@ export default React.memo(styled(User)`
       background: #FFFFFF;
       box-shadow: 0 0.57rem 1.43rem 0 rgba(0, 0, 0, 0.1);
       border-radius: 0.86rem;
+      width: 328px;
       border: 0.07rem solid #EEEEEE;
-      padding: 0.57rem;
+      padding: 16px;
+      margin-top: 1.6rem !important;
 
-      .item {
-        padding: 0.78rem 0.57rem !important;
-        border-radius: 0.57rem;
-
-        &:active {
-          background-color: #EEEEEE;
-        }
-      }
     }
   }
 `)

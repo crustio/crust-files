@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Segment } from "semantic-ui-react";
 import styled from "styled-components";
@@ -9,11 +9,8 @@ import { MCard } from '../components/MCard';
 import SideLayout from "../components/SideLayout";
 import User from "../components/User";
 import { useClaimRewards } from "../lib/hooks/useClaimRewards";
-import { useGet } from "../lib/hooks/useGet";
 import { useGetDepost } from "../lib/hooks/useGetDeposit";
-import { getReward } from "../lib/http/share_earn";
-import { trimZero } from "../lib/utils";
-import { useContextWrapLoginUser } from "../lib/wallet/hooks";
+import { useGetReward } from "../lib/hooks/useGetRewards";
 
 export interface Props {
   className?: string
@@ -25,13 +22,12 @@ function Index(props: Props) {
   const { className } = props
   const { t } = useTranslation()
   const r = useRouter()
-  const { account } = useContextWrapLoginUser()
-  const { isPremiumUser, isCrust } = useGetDepost()
+  const { isPremiumUser } = useGetDepost()
   const uClaimRewards = useClaimRewards()
   const _clickClaimRewards = () => {
     uClaimRewards.start()
   }
-  const [reward, doGetReward] = useGet(() => getReward(account), [account, isCrust])
+  const { hasReward, totalRewards, claimedRewards, validCount, claimOngoing, doGetReward} = useGetReward()
   useEffect(() => {
     let task
     if (uClaimRewards.finish) {
@@ -48,11 +44,7 @@ function Index(props: Props) {
     }
     return () => task && clearInterval(task)
   }, [uClaimRewards.finish])
-  const hasReward = reward && reward.pendingReward
-  const totalRewards = useMemo(() => trimZero(`${reward?.pendingReward || '0'}`), [reward])
-  const claimedRewards = useMemo(() => trimZero(`${reward?.claimedReward || '0'}`), [reward])
-  const validCount = useMemo(() => reward && reward.totalInvition, [reward])
-  const onGoingClaim = uClaimRewards.finish || (reward && reward.claimOngoing)
+  const onGoingClaim = uClaimRewards.finish || claimOngoing
   const disabledClaimRewards = !uClaimRewards.ready || !hasReward || onGoingClaim
   const _clickGetPremium = () => r.push('/user')
   return <SideLayout path={'/share-earn'}>

@@ -43,6 +43,19 @@ export class LoginUser {
 
 }
 
+export const WalletName: { [k in LoginUser['wallet']]: string } = {
+  "crust": 'Crust Wallet',
+  "metamask": 'MetaMask',
+  "metamask-Polygon": "MetaMask",
+  "metamask-Moonriver": "MetaMask",
+  "polkadot-js": "Polkadot Extension",
+  "near": "Near Wallet",
+  "elrond": "Elrond(Maiar Wallet)",
+  "flow": "Flow Wallet",
+  "solana": "Solana(Phantom Wallet)",
+  "wallet-connect": "WalletConnect"
+}
+
 
 const NEED_REMEMBER_WALLET: LoginUser['wallet'][] = [
   'crust',

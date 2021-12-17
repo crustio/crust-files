@@ -14,26 +14,13 @@ import { parseUserCrypto, useUserCrypto } from "../../lib/crypto/useUserCrypto";
 import { useClipboard } from "../../lib/hooks/useClipboard";
 import { useToggle } from "../../lib/hooks/useToggle";
 import { ExportObj, SaveFile } from "../../lib/types";
-import { LoginUser, useContextWrapLoginUser, useFiles } from "../../lib/wallet/hooks";
+import { useContextWrapLoginUser, useFiles, WalletName } from "../../lib/wallet/hooks";
 
 export interface Props {
   className?: string
 }
 
 type FunInputFile = (e: React.ChangeEvent<HTMLInputElement>) => void
-
-const WalletName: { [k in LoginUser['wallet']]: string } = {
-  "crust": 'Crust Wallet',
-  "metamask": 'MetaMask',
-  "metamask-Polygon": "MetaMask",
-  "metamask-Moonriver": "MetaMask",
-  "polkadot-js": "Polkadot Extension",
-  "near": "Near Wallet",
-  "elrond": "Elrond(Maiar Wallet)",
-  "flow": "Flow Wallet",
-  "solana": "Solana(Phantom Wallet)",
-  "wallet-connect": "WalletConnect"
-}
 
 function Index(props: Props) {
   const { className } = props
