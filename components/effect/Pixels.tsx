@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import React, { CSSProperties, useMemo } from "react";
+import React, { CSSProperties, MouseEventHandler, useMemo } from "react";
 import styled from "styled-components";
 import { BaseProps } from "../types";
 const defWidth = 120;
@@ -10,6 +10,7 @@ export interface Props extends BaseProps {
     fullH?: boolean,
     color?: string,
     fillColor?: string,
+    type?: 1 | 2
 }
 
 
@@ -26,16 +27,17 @@ function _Pixel(props: Props) {
         count = 3,
         width = defWidth,
         color = '#191919',
-        fillColor = '#000000'
+        fillColor = '#000000',
+        type = 2
     } = props
     const mCount = fullH ? count + 1 : count
     const size = useMemo(() => Math.round(width / mCount), [width, mCount])
-
+    const tHeight = useMemo(() => ((mCount - 1) * 2 + type) * size, [mCount, type, size])
     const pixels = useMemo(() => {
         const items: Pixel[] = []
         for (let index = 0; index < mCount; index++) {
             const isFull = index === 0 && fullH
-            const h = isFull ? '100%' : width * 2 - index * 2 * size;
+            const h = isFull ? '100%' : tHeight - index * 2 * size;
             const top = isFull ? 0 : `calc(50% - ${Math.round((h as number) / 2)}px)`
             const style: CSSProperties = {
                 position: 'absolute',
@@ -52,12 +54,12 @@ function _Pixel(props: Props) {
             items.push({ style })
         }
         return items
-    }, [mCount, size, width, fullH, position])
+    }, [mCount, size, tHeight, fullH, position])
 
     const fillPixels = useMemo(() => {
         const items: Pixel[] = []
         for (let index = 0; index < mCount - 1; index++) {
-            const h = width * 2 - (index + 1) * 2 * size;
+            const h = tHeight - (index + 1) * 2 * size;
             const top = `calc(50% - ${Math.round((h as number) / 2)}px)`
             const style: CSSProperties = {
                 position: 'absolute',
@@ -75,10 +77,10 @@ function _Pixel(props: Props) {
             items.push({ style })
         }
         return items
-    }, [mCount, size, width, fullH, position])
+    }, [mCount, size, tHeight, fullH, position])
     return <div className={classNames(className, position)}>
-        {pixels.map((item,index) => <div key={`pixels_${index}`} style={item.style} />)}
-        {fillPixels.map((item,index) => <div key={`fill_pixels_${index}`} style={item.style} />)}
+        {pixels.map((item, index) => <div key={`pixels_${index}`} style={item.style} />)}
+        {fillPixels.map((item, index) => <div key={`fill_pixels_${index}`} style={item.style} />)}
     </div>
 }
 
@@ -86,6 +88,7 @@ export const Pixel = styled(_Pixel) <Props>`
     z-index: 2;
     display: flex;
     height: 100%;
+    position: relative;
     width: ${({ width = defWidth }) => width}px;
     &.left {
         flex-direction: row;
@@ -96,13 +99,65 @@ export const Pixel = styled(_Pixel) <Props>`
 `
 
 
-// export type BtnProps = BaseProps
-// function _PixelBtn(props: BtnProps) {
-//     return <div>
-//         <Pixel position="right" />
-//         <div />
-//         <Pixel position="left" />
-//     </div>
-// }
+const defColor = '#999999'
+const defFillColor = '#000000'
+export interface BtnProps extends BaseProps {
+    height: number,
+    color?: string,
+    fillColor?: string,
+    content: string | React.ReactNode,
+    onClick?: MouseEventHandler<HTMLDivElement>,
+}
 
+function _PixelBtn(props: BtnProps) {
+    const {
+        height = 60,
+        className,
+        color = defColor,
+        fillColor = defFillColor,
+        content,
+        onClick
+    } = props
+    const width = Math.round((height / 5) * 3);
+
+    return <div className={className} onClick={onClick}>
+        <Pixel
+            type={1}
+            width={width}
+            color={color}
+            fillColor={fillColor}
+            position="right"
+        />
+        <div className="btn_content">{content}</div>
+        <Pixel
+            type={1}
+            width={width}
+            color={color}
+            fillColor={fillColor}
+            position="left"
+        />
+    </div>
+}
+
+export const PixelBtn = styled(_PixelBtn) <BtnProps>`
+    display: flex;
+    align-items: center;
+    width: min-content;
+    height: ${({ height }) => height}px;
+    cursor: pointer;
+    .btn_content {
+        height: 100%;
+        line-height: ${({ height }) => height}px;
+        padding: 0 20px;
+        min-width: 230px;
+        font-size: 24px;
+        font-family: OpenSans-SemiBold;
+        color: white;
+        text-align: center;
+        background-color: ${({ fillColor = defFillColor }) => fillColor};
+    }
+    &:hover {
+        
+    }
+`
 

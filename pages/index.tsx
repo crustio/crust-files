@@ -3,7 +3,9 @@ import _ from 'lodash';
 import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import styled from "styled-components";
+import { PixelBg } from "../components/effect/PixelBg";
 import { Pixel } from "../components/effect/Pixels";
+import { Links } from "../components/Links";
 // import BgAnim from '../components/effect/BgAnim';
 import Logo from "../components/Logo";
 import { AppContext } from "../lib/AppContext";
@@ -394,20 +396,19 @@ function Home({ className }: { className?: string }) {
     <div className={className}>
       <div className="left_panel">
         {/* <BgAnim /> */}
-        <Logo className={"logo"} />
-        <div className="docs" onClick={() => openDocs('/docs/CrustFiles_Welcome')}>Docs</div>
-        <div style={{ flex: 1 }} />
-        <div className="slog font-sans-semibold">
-          Your<br />
-          first personal<br />
-          <span>Web3.0</span> storage<br />
-          in <span>Metaverse</span>.
-        </div>
-        <div style={{ flex: 1 }} />
-        <div className="links">
-          <a href="https://twitter" target="_blank" rel="noreferrer" />
-          <a href="https://telegram" target="_blank" rel="noreferrer" />
-          <a href="https://crust.network" target="_blank" rel="noreferrer" />
+        <PixelBg className="bg" />
+        <div className="panel">
+          <Logo className={"logo"} />
+          <div className="docs" onClick={() => openDocs('/docs/CrustFiles_Welcome')}>Docs</div>
+          <div style={{ flex: 1 }} />
+          <div className="slog font-sans-semibold">
+            Your<br />
+            first personal<br />
+            <span>Web3.0</span> storage<br />
+            in <span>Metaverse</span>.
+          </div>
+          <div style={{ flex: 1 }} />
+          <Links className="links" />
         </div>
       </div>
       <div className="center_panel">
@@ -463,13 +464,26 @@ export default React.memo(styled(Home)`
   min-height: 960px;
   .left_panel {
     background-color: #000000;
-    display: flex;
     flex: 1;
     height: 100%;
-    flex-direction: column;
-    align-items: center;
-    overflow: auto;
     position: relative;
+    .bg {
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      z-index: 0;
+    }
+    .panel {
+      z-index: 1;
+      display: flex;
+      width: 100%;
+      height: 100%;
+      flex-direction: column;
+      align-items: center;
+      overflow: auto;
+      position: relative;
+    }
     .docs {
       cursor: pointer;
       position: absolute;
@@ -533,26 +547,7 @@ export default React.memo(styled(Home)`
   .links {
     width: 650px;
     height: 100px;
-    align-items: flex-start;
     flex-shrink: 0;
-    display: flex;
-    a {
-      margin-right: 40px;
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-position: center;
-      width: 32px;
-      height: 32px;
-    }
-    a:nth-child(1) {
-      background-image: url('/images/icon_twitter.png');
-    }
-    a:nth-child(2) {
-      background-image: url('/images/icon_telegram.png');
-    }
-    a:nth-child(3) {
-      background-image: url('/images/icon_crust.png');
-    }
   }
   .wallets_title {
     font-weight: 600;

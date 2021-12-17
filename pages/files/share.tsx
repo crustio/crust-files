@@ -2,10 +2,14 @@ import classNames from 'classnames';
 import { useRouter } from 'next/router';
 import React, { useMemo } from 'react';
 import styled from "styled-components";
+import { Pixel, PixelBtn } from '../../components/effect/Pixels';
+import { Links } from '../../components/Links';
 import { BaseProps } from "../../components/types";
 import { useClipboard } from '../../lib/hooks/useClipboard';
+import { useGet } from '../../lib/hooks/useGet';
+import { getShareEarnConfig } from '../../lib/http/share_earn';
 import { ShareOptions } from '../../lib/types';
-import { openDocs } from '../../lib/utils';
+import { formatCRU } from '../../lib/utils';
 
 function _share(props: BaseProps) {
     const { className } = props
@@ -28,50 +32,45 @@ function _share(props: BaseProps) {
 
     const copy = useClipboard()
     const _onClickCopy = () => copy(link)
-    const isCrustWallet = options && options.fromWallet === 'crust'
-    const title = useMemo(() => {
-        if (options && options.from)
-            return `${options.from}‘s Sharing Link is Successfully Created. `
-        return `Yours Sharing Link is Successfully Created. `
-    }, [options])
+    const [config] = useGet(() => getShareEarnConfig())
+    const eachReward = useMemo(() => formatCRU(config && config.shareAndEarnPerUserReward), [config])
+    const from = (options && options.from) ? options.from : ''
 
     return <div className={classNames(className)}>
-        <div className="share--flex1" />
         <div className="share--panel">
+            {/* <img className="share-logo" src="/images/share_logo.png" /> */}
+            <img className="logo" src="/images/logo_12x.png" />
             <div className="share--flex1" />
-            <img className="share-logo" src="/images/share_logo.png" />
             <div className="share-info">
-                <img className="logo" src="/images/logo_12x.png" />
-                <div className="title">{title}</div>
-                <div className="link-btn">
-                    <span className="link">{link}</span>
-                    <span className="btn" onClick={_onClickCopy}>Copy Link</span>
+                <div className="title">
+                    {from && <><span>{from}</span>,<br /></>}
+                    You have successfully created a sharelink!
                 </div>
+                <div className='link'>{link}</div>
+                <PixelBtn
+                    onClick={_onClickCopy}
+                    height={60}
+                    content="Copy Link"
+                    color='#E46A11'
+                    fillColor='#FF8D00'
+                />
             </div>
             <div className="share--flex1" />
         </div>
-        <div className="share--flex1" />
+        <div className='share--pixels'>
+            <Pixel className="pixel_right" position="right" fullH={true} />
+        </div>
         <div className="share--activity">
-            <div className="share--flex1" />
-            <div className="texts">
-                <div className="title">
-                    Share files to your friends and invite them to use <span>Crust Files</span>. Enjoy and Earn <span>$CRU</span> !!!
-                </div>
-                {
-                    isCrustWallet ?
-                        <div className="text">
-                            1. Share files to your friends and invite them to use Crust Files.<br />
-                            2. For every effective invitation (as your friend becomes a Premium User), you get 0.5 $CRU reward.
-                        </div> :
-                        <div className="text">
-                            1. Log in to Crust Files with Crust Wallet.<br />
-                            2. Share files to your friends and invite them to use Crust Files.<br />
-                            3. For every effective invitation (as your friend becomes a Premium User), you get 0.5 $CRU reward.
-                        </div>
-                }
+            <div className='text'>
+                <span>Share</span> fun<br />
+                and <span>invite</span><br />
+                your friends<br />
+                to Crust Files,<br />
+                Win <span>{eachReward} CRU</span><br />
+                for each <br />
+                invitation!
             </div>
-            <div className="btn-share-earn" onClick={() => openDocs('/docs/CrustFiles_ShareandEarn')}>Learn more about Share-and-Earn</div>
-            <div className="share--flex1" />
+            <Links className='links' />
         </div>
     </div>
 }
@@ -79,101 +78,83 @@ function _share(props: BaseProps) {
 export default React.memo(styled(_share)`
     width: 100%;
     height: 100vh;
+    min-height: 788px;
     background: white;
     display: flex;
-    flex-direction: column;
 
     .share--flex1 {
         flex: 1;
     }
     .share--panel {
         display: flex;
-        .share-logo {
-            height: 22.857143rem;
-            margin-right: 4.285714rem;
-        }
-
-        .share-info {
-            padding-top: 2.857143rem;
-            .logo {
-                height: 35px;
-            }
-            .title {
-                font-size: 2.285714rem;
-                line-height: 3.142857rem;
-                font-weight: 600;
-                margin-top: 1.714286rem;
-                margin-bottom: 2.285714rem;
-            }
-            .link-btn {
-                display: inline-block;
-                font-size: 1.142857rem;
-                height: 4.285714rem;
-                line-height: 4.285714rem;
-                border-radius: .857143rem;
-                border: 1px solid var(--main-color);
-                overflow: hidden;
-                .link {
-                    display: inline-block;
-                    max-width: 28.9rem;
-                    width: 28.9rem;
-                    color: var(--secend-color);
-                    padding-left: 1.142857rem;
-                    padding-right: 3.142857rem;
-                    white-space: nowrap;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                }
-                .btn{
-                    min-width: 18.285714rem;
-                    text-align: center;
-                    vertical-align: top;
-                    display: inline-block;
-                    background: var(--main-color);
-                    cursor: pointer;
-                    color: white;
-                    font-weight: 600;
-                    padding: 0 1.428571rem;
-                    
-                }
-            }
-        }
-    }
-    .share--activity {
-        background: var(--main-color);
-        padding: 1.142857rem 0;
-        flex-shrink: 0;
-        font-size: 1rem;
-        color: white;
-        text-align: center;
-        display: flex;
+        flex-direction: column;
+        position: relative;
+        height: 100%;
+        flex: 1;
         align-items: center;
-        .texts {
-            text-align: start;
-            margin-right: 60px;
+        .logo {
+            height: 35px;
+            align-self: flex-start;
+            margin-top: 36px;
+            margin-left: 50px;
+        }
+        .share-info {
+            width: 687px;
+            padding-bottom: 10rem;
             .title {
-                color: white;
-                font-size: 1.142857rem;
-                margin-bottom: 8px;
-        
+                font-size: 60px;
+                line-height: 82px;
+                font-family: OpenSans-SemiBold;
+                color: black;
                 span {
                     color: var(--primary-color);
                 }
             }
-            .text {
-                line-height: 1.357143rem;
-                color: #cccccc;
+            .link {
+                font-size: 28px;
+                width: 100%;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                line-height: 38px;
+                margin-top: 24px;
+                margin-bottom: 84px;
+                color: var(--secend-color);
+            }
+            
+        }
+    }
+    .share--pixels {
+        width: 180px;
+        position: relative;
+        flex-shrink: 0;
+        .pixel_right {
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
+    }
+    .share--activity {
+        background: black;
+        padding: 86px 10px 56px 55px;
+        width: 495px;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+
+        .text {
+            font-size: 60px;
+            line-height: 82px;
+            font-family: OpenSans-SemiBold;
+            color: white;
+            span {
+                color: var(--primary-color);
             }
         }
-        .btn-share-earn {
-            border: 1px solid #FFFFFF;
-            border-radius: 12px;
-            padding: 1rem 2.285714rem;
-            color: white;
-            cursor: pointer;
-            font-size: 1.14rem;
-            font-weight: 600;
+        .links {
+            margin-top: 40px;
+            flex-shrink: 0;
+            height: 60px;
         }
-        
     }
 `)

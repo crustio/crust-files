@@ -40,9 +40,10 @@ export const trimZero = (str: string, decimals = 4): string => {
   if (dotIndex >= 0 && (t.length - dotIndex - 1) > decimals) {
     t = t.substring(0, dotIndex + decimals + 1)
   }
-  while (t !== '0' && t.endsWith('0') && !t.endsWith('.0')) {
+  while (t !== '0' && t.endsWith('0')) {
     t = t.substring(0, t.length - 1)
   }
+  if (t.endsWith('.')) return t.substring(0, t.length - 1)
   return t
 }
 
