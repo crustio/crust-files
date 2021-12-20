@@ -2,6 +2,7 @@ import classNames from 'classnames';
 import { useRouter } from 'next/router';
 import React, { useMemo } from 'react';
 import styled from "styled-components";
+import { PixelBg } from '../../components/effect/PixelBg';
 import { Pixel, PixelBtn } from '../../components/effect/Pixels';
 import { Links } from '../../components/Links';
 import { BaseProps } from "../../components/types";
@@ -61,6 +62,7 @@ function _share(props: BaseProps) {
             <Pixel className="pixel_right" position="right" fullH={true} />
         </div>
         <div className="share--activity">
+            <PixelBg type={2} />
             <div className='text'>
                 <span>Share</span> fun<br />
                 and <span>invite</span><br />
@@ -141,8 +143,10 @@ export default React.memo(styled(_share)`
         flex-shrink: 0;
         display: flex;
         flex-direction: column;
+        position: relative;
 
         .text {
+            z-index: 2;
             font-size: 60px;
             line-height: 82px;
             font-family: OpenSans-SemiBold;
@@ -152,6 +156,7 @@ export default React.memo(styled(_share)`
             }
         }
         .links {
+            z-index: 2;
             margin-top: 40px;
             flex-shrink: 0;
             height: 60px;
