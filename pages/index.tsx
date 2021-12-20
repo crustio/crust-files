@@ -295,20 +295,20 @@ function Home({className}: { className?: string }) {
     })
   }, [_onClickWalletConnect])
 
-  const [slogTextIndex, setSlogTextIndex] = useState(0)
-  useEffect(() => {
-    let index = 0
-    const task = setInterval(() => {
-      if (index === 3) setSlogTextIndex(1)
-      if (index === 9) setSlogTextIndex(2)
-      if (index === 14) {
-        setSlogTextIndex(0)
-        index = 0
-      }
-      index += 1
-    }, 2000)
-    return () => clearInterval(task)
-  }, [])
+  // const [slogTextIndex,setSlogTextIndex] = useState(0)
+  // useEffect(() => {
+  //   let index = 0
+  //   const task = setInterval(() => {
+  //     if (index === 3) setSlogTextIndex(1)
+  //     if (index === 9) setSlogTextIndex(2)
+  //     if (index === 14) {
+  //       setSlogTextIndex(0)
+  //       index = 0
+  //     }
+  //     index += 1
+  //   }, 2000)
+  //   return () => clearInterval(task)
+  // }, [])
 
   const [hoverWallet, setHoverWallet] = useState<ItemWallet | null>(null)
 
@@ -327,14 +327,30 @@ function Home({className}: { className?: string }) {
 
   return (
     <div className={className}>
-      <BgAnim/>
-      <Logo className={"logo"}/>
-      <div className="flexN"/>
+      <BgAnim />
+      <div className="logo_panel">
+        <Logo className={"logo"} />
+        <span className="beta">Beta</span>
+        <div className="coming-soon">
+          <span className="num">$50,000,000</span>
+          <span className="sub">REWARDS PROGRAM FOR USERS</span>
+          <span className="soon">COMING<br/>SOON...</span>
+        </div>
+      </div>
+      <div className="flexN" />
       <div className="slog font-sans-semibold">
         <Image src={"/images/crust_box2x.png"}
                className={classNames("slogIcon")}/>
         <div className={classNames("slogText")}>
-          {
+          {/* <img src={"/images/beta.png"}/> */}
+          <div className={"slogText1"}>
+              <TypeIt options={{speed: 60, loop: true, loopDelay: [1000,3000]} as any}>
+              Crust Files,<br/>
+              A Gift for Web 3.0<br/>
+              and Metaverse
+              </TypeIt>
+            </div>
+          {/* {
             slogTextIndex === 0 &&
             <div className={"slogText1"}>
               <TypeIt options={{speed: 60} as any}>
@@ -363,7 +379,7 @@ function Home({className}: { className?: string }) {
                 - Paid service with smart contract on public<br/> blockchains
               </TypeIt>
             </div>
-          }
+          } */}
         </div>
       </div>
       <div className="flex1"/>
@@ -445,10 +461,54 @@ export default React.memo(styled(Home)`
   align-items: center;
   overflow: auto;
 
-  .logo {
+  .logo_panel {
     margin-left: 3.5rem;
     margin-top: 3rem;
     align-self: flex-start;
+    display: block;
+    .logo {
+      display: inline-block;
+    }
+    .beta {
+      display: inline-block;
+      position: relative;
+      vertical-align: top;
+      color: #EC5A29;
+      top: -5px;
+      left: 1px;
+      font-size: 10px;
+    }
+    .coming-soon{
+      position: absolute;
+      right: 100px;
+      top: 100px;
+
+      border-bottom: 3px solid white;
+      color: white;
+      width: 446px;
+      padding-bottom: 8px;
+      .num {
+        font-size: 50px;
+        line-height: 50px;
+        display: block;
+        /* transform: scaleY(1.3); */
+        font-family: 'OpenSans-SemiBold';
+      }
+      .sub {
+        z-index: 2;
+        display: block;
+        font-size: 16px;
+        font-family: 'OpenSans-Medium';
+      }
+      .soon {
+        position: absolute;
+        top: 3px;
+        line-height: 36px;
+        right: 0;
+        font-size: 30px;
+        font-family: 'OpenSans-SemiBold';
+      }
+    }
   }
 
   .flexN {
