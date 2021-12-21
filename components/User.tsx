@@ -9,6 +9,7 @@ import { useGetReward } from '../lib/hooks/useGetRewards';
 import { useToggle } from "../lib/hooks/useToggle";
 import { shortStr } from "../lib/utils";
 import { useContextWrapLoginUser, WalletName, WrapLoginUser } from "../lib/wallet/hooks";
+import { Links } from './Links';
 import ModalSelectAccount from "./ModalSelectAccount";
 
 export interface Props {
@@ -162,9 +163,11 @@ function User(props: Props) {
       />
     }
     <Item.Group>
-      <Item style={{ justifyContent: 'flex-end' }}>
+      <Item style={{ justifyContent: 'flex-end', alignItems: 'center' }}>
+        <Links className='dark' space={16}/>
         <div className="docs" onClick={_onClickDocs}>
-          <span className="cru-fo cru-fo-file-text" /> Docs
+          {/* <span className="cru-fo cru-fo-file-text" />  */}
+          Docs
         </div>
         <Item.Image src={getWalletIcon(user)} size={'tiny'} />
         <Item.Content verticalAlign={"middle"} style={{ flex: 'unset', paddingLeft: '0.7rem' }}>
@@ -204,7 +207,8 @@ export default React.memo(styled(User)`
   width: 100%;
 
   .docs {
-    margin-top: 20px;
+    /* margin-top: 20px; */
+    margin-left: 20px;
     display: inline-block;
     color: var(--main-color);
     height: 24px;

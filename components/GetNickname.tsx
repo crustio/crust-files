@@ -97,7 +97,7 @@ function _GetNickname(props: BaseProps) {
     const showGetNickname = _.isEmpty(member) && account && wallet === 'crust' && !wUser.nickName
     if (!showGetNickname) return null
     if (loading.isLoading) return <div className={className} />
-    return <div className={className} onClick={(e) => e.preventDefault()}>
+    return <div className={className}>
         <div className="flex">
             <img className="logo" src="/images/logo_12x.png" />
             <User className="get_nickname_User" />

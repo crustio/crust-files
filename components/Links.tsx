@@ -13,8 +13,8 @@ export interface Props extends BaseProps {
 function _Links(props: Props) {
     const { className } = props
     return <div className={className}>
-        <a href="https://twitter" target="_blank" rel="noreferrer" />
-        <a href="https://telegram" target="_blank" rel="noreferrer" />
+        <a href="https://twitter.com/CrustNetwork" target="_blank" rel="noreferrer" />
+        <a href="https://t.me/CrustNetwork" target="_blank" rel="noreferrer" />
         <a href="https://crust.network" target="_blank" rel="noreferrer" />
     </div>
 }
@@ -44,5 +44,9 @@ export const Links = styled(_Links)`
     }
     a:last-child{
       margin-right: 0;
+    }
+
+    &.dark {
+      filter: invert(80%);
     }
 `

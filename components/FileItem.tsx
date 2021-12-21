@@ -96,6 +96,9 @@ function FileItem(props: Props) {
       window.open(createUrl(file, endpoints), '_blank')
     }
   }, [uc, file, endpoints])
+  const _onClickSearch = () => {
+    window.open(`https://ipfsscan.crustapps.net?cid=${file.Hash}`, '_blank')
+  }
   // const _onClickCopy = useCallback(() => copy(createUrl(file, endpoints)), [file, endpoints])
   // const r = useRouter()
   const user = useContextWrapLoginUser()
@@ -228,6 +231,15 @@ function FileItem(props: Props) {
           <span
             className="cru-fo cru-fo-trash-2"
             style={{ marginLeft: '1rem' }} onClick={_onClickDelete} />
+        }
+      />
+      <Popup
+        position={"top center"}
+        content={"IPFS Scan"}
+        trigger={
+          <span
+            className="cru-fo cru-fo-search"
+            style={{ marginLeft: '1rem' }} onClick={_onClickSearch} />
         }
       />
 

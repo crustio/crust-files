@@ -49,21 +49,26 @@ function Index(props: Props) {
   const showClaim = isCrust && hasDeposit
   const [dest] = useGet(() => getDepositAddress())
   const fValue = useMemo(() => formatCRU(value), [value])
+  const cTime = useMemo(() => new Date().getTime(),[])
   const fCalimValue = useMemo(() => {
     if (!hasDeposit) return '-'
-    const s = new Date().getTime() / 1000
     // 提前赎回
-    if (deposit.deposit.expire_timestamp > s) {
+    if (deposit.deposit.expire_timestamp > cTime) {
       return trimZero(deposit.deposit.claim_amount)
     }
     return trimZero(deposit.deposit.deposit_amount)
-  }, [hasDeposit])
+  }, [hasDeposit,cTime])
   const guaranteeAmount = useMemo(() => formatCRU(config?.guaranteeAmount || ''), [config])
   const guaranteeDiscountWithReferer = useMemo(() => formatCRU(config?.guaranteeDiscountWithReferer || ''), [config])
-  const months = useMemo(() => {
-    if (!config || !showClaim) return 6
+  // const months = useMemo(() => {
+  //   if (!config || !showClaim) return '-'
+  //   const s = new Number(config.guaranteePeriod).valueOf()
+  //   return Math.round(s / 60 / 60 / 24 / 30)
+  // }, [showClaim, config])
+  const days = useMemo(() => {
+    if (!config || !showClaim) return '-'
     const s = new Number(config.guaranteePeriod).valueOf()
-    return Math.round(s / 60 / 60 / 24 / 30)
+    return Math.round(s / 60 / 60 / 24)
   }, [showClaim, config])
   const periodTime = useMemo(() => {
     if (!hasDeposit) return '--:--:--'
@@ -98,7 +103,7 @@ function Index(props: Props) {
   const onGoingDeposit = uDeposit.finish || (deposit && deposit.depositOngoing)
   const disabledDeposit = !uDeposit.ready || !value || onGoingDeposit
   const onGoingClaim = uClaim.finish || (deposit && deposit.claimOngoing)
-  const disabledClaim = !uClaim.ready || onGoingClaim
+  const disabledClaim = !uClaim.ready || onGoingClaim || (hasDeposit && deposit.deposit.expire_timestamp >= cTime)
   const _onClickDownCrustWallet = () => window.open(CrustWalletDownUrl, '_blank')
   const _onClickDeposit = () => { uDeposit.start() }
   const _onClickClaim = () => { uClaim.start() }
@@ -119,11 +124,11 @@ function Index(props: Props) {
               <div className="t-item">End-2-end File Encryption<img className="icon" src="/images/icon_hook.png" /></div>
               <div className="t-item">Maximum Upload Size=<span>1GB</span></div>
               <div className="t-item">
-                <span>Renew</span> On-chain Storage Order<span className="space" />
-                Place <span>“Permanent Storage Order”</span>
+                <span>Renew</span> On-chain Storage Order & Place <span>“Permanent Storage Order”</span>
               </div>
               <div className="t-item">More Space</div>
               <div className="t-item"><span>Claim Rewards</span> from “Share-and-Earn”</div>
+              <div className="t-item">Priority access to <span>future airdrops</span> and other exclusive benefits</div>
             </div>
             <div className="mtable trial">
               <div className="t-title">Trial User</div>
@@ -132,6 +137,7 @@ function Index(props: Props) {
               <div className="t-item">Storage Order Expires in <span>6 Months</span></div>
               <div className="t-item"><span>Limited</span> Space</div>
               <div className="t-item"><span>Cannot</span> Claim Rewards from “Share-and-Earn”</div>
+              <div className="t-item"><span>Limited</span> access to future airdrops or other exclusive benefits</div>
             </div>
           </div>
         </div>
@@ -146,8 +152,11 @@ function Index(props: Props) {
         {
           showDeposit && <MCard>
             <div className="title font-sans-semibold">Get a Premium</div>
-            <div className="text font-sans-regular">A Premium user plan asks for {guaranteeAmount} CRU deposit. If you have an invitation code, which is the Metaverse Citizen ID of your inviter, the deposit is {guaranteeDiscountWithReferer} CRU.</div>
-
+            <div className="text font-sans-regular">
+              Deposit <span className='origin'>{5} CRU</span><span className='reffer'>(now {guaranteeAmount} CRU for New Year Discount!)</span> to become a Premium User. <br/>
+              Deposit <span className='origin'>{4} CRU</span><span className='reffer'>(now {guaranteeDiscountWithReferer} CRU for New Year Discount!)</span> if you have an invitation code (the Nickname of your inviter).<br/>
+              The deposit can be redeemed after {days} days from your deposit.
+            </div>
             <div className={'btns mbtns'}>
               <input
                 className="input-Nickname"
@@ -163,8 +172,7 @@ function Index(props: Props) {
           showClaim && <MCard>
             <div className="title font-sans-semibold">Redeem Your Deposit</div>
             <div className="text font-sans-regular">
-              You can redeem back your full deposit after {months} months from your deposit date or half of the deposit in no more than {months} months from your deposit date.<br />
-              Full Redeem on <span className="font-sans-semibold" style={{ color: '#333333' }}>{periodTime}</span> ({months} months after your deposit)
+              You can redeem your deposit after {days} days (est. on <span className="font-sans-semibold" style={{ color: '#333333' }}>{periodTime}</span>) after your initial deposit.
             </div>
             <div className={'btns mbtns'}>
               <Btn content={onGoingClaim ? 'Ongoing Redeem...' : `Redeem ${fCalimValue} CRU`} disabled={disabledClaim} onClick={_onClickClaim} />
@@ -200,6 +208,15 @@ export default React.memo<Props>(styled(Index)`
       margin-top: 1rem;
       line-height: 20px;
       color: #999999;
+    }
+    .text > .origin {
+      color: var(--main-color);
+      font-family: 'OpenSans-SemiBold';
+      text-decoration: line-through;
+    }
+    .text > .reffer {
+      margin-left: 6px;
+      color: var(--primary-color);
     }
   }
 

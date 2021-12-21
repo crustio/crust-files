@@ -17,6 +17,14 @@ import { FileInfo, SaveFile, UploadRes } from '../lib/wallet/types';
 import Btn from "./Btn";
 import MDropdown from "./MDropdown";
 
+
+const Contribute = styled.div`
+  cursor: pointer;
+  height: 40px;
+  line-height: 40px;
+  color: var(--primary-color);
+  text-align: center;
+`
 export interface Props {
   className?: string,
   file: FileInfo,
@@ -61,6 +69,9 @@ function UploadModal(p: Props): React.ReactElement<Props> {
   // const [encrypt, toggleEncrypt] = useToggle(isVault)
   const encrypt = isVault && !!uc.secret;
   const [showOptions, toggleShowOptions] = useToggle()
+
+  const _onClickContributeGateway = () => window.open('https://wiki.crust.network/docs/en/buildIPFSWeb3AuthGW', '_blank')
+  const _onClickContributePinner = () => window.open('https://wiki.crust.network/docs/en/buildIPFSW3AuthPin', '_blank')
 
   const _onClose = useCallback(() => {
     if (cancelUp) cancelUp.cancel();
@@ -228,6 +239,7 @@ function UploadModal(p: Props): React.ReactElement<Props> {
                   options={endpoints}
                   defaultGroup={endpoint.group}
                   defaultValue={endpoint.value}
+                  footer={<Contribute onClick={_onClickContributeGateway}>Contribute IPFS W3Auth Gateway</Contribute>}
                 />
               </Card>
               <Card fluid>
@@ -241,6 +253,7 @@ function UploadModal(p: Props): React.ReactElement<Props> {
                   onChange={onChangePinner}
                   options={pins}
                   defaultValue={pinner.value}
+                  footer={<Contribute onClick={_onClickContributePinner}>Contribute IPFS W3Auth Pinner</Contribute>}
                 />
               </Card>
             </>

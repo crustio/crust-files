@@ -414,7 +414,7 @@ function Home({ className }: { className?: string }) {
       <div className="center_panel">
         <div className="cosmos" />
         <Pixel className="pixel_left" position="left" fullH={true} />
-        <Pixel className="pixel_right" position="right" fullH={true} fillColor="#FF8D00" />
+        <Pixel className="pixel_right" position="right" fullH={true} color="#E46A11" fillColor="#FF8D00" />
       </div>
       <div className="right_panel">
         <div style={{ flex: 1 }} />

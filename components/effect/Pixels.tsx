@@ -2,6 +2,8 @@ import classNames from "classnames";
 import React, { CSSProperties, MouseEventHandler, useMemo } from "react";
 import styled from "styled-components";
 import { BaseProps } from "../types";
+
+
 const defWidth = 120;
 export interface Props extends BaseProps {
     position?: 'left' | 'right',
@@ -161,3 +163,41 @@ export const PixelBtn = styled(_PixelBtn) <BtnProps>`
     }
 `
 
+const defBtnHeight = 51
+const whRatio = 0.725
+const calcW = (h: number, c = 1) => Math.round(h * whRatio * c)
+export const PixelBtn1 = styled.div<{ height?: number }>`
+    color: white;
+    font-family: 'OpenSans-SemiBold';
+    font-size: 32px;
+    line-height: ${({ height = defBtnHeight }) => height}px;
+    height: ${({ height = defBtnHeight }) => height}px;
+    text-align: center;
+    width: 357px;
+    cursor: pointer;
+    background-image: url('/images/btn/btn_bg_l.png'),url('/images/btn/btn_bg_c.png'),url('/images/btn/btn_bg_r.png');
+    background-position: 0 0,${({ height = defBtnHeight }) => calcW(height)}px 0,right center;
+    background-repeat: no-repeat;
+    background-attachment: scroll;    
+    background-size: 
+        ${({ height = defBtnHeight }) => calcW(height)}px 100%, 
+        calc(100% - ${({ height = defBtnHeight }) => calcW(height, 2)}px) 100%, 
+        ${({ height = defBtnHeight }) => calcW(height)}px 100%;
+    &.dark {
+        background-image: url('/images/btn/btn_dark_bg_l.png'),url('/images/btn/btn_dark_bg_c.png'),url('/images/btn/btn_dark_bg_r.png'); 
+    }
+
+    &.style_left {
+        background-image: url('/images/btn/btn_bg_l.png'),url('/images/btn/btn_bg_c.png'),url('/images/btn/btn_bg_r2.png');
+        &.dark {
+            background-image: url('/images/btn/btn_dark_bg_l.png'),url('/images/btn/btn_dark_bg_c.png'),url('/images/btn/btn_dark_bg_r2.png') ; 
+        }
+    }
+
+    &.style_right {
+        background-image: url('/images/btn/btn_bg_l2.png'),url('/images/btn/btn_bg_c.png'),url('/images/btn/btn_bg_r.png');
+        &.dark {
+            background-image: url('/images/btn/btn_dark_bg_l2.png'),url('/images/btn/btn_dark_bg_c.png'),url('/images/btn/btn_dark_bg_r.png'); 
+        }
+    }
+`
