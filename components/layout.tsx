@@ -17,7 +17,7 @@ function Layout({
         <link rel="icon" href="/favicon.ico" />
         <meta
           name="description"
-          content="Base Next"
+          content="Crust Files, the Web3.0 file storage application"
         />
         <meta name="og:title" content={siteTitle} />
       </Head>

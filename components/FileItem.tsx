@@ -16,7 +16,7 @@ import { report } from "../lib/http/report";
 import { ShareOptions } from "../lib/types";
 import { useAuthGateway } from "../lib/useAuth";
 import { shortStr } from "../lib/utils";
-import { useContextWrapLoginUser } from "../lib/wallet/hooks";
+import { WrapLoginUser, useContextWrapLoginUser } from "../lib/wallet/hooks";
 import { SaveFile } from "../lib/wallet/types";
 import Btn from "./Btn";
 
@@ -45,6 +45,31 @@ function createUrl(f: SaveFile, endpoints: AuthIpfsEndpoint[]) {
   const endpoint = (p && p.value) || endpoints[0].value;
 
   return `${endpoint}/ipfs/${f.Hash}?filename=${f.Name}`;
+}
+
+function createShareOrReceiveUrl(file: SaveFile, user: WrapLoginUser, receive = false) {
+  const options: ShareOptions = {
+    name: file.Name,
+    encrypted: file.Encrypted,
+    gateway: file.UpEndpoint,
+    fromAccount: user.account,
+    fromWallet: user.wallet,
+    from: user.nickName,
+    isDir: !!file.items,
+  }
+  report({
+    type: 3,
+    walletType: user.wallet,
+    address: user.account,
+    data: {
+      cid: file.Hash,
+      fileType: file.items ? 1 : 0,
+      strategy: file.Encrypted ? 1 : 0,
+      shareType: 0
+    }
+  })
+  const str = encodeURI(JSON.stringify(options))
+  return receive ? `${window.location.origin}/files/receive?cid=${file.Hash}&options=${str}` : `${window.location.origin}/files/share?cid=${file.Hash}&options=${str}`;
 }
 
 function parseStat(stat: any) {
@@ -103,28 +128,15 @@ function FileItem(props: Props) {
   // const r = useRouter()
   const user = useContextWrapLoginUser()
   const _onClickShare = () => {
-    const options: ShareOptions = {
-      name: file.Name,
-      encrypted: file.Encrypted,
-      gateway: file.UpEndpoint,
-      fromAccount: user.account,
-      fromWallet: user.wallet,
-      from: user.nickName,
-      isDir: !!file.items,
-    }
-    report({
-      type: 3,
-      walletType: user.wallet,
-      address: user.account,
-      data: {
-        cid: file.Hash,
-        fileType: file.items ? 1 : 0,
-        strategy: file.Encrypted ? 1 : 0,
-        shareType: 0
-      }
-    })
-    const str = encodeURI(JSON.stringify(options))
-    window.open(`${window.location.origin}/files/share?cid=${file.Hash}&options=${str}`, '_blank')
+    window.open(createShareOrReceiveUrl(file, user), '_blank')
+  }
+  const _onClickTweet = () => {
+    const shareUrl = createShareOrReceiveUrl(file, user, true);
+    const text = user.nickName ?
+      `${user.nickName} is sharing you a file.\nGo check it at Crust Files – your first personal Web3.0 storage in Metaverse.` :
+      `You are receiving a file.\nGo check it at Crust Files – your first personal Web3.0 storage in Metaverse.`;
+    const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURI(text)}&url=${encodeURIComponent(shareUrl)}&hashtags=web3,ipfs,crustnetwork,metaverse,crustfiles`;
+    window.open(tweetUrl, '_blank');
   }
 
   const queryFileApi = api && api.query?.market && api.query?.market.files
@@ -247,6 +259,16 @@ function FileItem(props: Props) {
     {
       isPublic && !file.items && <Table.Cell textAlign={"center"}>
         <Btn className="item-share-btn" onClick={_onClickShare}>Share</Btn>
+        <Popup
+          position={"top center"}
+          content={"Quick Tweet"}
+          trigger={
+            <span
+              className="cru-fo cru-fo-twitter"
+              onClick={_onClickTweet}
+              style={{ marginLeft: '0.5rem', top: '0.2rem' }} />
+          }
+      />
       </Table.Cell>}
   </Table.Row>
 }
