@@ -145,6 +145,8 @@ export const GetNickname = React.memo<BaseProps>(styled(_GetNickname)`
         width: 100%;
         justify-content: space-between;
         .get_nickname_User {
+            flex: 1;
+            width: 0;
             border-bottom: unset !important;
         }
     }

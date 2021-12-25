@@ -1,131 +1,158 @@
 :root {
-    --main-color: #333333;
-    --secend-color: #666666;
-    --line-color: #EEEEEE;
+  --main-color: #333333;
+  --secend-color: #666666;
+  --line-color: #eeeeee;
 
-    --primary-color: #FF8D00;
+  --primary-color: #ff8d00;
+  --primary-color2: #000000;
+  --primary-color3: #216cff;
+  --primary-color4: #e46a11;
 
-    /* for TypeIt */
-    --ti-cursor-margin-left: 0;
+  /* for TypeIt */
+  --ti-cursor-margin-left: 0;
 
-    /* for modal*/
-    --modal-radius: 0.57rem
-}
-
-
-@font-face {
-    font-family: "OpenSans-Medium";
-    src: url("../public/fonts/OpenSans-Medium.ttf") format("truetype");
-    font-weight: normal;
-    font-style: normal;
+  /* for modal*/
+  --modal-radius: 0.57rem;
 }
 
 @font-face {
-    font-family: "OpenSans-Regular";
-    src: url("../public/fonts/OpenSans-Regular.ttf") format("truetype");
-    font-weight: normal;
-    font-style: normal;
+  font-family: "OpenSans-Medium";
+  src: url("../public/fonts/OpenSans-Medium.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
 }
 
 @font-face {
-    font-family: "OpenSans-SemiBold";
-    src: url("../public/fonts/OpenSans-SemiBold.ttf") format("truetype");
-    font-weight: normal;
-    font-style: normal;
+  font-family: "OpenSans-Regular";
+  src: url("../public/fonts/OpenSans-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "OpenSans-SemiBold";
+  src: url("../public/fonts/OpenSans-SemiBold.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
 }
 
 html,
 body {
-    padding: 0;
-    margin: 0;
-    font-family: OpenSans-Regular;
-    color: var(--main-color);
-    font-size: 14px;
+  padding: 0;
+  margin: 0;
+  font-family: OpenSans-Regular;
+  color: var(--main-color);
+  font-size: 14px;
 }
 
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 a {
-    color: var(--primary-color);
-    text-decoration: none;
+  color: var(--primary-color);
+  text-decoration: none;
 }
 
 a:hover {
-    color: var(--primary-color);
-    text-decoration: none;
+  color: var(--primary-color);
+  text-decoration: none;
 }
 
 img {
-    max-width: 100%;
-    display: block;
+  max-width: 100%;
+  display: block;
 }
 
 .hFull {
-    height: 100vh;
+  height: 100vh;
+}
+
+.full {
+  width: 100%;
+  height: 100%;
+}
+
+@media screen and (max-width: 1440px) {
+  body {
+    font-size: 12px;
+  }
+}
+
+@media screen and (max-width: 1296px) {
+  body {
+    font-size: 11px;
+  }
+}
+@media screen and (max-width: 1152px) {
+  body {
+    font-size: 10px;
+  }
+}
+@media screen and (max-width: 1008px) {
+  body {
+    font-size: 9px;
+  }
 }
 
 .flex1 {
-    flex: 1;
+  flex: 1;
 }
 
 .font-sans-regular {
-    font-family: OpenSans-Regular, -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-family: OpenSans-Regular, -apple-system, BlinkMacSystemFont, sans-serif !important;
 }
 
 .font-sans-medium {
-    font-family: OpenSans-Medium, -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-family: OpenSans-Medium, -apple-system, BlinkMacSystemFont, sans-serif !important;
 }
 
 .font-sans-semibold {
-    font-family: OpenSans-SemiBold, -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-family: OpenSans-SemiBold, -apple-system, BlinkMacSystemFont, sans-serif !important;
 }
 
-
 .ui.popup {
-    padding: 0.6rem 0.8rem !important;
+  padding: 0.6rem 0.8rem !important;
 }
 
 .ui.modal {
-    border-radius: var(--modal-radius);
-    box-shadow: unset;
+  border-radius: var(--modal-radius);
+  box-shadow: unset;
 }
 .ui.modal > .header {
-    border-top-left-radius: var(--modal-radius) !important;
-    border-top-right-radius: var(--modal-radius) !important;
+  border-top-left-radius: var(--modal-radius) !important;
+  border-top-right-radius: var(--modal-radius) !important;
 }
 
-.ui.modal > .content:last-child, .ui.modal > .actions {
-    border-bottom-left-radius: var(--modal-radius) !important;
-    border-bottom-right-radius: var(--modal-radius) !important;
+.ui.modal > .content:last-child,
+.ui.modal > .actions {
+  border-bottom-left-radius: var(--modal-radius) !important;
+  border-bottom-right-radius: var(--modal-radius) !important;
 }
-
 
 .ui.page.dimmer {
-    background: rgba(0, 0, 0, 0.5) !important;
+  background: rgba(0, 0, 0, 0.5) !important;
 }
 
 .ui.card {
-    border-radius: 0.57rem !important;
-    border: 0.07rem solid #EEEEEE !important;
-    box-shadow: unset !important;
+  border-radius: 0.57rem !important;
+  border: 0.07rem solid #eeeeee !important;
+  box-shadow: unset !important;
 }
 
 .clear-border {
-    border: unset !important;
+  border: unset !important;
 }
 
 .no-padding {
-    padding: unset !important;
+  padding: unset !important;
 }
 
-
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }

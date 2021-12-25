@@ -10,7 +10,10 @@ export function useGet<T>(get: () => Promise<T>, deeps: any[] = []): [T, () => v
         if (deeps.length) {
             if (deeps.some(d => !d)) return
         }
-        get().then(setValue).catch(console.error)
+        const p = get()
+        if (p.then) {
+            p.then(setValue).catch(console.error)
+        }
     }
     return [value, doGet]
 }

@@ -298,12 +298,7 @@ function Home({ className }: { className?: string }) {
         image: '/images/crust_get_cru.png',
         onClick: _onClickCrustGetCru,
       },
-      {
-        group: 'Polkadot',
-        name: 'Polkadot',
-        image: '/images/wallet_polkadot.png',
-        onClick: _onClickPolkadotJs,
-      },
+
       {
         group: 'MetaMask',
         name: 'Ethereum',
@@ -347,6 +342,14 @@ function Home({ className }: { className?: string }) {
         onClick: _onClickFlow,
       },
       {
+        group: 'Polkadot',
+        name: 'Polkadot',
+        image: '/images/wallet_polkadot.png',
+        onClick: _onClickPolkadotJs,
+      },
+
+
+      {
         group: 'WalletConnect',
         name: 'WalletConnect',
         image: '/images/wallet_connect.png',
@@ -373,21 +376,6 @@ function Home({ className }: { className?: string }) {
     })
   }, [wallets])
 
-  // const [slogTextIndex, setSlogTextIndex] = useState(0)
-  // useEffect(() => {
-  //   let index = 0
-  //   const task = setInterval(() => {
-  //     if (index === 3) setSlogTextIndex(1)
-  //     if (index === 9) setSlogTextIndex(2)
-  //     if (index === 14) {
-  //       setSlogTextIndex(0)
-  //       index = 0
-  //     }
-  //     index += 1
-  //   }, 2000)
-  //   return () => clearInterval(task)
-  // }, [])
-
   const [hoverWalletGroup, setHoverWalletGroup] = useState<WalletGroup | null>(null)
   const { data } = useParallax(100, 5)
 
@@ -405,7 +393,7 @@ function Home({ className }: { className?: string }) {
             Your<br />
             first personal<br />
             <span>Web3.0</span> storage<br />
-            in <span>Metaverse</span>.
+            in the <span>Metaverse</span>.
           </div>
           <div style={{ flex: 1 }} />
           <Links className="links" />
@@ -461,7 +449,8 @@ export default React.memo(styled(Home)`
   display: flex;
   width: 100%;
   height: 100vh;
-  min-height: 960px;
+  min-height: 40rem;
+  overflow-x: auto;
   .left_panel {
     background-color: #000000;
     flex: 1;
@@ -487,15 +476,31 @@ export default React.memo(styled(Home)`
     .docs {
       cursor: pointer;
       position: absolute;
-      top: 50px;
+      top: 3.57rem;
       right: 2.3rem;
-      font-size: 18px;
-      line-height: 25px;
+      font-size: 1.29rem;
+      line-height: 1.79rem;
       font-weight: 600;
+    }
+
+    .slog {
+      font-size: 6.14rem;
+      line-height: 8.36rem;
+      width: 52.14rem;
+      span {
+        color: var(--primary-color)
+      }
+    }
+
+    .links {
+      width: 52.14rem;
+      height: 7.14rem;
+      margin-bottom: 3rem;
+      flex-shrink: 0;
     }
   }
   .center_panel {
-    width: 360px;
+    width: 25.71rem;
     height: 100%;
     flex-shrink: 0;
     position: relative;
@@ -518,10 +523,11 @@ export default React.memo(styled(Home)`
       right: 0;
       top: 0;
     }
+ 
   }
   .right_panel {
     background-color: var(--primary-color);
-    width: 295px;
+    width: 21.07rem;
     height: 100%;
     flex-shrink: 0;
     display: flex;
@@ -535,25 +541,10 @@ export default React.memo(styled(Home)`
     align-self: flex-start;
   }
 
-
-  .slog {
-    font-size: 86px;
-    line-height: 117px;
-    width: 650px;
-    span{
-      color: var(--primary-color)
-    }
-  }
-  .links {
-    width: 650px;
-    height: 100px;
-    flex-shrink: 0;
-  }
   .wallets_title {
     font-weight: 600;
-    font-size: 24px;
-    line-height: 33px;
-    padding-bottom: 32px;
+    font-size: 1.71rem;
+    line-height: 2.36rem;
   }
   .wallets {
     height: min-content;
@@ -566,7 +557,7 @@ export default React.memo(styled(Home)`
       .wallet_group{
         .image,.text {
           position: relative;
-          transform: translateX(-55px);
+          transform: translateX(-3.93rem);
         }
       }
     }
@@ -577,23 +568,23 @@ export default React.memo(styled(Home)`
       overflow: visible;
       width: 100%;
       text-align: center;
-      padding-top: 2.285714rem;
+      padding-top: 2rem;
       position: relative;
       cursor: pointer;
       /* transition: all cubic-bezier(.41, .19, .21, 1.25) 1.2s; */
-      /* transform: translateX(-800px); */
+      /* transform: translateX(-57.14rem); */
       
       &:hover {
         .image,.text {
-          filter: drop-shadow(0px 4px 16px rgba(255, 255, 255, 0.5));
+          filter: drop-shadow(0rem .29rem 1.14rem rgba(255, 255, 255, 0.5));
           position: relative;
         }
       }
 
       .image {
         transition: all ease-in-out 300ms;
-        width: 5.142857rem;
-        height: 5.142857rem;
+        width: 5rem;
+        height: 5rem;
         display: block;
       }
       .text {
@@ -603,10 +594,10 @@ export default React.memo(styled(Home)`
       }
       .arrow {
         position: absolute;
-        top: 4.4rem;
+        top: 4rem;
         right: 9.285714rem;
-        width: 10px;
-        height: 16px;
+        width: .71rem;
+        height: 1.14rem;
       }
       .wallet_items {
         position: absolute;
@@ -616,7 +607,7 @@ export default React.memo(styled(Home)`
         align-items: flex-start;
         width: 6.86rem;
         padding-right: 1rem;
-        top: 1.6rem;
+        top: 1rem;
         right: 2rem;
         z-index: 2;
       }
@@ -627,7 +618,7 @@ export default React.memo(styled(Home)`
       text-align: center;
       cursor: pointer;
       padding-top: 1.714286rem;
-      transform: translateX(100px);
+      transform: translateX(7.14rem);
       transition: all cubic-bezier(.41, .19, .21, 1.25) 300ms;
       .item_image {
         margin-left: 1.14rem;
@@ -648,4 +639,13 @@ export default React.memo(styled(Home)`
       transform: none;
     }
   }
+
+  @media screen and (max-width: 1440px) {
+      .links, .slog {
+        font-size: 4rem !important;
+        width: 40rem !important;
+        line-height: 6rem !important;
+        padding-left: 2rem;
+      }
+    }
 `)

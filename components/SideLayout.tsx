@@ -1,9 +1,9 @@
 import classNames from "classnames";
-import _ from 'lodash';
 import { useRouter } from "next/router";
-import React, { useCallback, useMemo } from "react";
-import { Grid, Menu, Segment, Sidebar } from 'semantic-ui-react';
+import React, { useCallback } from "react";
+import { Grid, Segment, Sidebar } from 'semantic-ui-react';
 import styled from "styled-components";
+import { PixelBtn } from "./effect/Pixels";
 import Logo from "./Logo";
 
 type Path = '/files' | '/setting' | '/home' | '/files/vault' | '/share-earn' | '/user'
@@ -19,6 +19,7 @@ interface MenuInfo {
   icon?: string,
   name: string,
   isParent?: boolean,
+  link?: string,
 }
 
 const menus: MenuInfo[] = [
@@ -30,6 +31,7 @@ const menus: MenuInfo[] = [
   // { path: "/docs", icon: "cru-fo-file-text", name: 'Docs' },
   { path: "/share-earn", icon: "cru-fo-share-2", name: 'Share-and-Earn' },
   { path: "/user", icon: "cru-fo-user", name: 'Premium User' },
+  { icon: "cru-fo-database", name: 'Get CRU', link: 'https://swap.crustapps.net' },
 ]
 
 function SideLayout(props: Props) {
@@ -38,10 +40,12 @@ function SideLayout(props: Props) {
     const m = menus[index]
     if (m.path && m.path !== props.path)
       r.push(m.path)
+    if (m.link)
+      window.open(m.link, '_blank')
   }, [props.path])
-  const shareEarnIndex = useMemo(() => _.findIndex(menus, m => m.path === '/share-earn'), [])
+  // const shareEarnIndex = useMemo(() => _.findIndex(menus, m => m.path === '/share-earn'), [])
   const isActive = (info: MenuInfo) => props.path === info.path
-  const isActive2 = (info: MenuInfo) => props.path.startsWith(info.path) && info.isParent
+  // const isActive2 = (info: MenuInfo) => props.path.startsWith(info.path) && info.isParent
 
   return <Sidebar.Pushable
     as={Segment}
@@ -55,27 +59,31 @@ function SideLayout(props: Props) {
     >
       <Grid textAlign='center'>
         <Grid.Row columns={1} className={"logoPanel"}>
-          <Logo src="/images/logo_12x.png" />
+          <Logo src="/images/logo_22x.png" />
         </Grid.Row>
         <Grid.Row columns={1}>
-          <Menu fluid vertical borderless>
+          <div className="menus">
             {
-              menus.map((mInfo, index) => <Menu.Item
-                className={isActive2(mInfo) ? 'active2' : ''}
-                position={"left"}
-                key={`side_menu_${index}`}
-                index={index}
-                active={isActive(mInfo)}
-                icon={<span className={mInfo.icon ?? 'cru-fo-file'} style={{ opacity: mInfo.icon ? 1 : 0 }} />}
-                name={mInfo.name}
-                onClick={_onTabClick}
-              />)
+              menus.map((mInfo, index) =>
+                <PixelBtn
+                  className={classNames("btn_item", { active: isActive(mInfo) })}
+                  onClick={() => _onTabClick(null, { index })}
+                  key={`side_menu_${index}`}
+                  fillColor={isActive(mInfo) ? "#FF8D00" : "#000000"}
+                  color={isActive(mInfo) ? "#E46A11" : "#000000"}
+                  height={40}
+                  content={
+                    <>
+                      <span className={mInfo.icon ?? 'cru-fo-file'} style={{ opacity: mInfo.icon ? 1 : 0 }} />
+                      {mInfo.name}
+                    </>
+                  } />)
             }
-          </Menu>
+          </div>
         </Grid.Row>
       </Grid>
       <div className="flex1" />
-      <img className="share_earn" onClick={() => _onTabClick({}, { index: shareEarnIndex })} src="/images/share_earn.png" />
+      {/* <img className="share_earn" onClick={() => _onTabClick({}, { index: shareEarnIndex })} src="/images/share_earn.png" /> */}
     </Sidebar>
 
     <Sidebar.Pusher>
@@ -84,7 +92,8 @@ function SideLayout(props: Props) {
   </Sidebar.Pushable>
 }
 
-const sideWidth = '15.7rem'
+const sideWidth = '17rem'
+const minHeight = '700px'
 export default React.memo<Props>(styled(SideLayout)`
   height: 100vh;
   background: white;
@@ -92,10 +101,10 @@ export default React.memo<Props>(styled(SideLayout)`
 
   .ui.sidebar {
     padding: unset !important;
-    background: #F5F5F5;
+    background: black;
     box-shadow: unset !important;
     width: ${sideWidth};
-    min-height: 821px;
+    min-height: ${minHeight};
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -110,42 +119,48 @@ export default React.memo<Props>(styled(SideLayout)`
         height: 1.7rem;
       }
     }
-
-    .menu {
-      box-shadow: unset !important;
-      border: unset !important;
-      border-radius: unset !important;
-      background: unset !important;
-
-      .item {
+    .menus {
+      padding: 0 7px;
+      width: 100%;
+      .btn_item {
         border-radius: 0 !important;
+        margin-top: 15px;
         text-align: left;
-        padding-left: 2rem !important;
-        font-weight: 500;
-        font-size: 1.3rem;
-        color: var(--secend-color);
-        font-family: OpenSans-Regular;
+        min-width: unset;
+        width: 100%;
+        /* padding-left: 2rem !important; */
 
+        font-family: OpenSans-Regular;
+        .btn_content {
+          min-width: 0;
+          flex: 1;
+          font-weight: 500;
+          font-size: 1.3rem;
+          text-align: left;
+          color: var(--secend-color);
+          white-space: nowrap;
+          padding: 0 6px;
+          span {
+            position: relative;
+            top: 1px;
+            margin-right: 8px;
+          }
+        }
         &.active {
-          position: relative;
-          color: var(--main-color);
-          /* font-family: OpenSans-Medium; */
-          border-right: solid 0.2rem var(--primary-color);
+          .btn_content {
+            position: relative;
+            color: white;
+            border-right: solid 0.2rem var(--primary-color);
+          }
         }
 
         &.active2 {
-          color: var(--main-color);
+          color: white;
           border-right: unset;
           background-color: transparent;
         }
-
-        span {
-          float: left;
-          margin-right: 10px;
-        }
       }
     }
-
     .share_earn {
       cursor: pointer;
       width: 15rem;
@@ -157,7 +172,7 @@ export default React.memo<Props>(styled(SideLayout)`
   .pusher {
     width: calc(100vw - ${sideWidth});
     height: 100vh;
-    min-height: 821px;
+    min-height: ${minHeight};
     transform: translate3d(${sideWidth}, 0, 0) !important;
     overflow: auto !important;
     background: white;

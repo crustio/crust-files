@@ -77,19 +77,6 @@ export function useDeposit(dest: string, value: string, share_from?: string): Us
         const statusCb: Callback<ISubmittableResult> = (res) => {
             api.setSigner(undefined)
             if (res.status.isFinalized) {
-                // const blockHash = res.status.asInBlock.toString()
-                // signature = batch.signature.toString()
-                // const exHash = batch.hash.toString()
-                // console.info('block:', res.status.index, blockHash, exHash)
-                // getBlockExtrinsicInfo(api, blockHash, exHash)
-                //     .then((info) => {
-                //         console.info('blockExInfo: ', info)
-                //         const msgBase = window.btoa(JSON.stringify(msg))
-                //         const auth = window.btoa(`crust-${user.account}:${signature}:${msgBase}`)
-                //         return doPremark(info.blockNumber, info.extrinsicIndex, 0, auth)
-                //     })
-                //     .catch(console.error)
-                //     .then(() => loading.hide())
                 loading.hide()
                 setFinish(true)
             }
@@ -150,19 +137,6 @@ export function useClaim(): UseClaim {
         const statusCb: Callback<ISubmittableResult> = (res) => {
             api.setSigner(undefined)
             if (res.status.isFinalized) {
-                // const blockHash = res.status.asInBlock.toString()
-                // signature = ex.signature.toString()
-                // const exHash = ex.hash.toString()
-                // console.info('block:', res.status.index, blockHash, exHash)
-                // getBlockExtrinsicInfo(api, blockHash, exHash)
-                //     .then((info) => {
-                //         console.info('blockExInfo: ', info)
-                //         const msgBase = window.btoa(JSON.stringify(msg))
-                //         const auth = window.btoa(`crust-${user.account}:${signature}:${msgBase}`)
-                //         return doPremark(info.blockNumber, info.extrinsicIndex, 1, auth)
-                //     })
-                //     .catch(console.error)
-                //     .then(() => loading.hide())
                 loading.hide()
                 setFinish(true)
             }

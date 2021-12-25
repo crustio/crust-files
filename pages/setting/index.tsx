@@ -7,8 +7,7 @@ import { Accordion, AccordionContent, AccordionTitle, Segment } from "semantic-u
 import styled from "styled-components";
 import Btn from "../../components/Btn";
 import ModalNewKey from "../../components/ModalNewKey";
-import SideLayout from "../../components/SideLayout";
-import User from "../../components/User";
+import PageUserSideLayout from '../../components/PageUserSideLayout';
 import { AppContext } from "../../lib/AppContext";
 import { parseUserCrypto, useUserCrypto } from "../../lib/crypto/useUserCrypto";
 import { useClipboard } from "../../lib/hooks/useClipboard";
@@ -109,108 +108,100 @@ function Index(props: Props) {
     FileSaver.saveAs(blob, 'backup.json');
   }, [wFiles, uc]);
 
-  return <SideLayout path={'/setting'}>
-    <Segment basic className={className}>
-      <input
-        onChange={_onInputImportFile}
-        ref={importInputRef}
-        style={{ display: 'none' }}
-        type={'file'}
+  return <PageUserSideLayout path={'/setting'} className={className}>
+    <input
+      onChange={_onInputImportFile}
+      ref={importInputRef}
+      style={{ display: 'none' }}
+      type={'file'}
+    />
+    {
+      open && <ModalNewKey
+        alert={alert}
+        size={'tiny'}
+        open={true}
+        toggleOpen={toggleOpen}
+        onSuccess={uc.set}
       />
-      <User />
+    }
+    <Segment basic className={"mcard"}>
+      <div className="title font-sans-semibold">
+        {t('User Profile')}
+      </div>
+      <div className="text font-sans-regular">
+        {`${t('Web3 Identity Logged-in:')} `}
+        <span className="bold-text font-sans-semibold">{user.account}</span>
+      </div>
+      <div className="text font-sans-regular">
+        {`${t('Logged-in Wallet:')} `}
+        <span className="bold-text font-sans-semibold">{WalletName[user.wallet]}</span>
+      </div>
       {
-        open && <ModalNewKey
-          alert={alert}
-          size={'tiny'}
-          open={true}
-          toggleOpen={toggleOpen}
-          onSuccess={uc.set}
-        />
+        isCrust && user.nickName && <div className="text font-sans-regular">
+          {`${t('Nick Name:')} `}
+          {<span className="bold-text font-sans-semibold">{user.nickName}</span>}
+          {/* {!isCrust && <a className="" target="_blank" href="/docs/CrustFiles_Users" rel="noreferrer">Get a Nick Name</a>} */}
+        </div>
       }
-      <Segment basic className="mcontent">
-        <Segment basic className={"mcard"}>
+      <div className="text font-sans-regular">
+        {`${t('User Type:')} `}
+        {isCrust && <span className="bold-text font-sans-semibold">{userType}</span>}
+        {!isCrust && <a onClick={() => r.push('/user')} rel="noreferrer">Get a Premium</a>}
+      </div>
+    </Segment>
+    <Segment basic className={"mcard"}>
+      <div className="title font-sans-semibold">
+        {t('User Data Management')}
+      </div>
+      <div className="text font-sans-regular">
+        {`${t('Your user data (including three File Lists and one File Encryption Key) are cached on your local devices. If you want to migrate your user data to a new device, use Export & Import function.')} `}
+      </div>
+      <Accordion>
+        <AccordionTitle active={showFileEncryption} onClick={() => toggleFileEncryption()}>
           <div className="title font-sans-semibold">
-            {t('User Profile')}
+            {t('File Encryption')}<span className={classNames('icon', showFileEncryption ? 'cru-fo-chevron-up' : 'cru-fo-chevron-down')} />
           </div>
+        </AccordionTitle>
+        <AccordionContent active={showFileEncryption} className="no-padding">
           <div className="text font-sans-regular">
-            {`${t('Web3 Identity Logged-in:')} `}
-            <span className="bold-text font-sans-semibold">{user.account}</span>
-          </div>
-          <div className="text font-sans-regular">
-            {`${t('Logged-in Wallet:')} `}
-            <span className="bold-text font-sans-semibold">{WalletName[user.wallet]}</span>
+            {`${t('Your File Encryption Key:')} `}
+            {
+              uc.secret && <span className="bold-text font-sans-semibold">
+                {uc.secret}
+                <span className="icon cru-fo-copy" onClick={() => copy(uc.secret)} />
+              </span>}
+            {
+              !uc.secret && <a onClick={uc.generate}>Generate a New</a>
+            }
           </div>
           {
-            isCrust && user.nickName && <div className="text font-sans-regular">
-              {`${t('Nick Name:')} `}
-              {<span className="bold-text font-sans-semibold">{user.nickName}</span>}
-              {/* {!isCrust && <a className="" target="_blank" href="/docs/CrustFiles_Users" rel="noreferrer">Get a Nick Name</a>} */}
+            uc.seeds && <div className="text font-sans-regular">
+              {`${t('Seed Phrase:')} `}
+              <span className="bold-text font-sans-semibold">
+                {uc.seeds}
+              </span>
             </div>
           }
-          <div className="text font-sans-regular">
-            {`${t('User Type:')} `}
-            {isCrust && <span className="bold-text font-sans-semibold">{userType}</span>}
-            {!isCrust && <a onClick={() => r.push('/user')} rel="noreferrer">Get a Premium</a>}
-          </div>
-        </Segment>
-        <Segment basic className={"mcard"}>
-          <div className="title font-sans-semibold">
-            {t('User Data Management')}
-          </div>
-          <div className="text font-sans-regular">
-            {`${t('Your user data (including three File Lists and one File Encryption Key) are cached on your local devices. If you want to migrate your user data to a new device, use Export & Import function.')} `}
-          </div>
-          <Accordion>
-            <AccordionTitle active={showFileEncryption} onClick={() => toggleFileEncryption()}>
-              <div className="title font-sans-semibold">
-                {t('File Encryption')}<span className={classNames('icon', showFileEncryption ? 'cru-fo-chevron-up' : 'cru-fo-chevron-down')} />
-              </div>
-            </AccordionTitle>
-            <AccordionContent active={showFileEncryption} className="no-padding">
-              <div className="text font-sans-regular">
-                {`${t('Your File Encryption Key:')} `}
-                {
-                  uc.secret && <span className="bold-text font-sans-semibold">
-                    {uc.secret}
-                    <span className="icon cru-fo-copy" onClick={() => copy(uc.secret)} />
-                  </span>}
-                {
-                  !uc.secret && <a onClick={uc.generate}>Generate a New</a>
-                }
-              </div>
-              {
-                uc.seeds && <div className="text font-sans-regular">
-                  {`${t('Seed Phrase:')} `}
-                  <span className="bold-text font-sans-semibold">
-                    {uc.seeds}
-                  </span>
-                </div>
-              }
-            </AccordionContent>
-          </Accordion>
-          <div className={'btns'}>
-            <Btn content={t('Export')} onClick={_clickExport} />
-            <Btn content={t('Import')} onClick={_clickImport} />
-          </div>
-        </Segment>
-      </Segment>
+        </AccordionContent>
+      </Accordion>
+      <div className={'btns'}>
+        <Btn content={t('Export')} onClick={_clickExport} />
+        <Btn content={t('Import')} onClick={_clickImport} />
+      </div>
     </Segment>
-  </SideLayout>
+  </PageUserSideLayout>
 }
 
 export default React.memo<Props>(styled(Index)`
-  padding: unset !important;
-  .mcontent {
-    margin: unset !important;
-    padding: 0 0 3rem 0 !important;
-    overflow: auto;
+  .pusl_center_flex_content {
+    min-width: 60rem;
   }
   .mcard {
     padding: 1.71rem !important;
     box-shadow: 0 0.71rem 1.71rem 0 rgba(0, 0, 0, 0.06) !important;
     border-radius: 1.14rem !important;
     border: 0.07rem solid #EEEEEE !important;
-    margin: 2.21rem 2.29rem 0 2.39rem !important;
+    margin-top: 2.21rem;
   
     .title {
       font-size: 1.3rem !important;

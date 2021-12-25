@@ -1,5 +1,5 @@
 import { getDeposit } from "../http/share_earn";
-import { Deposit } from "../http/types";
+import { Deposit, DepositDTO } from "../http/types";
 import { useContextWrapLoginUser } from "../wallet/hooks";
 import { useGet } from "./useGet";
 
@@ -7,6 +7,7 @@ export interface UseGetDeposit {
     isPremiumUser: boolean,
     isCrust: boolean,
     deposit?: Deposit,
+    depositDto?: DepositDTO,
     hasDeposit: boolean,
     doGetDeposit: () => void,
 }
@@ -20,6 +21,7 @@ export function useGetDepost(): UseGetDeposit {
     return {
         isPremiumUser: isMember1 || hasDeposit,
         deposit,
+        depositDto: deposit?.deposit,
         hasDeposit,
         doGetDeposit,
         isCrust

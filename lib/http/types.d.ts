@@ -25,7 +25,8 @@ export interface DepositDTO {
     claim_amount: string,
     share_from: string,
     deposit_state: number,// 1 deposited, 2 pendingRedeem
-    expire_timestamp: number
+    expire_timestamp: number,
+    extrinsic_hash: string,
 }
 
 export interface Deposit {
@@ -42,9 +43,85 @@ export interface Reward {
 }
 
 export interface ShareEarnConfig {
-    guaranteeAmount: string // 原价 
-    guaranteeDiscountWithReferer: string // 邀请码价
+    guaranteeAmount: string // 当前价 
+    guaranteeDiscountWithReferer: string // 当前邀请码价
     guaranteePeriod: string // 过期秒数
     preclaimPercentage: string // 提前赎回比例
     shareAndEarnPerUserReward: string // 每邀请获利
+
+    // 过期区块数量
+    guaranteeBlockCount: "180",
+    // 是否展示打折前价格
+    showBase: boolean,
+    // 原价
+    baseGuaranteeAmount: string,
+    // 邀请码原价
+    baseGuaranteeDiscountWithReferer: string
+    // LuckyNewbie每质押产生的奖金
+    depositRewardAmount: string
+}
+
+export interface RewardItem {
+    total: number,
+    pending: number,
+    claimed: number,
+}
+export interface Rewards {
+
+    onGoing: boolean,
+    // Share
+    reward: RewardItem,
+    // GrandDraw
+    grandDraw: RewardItem,
+    // Lunky Newbie
+    depositReward: RewardItem,
+    // Total
+    total: RewardItem
+}
+
+export interface NetworkState {
+    // PremiumUser Count
+    premiumUser: number,
+    // Deposit Pool,
+    depositPool: number,
+    // 已发收益，
+    rewardsDistributed: number,
+    // 剩余未发收益。
+    remainingRewards: number
+}
+
+export interface LuckyNebie {
+    // 当前总收益
+    totalAmount: number,
+    // 最后一个质押用户的区块号
+    lastBlockNumber: number,
+    // 最后一个质押用户的地址
+    memberAddress: string,
+    // 多少块后无用户质押，可领取奖励
+    blockCount: number,
+}
+
+export interface GrandDraw {
+    // 0: 未到达开奖条件，  1: 到达开奖条件，未开奖， 2：已开奖
+    drawState: number,
+    // 参与人数
+    depositCount: number,
+    grandDraw: {
+        // 总奖金
+        totalAmount: number,
+        // 开奖block
+        expireBlock: number,
+        // 开奖需要的参与人数
+        memberSize: number,
+        // 匹配hash的后几位
+        matchCount: number
+        // 
+        blockHash: string,
+    }
+    // 中奖成员
+    members?: { address: string }[]
+}
+
+export interface GrandApplyState {
+    applyed: boolean
 }

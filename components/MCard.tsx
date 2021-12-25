@@ -13,7 +13,8 @@ export const MCard = React.memo<BasePropsWithChildren>(styled(_MCard)`
     box-shadow: 0 0.71rem 1.71rem 0 rgba(0, 0, 0, 0.06) !important;
     border-radius: 1.14rem !important;
     border: 0.07rem solid #EEEEEE !important;
-    margin: 2.21rem 2.29rem 0 2.39rem !important;
+    /* margin: 2.21rem 2.29rem 0 2.39rem !important; */
+    margin-top: 2.21rem;
   
     .title {
       font-size: 1.3rem !important;

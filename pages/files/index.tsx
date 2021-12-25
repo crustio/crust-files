@@ -4,9 +4,8 @@ import styled from "styled-components";
 import { BtnUpload } from "../../components/BtnUpload";
 import FilesTable from "../../components/FilesTable";
 import { OnDrapDropFrame } from "../../components/OnDrapDropFrame";
-import SideLayout from "../../components/SideLayout";
+import PageUserSideLayout from "../../components/PageUserSideLayout";
 import UploadModal from "../../components/UploadModal";
-import User from "../../components/User";
 import { useUserCrypto } from "../../lib/crypto/useUserCrypto";
 import { useGetDepost } from "../../lib/hooks/useGetDeposit";
 import useInputFile from "../../lib/hooks/useInputFile";
@@ -37,57 +36,41 @@ function Index(p: { className?: string }) {
     wInputFile.setFile(info)
   }
 
-  return <SideLayout path={'/files'}>
-    <Segment basic className={p.className}>
-      <OnDrapDropFrame onDrop={_onDrop} />
-      <User />
-      <Segment basic className="contentPanel">
-        <Segment basic textAlign={'center'} className={"font-sans-semibold uploadPanel"}>
-          <input
-            onChange={wInputFile._onInputFile}
-            ref={wInputFile.inputRef}
-            style={{ display: 'none' }}
-            type={'file'}
-          />
-          <div className={'upSlog'}>
-            <div className="title">Public</div>
-            <div className="content font-sans-regular">Your file will be just as it is supposed to be. No encryption, open access for all. It’s perfectly suitable for storing and sharing non-sensitive files.</div>
-          </div>
-          <BtnUpload
-            onClickUpFile={wInputFile._onClickUpFile}
-            onClickUpFolder={wInputFile._onClickUpFolder}
-          />
-          {
-            wInputFile.file && <UploadModal
-              isPremium={isPremiumUser}
-              type="public"
-              file={wInputFile.file}
-              user={user}
-              onClose={_onClose}
-              onSuccess={_onSuccess}
-              uc={uc}
-            />
-          }
-        </Segment>
-        <div className="line" />
-        <FilesTable files={wFiles.files} onDeleteItem={wFiles.deleteItem} />
-      </Segment>
+  return <PageUserSideLayout path="/files" className={p.className}>
+    <OnDrapDropFrame onDrop={_onDrop} />
+    <Segment basic className="uploadPanel">
+      <input
+        onChange={wInputFile._onInputFile}
+        ref={wInputFile.inputRef}
+        style={{ display: 'none' }}
+        type={'file'}
+      />
+      <div className={'upSlog'}>
+        <div className="title">Public</div>
+        <div className="content font-sans-regular">Your file will be just as it is supposed to be. No encryption, open access for all. It’s perfectly suitable for storing and sharing non-sensitive files.</div>
+      </div>
+      <BtnUpload
+        onClickUpFile={wInputFile._onClickUpFile}
+        onClickUpFolder={wInputFile._onClickUpFolder}
+      />
+      {
+        wInputFile.file && <UploadModal
+          isPremium={isPremiumUser}
+          type="public"
+          file={wInputFile.file}
+          user={user}
+          onClose={_onClose}
+          onSuccess={_onSuccess}
+          uc={uc}
+        />
+      }
     </Segment>
-  </SideLayout>
+    <div className="line" />
+    <FilesTable files={wFiles.files} onDeleteItem={wFiles.deleteItem} />
+  </PageUserSideLayout >
 }
 
 export default React.memo(styled(Index)`
-  padding: unset !important;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  .contentPanel {
-    max-width: 100rem;
-    width: 100%;
-    margin: unset !important;
-    padding: unset !important;
-  }
 
   .line {
     margin: 0 2.3rem;

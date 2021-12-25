@@ -1,4 +1,6 @@
 import { BN, formatBalance } from '@polkadot/util'
+import numbro from 'numbro';
+import _ from 'lodash'
 
 export const shortStr = (name: string, count = 6): string => {
   if (name.length > (count * 2)) {
@@ -6,19 +8,6 @@ export const shortStr = (name: string, count = 6): string => {
   }
   return name;
 };
-
-
-// export const strToHex = (str: string): string => {
-//   if (str) {
-//     const charCode: string[] = []
-//     for (let i = 0; i < str.length; i++) {
-//       charCode.push(str.charCodeAt(i).toString(16))
-//     }
-//     return `0x${charCode.join(':')}`
-//   }
-//   return str
-// }
-
 
 const createZero = (count: number) => {
   let z = ''
@@ -47,14 +36,27 @@ export const trimZero = (str: string, decimals = 4): string => {
   return t
 }
 
-export const formatCRU = (cru: string | BN): string => {
+export const formatCRU = (cru: string | BN, decimals = 4): string => {
   if (!cru) return '-'
   const f = formatBalance(cru, { decimals: 12, forceUnit: "Unit", withSi: false })
-  return trimZero(f)
+  return trimZero(f, decimals)
 }
 // window._formatCRU = formatCRU
 
 
 export const openDocs = (path: string) => {
   window.open(`${window.location.origin}${path}`, '_blank')
+}
+
+export const formatNumber = (num: number): string => {
+  return numbro(num).format()
+}
+
+
+export function getFormatValue(obj: any, key: string, def: any = '-') {
+  const v = _.get(obj, key, def)
+  if (v !== def && v) {
+    return numbro(_.toNumber(v)).format()
+  }
+  return def
 }

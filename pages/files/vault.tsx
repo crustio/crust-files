@@ -5,9 +5,8 @@ import styled from "styled-components";
 import { BtnUpload } from "../../components/BtnUpload";
 import FilesTable from "../../components/FilesTable";
 import { OnDrapDropFrame } from "../../components/OnDrapDropFrame";
-import SideLayout from "../../components/SideLayout";
+import PageUserSideLayout from "../../components/PageUserSideLayout";
 import UploadModal from "../../components/UploadModal";
-import User from "../../components/User";
 import { useUserCrypto } from "../../lib/crypto/useUserCrypto";
 import { useGetDepost } from "../../lib/hooks/useGetDeposit";
 import useInputFile from "../../lib/hooks/useInputFile";
@@ -37,62 +36,46 @@ function Vault(p: { className?: string }) {
     wInputFile.setFile(info)
   }
 
-  return <SideLayout path={'/files/vault'}>
-    <Segment basic className={p.className}>
-      <OnDrapDropFrame onDrop={_onDrop} />
-      <User />
-      <Segment basic className="contentPanel">
-        <Segment basic textAlign={'center'} className={"font-sans-semibold uploadPanel"}>
-          <input
-            onChange={wInputFile._onInputFile}
-            ref={wInputFile.inputRef}
-            style={{ display: 'none' }}
-            type={'file'}
-          />
-          <div className={'upSlog'}>
-            <div className="title">Vault</div>
-            <div className="content font-sans-regular">This is your personal file vault which is 100% private, 100% secure and 100% owned by YOU. Every file will be encrypted by a locally-stored encryption key.</div>
-          </div>
-          <div className="btn-upload-panel">
-            <BtnUpload
-              disabled={!isPremiumUser}
-              onClickUpFile={() => isPremiumUser && wInputFile._onClickUpFile()}
-            // onClickUpFolder={wInputFile._onClickUpFolder}
-            />
-            {!isPremiumUser && <div className="unValut">Get a <span onClick={() => r.push('/user')}>Premium</span> to Unlock.</div>}
-          </div>
+  return <PageUserSideLayout path={'/files/vault'} className={p.className}>
+    <OnDrapDropFrame onDrop={_onDrop} />
+    <Segment basic textAlign={'center'} className={"font-sans-semibold uploadPanel"}>
+      <input
+        onChange={wInputFile._onInputFile}
+        ref={wInputFile.inputRef}
+        style={{ display: 'none' }}
+        type={'file'}
+      />
+      <div className={'upSlog'}>
+        <div className="title">Vault</div>
+        <div className="content font-sans-regular">This is your personal file vault which is 100% private, 100% secure and 100% owned by YOU. Every file will be encrypted by a locally-stored encryption key.</div>
+      </div>
+      <div className="btn-upload-panel">
+        <BtnUpload
+          disabled={!isPremiumUser}
+          onClickUpFile={() => isPremiumUser && wInputFile._onClickUpFile()}
+        // onClickUpFolder={wInputFile._onClickUpFolder}
+        />
+        {!isPremiumUser && <div className="unValut">Get a <span onClick={() => r.push('/user')}>Premium</span> to Unlock.</div>}
+      </div>
 
-          {
-            wInputFile.file && <UploadModal
-              isPremium={isPremiumUser}
-              type="vault"
-              file={wInputFile.file}
-              user={user}
-              onClose={_onClose}
-              onSuccess={_onSuccess}
-              uc={uc}
-            />
-          }
-        </Segment>
-        <div className="line" />
-        <FilesTable type="vault" files={wFiles.files} onDeleteItem={wFiles.deleteItem} />
-      </Segment>
+      {
+        wInputFile.file && <UploadModal
+          isPremium={isPremiumUser}
+          type="vault"
+          file={wInputFile.file}
+          user={user}
+          onClose={_onClose}
+          onSuccess={_onSuccess}
+          uc={uc}
+        />
+      }
     </Segment>
-  </SideLayout>
+    <div className="line" />
+    <FilesTable type="vault" files={wFiles.files} onDeleteItem={wFiles.deleteItem} />
+  </PageUserSideLayout>
 }
 
 export default React.memo(styled(Vault)`
-  padding: unset !important;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  .contentPanel {
-    max-width: 100rem;
-    width: 100%;
-    margin: unset !important;
-    padding: unset !important;
-  }
 
   .line {
     margin: 0 2.3rem;

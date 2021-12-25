@@ -39,7 +39,6 @@ function _share(props: BaseProps) {
 
     return <div className={classNames(className)}>
         <div className="share--panel">
-            {/* <img className="share-logo" src="/images/share_logo.png" /> */}
             <img className="logo" src="/images/logo_12x.png" />
             <div className="share--flex1" />
             <div className="share-info">

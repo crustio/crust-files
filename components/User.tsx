@@ -4,10 +4,11 @@ import React, { useCallback } from "react";
 import { Dropdown, Item, Segment } from "semantic-ui-react";
 import styled from "styled-components";
 import { useClipboard } from '../lib/hooks/useClipboard';
+import { useGet } from '../lib/hooks/useGet';
 import { useGetDepost } from '../lib/hooks/useGetDeposit';
-import { useGetReward } from '../lib/hooks/useGetRewards';
 import { useToggle } from "../lib/hooks/useToggle";
-import { shortStr } from "../lib/utils";
+import { getEarnRewards } from '../lib/http/share_earn';
+import { getFormatValue, shortStr } from "../lib/utils";
 import { useContextWrapLoginUser, WalletName, WrapLoginUser } from "../lib/wallet/hooks";
 import { Links } from './Links';
 import ModalSelectAccount from "./ModalSelectAccount";
@@ -129,7 +130,8 @@ function User(props: Props) {
 
   const copy = useClipboard()
   const { isPremiumUser, isCrust } = useGetDepost()
-  const { totalRewards } = useGetReward()
+  const [rewards] = useGet(() => getEarnRewards(user.account), [user.account, isCrust])
+  const totalRewards = getFormatValue(rewards, 'total.total')
   const r = useRouter()
 
   const renderGoToGetPermium = () => {
@@ -164,7 +166,7 @@ function User(props: Props) {
     }
     <Item.Group>
       <Item style={{ justifyContent: 'flex-end', alignItems: 'center' }}>
-        <Links className='dark' space={16}/>
+        <Links className='dark' space={16} />
         <div className="docs" onClick={_onClickDocs}>
           {/* <span className="cru-fo cru-fo-file-text" />  */}
           Docs
@@ -175,7 +177,7 @@ function User(props: Props) {
             pointing={"top right"}
             icon={<span className="cru-fo cru-fo-chevron-down" />}
             basic
-            text={ user.nickName || shortStr(user.account)}>
+            text={user.nickName || shortStr(user.account)}>
             <Dropdown.Menu>
               <TwoText>
                 <div className='title-text'>Sign-in Wallet : {WalletName[user.wallet]}</div>
@@ -205,7 +207,7 @@ export default React.memo(styled(User)`
   margin: unset !important;
   padding: 1.3rem !important;
   width: 100%;
-
+  flex-shrink: 0;
   .docs {
     /* margin-top: 20px; */
     margin-left: 20px;

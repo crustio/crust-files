@@ -80,7 +80,7 @@ function _Pixel(props: Props) {
         }
         return items
     }, [mCount, size, tHeight, fullH, position])
-    return <div className={classNames(className, position)}>
+    return <div className={classNames(className, `Pixel_${position}`)}>
         {pixels.map((item, index) => <div key={`pixels_${index}`} style={item.style} />)}
         {fillPixels.map((item, index) => <div key={`fill_pixels_${index}`} style={item.style} />)}
     </div>
@@ -92,10 +92,10 @@ export const Pixel = styled(_Pixel) <Props>`
     height: 100%;
     position: relative;
     width: ${({ width = defWidth }) => width}px;
-    &.left {
+    &.Pixel_left {
         flex-direction: row;
     }
-    &.right {
+    &.Pixel_right {
         flex-direction: row-reverse;
     }
 `
@@ -108,6 +108,7 @@ export interface BtnProps extends BaseProps {
     color?: string,
     fillColor?: string,
     content: string | React.ReactNode,
+    disabled?: boolean,
     onClick?: MouseEventHandler<HTMLDivElement>,
 }
 
@@ -118,11 +119,12 @@ function _PixelBtn(props: BtnProps) {
         color = defColor,
         fillColor = defFillColor,
         content,
+        disabled,
         onClick
     } = props
     const width = Math.round((height / 5) * 3);
 
-    return <div className={className} onClick={onClick}>
+    return <div className={classNames(className, { disabled })} onClick={onClick}>
         <Pixel
             type={1}
             width={width}
@@ -147,6 +149,10 @@ export const PixelBtn = styled(_PixelBtn) <BtnProps>`
     width: min-content;
     height: ${({ height }) => height}px;
     cursor: pointer;
+    &.disabled {
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
     .btn_content {
         height: 100%;
         line-height: ${({ height }) => height}px;
@@ -165,7 +171,7 @@ export const PixelBtn = styled(_PixelBtn) <BtnProps>`
 
 const defBtnHeight = 51
 const whRatio = 0.725
-const calcW = (h: number, c = 1) => Math.round(h * whRatio * c)
+const calcW = (h: number, c = 1) => Math.ceil(h * whRatio * c)
 export const PixelBtn1 = styled.div<{ height?: number }>`
     color: white;
     font-family: 'OpenSans-SemiBold';
@@ -176,12 +182,12 @@ export const PixelBtn1 = styled.div<{ height?: number }>`
     width: 357px;
     cursor: pointer;
     background-image: url('/images/btn/btn_bg_l.png'),url('/images/btn/btn_bg_c.png'),url('/images/btn/btn_bg_r.png');
-    background-position: 0 0,${({ height = defBtnHeight }) => calcW(height)}px 0,right center;
+    background-position: 0 0,${({ height = defBtnHeight }) => calcW(height) - 2}px 0,right center;
     background-repeat: no-repeat;
     background-attachment: scroll;    
     background-size: 
         ${({ height = defBtnHeight }) => calcW(height)}px 100%, 
-        calc(100% - ${({ height = defBtnHeight }) => calcW(height, 2)}px) 100%, 
+        calc(100% - ${({ height = defBtnHeight }) => calcW(height, 2) - 4}px) 100%, 
         ${({ height = defBtnHeight }) => calcW(height)}px 100%;
     &.dark {
         background-image: url('/images/btn/btn_dark_bg_l.png'),url('/images/btn/btn_dark_bg_c.png'),url('/images/btn/btn_dark_bg_r.png'); 
@@ -200,4 +206,26 @@ export const PixelBtn1 = styled.div<{ height?: number }>`
             background-image: url('/images/btn/btn_dark_bg_l2.png'),url('/images/btn/btn_dark_bg_c.png'),url('/images/btn/btn_dark_bg_r.png'); 
         }
     }
+`
+
+
+const prixlBoardAttrs = (p: { board_size: number }) => ({ board_size: p.board_size || 12 });
+export const PixelBoard = styled.div.attrs(prixlBoardAttrs)`
+  padding: ${(p) => p.board_size}px;
+  background-repeat: no-repeat;
+  background-size: 
+    calc(100% - ${(p) => p.board_size * 2}px) ${(p) => p.board_size}px,
+    calc(100% - ${(p) => p.board_size * 2}px) ${(p) => p.board_size}px,
+    ${(p) => p.board_size}px calc(100% - ${(p) => p.board_size * 2}px),
+    ${(p) => p.board_size}px calc(100% - ${(p) => p.board_size * 2}px);
+  background-position: 
+    ${(p) => p.board_size}px top,
+    ${(p) => p.board_size}px bottom,
+    left ${(p) => p.board_size}px,
+    right ${(p) => p.board_size}px;
+  background-image: 
+    linear-gradient(0deg,black,black),
+    linear-gradient(0deg,black,black),
+    linear-gradient(0deg,black,black),
+    linear-gradient(0deg,black,black);
 `
