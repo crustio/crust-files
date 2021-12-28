@@ -26,8 +26,12 @@ export interface DirFile extends File {
   _webkitRelativePath: string,
 }
 
+export interface BlobFile extends Blob {
+  name: string
+}
+
 export interface FileInfo {
-  file?: File,
+  file?: File | BlobFile,
   files?: DirFile[],
   dir?: string,
 }

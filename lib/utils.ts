@@ -1,4 +1,5 @@
 import { BN, formatBalance } from '@polkadot/util'
+import type { ISubmittableResult } from '@polkadot/types/types'
 import numbro from 'numbro';
 import _ from 'lodash'
 
@@ -55,8 +56,13 @@ export const formatNumber = (num: number): string => {
 
 export function getFormatValue(obj: any, key: string, def: any = '-') {
   const v = _.get(obj, key, def)
-  if (v !== def && v) {
+  if (v !== def && v !== null && v !== undefined) {
     return numbro(_.toNumber(v)).format()
   }
   return def
+}
+
+
+export const findEvent = (res: ISubmittableResult, key: string) => {
+  return res.events.find((e) => `${e.event.section.toString()}(${e.event.method.toString()})` === key)
 }

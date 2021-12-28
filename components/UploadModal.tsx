@@ -1,19 +1,18 @@
 // Copyright 2017-2021 @polkadot/app-files authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import axios, { CancelTokenSource } from 'axios';
 import _ from 'lodash';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, Modal, Progress, Radio } from 'semantic-ui-react';
 import styled from "styled-components";
-import { encryptFile } from "../lib/crypto/encryption";
-import { readFileAsync, WrapUserCrypto } from "../lib/crypto/useUserCrypto";
+import { WrapUserCrypto } from "../lib/crypto/useUserCrypto";
 import { useToggle } from "../lib/hooks/useToggle";
 import { report } from '../lib/http/report';
 import { useAuthGateway, useAuthPinner } from '../lib/useAuth';
-import { getPerfix, WrapLoginUser } from '../lib/wallet/hooks';
-import { FileInfo, SaveFile, UploadRes } from '../lib/wallet/types';
+import { useUpload } from '../lib/useUpload';
+import { WrapLoginUser } from '../lib/wallet/hooks';
+import { FileInfo, SaveFile } from '../lib/wallet/types';
 import Btn from "./Btn";
 import MDropdown from "./MDropdown";
 
@@ -38,38 +37,22 @@ export interface Props {
 
 const NOOP = (): void => undefined;
 
-const M1 = 1024 * 1024;
-const MAX = 40;
-const MAX_PREMIUM = 1024;
-
 function UploadModal(p: Props): React.ReactElement<Props> {
   const { className, uc, file, onClose = NOOP, onSuccess = NOOP, user, type, isPremium } = p;
-  const mMax = useMemo(() => isPremium ? MAX_PREMIUM : MAX, [isPremium])
   const isVault = type === 'vault'
   const { t } = useTranslation();
   const { endpoint, endpoints, onChangeEndpoint } = useAuthGateway();
   const { onChangePinner, pinner, pins } = useAuthPinner();
-  const [isBusy, setBusy] = useState(false);
-  const fileSizeError = useMemo(() => {
-    if (file.file) {
-      return file.file.size > mMax * M1;
-    } else if (file.files) {
-      let sum = 0;
-      for (const f of file.files) {
-        sum += f.size;
-      }
-      return sum > mMax * M1;
-    }
-    return false;
-  }, [file, mMax]);
-  const [error, setError] = useState('');
-  const errorText = fileSizeError ? t<string>(`Do not upload files larger than ${mMax}MB!`) : error;
-  const [upState, setUpState] = useState({ progress: 0, up: false });
-  const [cancelUp, setCancelUp] = useState<CancelTokenSource | null>(null);
-  // const [encrypt, toggleEncrypt] = useToggle(isVault)
   const encrypt = isVault && !!uc.secret;
   const [showOptions, toggleShowOptions] = useToggle()
-
+  const { error, cancelUp, upState, upload, isBusy, fileSizeError } = useUpload(user, {
+    isEncrypt: !!encrypt,
+    secret: uc.secret,
+    file,
+    isPremium,
+    endpoint,
+    pinner,
+  })
   const _onClickContributeGateway = () => window.open('https://wiki.crust.network/docs/en/buildIPFSWeb3AuthGW', '_blank')
   const _onClickContributePinner = () => window.open('https://wiki.crust.network/docs/en/buildIPFSW3AuthPin', '_blank')
 
@@ -79,127 +62,24 @@ function UploadModal(p: Props): React.ReactElement<Props> {
   }, [cancelUp, onClose]);
 
   const disabledSingAndUpload = fileSizeError || (isVault && !uc.secret) || !user.account || !user.sign
-  const _onClickUp = async () => {
-    setError('');
+  const _onClickUp = () => {
     if (disabledSingAndUpload) {
       return;
     }
-    try {
-      // 1: sign
-      setBusy(true);
-
-      const prefix = getPerfix(user);
-      const msg = user.wallet === 'near' ? user.pubKey || '' : user.account;
-      const signature = await user.sign(msg, user.account);
-      const perSignData = user.wallet === 'elrond' ? signature : `${prefix}-${msg}:${signature}`;
-      const base64Signature = window.btoa(perSignData);
-      const AuthBasic = `Basic ${base64Signature}`;
-      const AuthBearer = `Bearer ${base64Signature}`;
-      // 2: up file
-      const cancel = axios.CancelToken.source();
-
-      setCancelUp(cancel);
-      setUpState({ progress: 0, up: true });
-      // 2.**** : encrypt
-      const form = new FormData();
-      const isEncrypt = !!(encrypt && uc.secret)
-      if (isEncrypt) { // encrypt
-        if (file.file) {
-          const time1 = new Date().getTime()
-          const fileData = await readFileAsync(file.file)
-          console.info('readFile::', (new Date().getTime() - time1) / 1000)
-          const encryptedData = await encryptFile(fileData, uc.secret)
-          console.info('encrypted::', (new Date().getTime() - time1) / 1000)
-          const encryptedFile = new Blob([encryptedData], { type: file.file.type })
-          form.append('file', encryptedFile, file.file.name)
-        } else if (file.files) {
-          for (const f of file.files) {
-            const fileData = await readFileAsync(f)
-            const encryptedData = await encryptFile(fileData, uc.secret)
-            const encryptedFile = new Blob([encryptedData], { type: f.type })
-            form.append('file', encryptedFile, f.webkitRelativePath)
+    upload()
+      .then((saveFile) => {
+        onSuccess(saveFile)
+        return report({
+          type: 2,
+          walletType: user.wallet,
+          address: user.account,
+          data: {
+            cid: saveFile.Hash,
+            fileType: _.size(saveFile.items) ? 1 : 0,
+            strategy: saveFile.Encrypted ? 1 : 0,
           }
-        }
-      } else { // normal
-        if (file.file) {
-          form.append('file', file.file, file.file.name);
-        } else if (file.files) {
-          for (const f of file.files) {
-            form.append('file', f, f._webkitRelativePath || f.webkitRelativePath);
-          }
-        }
-      }
-
-      const UpEndpoint = endpoint.value;
-      const upResult = await axios.request<UploadRes | string>({
-        cancelToken: cancel.token,
-        data: form,
-        headers: { Authorization: AuthBasic },
-        maxContentLength: mMax,
-        method: 'POST',
-        onUploadProgress: (p: { loaded: number, total: number }) => {
-          const percent = p.loaded / p.total;
-
-          setUpState({ progress: Math.round(percent * 99), up: true });
-        },
-        params: { pin: true },
-        url: `${UpEndpoint}/api/v0/add`
-      });
-
-      let upRes: UploadRes;
-
-      if (typeof upResult.data === 'string') {
-        const jsonStr = upResult.data.replaceAll('}\n{', '},{');
-        const items = JSON.parse(`[${jsonStr}]`) as UploadRes[];
-        const folder = items.length - 1;
-
-        upRes = items[folder];
-        delete items[folder];
-        upRes.items = items;
-      } else {
-        upRes = upResult.data;
-      }
-
-      console.info('upResult:', upResult);
-      setCancelUp(null);
-      setUpState({ progress: 99, up: true })
-      // remote pin order
-      const PinEndpoint = pinner.value;
-      await axios.request({
-        data: {
-          cid: upRes.Hash,
-          name: upRes.Name
-        },
-        headers: { Authorization: AuthBearer },
-        method: 'POST',
-        url: `${PinEndpoint}/psa/pins`
-      });
-
-      setUpState({ progress: 100, up: false });
-      report({
-        type: 2,
-        walletType: user.wallet,
-        address: user.account,
-        data: {
-          cid: upRes.Hash,
-          fileType: _.size(upRes.items) ? 1 : 0,
-          strategy: isEncrypt ? 1 : 0,
-        }
-      })
-      onSuccess({
-        ...upRes,
-        PinEndpoint,
-        PinTime: new Date().getTime(),
-        UpEndpoint,
-        Encrypted: isEncrypt,
-      });
-    } catch (e) {
-      setUpState({ progress: 0, up: false });
-      setBusy(false);
-      console.error(e);
-      setError(t('Network Error,Please try to switch a Gateway.'));
-      // setError((e as Error).message);
-    }
+        })
+      }).catch(console.error)
   }
 
   return (
@@ -275,7 +155,7 @@ function UploadModal(p: Props): React.ReactElement<Props> {
           <div className="toggle-options" onClick={() => toggleShowOptions()}>{showOptions ? 'Put Away' : 'See More'}</div>
         </Card.Group>
         {
-          errorText &&
+          error &&
           <div
             style={{
               color: 'orangered',
@@ -284,7 +164,7 @@ function UploadModal(p: Props): React.ReactElement<Props> {
               wordBreak: 'break-all'
             }}
           >
-            {errorText}
+            {error}
           </div>
         }
       </Modal.Content>

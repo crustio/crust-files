@@ -1,18 +1,27 @@
 import classNames from 'classnames';
 import { format } from 'date-fns';
 import _ from 'lodash';
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import styled from "styled-components";
 import Btn from "../components/Btn";
+import { Badge } from '../components/effect/Badge';
+import { BadgeIcon1, BadgeIcon2 } from '../components/icons';
+import { ColFlex } from '../components/layout';
 import { MCard } from "../components/MCard";
 import PageUserSideLayout from '../components/PageUserSideLayout';
+import { useApp } from '../lib/AppContext';
 import { CrustWalletDownUrl } from '../lib/config';
 import { useClaim, useDeposit } from "../lib/hooks/useDeposit";
 import { useGet } from "../lib/hooks/useGet";
 import { useGetDepost } from '../lib/hooks/useGetDeposit';
 import { getAccountByNickName, getDepositAddress, getShareEarnConfig } from "../lib/http/share_earn";
+import { BlobFile, SaveFile } from '../lib/types';
+import { useAuthGateway, useAuthPinner } from '../lib/useAuth';
+import { useUpload } from '../lib/useUpload';
 import { formatCRU, trimZero } from '../lib/utils';
 import { useContextWrapLoginUser } from "../lib/wallet/hooks";
+
+
 export interface Props {
   className?: string
 }
@@ -20,6 +29,7 @@ export interface Props {
 function Index(props: Props) {
   const { className } = props
   const user = useContextWrapLoginUser()
+  const { alert, loading } = useApp()
   const { isCrust, isPremiumUser, deposit, doGetDeposit, hasDeposit } = useGetDepost()
   const [nickError, setNickError] = useState<string>()
   const [shareFrom, setShareFrom] = useState<string>()
@@ -45,7 +55,6 @@ function Index(props: Props) {
   const [value, setValue] = useState<string>()
   const [config] = useGet(() => getShareEarnConfig())
   const showBasePrice = config && config.showBase
-  // const basePrice = config && 
   const showDeposit = isCrust && !hasDeposit
   const showClaim = isCrust && hasDeposit
   const [dest] = useGet(() => getDepositAddress())
@@ -63,11 +72,6 @@ function Index(props: Props) {
   const guaranteeDiscountWithReferer = useMemo(() => formatCRU(config?.guaranteeDiscountWithReferer || ''), [config])
   const baseGuaranteeAmount = useMemo(() => formatCRU(config?.baseGuaranteeAmount || ''), [config])
   const baseGuaranteeDiscountWithReferer = useMemo(() => formatCRU(config?.baseGuaranteeDiscountWithReferer || ''), [config])
-  // const months = useMemo(() => {
-  //   if (!config || !showClaim) return '-'
-  //   const s = new Number(config.guaranteePeriod).valueOf()
-  //   return Math.round(s / 60 / 60 / 24 / 30)
-  // }, [showClaim, config])
   const days = useMemo(() => {
     if (!config || !showClaim) return '-'
     const s = new Number(config.guaranteePeriod).valueOf()
@@ -110,6 +114,39 @@ function Index(props: Props) {
   const _onClickDownCrustWallet = () => window.open(CrustWalletDownUrl, '_blank')
   const _onClickDeposit = () => { uDeposit.start() }
   const _onClickClaim = () => { uClaim.start() }
+
+  const { endpoint } = useAuthGateway()
+  const { pinner } = useAuthPinner()
+  const { upload, error } = useUpload(user, {
+    endpoint,
+    pinner
+  })
+  useEffect(() => {
+    if(error) alert.error(error)
+  }, [error])
+  const badgeRef = useRef<SVGSVGElement>();
+  const diabledGetBadge = !isPremiumUser && !badgeRef.current;
+  const [badge, setBadge] = useState<SaveFile>()
+  const badgeCID = (badge && badge.Hash)
+  const hasBadge = !!badgeCID;
+  const badgeEnpoint = (badge && badge.UpEndpoint) || endpoint.value
+  const badgeFileName = badge && badge.Name
+  const _onClickGetBadge = () => {
+    if (diabledGetBadge) return;
+    loading.show()
+    // 'image/svg+xml'
+    const svg = badgeRef.current.outerHTML
+    const badgeFile = new Blob([svg], { type: 'image/svg+xml' }) as BlobFile
+    badgeFile.name = `badge_${user.nickName}.svg`
+    upload({ file: badgeFile })
+      .then(sf => {
+        setBadge(sf)
+        console.info('badge:', sf)
+      })
+      .catch()
+      .then(loading.hide)
+  }
+
 
   return <PageUserSideLayout path={'/user'} className={className}>
     <div className="user-Info">
@@ -187,11 +224,56 @@ function Index(props: Props) {
         </div>
         {onGoingClaim && <div className="tip">Redeem will be done in less than 24 hours. Check your balance later.</div>}
       </MCard>}
+    {
+      isPremiumUser && <MCard>
+        {/* <Badge name={user.nickName}/> */}
+        <div className="title font-sans-semibold">My Badge Collection</div>
+        <div className="text font-sans-regular">
+          Collect your Achievement Badge here.
+        </div>
+        {
+          hasBadge ? <div style={{ marginTop: 20, display: 'flex', height: 100 }}>
+            <BadgeIcon2 />
+            <ColFlex style={{ marginLeft: 18, flex: 1, justifyContent: 'space-between' }}>
+              <span style={{ fontSize: 16, lineHeight: '22px', color: '#000000' }}>My Badge #1</span>
+              <div className='text font-sans-regular'>
+                Badge Type: Premium User Badge<br />
+                Badge CID: {badgeCID}
+              </div>
+              <div>
+                <a className='mlink-btn' target='_blank' href={`${badgeEnpoint}/ipfs/${badgeCID}?filename=${badgeFileName}`} rel="noreferrer">View full image</a>
+                <a className='mlink-btn' target='_blank' href={`https://ipfs-scan.io/?cid=${badgeCID}`} rel="noreferrer">Check in IPFS Scan</a>
+              </div>
+            </ColFlex>
+          </div> : <>
+            <div style={{ width: 0, height: 0, overflow: 'hidden' }}>
+              <Badge name={user.nickName} ref={badgeRef} />
+            </div>
+            <div style={{ paddingLeft: 70, marginTop: 20 }}>
+              <BadgeIcon1 />
+            </div>
+            <div className={'btns mbtns'}>
+              <Btn content={'Get Premium Badge'} disabled={diabledGetBadge} onClick={_onClickGetBadge} />
+              {!isPremiumUser && <a>Become a Premium User to get this badge.</a>}
+            </div>
+          </>
+        }
+
+      </MCard>
+    }
   </PageUserSideLayout>
 }
 
 export default React.memo<Props>(styled(Index)`
-
+  .mlink-btn{
+    white-space: nowrap !important;
+    margin-left: 0 !important;
+    margin-right: 40px;
+    color: var(--primary-color) !important;
+    text-decoration: underline !important;
+    font-size: 14px !important;
+    line-height: 19px !important;
+  }
   .mcard{
     a {
       font-size: 10px;
@@ -336,4 +418,7 @@ export default React.memo<Props>(styled(Index)`
     color: #F37565;
     margin-left: 12px;
   }
+
+
+
 `)

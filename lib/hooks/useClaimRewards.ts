@@ -3,6 +3,7 @@ import { useApp } from "../AppContext"
 import { useContextWrapLoginUser } from "../wallet/hooks"
 import type { Callback, ISubmittableResult, Signer } from '@polkadot/types/types';
 import { ShareEarnENV } from "../config";
+import { findEvent } from "../utils";
 
 export interface UseClaimRewards {
     ready: boolean,
@@ -47,16 +48,25 @@ export function useClaimRewards(): UseClaimRewards {
         const statusCb: Callback<ISubmittableResult> = (res) => {
             api.setSigner(undefined)
             if (res.status.isFinalized) {
-                loading.hide()
-                setFinish(true)
+                const batchCompletd = !!findEvent(res, 'utility(BatchCompleted)')
+                const exCompletd = !!findEvent(res, 'system(ExtrinsicSuccess)')
+                if (batchCompletd && exCompletd) {
+                    loading.hide()
+                    setFinish(true)
+                } else {
+                    loading.hide()
+                    alert.error('Claim Error')
+                }
             }
         }
         ex.signAndSend(user.account, { nonce: -1, tip: 0 }, statusCb)
             .catch(error => {
                 if (typeof error === 'string') {
                     alert.error(error)
+                } else if (error && typeof error.message === 'string') {
+                    alert.error(error.message)
                 } else {
-                    console.error(error)
+                    console.error("Deposit:", JSON.stringify(error))
                 }
                 loading.hide()
             })

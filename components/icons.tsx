@@ -22,3 +22,16 @@ export const Coin = styled.img.attrs({ src: "/images/coin.svg"})`
   object-fit: contain;
   display: inline-block;
 `
+
+export const BadgeIcon1 = styled.img.attrs({ src: '/images/badge1.svg'})`
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  display: inline-block;
+`
+export const BadgeIcon2 = styled.img.attrs({ src: '/images/badge2.svg'})`
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  display: inline-block;
+`

@@ -1,9 +1,9 @@
 import type { Callback, ISubmittableResult, Signer } from '@polkadot/types/types';
+
 import { useEffect, useState } from "react";
 import { useApp } from "../AppContext";
 import { ShareEarnENV } from "../config";
-// import { doPremark } from "../http/share_earn";
-// import { strToBn } from "../utils";
+import { findEvent } from '../utils';
 import { useContextWrapLoginUser } from "../wallet/hooks";
 
 // export interface BlockExtrinsicInfo {
@@ -77,16 +77,29 @@ export function useDeposit(dest: string, value: string, share_from?: string): Us
         const statusCb: Callback<ISubmittableResult> = (res) => {
             api.setSigner(undefined)
             if (res.status.isFinalized) {
+                const batchCompletd = !!findEvent(res, 'utility(BatchCompleted)')
+                const txCompletd = !!findEvent(res, 'system(ExtrinsicSuccess)')
+                if (batchCompletd && txCompletd) {
+                    loading.hide()
+                    setFinish(true)
+                } else {
+                    loading.hide()
+                    alert.error('Deposit Error')
+                }
+            } else if (res.isError) {
                 loading.hide()
-                setFinish(true)
+                alert.error('Deposit Error')
             }
+            console.info('events:', res.events)
         }
         batch.signAndSend(user.account, { nonce: -1, tip: 0 }, statusCb)
             .catch(error => {
                 if (typeof error === 'string') {
                     alert.error(error)
+                } else if (error && typeof error.message === 'string') {
+                    alert.error(error.message)
                 } else {
-                    console.error(error)
+                    console.error("Deposit:", JSON.stringify(error))
                 }
                 loading.hide()
             })
@@ -137,16 +150,25 @@ export function useClaim(): UseClaim {
         const statusCb: Callback<ISubmittableResult> = (res) => {
             api.setSigner(undefined)
             if (res.status.isFinalized) {
-                loading.hide()
-                setFinish(true)
+                const batchCompletd = !!findEvent(res, 'utility(BatchCompleted)')
+                const exCompletd = !!findEvent(res, 'system(ExtrinsicSuccess)')
+                if (batchCompletd && exCompletd) {
+                    loading.hide()
+                    setFinish(true)
+                } else {
+                    loading.hide()
+                    alert.error('Redeem Error')
+                }
             }
         }
         ex.signAndSend(user.account, { nonce: -1, tip: 0 }, statusCb)
             .catch(error => {
                 if (typeof error === 'string') {
                     alert.error(error)
+                } else if (error && typeof error.message === 'string') {
+                    alert.error(error.message)
                 } else {
-                    console.error(error)
+                    console.error("Deposit:", JSON.stringify(error))
                 }
                 loading.hide()
             })

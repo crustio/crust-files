@@ -38,7 +38,7 @@ export function filesTable(props: Props) {
         <Table.HeaderCell>File Name</Table.HeaderCell>
         <Table.HeaderCell width="2" textAlign={"center"}>File CID</Table.HeaderCell>
         <Table.HeaderCell width="2" textAlign={"center"}>File Size</Table.HeaderCell>
-        <Table.HeaderCell width="2" textAlign={"center"}>Status</Table.HeaderCell>
+        <Table.HeaderCell width="3" textAlign={"center"}>Status</Table.HeaderCell>
         <Table.HeaderCell width="2" textAlign={"center"}>Action</Table.HeaderCell>
         {isPublic && <Table.HeaderCell width="2" />}
       </Table.Row>
