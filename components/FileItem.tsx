@@ -133,8 +133,8 @@ function FileItem(props: Props) {
   const _onClickTweet = () => {
     const shareUrl = createShareOrReceiveUrl(file, user, true);
     const text = user.nickName ?
-      `${user.nickName} is sharing you a file.\nGo check it at Crust Files – your first personal Web3.0 storage in Metaverse.` :
-      `You are receiving a file.\nGo check it at Crust Files – your first personal Web3.0 storage in Metaverse.`;
+      `Check out what '${user.nickName}' is sharing on Crust Files!` :
+      `Check out what I am sharing on Crust Files!`;
     const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURI(text)}&url=${encodeURIComponent(shareUrl)}&hashtags=web3,ipfs,crustnetwork,metaverse,crustfiles`;
     window.open(tweetUrl, '_blank');
   }
