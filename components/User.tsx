@@ -9,7 +9,7 @@ import { useGetDepost } from '../lib/hooks/useGetDeposit';
 import { useToggle } from "../lib/hooks/useToggle";
 import { getEarnRewards } from '../lib/http/share_earn';
 import { getFormatValue, shortStr } from "../lib/utils";
-import { useContextWrapLoginUser, WalletName, WrapLoginUser } from "../lib/wallet/hooks";
+import { WalletName, WrapLoginUser } from "../lib/wallet/hooks";
 import { Links } from './Links';
 import ModalSelectAccount from "./ModalSelectAccount";
 
@@ -120,16 +120,14 @@ const MBtns = styled.div`
 `
 
 function User(props: Props) {
-  const user = useContextWrapLoginUser();
-  const _onClickLogout = useCallback(user.logout, [user])
-  const showSwitchAccount = user.wallet === 'crust' || user.wallet === 'polkadot-js'
   const [open, toggleOpen] = useToggle()
   const _onClickDocs = () => {
     window.open(`${window.location.origin}/docs/CrustFiles_Welcome`, '_blank')
   }
-
   const copy = useClipboard()
-  const { isPremiumUser, isCrust } = useGetDepost()
+  const { isPremiumUser, isCrust, user } = useGetDepost()
+  const _onClickLogout = useCallback(user.logout, [user])
+  const showSwitchAccount = user.wallet === 'crust' || user.wallet === 'polkadot-js'
   const [rewards] = useGet(() => getEarnRewards(user.account), [user.account, isCrust])
   const totalRewards = getFormatValue(rewards, 'total.total')
   const r = useRouter()

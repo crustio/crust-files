@@ -125,3 +125,7 @@ export interface GrandDraw {
 export interface GrandApplyState {
     applyed: boolean
 }
+
+export interface NFT {
+    cid: string
+}

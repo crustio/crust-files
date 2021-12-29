@@ -67,7 +67,7 @@ function UploadModal(p: Props): React.ReactElement<Props> {
       return;
     }
     upload()
-      .then((saveFile) => {
+      .then(([saveFile]) => {
         onSuccess(saveFile)
         return report({
           type: 2,

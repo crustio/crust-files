@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react"
-import { useApp } from "../AppContext"
-import { useContextWrapLoginUser } from "../wallet/hooks"
 import type { Callback, ISubmittableResult, Signer } from '@polkadot/types/types';
+import { useEffect, useState } from "react";
+import { useApp } from "../AppContext";
 import { ShareEarnENV } from "../config";
 import { findEvent } from "../utils";
+import { useContextWrapLoginUser } from "../wallet/hooks";
 
 export interface UseClaimRewards {
     ready: boolean,
@@ -48,9 +48,8 @@ export function useClaimRewards(): UseClaimRewards {
         const statusCb: Callback<ISubmittableResult> = (res) => {
             api.setSigner(undefined)
             if (res.status.isFinalized) {
-                const batchCompletd = !!findEvent(res, 'utility(BatchCompleted)')
                 const exCompletd = !!findEvent(res, 'system(ExtrinsicSuccess)')
-                if (batchCompletd && exCompletd) {
+                if (exCompletd) {
                     loading.hide()
                     setFinish(true)
                 } else {

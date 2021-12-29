@@ -6,8 +6,12 @@ import { readFileAsync } from "./crypto/useUserCrypto";
 import { FileInfo, SaveFile, UploadRes } from "./types";
 import { getPerfix, WrapLoginUser } from "./wallet/hooks";
 
+export interface Params {
+    signature: string,
+    msg: string
+}
 export interface UseUpload {
-    upload: (file?: FileInfo) => Promise<SaveFile>,
+    upload: (file?: FileInfo) => Promise<[SaveFile, Params]>,
     error: string,
     isBusy: boolean,
     fileSizeError: boolean,
@@ -56,7 +60,7 @@ export function useUpload(user: WrapLoginUser, options: Options): UseUpload {
         return false;
     }, [file, mMax]);
 
-    const upload = async (cFile?: FileInfo) => {
+    const upload = async (cFile?: FileInfo): Promise<[SaveFile, Params]> => {
         try {
             // 1: sign
             setBusy(true);
@@ -149,13 +153,18 @@ export function useUpload(user: WrapLoginUser, options: Options): UseUpload {
             });
 
             setUpState({ progress: 100, up: false });
-            return {
+            const sf: SaveFile = {
                 ...upRes,
                 PinEndpoint,
                 PinTime: new Date().getTime(),
                 UpEndpoint,
                 Encrypted: isEncrypt,
             }
+            const params: Params = {
+                msg,
+                signature: signature
+            }
+            return [sf, params]
         } catch (e) {
             setUpState({ progress: 0, up: false });
             setBusy(false);

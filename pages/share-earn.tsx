@@ -18,7 +18,6 @@ import { useToggle } from "../lib/hooks/useToggle";
 import { applyGrandDraw, getEarnRewards, getGrandApplyState, getGrandDraw, getLuckyNebie, getNetworkState, getShareEarnConfig } from "../lib/http/share_earn";
 import mDayjs from "../lib/mDayjs";
 import { formatCRU, getFormatValue } from "../lib/utils";
-import { useContextWrapLoginUser } from "../lib/wallet/hooks";
 export interface Props {
   className?: string
 }
@@ -304,10 +303,10 @@ const RewardPrograms = styled.div`
 function Index(props: Props) {
   const { className } = props
   const { api, alert, loading } = useApp()
-  const { account, sign } = useContextWrapLoginUser()
   const r = useRouter()
   const [isMe, setIsMe] = useToggle(true)
-  const { isPremiumUser, isCrust, depositDto } = useGetDepost()
+  const { isPremiumUser, isCrust, depositDto, user } = useGetDepost()
+  const { account, sign } = user
   const uClaimRewards = useClaimRewards()
   const [config] = useGet(() => getShareEarnConfig())
   const [rewards, doGetRewards] = useGet(() => getEarnRewards(account), [account, isCrust])
@@ -351,11 +350,13 @@ function Index(props: Props) {
   }, [config])
 
   const depositRewardAmount = useMemo(() => formatCRU(config && config.depositRewardAmount), [config])
+
   const countdown = useMemo(() => {
     if (!luckyNebie || !bestNumberFinalized) return 0
     return (luckyNebie.lastBlockNumber + luckyNebie.blockCount - bestNumberFinalized) * 6
   }, [luckyNebie, bestNumberFinalized])
   const fCountdown = useCountdown(countdown);
+  const luckyDutation = useMemo(() => (luckyNebie?.blockCount || 300) / 10, [luckyNebie])
 
   const grandProgress = useMemo(() => {
     if (granDraw && granDraw.grandDraw) {
@@ -389,7 +390,7 @@ function Index(props: Props) {
   }, [granDraw, bestNumberFinalized])
 
   const totalPending = getFormatValue(rewards, 'total.pending')
-  const disabledClaimRewards = !uClaimRewards.ready || onGoingClaim || !rewards || totalPending === '-'
+  const disabledClaimRewards = !uClaimRewards.ready || onGoingClaim || !rewards || totalPending === '-' || totalPending === '0'
 
   const _clickSignUpGrandDraw = async () => {
     if (!account || !isCrust || !isPremiumUser) return
@@ -479,7 +480,7 @@ function Index(props: Props) {
         1. The last Premium User to join before the countdown reaches zero<br />
         will be the winner of the current pool.<br />
         2. Each time a newly registered Premium User will refresh<br />
-        the countdown to 30min and add {depositRewardAmount} CRU into the pool.<br />
+        the countdown to {luckyDutation}min and add {depositRewardAmount} CRU into the pool.<br />
         <div className="footer">
           Best chance: <span>{getStrValue(luckyNebie, 'memberAddress')}</span>
         </div>
@@ -506,7 +507,7 @@ function Index(props: Props) {
             My Ticket: {
               isPremiumUser ?
                 <span>{myTicket}</span> :
-                <span style={{ color: '#333333', fontSize: 20 }}>
+                <span style={{ color: '#333333', fontSize: 20, verticalAlign: 'middle' }}>
                   - Get a <span style={{ color: '#FF8D00', cursor: 'pointer' }} onClick={_clickGetPremium}>Premium User</span> to join the game.
                 </span>
             }

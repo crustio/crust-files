@@ -14,12 +14,11 @@ import { CrustWalletDownUrl } from '../lib/config';
 import { useClaim, useDeposit } from "../lib/hooks/useDeposit";
 import { useGet } from "../lib/hooks/useGet";
 import { useGetDepost } from '../lib/hooks/useGetDeposit';
-import { getAccountByNickName, getDepositAddress, getShareEarnConfig } from "../lib/http/share_earn";
-import { BlobFile, SaveFile } from '../lib/types';
+import { getAccountByNickName, getDepositAddress, getNft, getShareEarnConfig, saveNft } from "../lib/http/share_earn";
+import { BlobFile } from '../lib/types';
 import { useAuthGateway, useAuthPinner } from '../lib/useAuth';
 import { useUpload } from '../lib/useUpload';
 import { formatCRU, trimZero } from '../lib/utils';
-import { useContextWrapLoginUser } from "../lib/wallet/hooks";
 
 
 export interface Props {
@@ -28,9 +27,8 @@ export interface Props {
 
 function Index(props: Props) {
   const { className } = props
-  const user = useContextWrapLoginUser()
   const { alert, loading } = useApp()
-  const { isCrust, isPremiumUser, deposit, doGetDeposit, hasDeposit } = useGetDepost()
+  const { isCrust, isPremiumUser, deposit, doGetDeposit, hasDeposit, user } = useGetDepost()
   const [nickError, setNickError] = useState<string>()
   const [shareFrom, setShareFrom] = useState<string>()
   const _onChangeNickname = useMemo(() => {
@@ -122,15 +120,15 @@ function Index(props: Props) {
     pinner
   })
   useEffect(() => {
-    if(error) alert.error(error)
+    if (error) alert.error(error)
   }, [error])
   const badgeRef = useRef<SVGSVGElement>();
   const diabledGetBadge = !isPremiumUser && !badgeRef.current;
-  const [badge, setBadge] = useState<SaveFile>()
-  const badgeCID = (badge && badge.Hash)
+  const [nft, doGetNft, loadNft] = useGet(() => getNft(user.account), [isCrust, isPremiumUser, user.account])
+  const badgeCID = _.get(nft, '0.cid')
   const hasBadge = !!badgeCID;
-  const badgeEnpoint = (badge && badge.UpEndpoint) || endpoint.value
-  const badgeFileName = badge && badge.Name
+  const badgeEnpoint = endpoint.value
+  const badgeFileName = `badge_nft_${user.nickName}`
   const _onClickGetBadge = () => {
     if (diabledGetBadge) return;
     loading.show()
@@ -139,11 +137,12 @@ function Index(props: Props) {
     const badgeFile = new Blob([svg], { type: 'image/svg+xml' }) as BlobFile
     badgeFile.name = `badge_${user.nickName}.svg`
     upload({ file: badgeFile })
-      .then(sf => {
-        setBadge(sf)
-        console.info('badge:', sf)
+      .then(([sf, params]) => {
+        const perSignData = `crust-${params.msg}:${params.signature}`;
+        const base64Signature = window.btoa(perSignData);
+        return saveNft(base64Signature, sf.Hash).then(() => doGetNft())
       })
-      .catch()
+      .catch(console.error)
       .then(loading.hide)
   }
 
@@ -225,7 +224,7 @@ function Index(props: Props) {
         {onGoingClaim && <div className="tip">Redeem will be done in less than 24 hours. Check your balance later.</div>}
       </MCard>}
     {
-      isPremiumUser && <MCard>
+      isPremiumUser && !loadNft && <MCard>
         {/* <Badge name={user.nickName}/> */}
         <div className="title font-sans-semibold">My Badge Collection</div>
         <div className="text font-sans-regular">

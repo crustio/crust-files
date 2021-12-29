@@ -181,6 +181,7 @@ export const PixelBtn1 = styled.div<{ height?: number }>`
     text-align: center;
     width: 357px;
     cursor: pointer;
+    transition: all ease-in-out 200ms;
     background-image: url('/images/btn/btn_bg_l.png'),url('/images/btn/btn_bg_c.png'),url('/images/btn/btn_bg_r.png');
     background-position: 0 0,${({ height = defBtnHeight }) => calcW(height) - 2}px 0,right center;
     background-repeat: no-repeat;

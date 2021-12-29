@@ -1,5 +1,5 @@
 import axios, { AxiosResponse, AxiosRequestConfig } from 'axios';
-import { CommonResponse, Deposit, GrandApplyState, GrandDraw, LuckyNebie, Member, NetworkState, Reward, Rewards, ShareEarnConfig } from './types';
+import { CommonResponse, Deposit, GrandApplyState, GrandDraw, LuckyNebie, Member, NetworkState, NFT, Reward, Rewards, ShareEarnConfig } from './types';
 // import _ from 'lodash';
 
 const base_url = 'https://files-api.decoo.io'
@@ -97,4 +97,13 @@ export function getGrandApplyState(address: string) {
 
 export function applyGrandDraw(signature: string) {
     return reqWithAuth(signature, '/auth/member/grand/apply')
+}
+
+export function getNft(address: string) {
+    return axios.post<CommonResponse<NFT[]>>(createUrl('/common/nft'), { address })
+        .then(getData)
+}
+
+export function saveNft(signature: string, cid: string) {
+    return reqWithAuth(signature, '/auth/member/nft', { cid })
 }

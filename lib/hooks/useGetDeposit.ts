@@ -1,6 +1,6 @@
 import { getDeposit } from "../http/share_earn";
 import { Deposit, DepositDTO } from "../http/types";
-import { useContextWrapLoginUser } from "../wallet/hooks";
+import { useContextWrapLoginUser, WrapLoginUser } from "../wallet/hooks";
 import { useGet } from "./useGet";
 
 export interface UseGetDeposit {
@@ -10,10 +10,12 @@ export interface UseGetDeposit {
     depositDto?: DepositDTO,
     hasDeposit: boolean,
     doGetDeposit: () => void,
+    user: WrapLoginUser
 }
 
 export function useGetDepost(): UseGetDeposit {
-    const { account, wallet, member } = useContextWrapLoginUser()
+    const user = useContextWrapLoginUser()
+    const { account, wallet, member } = user
     const isCrust = wallet === 'crust'
     const [deposit, doGetDeposit] = useGet(() => getDeposit(account), [account, isCrust])
     const hasDeposit = !!(deposit && deposit.deposit && deposit.deposit.id)
@@ -24,6 +26,7 @@ export function useGetDepost(): UseGetDeposit {
         depositDto: deposit?.deposit,
         hasDeposit,
         doGetDeposit,
-        isCrust
+        isCrust,
+        user
     }
 }
