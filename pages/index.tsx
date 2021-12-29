@@ -480,8 +480,8 @@ export default React.memo(styled(Home)`
     }
     .coming-soon{
       position: absolute;
-      right: 100px;
-      top: 100px;
+      right: 36px;
+      top: 36px;
 
       border-bottom: 3px solid white;
       color: white;
