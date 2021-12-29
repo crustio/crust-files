@@ -41,7 +41,7 @@ https://crustfiles.io/
 <br/>
 or
 <br/>
-https://files-ipfs.crustapps.net/ if you want an IPFS hosted version.
+https://ipfs.crustfiles.io/ if you want an IPFS hosted version.
 <br/>
 
 
