@@ -43,6 +43,7 @@ body {
   font-family: OpenSans-Regular;
   color: var(--main-color);
   font-size: 14px;
+  /* scale: 0.8; */
 }
 
 * {
@@ -74,24 +75,24 @@ img {
 }
 
 @media screen and (max-width: 1440px) {
-  body {
-    font-size: 12px;
+  html {
+    font-size: 14px;
   }
 }
 
 @media screen and (max-width: 1296px) {
-  body {
-    font-size: 11px;
+  html {
+    font-size: 13px;
   }
 }
 @media screen and (max-width: 1152px) {
-  body {
-    font-size: 10px;
+  html {
+    font-size: 12px;
   }
 }
 @media screen and (max-width: 1008px) {
-  body {
-    font-size: 9px;
+  html {
+    font-size: 10px;
   }
 }
 

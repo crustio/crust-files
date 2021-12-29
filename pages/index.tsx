@@ -401,8 +401,8 @@ function Home({ className }: { className?: string }) {
       </div>
       <div className="center_panel">
         <div className="cosmos" />
-        <Pixel className="pixel_left" position="left" fullH={true} />
-        <Pixel className="pixel_right" position="right" fullH={true} color="#E46A11" fillColor="#FF8D00" />
+        <Pixel className="pixel_left" width={'8.57rem'} position="left" fullH={true} />
+        <Pixel className="pixel_right" width={'8.57rem'} position="right" fullH={true} color="#E46A11" fillColor="#FF8D00" />
       </div>
       <div className="right_panel">
         <div style={{ flex: 1 }} />
@@ -440,9 +440,6 @@ function Home({ className }: { className?: string }) {
 
   )
 }
-
-
-const pixels_size = 40
 
 export default React.memo(styled(Home)`
   color: white;
@@ -505,8 +502,8 @@ export default React.memo(styled(Home)`
     flex-shrink: 0;
     position: relative;
     .cosmos {
-      width: calc(100% - ${pixels_size * 2}px);
-      margin-left: ${pixels_size}px;
+      width: calc(100% - 5.71rem);
+      margin-left: 2.86rem;
       height: 100%;
       background: url("/images/cosmos.png");
       background-size: contain;

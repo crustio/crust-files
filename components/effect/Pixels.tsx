@@ -2,12 +2,13 @@ import classNames from "classnames";
 import React, { CSSProperties, MouseEventHandler, useMemo } from "react";
 import styled from "styled-components";
 import { BaseProps } from "../types";
+import _ from 'lodash'
 
 
 const defWidth = 120;
 export interface Props extends BaseProps {
     position?: 'left' | 'right',
-    width?: number,
+    width?: number | string,
     count?: number,
     fullH?: boolean,
     color?: string,
@@ -33,25 +34,29 @@ function _Pixel(props: Props) {
         type = 2
     } = props
     const mCount = fullH ? count + 1 : count
-    const size = useMemo(() => Math.round(width / mCount), [width, mCount])
+    const isPx = typeof width === 'number' || width.endsWith('px');
+    const wrapUnit = (num: number | string) => typeof num === 'string' ? num : isPx ? `${_.round(num)}px` : `${_.round(num, 4)}rem`
+    const mWidth: number = typeof width === 'number' ? width as number : _.toNumber(width.replace('px', '').replace('rem', ''));
+    const size = useMemo(() => mWidth / mCount, [width, mCount])
     const tHeight = useMemo(() => ((mCount - 1) * 2 + type) * size, [mCount, type, size])
     const pixels = useMemo(() => {
         const items: Pixel[] = []
         for (let index = 0; index < mCount; index++) {
             const isFull = index === 0 && fullH
             const h = isFull ? '100%' : tHeight - index * 2 * size;
-            const top = isFull ? 0 : `calc(50% - ${Math.round((h as number) / 2)}px)`
+            const wrapUnitH = wrapUnit(h)
+            const top = isFull ? 0 : `calc(50% - ${wrapUnit((h as number) / 2)})`
             const style: CSSProperties = {
                 position: 'absolute',
-                height: h,
-                width: size,
+                height: wrapUnitH,
+                width: wrapUnit(size),
                 top,
                 backgroundColor: color,
             }
             if (position === 'left') {
-                style.left = index * size;
+                style.left = wrapUnit(index * size);
             } else if (position === 'right') {
-                style.right = index * size;
+                style.right = wrapUnit(index * size);
             }
             items.push({ style })
         }
@@ -62,19 +67,20 @@ function _Pixel(props: Props) {
         const items: Pixel[] = []
         for (let index = 0; index < mCount - 1; index++) {
             const h = tHeight - (index + 1) * 2 * size;
-            const top = `calc(50% - ${Math.round((h as number) / 2)}px)`
+            const wrapUnitH = wrapUnit(h)
+            const top = `calc(50% - ${wrapUnit((h as number) / 2)})`
             const style: CSSProperties = {
                 position: 'absolute',
-                height: h,
-                width: size,
+                height: wrapUnitH,
+                width: wrapUnit(size),
                 top,
                 zIndex: 2,
                 backgroundColor: fillColor
             }
             if (position === 'left') {
-                style.left = index * size;
+                style.left = wrapUnit(index * size);
             } else if (position === 'right') {
-                style.right = index * size;
+                style.right = wrapUnit(index * size);
             }
             items.push({ style })
         }
@@ -91,7 +97,7 @@ export const Pixel = styled(_Pixel) <Props>`
     display: flex;
     height: 100%;
     position: relative;
-    width: ${({ width = defWidth }) => width}px;
+    width: ${({ width = defWidth }) => typeof width === 'number' ? width + 'px' : width};
     &.Pixel_left {
         flex-direction: row;
     }
