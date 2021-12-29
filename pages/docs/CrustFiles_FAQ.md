@@ -37,7 +37,7 @@ No user account. No password.
 It's the Web3.0 way, get used to it. If you have no wallet, get a <font color="red">Crust Wallet</font>.
 
 ### Website
-https://files.crustapps.net/
+https://crustfiles.io/
 <br/>
 or
 <br/>
