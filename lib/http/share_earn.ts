@@ -2,7 +2,7 @@ import axios, { AxiosResponse, AxiosRequestConfig } from 'axios';
 import { CommonResponse, Deposit, GrandApplyState, GrandDraw, LuckyNebie, Member, NetworkState, NFT, Reward, Rewards, ShareEarnConfig } from './types';
 // import _ from 'lodash';
 
-const base_url = 'https://files-api.decoo.io'
+const base_url = 'https://api.crustfiles.io'
 export const createUrl = (path: string): string => {
     return `${base_url}${path}`
 }
