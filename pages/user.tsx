@@ -158,22 +158,28 @@ function Index(props: Props) {
         <div className="mtable premium">
           <div className="t-title">Premium User</div>
           <div className="t-item">End-2-end File Encryption<img className="icon" src="/images/icon_hook.png" /></div>
-          <div className="t-item">Maximum Upload Size=<span>1GB</span></div>
-          <div className="t-item">
-            <span>Renew</span> On-chain Storage Order & Place <span>“Permanent Storage Order”</span>
+          <div className="t-item">Maximum Upload Size=<span className='primary'>1GB</span></div>
+          <div className="t-item two">
+            <span><span className='primary'>Renew</span> On-chain Storage Order</span>
+            <span>Place <span className='primary'>{`"Permanent Storage Order"`}</span></span>
           </div>
           <div className="t-item">More Space</div>
-          <div className="t-item"><span>Claim Rewards</span> from “Share-and-Earn”</div>
-          <div className="t-item">Priority access to <span>future airdrops</span> and other exclusive benefits</div>
+          <div className="t-item">
+            <span className='primary'>Claim Rewards</span> <span>from “Share-and-Earn”</span>
+          </div>
+          <div className="t-item">
+            <span>Priority access to</span><span className='primary'>future airdrops</span>
+            <span>and other exclusive benefits</span>
+          </div>
         </div>
         <div className="mtable trial">
           <div className="t-title">Trial User</div>
           <div className="t-item">End-2-end File Encryption<img className="icon" src="/images/icon_fork.png" /></div>
-          <div className="t-item">Maximum Upload Size=<span>40MB</span></div>
-          <div className="t-item">Storage Order Expires in <span>6 Months</span></div>
-          <div className="t-item"><span>Limited</span> Space</div>
-          <div className="t-item"><span>Cannot</span> Claim Rewards from “Share-and-Earn”</div>
-          <div className="t-item"><span>Limited</span> access to future airdrops or other exclusive benefits</div>
+          <div className="t-item">Maximum Upload Size=<span className='primary'>40MB</span></div>
+          <div className="t-item"><span>Storage Order Expires</span> in <span className='primary'>6 Months</span></div>
+          <div className="t-item"><span className='primary'>Limited</span> <span>Space</span></div>
+          <div className="t-item"><span className='primary'>Cannot</span> Claim Rewards <span>from “Share-and-Earn”</span></div>
+          <div className="t-item"><span className='primary'>Limited</span> access to future airdrops <span>or other exclusive benefits</span></div>
         </div>
       </div>
     </div>
@@ -355,13 +361,27 @@ export default React.memo<Props>(styled(Index)`
         .t-item {
           font-weight: 500;
           font-size: 16px;
-          line-height: 50px;
-          height: 50px;
+          line-height: 20px;
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: flex-start;
+          align-items: center;
+          align-content: center;
+          height: 60px;
           color: var(--main-color);
-          span {
+          span.primary {
             color: var(--primary-color);
+            margin-right: 6px;
+            margin-left: 6px;
+            &:first-child{
+              margin-left: 0;
+            }
+            &:last-child{
+              margin-right: 0;
+            }
           }
         }
+
         .icon {
           height: 50px;
           width: auto;

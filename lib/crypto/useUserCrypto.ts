@@ -79,7 +79,6 @@ export function useUserCrypto(): WrapUserCrypto {
       secret: window.btoa(secret),
       seeds: mnemonics
     }
-    console.info('length:', secret.length, uc.secret.length)
     set(uc)
     return uc
   }, [])

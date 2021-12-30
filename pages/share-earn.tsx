@@ -17,7 +17,7 @@ import { useGetDepost } from "../lib/hooks/useGetDeposit";
 import { useToggle } from "../lib/hooks/useToggle";
 import { applyGrandDraw, getEarnRewards, getGrandApplyState, getGrandDraw, getLuckyNebie, getNetworkState, getShareEarnConfig } from "../lib/http/share_earn";
 import mDayjs from "../lib/mDayjs";
-import { formatCRU, getFormatValue } from "../lib/utils";
+import { docsUrl, formatCRU, getFormatValue, isSameCrustAddress } from "../lib/utils";
 export interface Props {
   className?: string
 }
@@ -177,17 +177,17 @@ const pixelProgressAttrs = (p: { progress: number, board_size: number }) => ({
   board_size: 2
 })
 const PixelProgress = styled(PixelBoard).attrs(pixelProgressAttrs)`
-  height: 1rem;
-  width: 7.43rem;
+  height: 14px;
+  width: 104px;
   margin-right: .57rem;
   position: relative;
   &::after {
     content: '';
     position: absolute;
-    top: .14rem;
-    left: .14rem;
+    top: 2px;
+    left: 2px;
     background-color: #2A66FE;
-    height: .71rem;
+    height: 10px;
     width: ${(p) => p.progress}px;
     transition: all ease-in-out 300ms;
   }
@@ -216,8 +216,8 @@ const M_PixelBtn = styled(PixelBtn).attrs({ height: 40 })`
   .btn_content {
     white-space: nowrap;
     padding: unset;
-    min-width: 10.71rem;
-    width: 10.71rem;
+    min-width: 12.71rem;
+    width: 12.71rem;
     font-size: 1.29rem;
   }
 `
@@ -313,7 +313,10 @@ function Index(props: Props) {
   const [networkState] = useGet(() => getNetworkState())
   const [luckyNebie] = useGet(() => getLuckyNebie())
   const [granDraw] = useGet(() => getGrandDraw())
-
+  const isGrandDrawWiner = useMemo(() => {
+    return !!(user.account && granDraw && granDraw.members && granDraw.members
+      .find(item => isSameCrustAddress(item.address, user.account)))
+  }, [granDraw, user.account])
   const bestNumFinlized = useCall<BlockNumber>(api?.derive?.chain?.bestNumberFinalized);
   const [bestNumberFinalized, setBNF] = useState(0)
   useEffect(() => {
@@ -379,8 +382,8 @@ function Index(props: Props) {
   const showGrandDraw = GrandStat0 || GrandStat1 || GrandStat2
 
   const [grandApplyState, doGetGrandApplyState] = useGet(() => getGrandApplyState(account), [account, isCrust, GrandStat1])
-  const showSignUpGrandDraw = isPremiumUser && GrandStat1 && grandApplyState && !grandApplyState.applyed
-
+  const showSignUpGrandDraw = isPremiumUser && GrandStat1
+  const grandAppled = grandApplyState && grandApplyState.applyed
   const grandExpireTime = useMemo(() => {
     if (!granDraw || !bestNumberFinalized) {
       return '0000-00-00 00:00 AM'
@@ -393,7 +396,7 @@ function Index(props: Props) {
   const disabledClaimRewards = !uClaimRewards.ready || onGoingClaim || !rewards || totalPending === '-' || totalPending === '0'
 
   const _clickSignUpGrandDraw = async () => {
-    if (!account || !isCrust || !isPremiumUser) return
+    if (!account || !isCrust || !isPremiumUser || grandAppled) return
     try {
       loading.show()
       const msg = account
@@ -464,7 +467,7 @@ function Index(props: Props) {
       <YouComment>Get <span>{youGet} CRU</span> Reward</YouComment>
       <YourFriend />
       <YourFriendComment>Get <span>{youFriendGet} CRU</span> Discount on<br />Premium User Deposit</YourFriendComment>
-      <DetailedRules target={'_blank'} href="https://">Detailed Rules</DetailedRules>
+      <DetailedRules target={'_blank'} href={docsUrl('/docs/CrustFiles_ShareandEarn/#invite_bonus')}>Detailed Rules</DetailedRules>
     </PixelBoard>
 
     <PixelBoard className="earn_item">
@@ -485,7 +488,7 @@ function Index(props: Props) {
           Best chance: <span>{getStrValue(luckyNebie, 'memberAddress')}</span>
         </div>
       </div>
-      <DetailedRules target={'_blank'} href="https://">Detailed Rules</DetailedRules>
+      <DetailedRules target={'_blank'} href={docsUrl('/docs/CrustFiles_ShareandEarn/#lucky_newbie')}>Detailed Rules</DetailedRules>
     </PixelBoard>
 
     {
@@ -497,7 +500,7 @@ function Index(props: Props) {
           <Trophy />
           {
             GrandStat0 && <GrandDrawProgress>
-              <PixelProgress progress={grandProgress} /> <span>{getStrValue(granDraw, 'depositCount')}</span>/{getStrValue(granDraw, 'grandDraw.memberSize')}
+              <PixelProgress progress={grandProgress} /> <span>{_.clamp(getStrValue(granDraw, 'depositCount'), 0, getStrValue(granDraw, 'grandDraw.memberSize'))}</span>/{getStrValue(granDraw, 'grandDraw.memberSize')}
             </GrandDrawProgress>}
           {GrandStat1 && <GrandDrawText>Sign Up Time!</GrandDrawText>}
           {GrandStat2 && <GrandDrawText>Draw Time!</GrandDrawText>}
@@ -521,16 +524,16 @@ function Index(props: Props) {
             GrandStat1 && <div>
               Sign up before the draw time <span>{grandExpireTime} (est.)</span> at<br />
               <span>Block #{getFormatValue(granDraw, 'grandDraw.expireBlock')}</span>
-              {showSignUpGrandDraw && <M_PixelBtn content={"Sign Up"} onClick={_clickSignUpGrandDraw} />}
+              {showSignUpGrandDraw && <M_PixelBtn disabled={grandAppled} content={grandAppled ? "Sign Up Completed" : "Sign Up"} onClick={_clickSignUpGrandDraw} />}
             </div>}
           {
             GrandStat2 && <div>
               Block Hash of #{getFormatValue(granDraw, 'grandDraw.expireBlock')}: <span>{getStrValue(granDraw, 'grandDraw.blockHash')}</span><br />
               Winning Condition: <span>The last {getStrValue(granDraw, 'grandDraw.matchCount')} digits match</span><br />
-              My Status: <span>Not Matched</span>
+              My Status: <span>{isGrandDrawWiner ? 'You are the Winner!' : 'Not Matched'}</span>
             </div>}
         </div>
-        <DetailedRules target={'_blank'} href="https://">Detailed Rules</DetailedRules>
+        <DetailedRules target={'_blank'} href={docsUrl('/docs/CrustFiles_ShareandEarn/#grand_draw')}>Detailed Rules</DetailedRules>
       </PixelBoard>}
 
     <PixelBoard className="earn_item">
@@ -549,6 +552,7 @@ function Index(props: Props) {
           You have {totalPending} CRU pending claim rewards.
         </div>
       </ClaimRewards>
+      <DetailedRules target={'_blank'} href={docsUrl('/docs/CrustFiles_ShareandEarn/#claim_rewards')}>Learn More</DetailedRules>
     </PixelBoard>
   </PageUserSideLayout>
 }

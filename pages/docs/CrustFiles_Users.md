@@ -6,7 +6,7 @@ All users are asked to sign in Crust Files with a supported crypto wallet.
 
 No user account. No password. Your wallet address is your unique identifier in Crust Files.  
 
-If you have no wallet, just get a <font color="red">Crust Wallet</font>.
+If you have no wallet, just get a <font color="red">Crust Wallet</font> [here](https://chrome.google.com/webstore/detail/crust-wallet/jccapkebeeiajkkdemacblkjhhhboiek?hl=en) 
 
 ## User Plan
 
@@ -55,10 +55,6 @@ Go to Premium User page and click Deposit button. An on-chain deposit transactio
 
 On-chain finalization could take some time. After transaction finalization, you will become a Premium User.  
 
-If you want to make a valid Deposit Transaction on your own (outside of Crust Files frontend), follow this instruction:
-
-[TBD]
-
 ### Redeem Deposit
 
 You can redeem your deposit after 180 days from your deposit action.
@@ -67,9 +63,31 @@ Go to Premium User page, and click Redeem Deposit button. An on-chain request tr
 
 Redeem Deposit will be processed on request from the blockchain. Please wait and check your wallet balance.  
 
-If you want to make a valid Redeem Request Transaction on your own (outside of Crust Files frontend), follow this instruction:
+### Appendix: How to Deposit with Crust Network Extrinsics
 
-[TBD]
+If you want to make a valid **Deposit Transaction** on your own (outside of Crust Files frontend), follow the instructions:  
+
+Send a batch transaction to this CRU address: `cTLLc4c7Tndroz4Hqe19nsKzepc59Jgrn5RqmioBptnnSL9Hw` 
+
+The batch transaction can be created by submitting the extrinsic: `utility.batchAll` (calls) 
+
+The batch consists of two transactions. 
+
+The first one is a `balances.transfer` with the deposit amount of CRU tokens. The transfer should contain enough funds as required.   
+
+The second one is a `system.remark(_remark)` with contents:  
+
+```
+{
+  "scope": "crustFiles",
+  "env": "prod",
+  "action": "deposit",
+  "share_from": ""
+}
+```
+If you have an inviter, put inviter's Crust address in the "share_from" field.
+
+
 
 
 

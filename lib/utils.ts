@@ -1,4 +1,5 @@
 import { BN, formatBalance } from '@polkadot/util'
+import { decodeAddress, encodeAddress } from '@polkadot/keyring'
 import type { ISubmittableResult } from '@polkadot/types/types'
 import numbro from 'numbro';
 import _ from 'lodash'
@@ -48,6 +49,7 @@ export const formatCRU = (cru: string | BN, decimals = 4): string => {
 export const openDocs = (path: string) => {
   window.open(`${window.location.origin}${path}`, '_blank')
 }
+export const docsUrl = (path: string) => `${window.location.origin}${path}`
 
 export const formatNumber = (num: number): string => {
   return numbro(num).format()
@@ -57,7 +59,9 @@ export const formatNumber = (num: number): string => {
 export function getFormatValue(obj: any, key: string, def: any = '-') {
   const v = _.get(obj, key, def)
   if (v !== def && v !== null && v !== undefined) {
-    return numbro(_.toNumber(v)).format()
+    const num = _.toNumber(v)
+    const clampNum = num < 0 ? 0 : num
+    return numbro(clampNum).format()
   }
   return def
 }
@@ -65,4 +69,12 @@ export function getFormatValue(obj: any, key: string, def: any = '-') {
 
 export const findEvent = (res: ISubmittableResult, key: string) => {
   return res.events.find((e) => `${e.event.section.toString()}(${e.event.method.toString()})` === key)
+}
+
+export const formatToCrustAccount = (address: string) => {
+  return encodeAddress(decodeAddress(address), 66)
+}
+
+export const isSameCrustAddress = (address1: string, address2: string) => {
+  return formatToCrustAccount(address1) === formatToCrustAccount(address2)
 }

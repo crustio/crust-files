@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import FileSaver from 'file-saver';
 import { useRouter } from 'next/router';
-import React, { useCallback, useContext, useMemo, useRef } from "react";
+import React, { useCallback, useContext, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Accordion, AccordionContent, AccordionTitle, Segment } from "semantic-ui-react";
 import styled from "styled-components";
@@ -11,9 +11,10 @@ import PageUserSideLayout from '../../components/PageUserSideLayout';
 import { AppContext } from "../../lib/AppContext";
 import { parseUserCrypto, useUserCrypto } from "../../lib/crypto/useUserCrypto";
 import { useClipboard } from "../../lib/hooks/useClipboard";
+import { useGetDepost } from '../../lib/hooks/useGetDeposit';
 import { useToggle } from "../../lib/hooks/useToggle";
 import { ExportObj, SaveFile } from "../../lib/types";
-import { useContextWrapLoginUser, useFiles, WalletName } from "../../lib/wallet/hooks";
+import { useFiles, WalletName } from "../../lib/wallet/hooks";
 
 export interface Props {
   className?: string
@@ -29,9 +30,11 @@ function Index(props: Props) {
   const { alert } = useContext(AppContext)
   const [open, toggleOpen] = useToggle(false)
   const [showFileEncryption, toggleFileEncryption] = useToggle()
+  useEffect(() => {
+    if(uc.init && !uc.secret) toggleFileEncryption(true)
+  }, [uc])
+  const { user, isPremiumUser } = useGetDepost()
   const copy = useClipboard()
-  const user = useContextWrapLoginUser()
-  const isPremiumUser = user.member && user.member.member_state === 1
   const userType = useMemo(() => {
     if (isPremiumUser) return 'Premium User'
     return 'Trial User'
@@ -155,6 +158,7 @@ function Index(props: Props) {
       </div>
       <div className="text font-sans-regular">
         {`${t('Your user data (including three File Lists and one File Encryption Key) are cached on your local devices. If you want to migrate your user data to a new device, use Export & Import function.')} `}
+        <span style={{ color: '#f47e6b' }}>Attention Please! If you want to switch device or explorer, please follow the following steps: 1) Export your user data from old device/explorer. 2) Log in to Crust Files in your new device/explorer. 3) Import the user data. 4) Enjoy Crust Files!</span>
       </div>
       <Accordion>
         <AccordionTitle active={showFileEncryption} onClick={() => toggleFileEncryption()}>

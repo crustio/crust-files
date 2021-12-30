@@ -35,6 +35,8 @@ function Vault(p: { className?: string }) {
     if (!info.file) return
     wInputFile.setFile(info)
   }
+  const noSecret = uc.init && !uc.secret
+  const disabledUpload = !isPremiumUser || noSecret
 
   return <PageUserSideLayout path={'/files/vault'} className={p.className}>
     <OnDrapDropFrame onDrop={_onDrop} />
@@ -51,11 +53,12 @@ function Vault(p: { className?: string }) {
       </div>
       <div className="btn-upload-panel">
         <BtnUpload
-          disabled={!isPremiumUser}
-          onClickUpFile={() => isPremiumUser && wInputFile._onClickUpFile()}
+          disabled={disabledUpload}
+          onClickUpFile={() => !disabledUpload && wInputFile._onClickUpFile()}
         // onClickUpFolder={wInputFile._onClickUpFolder}
         />
         {!isPremiumUser && <div className="unValut">Get a <span onClick={() => r.push('/user')}>Premium</span> to Unlock.</div>}
+        {isPremiumUser && noSecret && <div className="unValut">Set your <span onClick={() => r.push('/setting')}>Encryption Key</span> first.</div>}
       </div>
 
       {
