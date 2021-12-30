@@ -22,6 +22,9 @@ interface Pixel {
     style: CSSProperties
 }
 
+const wrapUnit = (num: number | string, isPx: boolean) => typeof num === 'string' ? num : isPx ? `${_.round(num)}px` : `${_.round(num, 4)}rem`
+const isPX = (num: number | string): boolean => typeof num === 'number' || num.endsWith('px')
+
 function _Pixel(props: Props) {
     const {
         className,
@@ -34,8 +37,7 @@ function _Pixel(props: Props) {
         type = 2
     } = props
     const mCount = fullH ? count + 1 : count
-    const isPx = typeof width === 'number' || width.endsWith('px');
-    const wrapUnit = (num: number | string) => typeof num === 'string' ? num : isPx ? `${_.round(num)}px` : `${_.round(num, 4)}rem`
+    const isPx = isPX(width);
     const mWidth: number = typeof width === 'number' ? width as number : _.toNumber(width.replace('px', '').replace('rem', ''));
     const size = useMemo(() => mWidth / mCount, [width, mCount])
     const tHeight = useMemo(() => ((mCount - 1) * 2 + type) * size, [mCount, type, size])
@@ -44,48 +46,48 @@ function _Pixel(props: Props) {
         for (let index = 0; index < mCount; index++) {
             const isFull = index === 0 && fullH
             const h = isFull ? '100%' : tHeight - index * 2 * size;
-            const wrapUnitH = wrapUnit(h)
-            const top = isFull ? 0 : `calc(50% - ${wrapUnit((h as number) / 2)})`
+            const wrapUnitH = wrapUnit(h, isPx)
+            const top = isFull ? 0 : `calc(50% - ${wrapUnit((h as number) / 2, isPx)})`
             const style: CSSProperties = {
                 position: 'absolute',
                 height: wrapUnitH,
-                width: wrapUnit(size),
+                width: wrapUnit(size, isPx),
                 top,
                 backgroundColor: color,
             }
             if (position === 'left') {
-                style.left = wrapUnit(index * size);
+                style.left = wrapUnit(index * size, isPx);
             } else if (position === 'right') {
-                style.right = wrapUnit(index * size);
+                style.right = wrapUnit(index * size, isPx);
             }
             items.push({ style })
         }
         return items
-    }, [mCount, size, tHeight, fullH, position])
+    }, [mCount, size, tHeight, fullH, position, isPx])
 
     const fillPixels = useMemo(() => {
         const items: Pixel[] = []
         for (let index = 0; index < mCount - 1; index++) {
             const h = tHeight - (index + 1) * 2 * size;
-            const wrapUnitH = wrapUnit(h)
-            const top = `calc(50% - ${wrapUnit((h as number) / 2)})`
+            const wrapUnitH = wrapUnit(h, isPx)
+            const top = `calc(50% - ${wrapUnit((h as number) / 2, isPx)})`
             const style: CSSProperties = {
                 position: 'absolute',
                 height: wrapUnitH,
-                width: wrapUnit(size),
+                width: wrapUnit(size, isPx),
                 top,
                 zIndex: 2,
                 backgroundColor: fillColor
             }
             if (position === 'left') {
-                style.left = wrapUnit(index * size);
+                style.left = wrapUnit(index * size, isPx);
             } else if (position === 'right') {
-                style.right = wrapUnit(index * size);
+                style.right = wrapUnit(index * size, isPx);
             }
             items.push({ style })
         }
         return items
-    }, [mCount, size, tHeight, fullH, position])
+    }, [mCount, size, tHeight, fullH, position, isPx])
     return <div className={classNames(className, `Pixel_${position}`)}>
         {pixels.map((item, index) => <div key={`pixels_${index}`} style={item.style} />)}
         {fillPixels.map((item, index) => <div key={`fill_pixels_${index}`} style={item.style} />)}
@@ -110,11 +112,12 @@ export const Pixel = styled(_Pixel) <Props>`
 const defColor = '#999999'
 const defFillColor = '#000000'
 export interface BtnProps extends BaseProps {
-    height: number,
+    height: number | string,
     color?: string,
     fillColor?: string,
     content: string | React.ReactNode,
     disabled?: boolean,
+    unClick?: boolean,
     onClick?: MouseEventHandler<HTMLDivElement>,
 }
 
@@ -126,11 +129,14 @@ function _PixelBtn(props: BtnProps) {
         fillColor = defFillColor,
         content,
         disabled,
+        unClick,
         onClick
     } = props
-    const width = Math.round((height / 5) * 3);
+    const isPx = isPX(height);
+    const mHeight = typeof height === 'number' ? height as number : _.toNumber(height.replace('px', '').replace('rem', ''));
+    const width = wrapUnit((mHeight / 5) * 3, isPx);
 
-    return <div className={classNames(className, { disabled })} onClick={onClick}>
+    return <div className={classNames(className, { disabled, unClick })} onClick={onClick}>
         <Pixel
             type={1}
             width={width}
@@ -153,18 +159,21 @@ export const PixelBtn = styled(_PixelBtn) <BtnProps>`
     display: flex;
     align-items: center;
     width: min-content;
-    height: ${({ height }) => height}px;
+    height: ${({ height }) => wrapUnit(height, isPX(height))};
     cursor: pointer;
     &.disabled {
         cursor: not-allowed;
         opacity: 0.6;
     }
+    &.unClick {
+        cursor: default;
+    }
     .btn_content {
         height: 100%;
-        line-height: ${({ height }) => height}px;
+        line-height: ${({ height }) => wrapUnit(height, isPX(height))};
         padding: 0 20px;
-        min-width: 230px;
-        font-size: 24px;
+        min-width: calc(130px + 7.14rem);
+        font-size: 1.71rem;
         font-family: OpenSans-SemiBold;
         color: white;
         text-align: center;
@@ -199,8 +208,9 @@ export const PixelBtn1 = styled.div<{ height?: number }>`
     &.dark {
         background-image: url('/images/btn/btn_dark_bg_l.png'),url('/images/btn/btn_dark_bg_c.png'),url('/images/btn/btn_dark_bg_r.png'); 
     }
-
+    transform-origin: center top;
     &.style_left {
+        transform-origin: right top;
         background-image: url('/images/btn/btn_bg_l.png'),url('/images/btn/btn_bg_c.png'),url('/images/btn/btn_bg_r2.png');
         &.dark {
             background-image: url('/images/btn/btn_dark_bg_l.png'),url('/images/btn/btn_dark_bg_c.png'),url('/images/btn/btn_dark_bg_r2.png') ; 
@@ -208,11 +218,21 @@ export const PixelBtn1 = styled.div<{ height?: number }>`
     }
 
     &.style_right {
+        transform-origin: left top;
         background-image: url('/images/btn/btn_bg_l2.png'),url('/images/btn/btn_bg_c.png'),url('/images/btn/btn_bg_r.png');
         &.dark {
             background-image: url('/images/btn/btn_dark_bg_l2.png'),url('/images/btn/btn_dark_bg_c.png'),url('/images/btn/btn_dark_bg_r.png'); 
         }
     }
+
+@media screen and (max-width: 1440px) {
+  transform: scale(0.9);
+}
+
+@media screen and (max-width: 1296px) {
+    transform: scale(0.8);
+}
+
 `
 
 

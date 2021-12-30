@@ -31,10 +31,11 @@ function Index(props: Props) {
   const [showFileEncryption, toggleFileEncryption] = useToggle()
   const copy = useClipboard()
   const user = useContextWrapLoginUser()
+  const isPremiumUser = user.member && user.member.member_state === 1
   const userType = useMemo(() => {
-    if (user.member && user.member.member_state === 1) return 'Premium'
-    return 'Trial'
-  }, [user])
+    if (isPremiumUser) return 'Premium User'
+    return 'Trial User'
+  }, [user, isPremiumUser])
   const isCrust = user.wallet === 'crust'
   const wFiles = useFiles();
 
@@ -145,8 +146,7 @@ function Index(props: Props) {
       }
       <div className="text font-sans-regular">
         {`${t('User Type:')} `}
-        {isCrust && <span className="bold-text font-sans-semibold">{userType}</span>}
-        {!isCrust && <a onClick={() => r.push('/user')} rel="noreferrer">Get a Premium</a>}
+        <span className="bold-text font-sans-semibold">{userType}</span> {!isPremiumUser && <a onClick={() => r.push('/user')} rel="noreferrer">Get a Premium</a>}
       </div>
     </Segment>
     <Segment basic className={"mcard"}>

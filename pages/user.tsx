@@ -71,10 +71,10 @@ function Index(props: Props) {
   const baseGuaranteeAmount = useMemo(() => formatCRU(config?.baseGuaranteeAmount || ''), [config])
   const baseGuaranteeDiscountWithReferer = useMemo(() => formatCRU(config?.baseGuaranteeDiscountWithReferer || ''), [config])
   const days = useMemo(() => {
-    if (!config || !showClaim) return '-'
+    if (!config) return '-'
     const s = new Number(config.guaranteePeriod).valueOf()
     return Math.round(s / 60 / 60 / 24)
-  }, [showClaim, config])
+  }, [config])
   const periodTime = useMemo(() => {
     if (!hasDeposit) return '--:--:--'
     return format(deposit.deposit.expire_timestamp * 1000, "yyyy-MM-dd")
@@ -203,7 +203,8 @@ function Index(props: Props) {
         <div className={'btns mbtns'}>
           <input
             className="input-Nickname"
-            placeholder="Enter Invitoe’s Nickname（Leave blank if you have no invitor.）"
+            spellCheck="false"
+            placeholder="Enter Invitoe’s Nickname（Leave blank if you have no inviter.）"
             onChange={_onChangeNickname} />
           <span className="input-NickError">{nickError}</span>
           <br />

@@ -61,7 +61,7 @@ export function filesTable(props: Props) {
       <Table.Row>
         <Table.HeaderCell colSpan={footerSpan} className={"btns"}>
           <div className="files-tip">
-            The file list is locally cached. If you want to keep this list when switching to another devices, please go to <span onClick={() => r.push('/setting')}>{'Settings->User Data Management'}</span> to migrate your user data.
+            The file list is locally cached. If you want to keep this list when switching to another device, please go to <span onClick={() => r.push('/setting')}>{'Settings->User Data Management'}</span> to migrate your user data.
           </div>
           {/* <Popup
                   position={"top center"}

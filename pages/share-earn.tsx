@@ -27,25 +27,25 @@ function getStrValue(obj: any, key: string) {
 }
 
 const EarnItemTip = styled.div`
-  width: 129px;
-  height: 108px;
+  width: 9.21rem;
+  height: 7.71rem;
   background-image: url("/images/earn_bg.png");
   background-size: cover;
   text-align: center;
-  padding-top: 27px;
-  padding-bottom: 31px;
-  line-height: 24px;
-  font-size: 26px;
+  padding-top: 1.93rem;
+  padding-bottom: 2.21rem;
+  line-height: 1.71rem;
+  font-size: 1.86rem;
   position: absolute;
-  top: -41px;
-  right: 12px;
+  top: -2.93rem;
+  right: .86rem;
   color: var(--primary-color);
 `
 
 const InviteBonusTitle = styled.div`
   color: #000000;
-  font-size: 32px;
-  line-height: 44px;
+  font-size: 2.29rem;
+  line-height: 3.14rem;
   align-self: center;
   span {
     color: var(--primary-color);
@@ -54,47 +54,47 @@ const InviteBonusTitle = styled.div`
 
 const DetailedRules = styled.a`
   position: absolute;
-  right: 28px;
-  bottom: 28px;
+  right: 2rem;
+  bottom: 2rem;
   white-space: nowrap;
   display: inline-block;
-  font-size: 14px;
-  line-height: 19px;
+  font-size: 1rem;
+  line-height: 1.36rem;
   color: var(--main-color);
   text-decoration: underline;
 `
 
 const You = styled.div`
   position: absolute;
-  width: 72px;
-  height: 99px;
+  width: 5.14rem;
+  height: 7.07rem;
   background-repeat: no-repeat;
   background-image: url("/images/img_women.png");
   background-size: cover;
   bottom: 12px;
-  left: 400px;
+  left: 28.57rem;
   &::after{
     content: 'You';
     position: absolute;
-    top: -19px;
-    left: 24px;
+    top: -1.36rem;
+    left: 1.71rem;
   }
 `
 
 const YourFriend = styled.div`
   position: absolute;
-  width: 72px;
-  height: 90px;
+  width: 5.14rem;
+  height: 6.43rem;
   background-size: cover;
   background-repeat: no-repeat;
   background-image: url("/images/img_man.png");
   bottom: 12px;
-  right: 154px;
+  right: 11rem;
   &::after{
     content: 'Your Friend';
     position: absolute;
     white-space: nowrap;
-    top: -19px;
+    top: -1.36rem;
     left: 0;
   }
 `
@@ -102,19 +102,19 @@ const YourFriend = styled.div`
 const YouComment = styled.div`
   background-repeat: no-repeat;
   background-image: url("/images/comment/comment_1_l.png"),  url('/images/comment/comment_1_c.png'), url('/images/comment/comment_1_r.png');
-  background-size: 66px 100%, calc(100% - 86px + 4px)  100%, 20px 100%;
-  background-position: 0 0, 64px 0, right 0;
+  background-size: 4.71rem 100%, calc(100% - 6.14rem + .29rem)  100%, 1.43rem 100%;
+  background-position: 0 0, 4.57rem 0, right 0;
   position: absolute;
-  bottom: 32px;
-  left: 472px;
+  bottom: 2.29rem;
+  left: 33.71rem;
   width: min-content;
-  height: 88px;
-  padding-left: 8px;
-  padding-right: 8px;
-  font-size: 18px;
-  line-height: 25px;
+  height: 6.29rem;
+  padding-left: .57rem;
+  padding-right: .57rem;
+  font-size: 1.29rem;
+  line-height: 1.79rem;
   text-align: center;
-  padding-top: 14px;
+  padding-top: 1rem;
   color: black;
   white-space: nowrap;
   span {
@@ -125,19 +125,19 @@ const YouComment = styled.div`
 const YourFriendComment = styled.div`
   background-repeat: no-repeat;
   background-image: url("/images/comment/comment_2_l.png"),  url('/images/comment/comment_2_c.png'), url('/images/comment/comment_2_r.png');
-  background-size: 23px 100%, calc(100% - 89px + 4px)  100%, 66px 100%;
-  background-position: 0 0, 21px 0, right 0;
+  background-size: 1.64rem 100%, calc(100% - 6.36rem + .29rem)  100%, 4.71rem 100%;
+  background-position: 0 0, 1.5rem 0, right 0;
   position: absolute;
-  bottom: 87px;
-  right: 212px;
+  bottom: 6.21rem;
+  right: 15.14rem;
   width: min-content;
-  height: 99px;
-  font-size: 18px;
-  line-height: 25px;
+  height: 7.07rem;
+  font-size: 1.29rem;
+  line-height: 1.79rem;
   text-align: center;
-  padding-top: 7px;
-  padding-left: 8px;
-  padding-right: 8px;
+  padding-top: .5rem;
+  padding-left: .57rem;
+  padding-right: .57rem;
   white-space: nowrap;
   color: black;
   span {
@@ -147,26 +147,26 @@ const YourFriendComment = styled.div`
 
 const CoinCru = styled.div`
   color: var(--primary-color);
-  font-size: 32px;
+  font-size: 2.29rem;
   display: flex;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: .57rem;
   img {
-    margin-right: 10px;
+    margin-right: .71rem;
   }
 `
 
 const Trophy = styled.img.attrs({ src: '/images/trophy.svg' })`
-  width: 138px;
-  height: 129px;
+  width: 9.86rem;
+  height: 9.21rem;
 `
 
 const TimeBlocks = styled.div`
-  font-size: 18px;
-  line-height: 24px;
+  font-size: 1.29rem;
+  line-height: 1.71rem;
   text-align: center;
   white-space: nowrap;
-  margin-top: 4px;
+  margin-top: .29rem;
   span {
     color: #2A66FE;
   }
@@ -177,17 +177,17 @@ const pixelProgressAttrs = (p: { progress: number, board_size: number }) => ({
   board_size: 2
 })
 const PixelProgress = styled(PixelBoard).attrs(pixelProgressAttrs)`
-  height: 14px;
-  width: 104px;
-  margin-right: 8px;
+  height: 1rem;
+  width: 7.43rem;
+  margin-right: .57rem;
   position: relative;
   &::after {
     content: '';
     position: absolute;
-    top: 2px;
-    left: 2px;
+    top: .14rem;
+    left: .14rem;
     background-color: #2A66FE;
-    height: 10px;
+    height: .71rem;
     width: ${(p) => p.progress}px;
     transition: all ease-in-out 300ms;
   }
@@ -196,29 +196,29 @@ const PixelProgress = styled(PixelBoard).attrs(pixelProgressAttrs)`
 const GrandDrawProgress = styled.div`
   display: flex;
   align-items: center;
-  margin-top: 10px;
-  font-size: 14px;
-  line-height: 19px;
+  margin-top: .71rem;
+  font-size: 1rem;
+  line-height: 1.36rem;
   span {
     color: #2A66FE;
   }
 `
 
 const GrandDrawText = styled.div`
-  font-size: 18px;
-  line-height: 25px;
-  margin-top: 4px;
+  font-size: 1.29rem;
+  line-height: 1.79rem;
+  margin-top: .29rem;
   color: black;
 `
 
 const M_PixelBtn = styled(PixelBtn).attrs({ height: 40 })`
-  margin-top: 20px;
+  margin-top: 1.43rem;
   .btn_content {
     white-space: nowrap;
     padding: unset;
-    min-width: 150px;
-    width: 150px;
-    font-size: 18px;
+    min-width: 10.71rem;
+    width: 10.71rem;
+    font-size: 1.29rem;
   }
 `
 
@@ -226,31 +226,31 @@ const Rewards = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding-left: 56px;
+  padding-left: 4rem;
   flex: 1;
   color: black;
   justify-content: center;
 
   .title {
-    font-size: 32px;
-    line-height: 44px;
+    font-size: 2.29rem;
+    line-height: 3.14rem;
   }
   .sub {
-    margin-top: 8px;
-    font-size: 24px;
-    line-height: 33px;
+    margin-top: .57rem;
+    font-size: 1.71rem;
+    line-height: 2.36rem;
   }
   span {
     color: var(--primary-color);
   }
 `
 const ClaimRewards = styled.div`
-  font-size: 18px;
-  line-height: 25px;
+  font-size: 1.29rem;
+  line-height: 1.79rem;
   display: flex;
   height: 100%;
-  padding-top: 20px;
-  margin-right: 56px;
+  padding-top: 1.43rem;
+  margin-right: 4rem;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -258,27 +258,27 @@ const ClaimRewards = styled.div`
 
 const marquee = keyframes`
     to {
-      transform: translateX(-685px);
+      transform: translateX(-48.93rem);
     }
 `
 const Marquee = styled.div`
   white-space: nowrap;
   animation: ${marquee} 8s linear infinite;
   span {
-    margin-left: 50px;
+    margin-left: 3.57rem;
     color: var(--primary-color);
   }
 `
 
 const RewardPrograms = styled.div`
-  margin-top: 35px;
+  margin-top: 2.5rem;
   width: 100%;
   position: relative;
-  height: 95px;
+  height: 6.79rem;
   .like {
     position: absolute;
     left: 0;
-    top: 1px;
+    top: .07rem;
     width: auto;
     height: 100%;
     z-index: 2;
@@ -289,13 +289,13 @@ const RewardPrograms = styled.div`
     z-index: 1;
     right: 0;
     bottom: 0;
-    width: calc(100% - 90px);
-    font-size: 32px;
-    /* line-height: 60px; */
-    height: 60px;
-    border: 4px dashed #000000;
-    padding-top: 16px;
-    /* padding: 8px 20px; */
+    width: calc(100% - 6.43rem);
+    font-size: 2.29rem;
+    /* line-height: 4.29rem; */
+    height: 4.29rem;
+    border: .29rem dashed #000000;
+    padding-top: 1.14rem;
+    /* padding: .57rem 1.43rem; */
     white-space: nowrap;
   }
 `
@@ -555,23 +555,23 @@ function Index(props: Props) {
 
 export default React.memo<Props>(styled(Index)`
     .share-and-earn {
-      margin-bottom: 32px;
-      border-radius: 16px;
+      margin-bottom: 2.29rem;
+      border-radius: 1.14rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
       .text {
-        font-size: 48px;
-        line-height: 65px;
+        font-size: 3.43rem;
+        line-height: 4.64rem;
         font-weight: 600;
-        margin-right: 60px;
+        margin-right: 4.29rem;
         span {
           color: var(--primary-color);
         }
       }
       .top_card {
-        height: 240px;
-        min-width: 572px;
+        height: 17.14rem;
+        min-width: 40.86rem;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -580,26 +580,29 @@ export default React.memo<Props>(styled(Index)`
           z-index: 2;
           position: relative;
           top: -12px;
-          width: 400px;
+          width: 34rem;
           display: flex;
+          div{
+            width: 50%;
+          }
         }
         .total {
           font-weight: 600;
-          font-size: 18px;
-          line-height: 25px;
+          font-size: 1.29rem;
+          line-height: 1.79rem;
         }
         .total_reward {
           span{
             color: #216CFF;
           }
           font-weight: 600;
-          font-size: 80px;
-          line-height: 80px;
+          font-size: 5.71rem;
+          line-height: 5.71rem;
         }
         .networks {
-          width: 400px;
-          font-size: 18px;
-          line-height: 28px;
+          width: 28.57rem;
+          font-size: 1.29rem;
+          line-height: 2rem;
           font-weight: 600;
           text-align: left;
           span {
@@ -611,21 +614,20 @@ export default React.memo<Props>(styled(Index)`
     }
 
     .earn_item {
-      margin-top: 73px;
+      margin-top: 5.21rem;
       width: 100%;
-      height: 269px;
+      height: calc(100px + 11.93rem);
       display: flex;
       position: relative;
       .top_btn {
         cursor: default;
-        width: 357px;
         position: absolute;
         top: 0;
-        left: calc(50% - 179px);
+        left: calc(50% - 178px);
       }
 
       .left {
-        width: 387px;
+        width: 27.64rem;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -633,15 +635,15 @@ export default React.memo<Props>(styled(Index)`
       }
       .right {
         color: black;
-        font-size: 18px;
-        line-height: 25px;
-        padding-top: 50px;
+        font-size: 1.29rem;
+        line-height: 1.79rem;
+        padding-top: 3.57rem;
         .title {
-          font-size: 32px;
-          line-height: 44px;
+          font-size: 2.29rem;
+          line-height: 3.14rem;
         }
         .footer {
-          margin-top: 10px;
+          margin-top: .71rem;
         }
         span {
           color: #216CFF;
@@ -649,4 +651,11 @@ export default React.memo<Props>(styled(Index)`
       }
     }
 
+    @media screen and (max-width: 1440px){
+    .share-and-earn{
+      .text{
+        font-size: 2.74rem;
+      }
+    }
+  }
 `)

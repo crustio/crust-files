@@ -66,6 +66,7 @@ function SideLayout(props: Props) {
             {
               menus.map((mInfo, index) =>
                 <PixelBtn
+                  unClick={!mInfo.path && !mInfo.link}
                   className={classNames("btn_item", { active: isActive(mInfo) })}
                   onClick={() => _onTabClick(null, { index })}
                   key={`side_menu_${index}`}
@@ -92,8 +93,8 @@ function SideLayout(props: Props) {
   </Sidebar.Pushable>
 }
 
-const sideWidth = '17rem'
-const minHeight = '700px'
+const sideWidth = '238px'
+const minHeight = '500px'
 export default React.memo<Props>(styled(SideLayout)`
   height: 100vh;
   background: white;
@@ -116,7 +117,7 @@ export default React.memo<Props>(styled(SideLayout)`
       padding: 4.7rem 0;
 
       img {
-        height: 1.7rem;
+        height: 24px;
       }
     }
     .menus {
@@ -124,7 +125,7 @@ export default React.memo<Props>(styled(SideLayout)`
       width: 100%;
       .btn_item {
         border-radius: 0 !important;
-        margin-top: 15px;
+        margin-top: 1.07rem;
         text-align: left;
         min-width: unset;
         width: 100%;
@@ -135,7 +136,7 @@ export default React.memo<Props>(styled(SideLayout)`
           min-width: 0;
           flex: 1;
           font-weight: 500;
-          font-size: 1.3rem;
+          font-size: 18px;
           text-align: left;
           color: var(--secend-color);
           white-space: nowrap;

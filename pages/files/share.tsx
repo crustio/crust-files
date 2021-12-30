@@ -49,7 +49,7 @@ function _share(props: BaseProps) {
                 <div className='link'>{link}</div>
                 <PixelBtn
                     onClick={_onClickCopy}
-                    height={60}
+                    height={'4.29rem'}
                     content="Copy Link"
                     color='#E46A11'
                     fillColor='#FF8D00'
@@ -79,7 +79,7 @@ function _share(props: BaseProps) {
 export default React.memo(styled(_share)`
     width: 100%;
     height: 100vh;
-    min-height: 788px;
+    min-height: 56.29rem;
     background: white;
     display: flex;
 
@@ -94,17 +94,17 @@ export default React.memo(styled(_share)`
         flex: 1;
         align-items: center;
         .logo {
-            height: 35px;
+            height: 2.5rem;
             align-self: flex-start;
-            margin-top: 36px;
-            margin-left: 50px;
+            margin-top: 2.57rem;
+            margin-left: 3.57rem;
         }
         .share-info {
-            width: 687px;
+            width: 49.07rem;
             padding-bottom: 10rem;
             .title {
-                font-size: 60px;
-                line-height: 82px;
+                font-size: 4.29rem;
+                line-height: 5.86rem;
                 font-family: OpenSans-SemiBold;
                 color: black;
                 span {
@@ -112,21 +112,21 @@ export default React.memo(styled(_share)`
                 }
             }
             .link {
-                font-size: 28px;
+                font-size: 2rem;
                 width: 100%;
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
-                line-height: 38px;
-                margin-top: 24px;
-                margin-bottom: 84px;
+                line-height: 2.71rem;
+                margin-top: 1.71rem;
+                margin-bottom: 6rem;
                 color: var(--secend-color);
             }
             
         }
     }
     .share--pixels {
-        width: 180px;
+        width: 12.86rem;
         position: relative;
         flex-shrink: 0;
         .pixel_right {
@@ -137,8 +137,8 @@ export default React.memo(styled(_share)`
     }
     .share--activity {
         background: black;
-        padding: 86px 10px 56px 55px;
-        width: 495px;
+        padding: 6.14rem .71rem 4rem 3.93rem;
+        width: 35.36rem;
         flex-shrink: 0;
         display: flex;
         flex-direction: column;
@@ -146,8 +146,8 @@ export default React.memo(styled(_share)`
 
         .text {
             z-index: 2;
-            font-size: 60px;
-            line-height: 82px;
+            font-size: 4.29rem;
+            line-height: 5.86rem;
             font-family: OpenSans-SemiBold;
             color: white;
             span {
@@ -156,9 +156,9 @@ export default React.memo(styled(_share)`
         }
         .links {
             z-index: 2;
-            margin-top: 40px;
+            margin-top: 2.86rem;
             flex-shrink: 0;
-            height: 60px;
+            height: 4.29rem;
         }
     }
 `)

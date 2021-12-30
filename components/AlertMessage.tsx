@@ -55,7 +55,7 @@ export default React.memo(styled(AlertMessage)`
     display: block;
     padding: 1.14rem 1.7rem;
     background: #FFFFFF;
-    box-shadow: 0 0.57rem 1.14rem 0 rgba(0, 0, 0, 0.06) !important;
+    box-shadow: 0 0.57rem 1.14rem 0 rgba(0, 0, 0, 0.1) !important;
     border-radius: 0.86rem !important;
     border: 0.07rem solid #EEEEEE;
     

@@ -57,7 +57,7 @@ function _GetNickname(props: BaseProps) {
     const doCheckNickName = useMemo(() => {
         let task: CancelTokenSource = null
         return _.debounce((nickName: string) => {
-            setErrorInfo('')
+            setErrorInfo(() => '')
             setNickStat(0)
             if (!nickName) {
                 return
@@ -83,13 +83,13 @@ function _GetNickname(props: BaseProps) {
             checkNickName(nickName, { cancelToken: task.token })
                 .then(valid => {
                     setNickStat(valid ? 1 : -1)
-                    if (!valid) setErrorInfo('This name is occupied!')
+                    setErrorInfo(valid ? '' : 'This name is occupied!')
                 })
         }, 300)
     }, [])
 
     useEffect(() => {
-        setErrorInfo('')
+        setErrorInfo(() => '')
         setNickStat(0)
         if (nickName) doCheckNickName(nickName)
     }, [nickName])
@@ -107,6 +107,7 @@ function _GetNickname(props: BaseProps) {
         <span className="sub-info">This Nickname is unique, linked to your Crust Account, and cannot be changed afterwards. Get a nice one!</span>
         <div className="input-panel">
             <input
+                spellCheck="false"
                 type={'text'}
                 value={nickName}
                 onChange={_onChange}

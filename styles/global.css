@@ -76,23 +76,23 @@ img {
 
 @media screen and (max-width: 1440px) {
   html {
-    font-size: 14px;
+    font-size: 12px;
   }
 }
 
 @media screen and (max-width: 1296px) {
   html {
-    font-size: 13px;
+    font-size: 11px;
   }
 }
 @media screen and (max-width: 1152px) {
   html {
-    font-size: 12px;
+    font-size: 9px;
   }
 }
 @media screen and (max-width: 1008px) {
   html {
-    font-size: 10px;
+    font-size: 8px;
   }
 }
 

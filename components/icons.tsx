@@ -17,8 +17,8 @@ export function Key(props: Props) {
 }
 
 export const Coin = styled.img.attrs({ src: "/images/coin.svg"})`
-  width: 34px;
-  height: 32px;
+  width: 2.43rem;
+  height: 2.29rem;
   object-fit: contain;
   display: inline-block;
 `

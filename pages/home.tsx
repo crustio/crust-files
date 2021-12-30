@@ -41,7 +41,7 @@ function home(p: BaseProps) {
                     Your file will be encrypted locally with a unique extraction code before a share link is created. Try this if you’d like to share something private or sensitive to your friends.
                 </div>
                 <div className="home--CommingSoon">
-                    Comming soon...
+                    Coming soon...
                 </div>
             </div>
         </div>

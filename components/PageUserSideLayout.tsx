@@ -33,7 +33,7 @@ export default React.memo<Props>(styled(_PageUserSideLayout)`
         flex-shrink: 0;
         max-width: 90rem;
         width: 100%;
-        min-width: 80rem;
+        min-width: 70rem;
         padding: 2.29rem;
         height: max-content;
     }
