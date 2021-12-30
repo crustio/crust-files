@@ -122,7 +122,7 @@ function FileItem(props: Props) {
     }
   }, [uc, file, endpoints])
   const _onClickSearch = () => {
-    window.open(`https://ipfsscan.crustapps.net?cid=${file.Hash}`, '_blank')
+    window.open(`https://ipfs-scan.io?cid=${file.Hash}`, '_blank')
   }
   // const _onClickCopy = useCallback(() => copy(createUrl(file, endpoints)), [file, endpoints])
   // const r = useRouter()
@@ -257,18 +257,21 @@ function FileItem(props: Props) {
 
     </Table.Cell>
     {
-      isPublic && !file.items && <Table.Cell textAlign={"center"}>
-        <Btn className="item-share-btn" onClick={_onClickShare}>Share</Btn>
-        <Popup
-          position={"top center"}
-          content={"Quick Tweet"}
-          trigger={
-            <span
-              className="cru-fo cru-fo-twitter"
-              onClick={_onClickTweet}
-              style={{ marginLeft: '0.5rem', top: '0.2rem' }} />
-          }
-      />
+      isPublic && <Table.Cell textAlign={"center"}>
+        {
+          !file.items && <>
+            <Btn className="item-share-btn" onClick={_onClickShare}>Share</Btn>
+            <Popup
+              position={"top center"}
+              content={"Quick Tweet"}
+              trigger={
+                <span
+                  className="cru-fo cru-fo-twitter"
+                  onClick={_onClickTweet}
+                  style={{ marginLeft: '0.5rem', top: '0.2rem' }} />
+              }
+            />
+          </>}
       </Table.Cell>}
   </Table.Row>
 }

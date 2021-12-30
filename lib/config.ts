@@ -1,4 +1,4 @@
-import type {TFunction} from 'i18next';
+import type { TFunction } from 'i18next';
 
 export interface AuthIpfsEndpoint {
   text?: string;
@@ -77,5 +77,7 @@ export const MOBILE_WIDTH = 960;
 
 export const CrustWalletDownUrl = 'https://chrome.google.com/webstore/detail/crust-wallet/jccapkebeeiajkkdemacblkjhhhboiek'
 
+export const IS_DEV = process.env.NODE_ENV === 'development'
 // beta prod
-export const ShareEarnENV = 'prod'
+export const ShareEarnENV = IS_DEV ? 'dev' : 'prod'
+export const ShareEarnBaseUrl = IS_DEV ? 'https://files-api.decoo.io' : 'https://api.crustfiles.io'

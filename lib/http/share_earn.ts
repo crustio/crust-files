@@ -1,8 +1,9 @@
 import axios, { AxiosResponse, AxiosRequestConfig } from 'axios';
+import { ShareEarnBaseUrl } from '../config';
 import { CommonResponse, Deposit, GrandApplyState, GrandDraw, LuckyNebie, Member, NetworkState, NFT, Reward, Rewards, ShareEarnConfig } from './types';
 // import _ from 'lodash';
 
-const base_url = 'https://api.crustfiles.io'
+const base_url = ShareEarnBaseUrl
 export const createUrl = (path: string): string => {
     return `${base_url}${path}`
 }

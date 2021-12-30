@@ -62,6 +62,7 @@ export function useUpload(user: WrapLoginUser, options: Options): UseUpload {
 
     const upload = async (cFile?: FileInfo): Promise<[SaveFile, Params]> => {
         try {
+            setError('')
             // 1: sign
             setBusy(true);
 

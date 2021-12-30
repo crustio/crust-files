@@ -85,7 +85,7 @@ function _GetNickname(props: BaseProps) {
                     setNickStat(valid ? 1 : -1)
                     setErrorInfo(valid ? '' : 'This name is occupied!')
                 })
-        }, 300)
+        }, 600)
     }, [])
 
     useEffect(() => {
