@@ -79,5 +79,5 @@ export const CrustWalletDownUrl = 'https://chrome.google.com/webstore/detail/cru
 
 export const IS_DEV = process.env.NODE_ENV === 'development'
 // beta prod
-export const ShareEarnENV = IS_DEV ? 'dev' : 'prod'
+export const ShareEarnENV = IS_DEV ? 'beta' : 'prod'
 export const ShareEarnBaseUrl = IS_DEV ? 'https://files-api.decoo.io' : 'https://api.crustfiles.io'
