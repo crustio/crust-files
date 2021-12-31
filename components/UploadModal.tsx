@@ -152,7 +152,7 @@ function UploadModal(p: Props): React.ReactElement<Props> {
               </Card.Content>
             </Card>
           }
-          <div className="toggle-options" onClick={() => toggleShowOptions()}>{showOptions ? 'Put Away' : 'See More'}</div>
+          {!showOptions && <div className="toggle-options" onClick={() => toggleShowOptions()}>{showOptions ? 'Put Away' : 'More Settings'}{<span className='cru-fo cru-fo-chevron-down'></span>}</div>}
         </Card.Group>
         {
           error &&
@@ -235,6 +235,12 @@ export default React.memo<Props>(styled(UploadModal)`
     line-height: 14px;
     margin-top: 8px;
     margin-left: 1.51rem;
+    .cru-fo {
+      font-size: 14px;
+      position: relative;
+      top: 2px;
+      margin-left: 6px;
+    }
   }
 
   .actions {

@@ -1,12 +1,12 @@
 # FAQ
 
-## What I can do with Crust Files?  
+## What can I do with Crust Files?  
 
 A list of what you can do with Crust Files:  
 
 - Store your files (for a period of time or permanently)
 - Store your files with end-to-end encryption
-- Share your files to friends with a link/twitter
+- Share your files to friends with a link / by Twitter
 - View and download your stored files
 
 ## How does Crust Files work? 
@@ -19,7 +19,7 @@ Crust Files is built on **IPFS** and **Crust Network**.
 
 All of your files are stored on IPFS via Crust's decentralized storage network.  
 
-IPFS is an open source protocol for distributed file system.  
+IPFS is an open source protocol for a distributed file system.  
 
 Crust Network is an open source protocol and a blockchain that works as an IPFS incentive layer and enables a decentralized storage market.  
 

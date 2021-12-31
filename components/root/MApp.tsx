@@ -53,8 +53,8 @@ function MAppProvider(props: BasePropsWithChildren) {
 
 function MAppLoading() {
   const { loading } = useApp()
-  return <Dimmer active={loading.isLoading} inverted>
-    <Loader size='large' inverted content="Loading" />
+  return <Dimmer active={loading.isLoading} inverted style={{ position: 'fixed', left: 0, top: 0, width: '100vw', height: '100vh' }}>
+    <Loader size='large' inverted content={loading.msg} />
   </Dimmer>
 }
 

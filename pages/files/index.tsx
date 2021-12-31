@@ -46,7 +46,7 @@ function Index(p: { className?: string }) {
       />
       <div className={'upSlog'}>
         <div className="title">Public</div>
-        <div className="content font-sans-regular">Your file will be just as it is supposed to be. No encryption, open access for all. It’s perfectly suitable for storing and sharing non-sensitive files.</div>
+        <div className="content font-sans-regular">Your files will be just as they were meant to be. No encryption, open access for all. Great for storing and sharing non-sensitive files.</div>
       </div>
       <BtnUpload
         onClickUpFile={wInputFile._onClickUpFile}

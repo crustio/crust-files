@@ -49,7 +49,7 @@ export function useDeposit(dest: string, value: string, share_from?: string): Us
         if (!ready) return
         // if (onGoing) return
         setFinish(false)
-        loading.show()
+        loading.show("Sending the deposit transaction... This process may take a few seconds before the transaction is finalized on-chain.")
         // const signer = user.crust.wallet.signer;
         // let msg, signature
         const signer: Signer = {

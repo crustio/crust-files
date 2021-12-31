@@ -2,7 +2,7 @@
 
 # Welcome to Crust Files, your first personal Web3.0 storage in the Metaverse.
 
-Crust Files delivers all the core value of decentralized storage and Web3.0 - **True Ownership, True Pravicy and True Freedom**. Welcome to Crust Files, welcome to the next generation web.  
+Crust Files delivers all the core value of decentralized storage and Web3.0 - **True Ownership, True Privacy and True Freedom**. Welcome to Crust Files, welcome to the next generation web.  
 
 ## True Ownership
 

@@ -259,7 +259,7 @@ function FileItem(props: Props) {
     {
       isPublic && <Table.Cell textAlign={"center"}>
         {
-          !file.items && <>
+          <>
             <Btn className="item-share-btn" onClick={_onClickShare}>Share</Btn>
             <Popup
               position={"top center"}
