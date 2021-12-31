@@ -149,7 +149,7 @@ function Index(props: Props) {
       }
       <div className="text font-sans-regular">
         {`${t('User Type:')} `}
-        <span className="bold-text font-sans-semibold">{userType}</span> {!isPremiumUser && <a onClick={() => r.push('/user')} rel="noreferrer">Get a Premium</a>}
+        <span className="bold-text font-sans-semibold">{userType}</span> {!isPremiumUser && <a onClick={() => r.push('/user')} rel="noreferrer">Get Premium</a>}
       </div>
     </Segment>
     <Segment basic className={"mcard"}>

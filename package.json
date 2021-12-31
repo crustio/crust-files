@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "lint": "eslint . --fix",
-    "dev": "next dev",
+    "dev": "next dev -p 3333",
     "build": "next build",
     "start": "next start",
     "export": "next build && next export"

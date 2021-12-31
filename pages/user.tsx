@@ -158,9 +158,9 @@ function Index(props: Props) {
         <div className="mtable premium">
           <div className="t-title">Premium User</div>
           <div className="t-item">End-2-end File Encryption<img className="icon" src="/images/icon_hook.png" /></div>
-          <div className="t-item">Maximum Upload Size=<span className='primary'>1GB</span></div>
+          <div className="t-item"><span>Maximum Upload Size of</span><span className='primary'>1GB</span></div>
           <div className="t-item two">
-            <span><span className='primary'>Renew</span> On-chain Storage Order</span>
+            <span style={{ marginRight: 6 }}><span className='primary'>Renew</span> On-chain Storage Order &</span>
             <span>Place <span className='primary'>{`"Permanent Storage Order"`}</span></span>
           </div>
           <div className="t-item">More Space</div>
@@ -175,25 +175,25 @@ function Index(props: Props) {
         <div className="mtable trial">
           <div className="t-title">Trial User</div>
           <div className="t-item">End-2-end File Encryption<img className="icon" src="/images/icon_fork.png" /></div>
-          <div className="t-item">Maximum Upload Size=<span className='primary'>40MB</span></div>
-          <div className="t-item"><span>Storage Order Expires</span> in <span className='primary'>6 Months</span></div>
+          <div className="t-item"><span>Maximum Upload Size of </span><span className='primary'>40MB</span></div>
+          <div className="t-item"><span>Storage Order Expires in</span><span className='primary'>6 Months</span></div>
           <div className="t-item"><span className='primary'>Limited</span> <span>Space</span></div>
-          <div className="t-item"><span className='primary'>Cannot</span> Claim Rewards <span>from “Share-and-Earn”</span></div>
+          <div className="t-item"><span className='primary'>Cannot</span><span style={{ marginRight: 6 }}>Claim Rewards</span> <span>from “Share-and-Earn”</span></div>
           <div className="t-item"><span className='primary'>Limited</span> access to future airdrops <span>or other exclusive benefits</span></div>
         </div>
       </div>
     </div>
     {
       !isCrust && <MCard>
-        <div className="title font-sans-semibold">How to get a Premium</div>
-        <div className="text font-sans-regular">Log in with Crust Wallet and Deposit CRU to get a Premium. </div>
+        <div className="title font-sans-semibold">How to get Premium</div>
+        <div className="text font-sans-regular">Log in with Crust Wallet and Deposit CRU to get Premium. </div>
         <div className={'btns mbtns'}>
           <Btn content="Download Crust Wallet" onClick={_onClickDownCrustWallet} />
         </div>
       </MCard>}
     {
       showDeposit && <MCard>
-        <div className="title font-sans-semibold">Get a Premium</div>
+        <div className="title font-sans-semibold">Get Premium</div>
         <div className="text font-sans-regular">
           {
             showBasePrice ? <>
@@ -204,13 +204,13 @@ function Index(props: Props) {
               Deposit <span className={classNames('origin')}>{guaranteeDiscountWithReferer} CRU</span> if you have an invitation code (the Nickname of your inviter).<br />
             </>
           }
-          The deposit can be redeemed after {days} days from your deposit.
+          The deposit can be redeemed {days} days after your deposit date.
         </div>
         <div className={'btns mbtns'}>
           <input
             className="input-Nickname"
             spellCheck="false"
-            placeholder="Enter Invitoe’s Nickname（Leave blank if you have no inviter.）"
+            placeholder="Enter inviter’s Nickname（Leave blank if you have no inviter.）"
             onChange={_onChangeNickname} />
           <span className="input-NickError">{nickError}</span>
           <br />
@@ -289,7 +289,8 @@ export default React.memo<Props>(styled(Index)`
     }
     .mbtns {
       button {
-        min-width: 27rem;
+        min-width: 406px;
+        height: 38px;
       }
     }
     .tip {
@@ -419,7 +420,7 @@ export default React.memo<Props>(styled(Index)`
 
   .input-Nickname {
     display: inline-block;
-    min-width: 27rem;
+    min-width: 406px;
     margin-bottom: 12px;
     height: 38px;
     line-height: 38px;

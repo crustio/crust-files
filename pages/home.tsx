@@ -13,14 +13,14 @@ function home(p: BaseProps) {
 
     return <PageUserSideLayout path='/home' className={p.className}>
         <div className="home--slog">
-            Upload and store your File to IPFS <br />
+            Upload and store your file to IPFS <br />
             via <a target="_blank" href="https://crust.network/" rel="noreferrer">Crust</a>’s decentralized storage network.
         </div>
         <div className="home--cards">
             <div className="home--card" onClick={_onClickPublick}>
                 <div className="home--card-Title home--borderBottom1">Public</div>
                 <div className="home--card-Content">
-                    Your file will be just as it is supposed to be. No encryption, open access for all. It’s perfectly suitable for storing and sharing non-sensitive files.
+                    Your files will be just as they were meant to be. No encryption, open access for all. Great for storing and sharing non-sensitive files.
                 </div>
             </div>
             <div className="home--card" onClick={_onClickVault}>
@@ -30,7 +30,7 @@ function home(p: BaseProps) {
                 </div>
                 {
                     !isPremiumUser && <div className="home--CommingSoon">
-                        <div>Get a <span onClick={() => r.push('/user')}>Premium</span></div>
+                        <div>Get <span onClick={() => r.push('/user')}>Premium</span></div>
                         to unlock.
                     </div>
                 }
@@ -38,7 +38,7 @@ function home(p: BaseProps) {
             <div className="home--card">
                 <div className="home--card-Title home--borderBottom3">SecureShare</div>
                 <div className="home--card-Content">
-                    Your file will be encrypted locally with a unique extraction code before a share link is created. Try this if you’d like to share something private or sensitive to your friends.
+                    Your files will be encrypted locally with a unique encryption code before a share link is created. This the the most secure option for sharing your private and sensitive files.
                 </div>
                 <div className="home--CommingSoon">
                     Coming soon...

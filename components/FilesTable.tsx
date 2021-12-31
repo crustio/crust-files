@@ -162,7 +162,7 @@ export const FilesTable = React.memo<Props>(styled(filesTable)`
         margin: unset;
       }
       .files-tip {
-        font-size: 10px;
+        font-size: 12px;
         line-height: 22px;
         color: #999999;
         padding-left: 0.57rem;

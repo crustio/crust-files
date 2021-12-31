@@ -94,18 +94,18 @@ function SideLayout(props: Props) {
 }
 
 const sideWidth = '238px'
-const minHeight = '500px'
 export default React.memo<Props>(styled(SideLayout)`
   height: 100vh;
   background: white;
   overflow-y: auto;
+  min-height: 68rem;
 
   .ui.sidebar {
     padding: unset !important;
     background: black;
     box-shadow: unset !important;
     width: ${sideWidth};
-    min-height: ${minHeight};
+    height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -172,8 +172,7 @@ export default React.memo<Props>(styled(SideLayout)`
 
   .pusher {
     width: calc(100vw - ${sideWidth});
-    height: 100vh;
-    min-height: ${minHeight};
+    height: 100%;
     transform: translate3d(${sideWidth}, 0, 0) !important;
     overflow: auto !important;
     background: white;

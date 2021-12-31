@@ -476,7 +476,7 @@ function Index(props: Props) {
       <div className="left">
         <CoinCru><Coin /> {getFormatValue(luckyNebie, 'totalAmount')} CRU</CoinCru>
         <Trophy />
-        <TimeBlocks><span>{fCountdown}</span> ( <span>{getFormatValue(luckyNebie, 'blockCount')}</span> blocks)</TimeBlocks>
+        <TimeBlocks><span>{fCountdown}</span> (<span>{getFormatValue(luckyNebie, 'blockCount')}</span> blocks)</TimeBlocks>
       </div>
       <div className="right">
         <div className="title">Rules:</div>
@@ -511,7 +511,7 @@ function Index(props: Props) {
               isPremiumUser ?
                 <span>{myTicket}</span> :
                 <span style={{ color: '#333333', fontSize: 20, verticalAlign: 'middle' }}>
-                  - Get a <span style={{ color: '#FF8D00', cursor: 'pointer' }} onClick={_clickGetPremium}>Premium User</span> to join the game.
+                  - Get <span style={{ color: '#FF8D00', cursor: 'pointer' }} onClick={_clickGetPremium}>Premium User</span> to join the game.
                 </span>
             }
           </div>

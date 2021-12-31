@@ -10,7 +10,7 @@ import { useToggle } from "../lib/hooks/useToggle";
 import { getEarnRewards } from '../lib/http/share_earn';
 import { getFormatValue, shortStr } from "../lib/utils";
 import { WalletName, WrapLoginUser } from "../lib/wallet/hooks";
-import { Links } from './Links';
+import { Links2 } from './Links';
 import ModalSelectAccount from "./ModalSelectAccount";
 
 export interface Props {
@@ -133,7 +133,7 @@ function User(props: Props) {
   const r = useRouter()
 
   const renderGoToGetPermium = () => {
-    return <span className='go-to' onClick={() => r.push('/user')}>Get a Premium</span>
+    return <span className='go-to' onClick={() => r.push('/user')}>Get Premium</span>
   }
   const renderTitleText = () => {
     if (isPremiumUser)
@@ -164,10 +164,10 @@ function User(props: Props) {
     }
     <Item.Group>
       <Item style={{ justifyContent: 'flex-end', alignItems: 'center' }}>
-        <Links className='dark' space={16} />
+        <Links2 space={20} size={24} />
         <div className="docs" onClick={_onClickDocs}>
-          {/* <span className="cru-fo cru-fo-file-text" />  */}
-          Docs
+          <span className="cru-fo cru-fo-file-text" /> 
+          {/* Docs */}
         </div>
         <Item.Image src={getWalletIcon(user)} size={'tiny'} />
         <Item.Content verticalAlign={"middle"} style={{ flex: 'unset', paddingLeft: '0.7rem' }}>
@@ -203,18 +203,18 @@ function User(props: Props) {
 export default React.memo(styled(User)`
   border-bottom: 1px solid var(--line-color) !important;
   margin: unset !important;
-  padding: 1.3rem !important;
+  padding: 1.1rem !important;
   width: 100%;
   flex-shrink: 0;
   .docs {
     /* margin-top: 20px; */
     margin-left: 20px;
     display: inline-block;
-    color: var(--main-color);
+    color: var(--secend-color);
     height: 24px;
     margin-right: 30px;
     cursor: pointer;
-    font-size: 18px;
+    font-size: 24px;
     .cru-fo {
       position: relative;
       top: 1px;
@@ -222,14 +222,11 @@ export default React.memo(styled(User)`
     }
     padding-right: 30px;
     border-right: 1px solid #EEEEEE;
-    &:hover {
-      color: black;
-    }
   }
 
   .tiny.image {
-    width: 4.3rem !important;
-    height: 4.3rem !important;
+    width: 50px !important;
+    height: 50px !important;
     margin-right: 1rem !important;
     /* filter: drop-shadow(0px 4px 5px rgba(0, 0, 0, 0.15)); */
   }
@@ -240,13 +237,13 @@ export default React.memo(styled(User)`
 
   .ui.dropdown {
     .cru-fo {
-      font-size: 1.3rem;
+      font-size: 18px;
       margin-left: 1.1rem;
     }
 
     .text {
       font-family: OpenSans-Medium;
-      font-size: 1.3rem;
+      font-size: 18px;
     }
 
     .menu::after {

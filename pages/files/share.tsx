@@ -79,7 +79,7 @@ function _share(props: BaseProps) {
 export default React.memo(styled(_share)`
     width: 100%;
     height: 100vh;
-    min-height: 56.29rem;
+    min-height: 70rem;
     background: white;
     display: flex;
 

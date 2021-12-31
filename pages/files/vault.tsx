@@ -57,7 +57,7 @@ function Vault(p: { className?: string }) {
           onClickUpFile={() => !disabledUpload && wInputFile._onClickUpFile()}
         // onClickUpFolder={wInputFile._onClickUpFolder}
         />
-        {!isPremiumUser && <div className="unValut">Get a <span onClick={() => r.push('/user')}>Premium</span> to Unlock.</div>}
+        {!isPremiumUser && <div className="unValut">Get <span onClick={() => r.push('/user')}>Premium</span> to Unlock.</div>}
         {isPremiumUser && noSecret && <div className="unValut">Set your <span onClick={() => r.push('/setting')}>Encryption Key</span> first.</div>}
       </div>
 
