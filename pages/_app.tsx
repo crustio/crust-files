@@ -20,8 +20,8 @@ export default function App({ Component, ...props }: AppProps) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
 
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:site" content="@CommunityCrust" />
-        <meta name="twitter:creator" content="@CommunityCrust" />
+        <meta name="twitter:site" content="@CrustNetwork" />
+        <meta name="twitter:creator" content="@CrustNetwork" />
         <meta name="twitter:title" content="Crust Files" />
         <meta name="twitter:description" content="Click to see what I am sharing on Crust Files - the personal Web3.0 storage application." />
         <meta name="twitter:image" content="https://gw.crustapps.net/ipfs/QmXFmy9kbfHJbac5bqGL5paEdXcwFuvHzzFQb1Lem7ZLCD?filename=Crust%20Files.png" />
