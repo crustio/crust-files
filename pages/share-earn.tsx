@@ -311,9 +311,9 @@ function Index(props: Props) {
   const uClaimRewards = useClaimRewards()
   const [config] = useGet(() => getShareEarnConfig())
   const [rewards, doGetRewards] = useGet(() => getEarnRewards(account), [account, isCrust])
-  const [networkState] = useGet(() => getNetworkState())
-  const [luckyNebie] = useGet(() => getLuckyNebie())
-  const [granDraw] = useGet(() => getGrandDraw())
+  const [networkState] = useGet(() => getNetworkState(), [user.account])
+  const [luckyNebie] = useGet(() => getLuckyNebie(), [user.account])
+  const [granDraw, , loadingGrandDraw] = useGet(() => getGrandDraw(), [user.account])
   const isGrandDrawWiner = useMemo(() => {
     return !!(user.account && granDraw && granDraw.members && granDraw.members
       .find(item => isSameCrustAddress(item.address, user.account)))
@@ -380,7 +380,7 @@ function Index(props: Props) {
   const GrandStat1 = granDraw && granDraw.drawState === 1
   // 已开奖
   const GrandStat2 = granDraw && granDraw.drawState === 2
-  const showGrandDraw = GrandStat0 || GrandStat1 || GrandStat2
+  const showGrandDraw = (GrandStat0 || GrandStat1 || GrandStat2) && !loadingGrandDraw
 
   const [grandApplyState, doGetGrandApplyState] = useGet(() => getGrandApplyState(account), [account, isCrust, GrandStat1])
   const showSignUpGrandDraw = isPremiumUser && GrandStat1
@@ -553,9 +553,9 @@ function Index(props: Props) {
           isPremiumUser ? <div style={{ marginTop: 8 }}>
             You have {totalPending} CRU pending claim rewards.
           </div> :
-          <div style={{ marginTop: 8 }}>
-            <ColorSpan className="btn" onClick={() => r.push('/user')}>Get Premium</ColorSpan> User to claim your rewards.
-          </div>
+            <div style={{ marginTop: 8 }}>
+              <ColorSpan className="btn" onClick={() => r.push('/user')}>Get Premium</ColorSpan> User to claim your rewards.
+            </div>
         }
 
       </ClaimRewards>
