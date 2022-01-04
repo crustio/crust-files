@@ -19,7 +19,7 @@ import { BlobFile } from '../lib/types';
 import { useAuthGateway, useAuthPinner } from '../lib/useAuth';
 import { useUpload } from '../lib/useUpload';
 import { formatCRU, trimZero } from '../lib/utils';
-
+import { toBlob } from 'html-to-image';
 
 export interface Props {
   className?: string
@@ -132,14 +132,17 @@ function Index(props: Props) {
   const _onClickGetBadge = () => {
     if (diabledGetBadge) return;
     loading.show()
-    // 'image/svg+xml'
-    const svg = badgeRef.current.outerHTML
-    const badgeFile = new Blob([svg], { type: 'image/svg+xml' }) as BlobFile
-    badgeFile.name = `badge_${user.nickName}.svg`
-    upload({ file: badgeFile })
+    toBlob(badgeRef.current as any)
+      .then(blob => {
+        const badgeFile = (blob as BlobFile)
+        badgeFile.name = `badge_${user.nickName}.svg`
+        return badgeFile
+      })
+      .then(file => upload({ file }))
       .then(([sf, params]) => {
         const perSignData = `crust-${params.msg}:${params.signature}`;
         const base64Signature = window.btoa(perSignData);
+        console.info('nft:', sf)
         return saveNft(base64Signature, sf.Hash).then(() => doGetNft())
       })
       .catch(console.error)

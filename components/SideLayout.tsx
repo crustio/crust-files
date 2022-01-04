@@ -1,8 +1,9 @@
 import classNames from "classnames";
 import { useRouter } from "next/router";
-import React, { useCallback } from "react";
+import React, { useMemo } from "react";
 import { Grid, Segment, Sidebar } from 'semantic-ui-react';
 import styled from "styled-components";
+import { useSessionState } from "../lib/hooks/useSessionState";
 import { PixelBtn } from "./effect/Pixels";
 import Logo from "./Logo";
 
@@ -18,35 +19,93 @@ interface MenuInfo {
   path?: Path,
   icon?: string,
   name: string,
-  isParent?: boolean,
   link?: string,
 }
 
-const menus: MenuInfo[] = [
+interface GroupMenuInfo extends MenuInfo {
+  items: MenuInfo[],
+  expand: boolean
+}
+
+type MenuItem = GroupMenuInfo | MenuInfo
+
+const menus: MenuItem[] = [
   { path: "/home", icon: "cru-fo-home", name: 'Home' },
-  { icon: "cru-fo-file", isParent: true, name: 'My Files' },
-  { path: "/files", name: 'Public' },
-  { path: "/files/vault", name: 'Vault' },
+  {
+    icon: "cru-fo-file", name: 'My Files', expand: true, items: [
+      { path: "/files", name: 'Public' },
+      { path: "/files/vault", name: 'Vault' }
+    ]
+  },
   { path: "/setting", icon: "cru-fo-settings", name: 'Settings' },
-  // { path: "/docs", icon: "cru-fo-file-text", name: 'Docs' },
   { path: "/share-earn", icon: "cru-fo-share-2", name: 'Share-and-Earn' },
   { path: "/user", icon: "cru-fo-user", name: 'Premium User' },
   { icon: "cru-fo-database", name: 'Get CRU', link: 'https://swap.crustapps.net' },
 ]
 
+interface GroupMenuProps {
+  info: MenuItem,
+  pagePath: Path,
+  onClickItem: (m: MenuItem) => void
+}
+
+function GroupMenu(props: GroupMenuProps) {
+  const { info: mInfo, pagePath, onClickItem } = props
+  const { items, expand } = mInfo as GroupMenuInfo
+  const isActive = (info: MenuInfo) => pagePath === info.path
+
+  return <div className="group_menu_wrap">
+    <PixelBtn
+      className={classNames("btn_item", { active: isActive(mInfo) })}
+      onClick={() => onClickItem(mInfo)}
+      fillColor={isActive(mInfo) ? "#FF8D00" : "#000000"}
+      color={isActive(mInfo) ? "#E46A11" : "#000000"}
+      height={40}
+      content={
+        <>
+          <span className={mInfo.icon ?? 'cru-fo-file'} style={{ opacity: mInfo.icon ? 1 : 0 }} />
+          {mInfo.name}
+          {items && <span className={classNames("group_menu_arrow", expand ? 'cru-fo-chevron-down' : 'cru-fo-chevron-right')} />}
+        </>
+      } />
+    {
+      expand && items.map((mInfo, index) =>
+        <PixelBtn
+          key={`side_menu_c_${index}`}
+          className={classNames("btn_item", { active: isActive(mInfo) })}
+          onClick={() => onClickItem(mInfo)}
+          fillColor={isActive(mInfo) ? "#FF8D00" : "#000000"}
+          color={isActive(mInfo) ? "#E46A11" : "#000000"}
+          height={40}
+          content={
+            <>
+              <span className={mInfo.icon ?? 'cru-fo-file'} style={{ opacity: mInfo.icon ? 1 : 0 }} />
+              {mInfo.name}
+            </>
+          } />)
+    }
+  </div>
+}
+
 function SideLayout(props: Props) {
   const r = useRouter()
-  const _onTabClick = useCallback((_: any, { index }: { index: number }) => {
-    const m = menus[index]
+  const [expand, setExpand] = useSessionState(menus.map(item => !!(item as GroupMenuInfo).expand), 'side_menus_expand')
+  const data = useMemo(() => {
+    return menus.map((item, index) => ({ ...item, expand: expand[index] }))
+  }, [expand])
+
+  const _onTabClick = (m: MenuItem) => {
     if (m.path && m.path !== props.path)
       r.push(m.path)
     if (m.link)
       window.open(m.link, '_blank')
-  }, [props.path])
-  // const shareEarnIndex = useMemo(() => _.findIndex(menus, m => m.path === '/share-earn'), [])
-  const isActive = (info: MenuInfo) => props.path === info.path
-  // const isActive2 = (info: MenuInfo) => props.path.startsWith(info.path) && info.isParent
-
+    if ((m as GroupMenuInfo).items) {
+      setExpand((old) => {
+        const fIndex = data.findIndex((item) => item === m)
+        return old.map((item, index) => index === fIndex ? !item : item)
+      })
+    }
+  }
   return <Sidebar.Pushable
     as={Segment}
     className={classNames(props.className, 'basic')}>
@@ -64,21 +123,14 @@ function SideLayout(props: Props) {
         <Grid.Row columns={1}>
           <div className="menus">
             {
-              menus.map((mInfo, index) =>
-                <PixelBtn
-                  unClick={!mInfo.path && !mInfo.link}
-                  className={classNames("btn_item", { active: isActive(mInfo) })}
-                  onClick={() => _onTabClick(null, { index })}
-                  key={`side_menu_${index}`}
-                  fillColor={isActive(mInfo) ? "#FF8D00" : "#000000"}
-                  color={isActive(mInfo) ? "#E46A11" : "#000000"}
-                  height={40}
-                  content={
-                    <>
-                      <span className={mInfo.icon ?? 'cru-fo-file'} style={{ opacity: mInfo.icon ? 1 : 0 }} />
-                      {mInfo.name}
-                    </>
-                  } />)
+              data.map((info, index) =>
+                <GroupMenu
+                  key={`group_menu_${index}`}
+                  info={info}
+                  pagePath={props.path}
+                  onClickItem={_onTabClick}
+                />
+              )
             }
           </div>
         </Grid.Row>
@@ -133,6 +185,8 @@ export default React.memo<Props>(styled(SideLayout)`
         /* padding-left: 2rem !important; */
 
         font-family: OpenSans-Regular;
+
+
         .btn_content {
           min-width: 0;
           flex: 1;
@@ -160,6 +214,11 @@ export default React.memo<Props>(styled(SideLayout)`
           color: white;
           border-right: unset;
           background-color: transparent;
+        }
+        .group_menu_arrow {
+          float: right;
+          font-size: 22px;
+          top: 9px !important;
         }
       }
     }

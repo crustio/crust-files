@@ -157,6 +157,7 @@ function _PixelBtn(props: BtnProps) {
 
 export const PixelBtn = styled(_PixelBtn) <BtnProps>`
     display: flex;
+    user-select: none;
     align-items: center;
     width: min-content;
     height: ${({ height }) => wrapUnit(height, isPX(height))};
