@@ -8,5 +8,11 @@ export type Colors =
 
 export const ColorSpan = styled.span.attrs((p: { color?: Colors }) => ({ color: p.color || '--primary-color' }))`
     color: var(${prop => prop.color});
+    &.btn {
+        cursor: pointer;
+        &:disabled{
+            cursor: not-allowed;
+        }
+    }
 `
 

@@ -98,7 +98,8 @@ export default React.memo<Props>(styled(SideLayout)`
   height: 100vh;
   background: white;
   overflow-y: auto;
-  min-height: 68rem;
+  min-height: calc(448px + 13rem);
+  margin: unset !important;
 
   .ui.sidebar {
     padding: unset !important;

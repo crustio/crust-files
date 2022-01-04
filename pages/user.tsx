@@ -165,7 +165,7 @@ function Index(props: Props) {
           </div>
           <div className="t-item">More Space</div>
           <div className="t-item">
-            <span className='primary'>Claim Rewards</span> <span>from “Share-and-Earn”</span>
+            <span className='primary'>Claim Rewards</span> <span>{`from "Share-and-Earn"`}</span>
           </div>
           <div className="t-item">
             <span>Priority access to</span><span className='primary'>future airdrops</span>
@@ -178,7 +178,7 @@ function Index(props: Props) {
           <div className="t-item"><span>Maximum Upload Size of </span><span className='primary'>40MB</span></div>
           <div className="t-item"><span>Storage Order Expires in</span><span className='primary'>6 Months</span></div>
           <div className="t-item"><span className='primary'>Limited</span> <span>Space</span></div>
-          <div className="t-item"><span className='primary'>Cannot</span><span style={{ marginRight: 6 }}>Claim Rewards</span> <span>from “Share-and-Earn”</span></div>
+          <div className="t-item"><span className='primary'>Cannot</span><span style={{ marginRight: 6 }}>Claim Rewards</span> <span>{`from "Share-and-Earn"`}</span></div>
           <div className="t-item"><span className='primary'>Limited</span> <span style={{ marginRight: 6 }}>access to future airdrops</span> <span>or other exclusive benefits</span></div>
         </div>
       </div>

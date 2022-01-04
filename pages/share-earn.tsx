@@ -8,6 +8,7 @@ import styled, { keyframes } from "styled-components";
 import { PixelBoard, PixelBtn, PixelBtn1 } from "../components/effect/Pixels";
 import { Coin } from "../components/icons";
 import PageUserSideLayout from "../components/PageUserSideLayout";
+import { ColorSpan } from "../components/texts/spans";
 import { useApp } from "../lib/AppContext";
 import { useCall } from "../lib/hooks/useCall";
 import { useClaimRewards } from "../lib/hooks/useClaimRewards";
@@ -393,7 +394,7 @@ function Index(props: Props) {
   }, [granDraw, bestNumberFinalized])
 
   const totalPending = getFormatValue(rewards, 'total.pending')
-  const disabledClaimRewards = !uClaimRewards.ready || onGoingClaim || !rewards || totalPending === '-' || totalPending === '0'
+  const disabledClaimRewards = !uClaimRewards.ready || !isPremiumUser || onGoingClaim || !rewards || totalPending === '-' || totalPending === '0'
 
   const _clickSignUpGrandDraw = async () => {
     if (!account || !isCrust || !isPremiumUser || grandAppled) return
@@ -548,9 +549,15 @@ function Index(props: Props) {
       </Rewards>
       <ClaimRewards>
         <M_PixelBtn disabled={disabledClaimRewards} content={onGoingClaim ? 'Ongoing Claim...' : 'Claim Rewards'} onClick={_clickClaimRewards} />
-        <div style={{ marginTop: 8 }}>
-          You have {totalPending} CRU pending claim rewards.
-        </div>
+        {
+          isPremiumUser ? <div style={{ marginTop: 8 }}>
+            You have {totalPending} CRU pending claim rewards.
+          </div> :
+          <div style={{ marginTop: 8 }}>
+            <ColorSpan className="btn" onClick={() => r.push('/user')}>Get Premium</ColorSpan> User to claim your rewards.
+          </div>
+        }
+
       </ClaimRewards>
       <DetailedRules target={'_blank'} href={docsUrl('/docs/CrustFiles_ShareandEarn/#claim_rewards')}>Learn More</DetailedRules>
     </PixelBoard>
