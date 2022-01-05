@@ -176,11 +176,12 @@ export default React.memo(styled(_share)`
         }
         .footer {
             display: flex;
-            justify-content: space-between;
-            height: 4.29rem;
-            margin-top: 2.86rem;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-top: 2rem;
         }
         .links {
+            margin-top: 1rem;
             flex-shrink: 0;
             height: 2.71rem;
             align-items: center;

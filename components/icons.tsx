@@ -35,3 +35,8 @@ export const BadgeIcon2 = styled.img.attrs({ src: '/images/badge2.svg'})`
   object-fit: contain;
   display: inline-block;
 `
+
+export const SVG = styled.embed`
+  width: 24px;
+  height: 24px;
+`

@@ -39,10 +39,12 @@ function Index(props: Props) {
       if (nickName) {
         getAccountByNickName(nickName)
           .then((account) => {
-            if (account !== user.account)
+            if (account !== user.account){
+              setNickError('')
               setShareFrom(account)
-            else
+            }else{
               setNickError(`It can't be your own`)
+            }
           })
           .catch(() => setNickError('Not found'))
       }
