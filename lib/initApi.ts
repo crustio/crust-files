@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { ApiPromise, WsProvider } from "@polkadot/api";
 import { typesBundleForPolkadot } from '@crustio/type-definitions'
 const wss = [
-  'wss://rpc.crustnetwork.io',
   'wss://rpc.crust.network',
   'wss://rpc-crust-mainnet.decoo.io'
 ]
