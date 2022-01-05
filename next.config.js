@@ -1,4 +1,17 @@
-module.exports = {
+const nextMdx = require('@next/mdx')
+
+const withMDX = nextMdx({
+  extension: /\.(md|mdx)$/,
+  options: {
+    remarkPlugins: [require('remark-gfm')],
+    rehypePlugins: [],
+  },
+})
+
+/**
+ * @type {import('next').NextConfig}
+ */
+const nextConfig = withMDX({
   webpack: (config) => {
     config.resolve.fallback = {
       crypto: require.resolve('crypto-browserify'),
@@ -13,4 +26,13 @@ module.exports = {
     return config
   },
   trailingSlash: true,
-}
+  experimental: {
+    // ssr and displayName are configured by default
+    styledComponents: true,
+  },
+  // mdx 
+  pageExtensions: ['tsx', 'md', 'mdx'],
+})
+
+// export default nextConfig
+module.exports = nextConfig

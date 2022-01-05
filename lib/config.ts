@@ -1,4 +1,5 @@
-import type {TFunction} from 'i18next';
+import type { TFunction } from 'i18next';
+import { IS_DEV } from './env';
 
 export interface AuthIpfsEndpoint {
   text?: string;
@@ -74,3 +75,10 @@ export function createAuthIpfsPinner(t: TFunction): AuthIpfsPinner[] {
 }
 
 export const MOBILE_WIDTH = 960;
+
+export const CrustWalletDownUrl = 'https://chrome.google.com/webstore/detail/crust-wallet/jccapkebeeiajkkdemacblkjhhhboiek'
+
+// export const IS_DEV = process.env.NODE_ENV === 'development'
+// beta prod
+export const ShareEarnENV = IS_DEV ? 'beta' : 'prod'
+export const ShareEarnBaseUrl = IS_DEV ? 'https://files-api.decoo.io' : 'https://api.crustfiles.com'

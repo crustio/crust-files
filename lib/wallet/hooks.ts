@@ -1,15 +1,16 @@
-import React, {useCallback, useContext, useEffect, useMemo, useState} from 'react';
+import { useRouter } from "next/router";
+import React, { Dispatch, SetStateAction, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import store from 'store';
-import {SaveFile} from './types';
-import {FlowM} from './Flow';
-import {Metamask} from './Metamask';
-import {NearM} from './Near';
-import {SolanaM} from './SolanaM';
-import {Crust} from './Crust'
-import {PolkadotJs} from "./PolkadotJs";
-import {Elrond} from "./Elrond";
-import {useRouter} from "next/router";
-import {MWalletConnect} from "./MWalletConnect";
+import { Member } from '../http/types';
+import { Crust } from './Crust';
+import { Elrond } from "./Elrond";
+import { FlowM } from './Flow';
+import { Metamask } from './Metamask';
+import { MWalletConnect } from "./MWalletConnect";
+import { NearM } from './Near';
+import { PolkadotJs } from "./PolkadotJs";
+import { SolanaM } from './SolanaM';
+import { SaveFile } from './types';
 
 // eslint-disable-next-line
 const fcl = require('@onflow/fcl');
@@ -23,6 +24,7 @@ type KEYS_FILES = 'files' | 'pins:files'
 
 export interface WrapFiles extends Files {
   setFiles: (files: SaveFile[]) => void,
+  deleteItem: (f: SaveFile) => void,
   key: KEYS_FILES,
 }
 
@@ -38,9 +40,42 @@ export class LoginUser {
   wallet: 'crust' | 'polkadot-js' | 'metamask' | 'metamask-Moonriver' | 'metamask-Polygon' |
     'near' | 'flow' | 'solana' | 'elrond' | 'wallet-connect';
   key?: KEYS = 'files:login';
+
 }
 
+export const WalletName: { [k in LoginUser['wallet']]: string } = {
+  "crust": 'Crust Wallet',
+  "metamask": 'MetaMask',
+  "metamask-Polygon": "MetaMask",
+  "metamask-Moonriver": "MetaMask",
+  "polkadot-js": "Polkadot Extension",
+  "near": "Near Wallet",
+  "elrond": "Elrond(Maiar Wallet)",
+  "flow": "Flow Wallet",
+  "solana": "Solana(Phantom Wallet)",
+  "wallet-connect": "WalletConnect"
+}
+
+
+const NEED_REMEMBER_WALLET: LoginUser['wallet'][] = [
+  'crust',
+  'polkadot-js'
+]
+
+export function lastUser(wallet: LoginUser['wallet'], key: KEYS = 'files:login'): LoginUser | undefined {
+  return store.get(`${key}:${wallet}:last`) as LoginUser
+}
+
+export function saveLastUser(wallet: LoginUser['wallet'], data: LoginUser, key: KEYS = 'files:login') {
+  store.set(`${key}:${wallet}:last`, data)
+}
+
+
 export interface WrapLoginUser extends LoginUser {
+  nickName?: string;
+  setNickName: Dispatch<SetStateAction<string>>;
+  member?: Member;
+  setMember: Dispatch<SetStateAction<Member>>
   isLoad: boolean
   accounts?: string[]
   setLoginUser: (u: LoginUser) => void
@@ -56,7 +91,7 @@ export interface WrapLoginUser extends LoginUser {
   walletConnect: MWalletConnect,
 }
 
-const defFilesObj: Files = {files: [], isLoad: true};
+const defFilesObj: Files = { files: [], isLoad: true };
 
 const initPinTime = (fileObj: Files) => {
   fileObj.files.forEach((file) => {
@@ -83,14 +118,20 @@ export function useFiles(key: KEYS_FILES = 'files'): WrapFiles {
     }
   }, [key]);
   const setFiles = useCallback((nFiles: SaveFile[]) => {
-    const nFilesObj = {...filesObj, files: nFiles};
+    const nFilesObj = { ...filesObj, files: nFiles };
     // init file.PinTime
     initPinTime(nFilesObj)
     setFilesObj(nFilesObj);
     store.set(key, nFilesObj);
   }, [filesObj, key]);
 
-  return useMemo(() => ({...filesObj, setFiles, key}), [filesObj, setFiles, key]);
+  const deleteItem = useCallback((f: SaveFile) => {
+    if (f.Hash) {
+      setFiles(filesObj.files.filter(file => file.Hash !== f.Hash))
+    }
+  }, [filesObj, setFiles])
+
+  return useMemo(() => ({ ...filesObj, setFiles, deleteItem, key }), [filesObj, setFiles, deleteItem, key]);
 }
 
 export function useSign(wUser: WrapLoginUser): UseSign {
@@ -162,11 +203,14 @@ export function useSign(wUser: WrapLoginUser): UseSign {
   return state;
 }
 
-const defLoginUser: LoginUser = {account: '', wallet: 'crust', key: 'files:login'};
+const defLoginUser: LoginUser = { account: '', wallet: 'crust', key: 'files:login' };
 
 export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
   const [account, setAccount] = useState<LoginUser>(defLoginUser);
   const [accounts, setAccounts] = useState<WrapLoginUser['accounts']>()
+  const [nickName, setNickName] = useState('')
+  const [member, setMember] = useState<Member>()
+
   const [isLoad, setIsLoad] = useState(true);
   const crust = useMemo(() => new Crust(), [])
   const polkadotJs = useMemo(() => new PolkadotJs(), [])
@@ -179,7 +223,7 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
   const r = useRouter()
 
   const setLoginUser = useCallback((loginUser: LoginUser) => {
-    const nAccount = {...loginUser, key};
+    const nAccount = { ...loginUser, key };
 
     setAccount((old) => {
       if (old.wallet === 'near') {
@@ -190,7 +234,46 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
       return nAccount;
     });
     store.set(key, nAccount);
+    if (NEED_REMEMBER_WALLET.includes(nAccount.wallet) && nAccount.account) {
+      saveLastUser(nAccount.wallet, nAccount)
+    }
   }, [near, key]);
+
+  useEffect(() => {
+    metamask.onAccountChange = (data) => {
+      console.info('accountsChange::', data, account)
+      if (!account.wallet.startsWith('metamask')) return
+      const accounts = data
+      if (accounts.length !== 0) {
+        setLoginUser({
+          account: accounts[0],
+          wallet: account.wallet
+        })
+      } else {
+        setLoginUser(defLoginUser)
+      }
+    }
+  }, [metamask, setLoginUser, account])
+
+  useEffect(() => {
+    walletConnect.onAccountChanged = (data) => {
+      if (account.wallet !== 'wallet-connect') return
+      if (data.length) {
+        console.info('wallet-connet:changed:', data)
+        setLoginUser({
+          account: data[0],
+          wallet: account.wallet
+        })
+      } else {
+        setLoginUser(defLoginUser)
+      }
+
+    }
+    walletConnect.onDisconnect = () => {
+      if (account.wallet !== 'wallet-connect') return
+      setLoginUser(defLoginUser)
+    }
+  }, [walletConnect, setLoginUser, account])
 
   useEffect(() => {
     try {
@@ -222,19 +305,11 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
         metamask.init()
           .then(() => {
             console.info('doInit::', metamask)
-            if (metamask.isAllowed && metamask.accounts.includes(f.account)) {
-              setAccount(f);
-              metamask.ethereum.on("accountsChanged", (data) => {
-                const accounts = data as string[]
-                if (accounts.length !== 0) {
-                  setLoginUser({
-                    account: accounts[0],
-                    wallet: f.wallet
-                  })
-                } else {
-                  setLoginUser(defLoginUser)
-                }
-              })
+            if (metamask.isAllowed && metamask.accounts.length) {
+              setAccount({
+                account: metamask.accounts[0],
+                wallet: f.wallet
+              });
             }
           })
           .then(() => setIsLoad(false))
@@ -260,20 +335,7 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
           .then(() => setIsLoad(false))
       } else if (f.wallet === 'wallet-connect') {
         walletConnect.init()
-          .then(() => {
-            setAccount(f)
-            console.info('wc::', walletConnect.connect)
-            walletConnect.connect?.on("session_update", (_, payload) => {
-              const {accounts} = payload.params[0]
-              setLoginUser({
-                wallet: 'wallet-connect',
-                account: accounts[0]
-              })
-            })
-            walletConnect.connect?.on("disconnect", () => {
-              setLoginUser(defLoginUser)
-            })
-          })
+          .then(() => setAccount(f))
           .then(() => setIsLoad(false))
       } else {
         setIsLoad(false)
@@ -282,7 +344,7 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
       setIsLoad(false);
       console.error(e);
     }
-  }, [metamask, near, flow, solana, walletConnect, key, r]);
+  }, [key, r]);
 
   const logout = useCallback(async () => {
     if (account.wallet === 'flow') {
@@ -301,7 +363,7 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
       await walletConnect.connect?.killSession()
     }
 
-    setLoginUser({...defLoginUser});
+    setLoginUser({ ...defLoginUser });
   }, [setLoginUser, account]);
 
   const wUser: WrapLoginUser = useMemo(() => {
@@ -320,16 +382,17 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
       solana,
       elrond,
       walletConnect,
+      nickName,
+      setNickName,
+      setMember,
+      member,
     };
-
-    // if (window.location.hostname === 'localhost') {
-    //   // eslint-disable-next-line
-    //   // @ts-ignore
-    //   window.wrapLU = wrapLoginUser;
-    // }
-
     return wrapLoginUser;
-  }, [account, accounts, isLoad, setLoginUser, logout, crust, polkadotJs, metamask, near, flow, solana, walletConnect, key]);
+  }, [
+    account, accounts, isLoad, setLoginUser, logout,
+    crust, polkadotJs, metamask, near, flow, solana,
+    walletConnect, nickName, member, key
+  ]);
   const uSign = useSign(wUser);
   wUser.sign = uSign.sign;
   return wUser;

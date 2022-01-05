@@ -1,11 +1,13 @@
-import React, {useCallback} from "react";
-import {Grid, Menu, Segment, Sidebar} from 'semantic-ui-react'
-import {useRouter} from "next/router";
 import classNames from "classnames";
+import { useRouter } from "next/router";
+import React, { useMemo } from "react";
+import { Grid, Segment, Sidebar } from 'semantic-ui-react';
 import styled from "styled-components";
+import { useSessionState } from "../lib/hooks/useSessionState";
+import { PixelBtn } from "./effect/Pixels";
 import Logo from "./Logo";
 
-type Path = '/files' | '/docs' | '/setting'
+type Path = '/files' | '/setting' | '/home' | '/files/vault' | '/share-earn' | '/user'
 
 export interface Props {
   className?: string
@@ -14,25 +16,96 @@ export interface Props {
 }
 
 interface MenuInfo {
-  path: Path,
-  icon: string,
+  path?: Path,
+  icon?: string,
   name: string,
+  link?: string,
 }
 
-const menus: MenuInfo[] = [
-  {path: "/files", icon: "cru-fo-file", name: 'Upload'},
-  {path: "/docs", icon: "cru-fo-file-text", name: 'Docs'},
-  {path: "/setting", icon: "cru-fo-settings", name: 'Settings'},
+interface GroupMenuInfo extends MenuInfo {
+  items: MenuInfo[],
+  expand: boolean
+}
+
+type MenuItem = GroupMenuInfo | MenuInfo
+
+const menus: MenuItem[] = [
+  { path: "/home", icon: "cru-fo-home", name: 'Home' },
+  {
+    icon: "cru-fo-file", name: 'My Files', expand: true, items: [
+      { path: "/files", name: 'Public' },
+      { path: "/files/vault", name: 'Vault' }
+    ]
+  },
+  { path: "/setting", icon: "cru-fo-settings", name: 'Settings' },
+  { path: "/share-earn", icon: "cru-fo-share-2", name: 'Share-and-Earn' },
+  { path: "/user", icon: "cru-fo-user", name: 'Premium User' },
+  { icon: "cru-fo-database", name: 'Get CRU', link: 'https://swap.crustapps.net' },
 ]
+
+interface GroupMenuProps {
+  info: MenuItem,
+  pagePath: Path,
+  onClickItem: (m: MenuItem) => void
+}
+
+function GroupMenu(props: GroupMenuProps) {
+  const { info: mInfo, pagePath, onClickItem } = props
+  const { items, expand } = mInfo as GroupMenuInfo
+  const isActive = (info: MenuInfo) => pagePath === info.path
+
+  return <div className="group_menu_wrap">
+    <PixelBtn
+      className={classNames("btn_item", { active: isActive(mInfo) })}
+      onClick={() => onClickItem(mInfo)}
+      fillColor={isActive(mInfo) ? "#FF8D00" : "#000000"}
+      color={isActive(mInfo) ? "#E46A11" : "#000000"}
+      height={40}
+      content={
+        <>
+          <span className={mInfo.icon ?? 'cru-fo-file'} style={{ opacity: mInfo.icon ? 1 : 0 }} />
+          {mInfo.name}
+          {items && <span className={classNames("group_menu_arrow", expand ? 'cru-fo-chevron-down' : 'cru-fo-chevron-right')} />}
+        </>
+      } />
+    {
+      expand && items.map((mInfo, index) =>
+        <PixelBtn
+          key={`side_menu_c_${index}`}
+          className={classNames("btn_item", { active: isActive(mInfo) })}
+          onClick={() => onClickItem(mInfo)}
+          fillColor={isActive(mInfo) ? "#FF8D00" : "#000000"}
+          color={isActive(mInfo) ? "#E46A11" : "#000000"}
+          height={40}
+          content={
+            <>
+              <span className={mInfo.icon ?? 'cru-fo-file'} style={{ opacity: mInfo.icon ? 1 : 0 }} />
+              {mInfo.name}
+            </>
+          } />)
+    }
+  </div>
+}
 
 function SideLayout(props: Props) {
   const r = useRouter()
-  const _onTabClick = useCallback((_: any, {index}: { index: number }) => {
-    const m = menus[index]
-    if (m.path !== props.path)
-      r.push(m.path)
-  }, [props.path])
+  const [expand, setExpand] = useSessionState(menus.map(item => !!(item as GroupMenuInfo).expand), 'side_menus_expand')
+  const data = useMemo(() => {
+    return menus.map((item, index) => ({ ...item, expand: expand[index] }))
+  }, [expand])
 
+  const _onTabClick = (m: MenuItem) => {
+    if (m.path && m.path !== props.path)
+      r.push(m.path)
+    if (m.link)
+      window.open(m.link, '_blank')
+    if ((m as GroupMenuInfo).items) {
+      setExpand((old) => {
+        const fIndex = data.findIndex((item) => item === m)
+        return old.map((item, index) => index === fIndex ? !item : item)
+      })
+    }
+  }
   return <Sidebar.Pushable
     as={Segment}
     className={classNames(props.className, 'basic')}>
@@ -45,24 +118,25 @@ function SideLayout(props: Props) {
     >
       <Grid textAlign='center'>
         <Grid.Row columns={1} className={"logoPanel"}>
-          <Logo src="/images/logo_12x.png"/>
+          <Logo src="/images/logo_22x.png" />
         </Grid.Row>
         <Grid.Row columns={1}>
-          <Menu fluid vertical borderless>
+          <div className="menus">
             {
-              menus.map((mInfo, index) => <Menu.Item
-                position={"left"}
-                key={`side_menu_${index}`}
-                index={index}
-                active={mInfo.path === props.path}
-                icon={<span className={mInfo.icon}/>}
-                name={mInfo.name}
-                onClick={_onTabClick}
-              />)
+              data.map((info, index) =>
+                <GroupMenu
+                  key={`group_menu_${index}`}
+                  info={info}
+                  pagePath={props.path}
+                  onClickItem={_onTabClick}
+                />
+              )
             }
-          </Menu>
+          </div>
         </Grid.Row>
       </Grid>
+      <div className="flex1" />
+      {/* <img className="share_earn" onClick={() => _onTabClick({}, { index: shareEarnIndex })} src="/images/share_earn.png" /> */}
     </Sidebar>
 
     <Sidebar.Pusher>
@@ -71,60 +145,94 @@ function SideLayout(props: Props) {
   </Sidebar.Pushable>
 }
 
-const sideWidth = '15.7rem'
+const sideWidth = '238px'
 export default React.memo<Props>(styled(SideLayout)`
-  overflow: hidden;
   height: 100vh;
   background: white;
+  overflow-y: auto;
+  min-height: calc(448px + 13rem);
+  margin: unset !important;
 
   .ui.sidebar {
-    background: #F5F5F5;
+    padding: unset !important;
+    background: black;
     box-shadow: unset !important;
     width: ${sideWidth};
-
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    .ui.grid {
+      margin: unset !important;
+      width: 100%;
+    }
     .logoPanel {
       padding: 4.7rem 0;
 
       img {
-        height: 1.7rem;
+        height: 24px;
       }
     }
-
-    .menu {
-      box-shadow: unset !important;
-      border: unset !important;
-      border-radius: unset !important;
-      background: unset !important;
-
-      .item {
+    .menus {
+      padding: 0 7px;
+      width: 100%;
+      .btn_item {
         border-radius: 0 !important;
+        margin-top: 1.07rem;
         text-align: left;
-        padding-left: 2rem !important;
-        font-weight: 500;
-        font-size: 1.3rem;
-        color: var(--secend-color);
-        font-family: "OpenSans-Regular";
+        min-width: unset;
+        width: 100%;
+        /* padding-left: 2rem !important; */
 
+        font-family: OpenSans-Regular;
+
+
+        .btn_content {
+          min-width: 0;
+          flex: 1;
+          font-weight: 500;
+          font-size: 18px;
+          text-align: left;
+          color: var(--secend-color);
+          white-space: nowrap;
+          padding: 0 6px;
+          span {
+            position: relative;
+            top: 1px;
+            margin-right: 8px;
+          }
+        }
         &.active {
-          position: relative;
-          color: var(--main-color);
-          font-family: "OpenSans-Medium";
-          border-right: solid 0.2rem var(--primary-color);
-          border-right-style: dot-dash;
+          .btn_content {
+            position: relative;
+            color: white;
+            border-right: solid 0.2rem var(--primary-color);
+          }
         }
 
-
-        span {
-          float: left;
-          margin-right: 10px;
+        &.active2 {
+          color: white;
+          border-right: unset;
+          background-color: transparent;
+        }
+        .group_menu_arrow {
+          float: right;
+          font-size: 22px;
+          top: 9px !important;
         }
       }
+    }
+    .share_earn {
+      cursor: pointer;
+      width: 15rem;
+      height: auto;
+      margin-bottom: 1rem;
     }
   }
 
   .pusher {
     width: calc(100vw - ${sideWidth});
-    height: 100vh;
+    height: 100%;
     transform: translate3d(${sideWidth}, 0, 0) !important;
     overflow: auto !important;
     background: white;

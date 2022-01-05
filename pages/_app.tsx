@@ -1,73 +1,32 @@
-import 'semantic-ui-css/semantic.min.css'
-import '../styles/global.css'
-import '@decooio/crust-fonts/style.css'
-import {AppProps} from 'next/app'
-import i18next from "i18next";
-import I18NextHttpBackend from "i18next-http-backend";
-import I18nextBrowserLanguageDetector from "i18next-browser-languagedetector";
-import {initReactI18next} from "react-i18next";
-import React, {useEffect, useMemo, useState} from "react";
-import {Container, Dimmer, Loader} from "semantic-ui-react";
-import {ContextWrapLoginUser, useLoginUser} from "../lib/wallet/hooks";
-import Redirect from "../components/Redirect";
-import {AppProvider, AppType} from '../lib/AppContext'
-import AlertMessage from "../components/AlertMessage";
-import {initAlert} from "../lib/initAlert"
-import {initApi} from "../lib/initApi";
+import { AppProps } from 'next/app';
+import { useRouter } from 'next/router';
 import Head from "next/head";
-import Layout, {siteTitle} from "../components/layout";
-import {initLoading} from "../lib/initLoading";
+import React from "react";
+import MApp from '../components/root/MApp';
+import MDocs from '../components/root/MDocs';
+import '@decooio/crust-fonts/style.css';
+import 'semantic-ui-css/semantic.min.css';
+import '../styles/global.css';
 
-function initI18n() {
-  const [init, setInit] = useState(false)
-  useEffect(() => {
-    i18next.use(new I18NextHttpBackend())
-      .use(I18nextBrowserLanguageDetector)
-      .use(initReactI18next)
-      .init({
-        backend: {
-          loadPath: '/locales/{{lng}}.json'
-        },
-        fallbackLng: 'zh-CN',
-        interpolation: {
-          escapeValue: false
-        }
-      }, () => {
-        setInit(true)
-      })
-  }, [])
-  return init;
-}
 
-export default function App({Component, pageProps}: AppProps) {
-  const wUser = useLoginUser()
-  const init = initI18n()
-  const alert = initAlert()
-  const api = initApi()
-  const loading = initLoading()
-  const appType = useMemo<AppType>(() => ({alert, api, loading}), [alert, api, loading])
-  if (!init || wUser.isLoad) return <Container className="hFull">
-    <Dimmer active inverted>
-      <Loader size='large' inverted content="Loading"/>
-    </Dimmer>
-  </Container>
-  return <ContextWrapLoginUser.Provider value={wUser}>
-    <AppProvider value={appType}>
+export default function App({ Component, ...props }: AppProps) {
+  const r = useRouter()
+  if (r.pathname.startsWith('/docs')) {
+    return <MDocs Component={Component} {...props} />
+  }
+  return (
+    <>
       <Head>
-        <title>{siteTitle}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@CrustNetwork" />
+        <meta name="twitter:creator" content="@CrustNetwork" />
+        <meta name="twitter:title" content="Crust Files" />
+        <meta name="twitter:description" content="Click to see what I am sharing on Crust Files - the personal Web3.0 storage application." />
+        <meta name="twitter:image" content="https://gw.crustapps.net/ipfs/QmXFmy9kbfHJbac5bqGL5paEdXcwFuvHzzFQb1Lem7ZLCD?filename=Crust%20Files.png" />
       </Head>
-      <Redirect>
-        <Layout>
-          <Component {...pageProps} />
-          <Dimmer active={loading.isLoading} inverted>
-            <Loader size='large' inverted content="Loading"/>
-          </Dimmer>
-        </Layout>
-      </Redirect>
-      <AlertMessage/>
-    </AppProvider>
-
-  </ContextWrapLoginUser.Provider>
-
-
+      <MApp Component={Component} {...props} />
+    </>
+  )
 }

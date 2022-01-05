@@ -1,28 +1,20 @@
-import {useEffect, useState} from "react";
-import {ApiPromise, WsProvider} from "@polkadot/api";
-import {typesBundleForPolkadot} from '@crustio/type-definitions'
-
+import { useEffect, useState } from "react";
+import { ApiPromise, WsProvider } from "@polkadot/api";
+import { typesBundleForPolkadot } from '@crustio/type-definitions'
+const wss = [
+  'wss://rpc.crustnetwork.io',
+  'wss://rpc.crust.network',
+  'wss://rpc-crust-mainnet.decoo.io'
+]
 export function initApi(): ApiPromise | null {
   const [api, setApi] = useState<ApiPromise | null>(null)
   useEffect(() => {
-    let task = null
-    const init = () => {
-      const provider = new WsProvider(['wss://rpc-crust-mainnet.decoo.io', 'wss://rpc-subscan.crust.network'])
-      return ApiPromise.create({
-        provider,
-        typesBundle: typesBundleForPolkadot,
-      })
-        .then(setApi)
-        .catch(() => {
-          task = setTimeout(init, 5000)
-        })
-    };
-    init().then()
-    return () => {
-      if (task) {
-        clearTimeout(task)
-      }
-    }
+    const provider = new WsProvider(wss, 5000)
+    provider.on('error', console.error)
+    new ApiPromise({
+      provider,
+      typesBundle: typesBundleForPolkadot,
+    }).isReady.then(setApi).catch(console.error)
   }, [])
   return api
 }

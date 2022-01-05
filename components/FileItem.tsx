@@ -1,25 +1,31 @@
-import React, {useCallback, useContext, useMemo} from "react";
-import {SaveFile} from "../lib/wallet/types";
-import {AuthIpfsEndpoint} from "../lib/config";
-import {Icon, Popup, Table} from "semantic-ui-react";
-import filesize from "filesize";
-import {saveAs} from 'file-saver';
-import {useClipboard} from "../lib/hooks/useClipboard";
-import {AppContext} from "../lib/AppContext";
-import {useCall} from "../lib/hooks/useCall";
-import styled from "styled-components";
-import {useAuthGateway} from "../lib/useAuth";
-import {WrapUserCrypto} from "../lib/crypto/useUserCrypto";
+import { BlockNumber } from "@polkadot/types/interfaces/types";
 import axios from "axios";
-import {decryptFile} from "../lib/crypto/encryption";
+import { saveAs } from 'file-saver';
+import filesize from "filesize";
 import _ from 'lodash';
-import {shortStr} from "../lib/utils";
-import {BlockNumber} from "@polkadot/types/interfaces/types";
+import React, { useCallback, useContext, useMemo } from "react";
+import { Icon, Popup, Table } from "semantic-ui-react";
+import styled from "styled-components";
+import { AppContext } from "../lib/AppContext";
+import { AuthIpfsEndpoint } from "../lib/config";
+import { decryptFile } from "../lib/crypto/encryption";
+import { WrapUserCrypto } from "../lib/crypto/useUserCrypto";
+import { useCall } from "../lib/hooks/useCall";
+import { useClipboard } from "../lib/hooks/useClipboard";
+import { report } from "../lib/http/report";
+import { ShareOptions } from "../lib/types";
+import { useAuthGateway } from "../lib/useAuth";
+import { shortStr } from "../lib/utils";
+import { WrapLoginUser, useContextWrapLoginUser } from "../lib/wallet/hooks";
+import { SaveFile } from "../lib/wallet/types";
+import Btn from "./Btn";
 
 export interface Props {
+  type?: 'public' | 'vault',
   className?: string,
   file: SaveFile,
   uc: WrapUserCrypto,
+  onDelete: (f: SaveFile) => void
 }
 
 type Status = 'Loading' | 'Submitted' | 'Expired' | 'Success' | 'Failed';
@@ -41,6 +47,31 @@ function createUrl(f: SaveFile, endpoints: AuthIpfsEndpoint[]) {
   return `${endpoint}/ipfs/${f.Hash}?filename=${f.Name}`;
 }
 
+function createShareOrReceiveUrl(file: SaveFile, user: WrapLoginUser, receive = false) {
+  const options: ShareOptions = {
+    name: file.Name,
+    encrypted: file.Encrypted,
+    gateway: file.UpEndpoint,
+    fromAccount: user.account,
+    fromWallet: user.wallet,
+    from: user.nickName,
+    isDir: !!file.items,
+  }
+  report({
+    type: 3,
+    walletType: user.wallet,
+    address: user.account,
+    data: {
+      cid: file.Hash,
+      fileType: file.items ? 1 : 0,
+      strategy: file.Encrypted ? 1 : 0,
+      shareType: 0
+    }
+  })
+  const str = encodeURI(JSON.stringify(options))
+  return receive ? `${window.location.origin}/files/receive?cid=${file.Hash}&options=${str}` : `${window.location.origin}/files/share?cid=${file.Hash}&options=${str}`;
+}
+
 function parseStat(stat: any) {
   try {
     return JSON.parse(JSON.stringify(stat))
@@ -59,17 +90,18 @@ function parseStat(stat: any) {
 const FailedTime = 2 * 60 * 60 * 1000
 
 function FileItem(props: Props) {
-  const {file, className, uc} = props;
+  const { file, className, uc, onDelete, type = 'public' } = props;
+  const isPublic = type === 'public';
   const copy = useClipboard();
-  const {api, alert, loading} = useContext(AppContext)
-  const {endpoints} = useAuthGateway()
-
+  const { api, alert, loading } = useContext(AppContext)
+  const { endpoints } = useAuthGateway()
+  const _onClickDelete = () => { onDelete(file) }
   const _onClickOpen = useCallback(async () => {
     if (file.Encrypted && _.size(file.items) === 0) {
       try {
         if (!uc.secret) return;
         loading.show()
-        const res = await axios.get<ArrayBuffer>(createUrl(file, endpoints), {responseType: "arraybuffer"})
+        const res = await axios.get<ArrayBuffer>(createUrl(file, endpoints), { responseType: "arraybuffer" })
         console.info('res::', res)
         const time1 = new Date().getTime()
         const decryptData = await decryptFile(res.data, uc.secret)
@@ -78,7 +110,7 @@ function FileItem(props: Props) {
           throw 'error'
         }
         console.info('de:', decryptData)
-        const saveFile = new File([decryptData], file.Name, {type: res.headers['content-type']})
+        const saveFile = new File([decryptData], file.Name, { type: res.headers['content-type'] })
         saveAs(saveFile, file.Name)
         loading.hide()
       } catch (e) {
@@ -89,14 +121,31 @@ function FileItem(props: Props) {
       window.open(createUrl(file, endpoints), '_blank')
     }
   }, [uc, file, endpoints])
-  const _onClickCopy = useCallback(() => copy(createUrl(file, endpoints)), [file, endpoints])
+  const _onClickSearch = () => {
+    window.open(`https://ipfs-scan.io?cid=${file.Hash}`, '_blank')
+  }
+  // const _onClickCopy = useCallback(() => copy(createUrl(file, endpoints)), [file, endpoints])
+  // const r = useRouter()
+  const user = useContextWrapLoginUser()
+  const _onClickShare = () => {
+    window.open(createShareOrReceiveUrl(file, user), '_blank')
+  }
+  const _onClickTweet = () => {
+    const shareUrl = createShareOrReceiveUrl(file, user, true);
+    const text = user.nickName ?
+      `Check out what '${user.nickName}' is sharing on Crust Files!` :
+      `Check out what I am sharing on Crust Files!`;
+    const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURI(text)}&url=${encodeURIComponent(shareUrl)}&hashtags=web3,ipfs,crustnetwork,metaverse,crustfiles`;
+    window.open(tweetUrl, '_blank');
+  }
+
   const queryFileApi = api && api.query?.market && api.query?.market.files
   const hasQueryFileApi = !!queryFileApi
   const stat = useCall<{ isEmpty: boolean } | undefined | null>(queryFileApi, [file.Hash])
   const bestNum = useCall<BlockNumber>(api?.derive?.chain?.bestNumber);
   const bestNumber = bestNum && bestNum.toNumber()
   const fileStat = useMemo<FileStat>(() => {
-    const fStat: FileStat = {status: 'Loading'}
+    const fStat: FileStat = { status: 'Submitted' }
     if (stat && !stat.isEmpty) {
       const {
         expired_at,
@@ -123,7 +172,7 @@ function FileItem(props: Props) {
         // success
         fStat.status = 'Success';
       }
-    } else if (hasQueryFileApi && (file.PinTime - new Date().getTime()) >= FailedTime) {
+    } else if (hasQueryFileApi && (new Date().getTime() - file.PinTime) >= FailedTime) {
       // 'Failed'
       fStat.status = 'Failed'
     }
@@ -135,16 +184,16 @@ function FileItem(props: Props) {
   return <Table.Row className={className}>
     <Table.Cell className={'fileName'}>
       {shortStr(file.Name)}
-      {file.items && <span className="icon cru-fo-folder"/>}
+      {file.items && <span className="icon cru-fo-folder" />}
       {
         file.Encrypted &&
         <Popup
-          trigger={<span className="icon cru-fo-key"/>}
+          trigger={<span className="icon cru-fo-key" />}
           content={"Encrypted"}
-          position={"top center"}/>
+          position={"top center"} />
       }
     </Table.Cell>
-    <Table.Cell textAlign={"center"}>
+    <Table.Cell textAlign={"right"}>
       {shortStr(file.Hash)}
       <Popup
         position={"top center"}
@@ -153,16 +202,16 @@ function FileItem(props: Props) {
           <span
             className="cru-fo cru-fo-copy"
             onClick={() => copy(file.Hash)}
-            style={{marginLeft: '1.8rem'}}/>
+            style={{ marginLeft: '1.8rem' }} />
         }
       />
     </Table.Cell>
     <Table.Cell textAlign={"center"}
-                style={{textTransform: 'uppercase'}}>{filesize(Number(file.Size), {round: 2})}</Table.Cell>
+      style={{ textTransform: 'uppercase' }}>{filesize(Number(file.Size), { round: 2 })}</Table.Cell>
     <Table.Cell textAlign={"center"}>
       {
         fileStat.status === 'Loading' &&
-        <Icon loading name="spinner"/>
+        <Icon loading name="spinner" />
       }
       {fileStat.status === "Submitted" && fileStat.status}
       {fileStat.status === "Expired" && fileStat.status}
@@ -170,24 +219,60 @@ function FileItem(props: Props) {
       {fileStat.status === "Success" && `${fileStat.status} (${fileStat.confirmedReplicas} Replicas)`}
     </Table.Cell>
     <Table.Cell textAlign={"center"}>
+
+      {/* <Popup
+        position={"top center"}
+        content={"Copy Download Link"}
+        trigger={
+          <span className="cru-fo cru-fo-copy" onClick={_onClickCopy} />
+        }
+      /> */}
       <Popup
         position={"top center"}
-        content={"Open File"}
+        content={"Open"}
         trigger={
           <span
             className="cru-fo cru-fo-external-link"
-            style={{marginRight: '1.14rem'}} onClick={_onClickOpen}/>
+            style={{ marginLeft: '1rem' }} onClick={_onClickOpen} />
         }
       />
       <Popup
-        position={"left center"}
-        content={"Copy Download Link"}
+        position={"top center"}
+        content={"Delete"}
         trigger={
-          <span className="cru-fo cru-fo-copy" onClick={_onClickCopy}/>
+          <span
+            className="cru-fo cru-fo-trash-2"
+            style={{ marginLeft: '1rem' }} onClick={_onClickDelete} />
+        }
+      />
+      <Popup
+        position={"top center"}
+        content={"IPFS Scan"}
+        trigger={
+          <span
+            className="cru-fo cru-fo-search"
+            style={{ marginLeft: '1rem' }} onClick={_onClickSearch} />
         }
       />
 
     </Table.Cell>
+    {
+      isPublic && <Table.Cell textAlign={"center"}>
+        {
+          <>
+            <Btn className="item-share-btn" onClick={_onClickShare}>Share</Btn>
+            <Popup
+              position={"top center"}
+              content={"Quick Tweet"}
+              trigger={
+                <span
+                  className="cru-fo cru-fo-twitter"
+                  onClick={_onClickTweet}
+                  style={{ marginLeft: '0.5rem', top: '0.2rem' }} />
+              }
+            />
+          </>}
+      </Table.Cell>}
   </Table.Row>
 }
 
@@ -205,6 +290,11 @@ export default React.memo<Props>(styled(FileItem)`
     .icon {
       margin-left: 0.6rem;
     }
+  }
+
+  .item-share-btn {
+    padding: 5px 11px !important;
+    border-radius: 8px !important;
   }
 
 `)

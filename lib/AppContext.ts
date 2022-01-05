@@ -1,7 +1,7 @@
-import React from "react";
-import {WrapAlert} from "./initAlert";
-import {ApiPromise} from "@polkadot/api";
-import {WrapLoading} from "./initLoading";
+import React, { useContext } from "react";
+import { WrapAlert } from "./initAlert";
+import { ApiPromise } from "@polkadot/api";
+import { WrapLoading } from "./initLoading";
 
 export interface AppType {
   alert: WrapAlert
@@ -11,3 +11,7 @@ export interface AppType {
 
 export const AppContext = React.createContext<AppType>(null)
 export const AppProvider = AppContext.Provider
+
+export function useApp(): AppType {
+  return useContext(AppContext)
+}

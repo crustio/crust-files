@@ -11,6 +11,19 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Merge main -> beta-ipfs
+        uses: devmasx/merge-branch@v1.3.1
+        with:
+          type: now
+          from_branch: main
+          target_branch: beta-ipfs
+          github_token: ${{ secrets.DECOO_PAT }}
+
+      - name: Checkout beta-ipfs branch
+        uses: actions/checkout@v2
+        with:
+          ref: beta-ipfs
+
       - name: Run install
         run: yarn install
 

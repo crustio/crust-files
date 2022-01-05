@@ -23,10 +23,20 @@ export interface SaveFile extends UploadRes {
 
 export interface DirFile extends File {
   webkitRelativePath: string,
+  _webkitRelativePath: string,
+}
+
+export interface BlobFile extends Blob {
+  name: string
 }
 
 export interface FileInfo {
-  file?: File,
+  file?: File | BlobFile,
   files?: DirFile[],
   dir?: string,
+}
+
+export interface ExportObj {
+  files: SaveFile[],
+  secret?: string
 }

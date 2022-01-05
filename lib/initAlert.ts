@@ -26,13 +26,13 @@ export function initAlert(): WrapAlert {
       clearTimeout(Tasks.last)
       Tasks.last = 0
     }
-    setAlerts((old) => {
+    setAlerts(() => {
       // return _.concat(old, msg)
       return [msg]
     })
     Tasks.last = setTimeout(() => {
       Tasks.last = 0
-      setAlerts((old) => {
+      setAlerts(() => {
         // return _.drop(old)
         return []
       })

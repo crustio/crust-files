@@ -1,15 +1,16 @@
-import React, {MouseEvent, useMemo, useState} from "react";
-import {DropdownItemProps, DropdownProps, Popup} from "semantic-ui-react";
+import React, { MouseEvent, useMemo, useState } from "react";
+import { DropdownItemProps, DropdownProps, Popup } from "semantic-ui-react";
 import styled from "styled-components";
-import {useToggle} from "../lib/hooks/useToggle";
+import { useToggle } from "../lib/hooks/useToggle";
 import useOnClickOutside from "../lib/hooks/useOnClickOut";
 import _ from 'lodash';
 import classNames from "classnames";
 
 export interface Props extends DropdownProps {
   help?: string,
-  label?: string
-  defaultGroup?: string
+  label?: string,
+  defaultGroup?: string,
+  footer?: React.ReactNode
 }
 
 const NULL_GROUP = '_null'
@@ -20,7 +21,7 @@ type SelectData = {
 }
 
 const RenderGroup = (
-  {expand, list, group, select, onClickItem, onClickGroup, renderGroupTitle = null}:
+  { expand, list, group, select, onClickItem, onClickGroup, renderGroupTitle = null }:
     {
       expand: boolean,
       list: DropdownItemProps[],
@@ -35,25 +36,25 @@ const RenderGroup = (
   return <div className={"group"}>
     {
       group !== NULL_GROUP &&
-      (renderGroupTitle && renderGroupTitle({group, select, onClickGroup}) ||
-        <div className={classNames("title", {active: groupActive})} onClick={onClickGroup}>
-          {group} <span className="dropIcon cru-fo-chevron-down"/>
+      (renderGroupTitle && renderGroupTitle({ group, select, onClickGroup }) ||
+        <div className={classNames("title", { active: groupActive })} onClick={onClickGroup}>
+          {group} <span className="dropIcon cru-fo-chevron-down" />
         </div>)
     }
     {
       expand &&
       list.map((item, index) =>
-        <div className={classNames("item", {active: groupActive && item.value === select.value})}
-             key={`group_item_${index}`}
-             onClick={(e) => onClickItem(e, {group, value: item.value})}>{item.text}</div>)
+        <div className={classNames("item", { active: groupActive && item.value === select.value })}
+          key={`group_item_${index}`}
+          onClick={(e) => onClickItem(e, { group, value: item.value })}>{item.text}</div>)
     }
   </div>
 }
 
 
 function MDropdown(props: Props) {
-  const {className, label, help, options, defaultValue, defaultGroup = NULL_GROUP, renderGroupTitle} = props
-  const [select, setSelect] = useState<SelectData>({value: defaultValue, group: defaultGroup})
+  const { className, label, help, options, defaultValue, defaultGroup = NULL_GROUP, renderGroupTitle, footer } = props
+  const [select, setSelect] = useState<SelectData>({ value: defaultValue, group: defaultGroup })
   const selectOption = useMemo(() => {
     return _.find(options, (item) => {
       const group = item.group || NULL_GROUP
@@ -84,13 +85,13 @@ function MDropdown(props: Props) {
         {
           help && <Popup
             position={"top center"}
-            trigger={<span className="icon cru-fo-question"/>}
-            content={help}/>
+            trigger={<span className="icon cru-fo-question" />}
+            content={help} />
         }
 
       </div>
     }
-    <span className={classNames("dropIcon", "cru-fo-chevron-down")}/>
+    <span className={classNames("dropIcon", "cru-fo-chevron-down")} />
     <div className="text font-sans-regular">{selectOption?.text ?? ''}</div>
     {
       visible && <div className={"options"}>
@@ -109,7 +110,8 @@ function MDropdown(props: Props) {
             onClickItem={(e, data) => {
               setSelect(data)
               props.onChange(e, data)
-            }}/>)}
+            }} />)}
+        {footer}
       </div>
     }
   </div>

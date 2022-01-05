@@ -14,7 +14,9 @@ export default React.memo<Props>(styled(Btn)`
   color: var(--primary-color) !important;
   font-weight: normal !important;
   border-radius: 10px !important;
-
+  &:disabled{
+    cursor: not-allowed !important;
+  }
   &:hover {
     background: var(--primary-color) !important;
     color: white !important;
