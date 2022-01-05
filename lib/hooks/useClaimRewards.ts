@@ -17,6 +17,7 @@ export function useClaimRewards(): UseClaimRewards {
     const [finish, setFinish] = useState<boolean>(false)
     useEffect(() => {
         setReady(false)
+        setFinish(false)
         if (!user.account || user.wallet !== 'crust') return
         if (!api) return;
         if (!user.crust.wallet) return;
