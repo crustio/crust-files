@@ -10,6 +10,7 @@ import { Dimmer, Loader } from "semantic-ui-react";
 import { AppProvider, AppType, useApp } from '../../lib/AppContext';
 import { initAlert } from "../../lib/initAlert";
 import { initApi } from "../../lib/initApi";
+import { initAppStore } from "../../lib/initAppStore";
 import { initLoading } from "../../lib/initLoading";
 import { ContextWrapLoginUser, useLoginUser } from "../../lib/wallet/hooks";
 import AlertMessage from "../AlertMessage";
@@ -45,7 +46,8 @@ function MAppProvider(props: BasePropsWithChildren) {
   const alert = initAlert()
   const api = initApi()
   const loading = initLoading()
-  const appType = useMemo<AppType>(() => ({ alert, api, loading }), [alert, api, loading])
+  const store = initAppStore()
+  const appType = useMemo<AppType>(() => ({ alert, api, loading, store }), [alert, api, loading, store])
   return <AppProvider value={appType}>
     {props.children}
   </AppProvider>

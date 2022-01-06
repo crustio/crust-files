@@ -28,7 +28,7 @@ export interface Props {
 function Index(props: Props) {
   const { className } = props
   const { alert, loading } = useApp()
-  const { isCrust, isPremiumUser, deposit, doGetDeposit, hasDeposit, user } = useGetDepost()
+  const { isCrust, isPremiumUser, deposit, doGetDeposit, hasDeposit, user, loading: isLoadingDeposit } = useGetDepost()
   const [nickError, setNickError] = useState<string>()
   const [shareFrom, setShareFrom] = useState<string>()
   const _onChangeNickname = useMemo(() => {
@@ -55,7 +55,7 @@ function Index(props: Props) {
   const [value, setValue] = useState<string>()
   const [config] = useGet(() => getShareEarnConfig())
   const showBasePrice = config && config.showBase
-  const showDeposit = isCrust && !hasDeposit
+  const showDeposit = isCrust && !hasDeposit && !isLoadingDeposit
   const showClaim = isCrust && hasDeposit
   const [dest] = useGet(() => getDepositAddress())
   const fValue = useMemo(() => formatCRU(value), [value])

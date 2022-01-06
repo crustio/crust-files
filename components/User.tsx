@@ -8,6 +8,7 @@ import { useGet } from '../lib/hooks/useGet';
 import { useGetDepost } from '../lib/hooks/useGetDeposit';
 import { useToggle } from "../lib/hooks/useToggle";
 import { getEarnRewards } from '../lib/http/share_earn';
+import { useAutoUpdateToStore } from '../lib/initAppStore';
 import { getFormatValue, shortStr } from "../lib/utils";
 import { WalletName, WrapLoginUser } from "../lib/wallet/hooks";
 import { Links2 } from './Links';
@@ -128,7 +129,8 @@ function User(props: Props) {
   const { isPremiumUser, isCrust, user } = useGetDepost()
   const _onClickLogout = useCallback(user.logout, [user])
   const showSwitchAccount = user.wallet === 'crust' || user.wallet === 'polkadot-js'
-  const [rewards] = useGet(() => getEarnRewards(user.account), [user.account, isCrust])
+  const [mRewards] = useGet(() => getEarnRewards(user.account), [user.account, isCrust], 'getEarnRewards')
+  const {rewards} = useAutoUpdateToStore({ key: 'rewards', value: mRewards})
   const totalRewards = getFormatValue(rewards, 'total.total')
   const r = useRouter()
 

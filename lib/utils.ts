@@ -61,7 +61,7 @@ export function getFormatValue(obj: any, key: string, def: any = '-') {
   if (v !== def && v !== null && v !== undefined) {
     const num = _.toNumber(v)
     const clampNum = num < 0 ? 0 : num
-    return numbro(clampNum).format()
+    return numbro(clampNum).format({thousandSeparated: true})
   }
   return def
 }
