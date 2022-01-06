@@ -4,6 +4,7 @@ import _ from 'lodash';
 import React, { ChangeEvent, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { useApp } from "../lib/AppContext";
+import { report } from '../lib/http/report';
 import { checkNickName, getMemberByAccount, getNickNameByAccount, setMyNickName } from '../lib/http/share_earn';
 import { useContextWrapLoginUser } from "../lib/wallet/hooks";
 import { BaseProps } from "./types";
@@ -45,6 +46,12 @@ function _GetNickname(props: BaseProps) {
             const member = await setMyNickName(nickName, base64Signature)
             wUser.setMember(member)
             wUser.setNickName(member.nick_name)
+            report({
+                type: 1,
+                walletType: wUser.wallet,
+                address: wUser.account,
+                data: {}
+            })
             setNickName("")
         } catch (e) {
             setErrorInfo('This name is occupied!')

@@ -17,8 +17,9 @@ import { useGet } from "../lib/hooks/useGet";
 import { useGetDepost } from "../lib/hooks/useGetDeposit";
 import { useToggle } from "../lib/hooks/useToggle";
 import { applyGrandDraw, getEarnRewards, getGrandApplyState, getGrandDraw, getLuckyNebie, getNetworkState, getShareEarnConfig } from "../lib/http/share_earn";
+import { useAutoUpdateToStore } from "../lib/initAppStore";
 import mDayjs from "../lib/mDayjs";
-import { docsUrl, formatCRU, getFormatValue, isSameCrustAddress } from "../lib/utils";
+import { docsUrl, formatCRU, getFormatValue, isSameCrustAddress, shortStr } from "../lib/utils";
 export interface Props {
   className?: string
 }
@@ -310,7 +311,8 @@ function Index(props: Props) {
   const { account, sign } = user
   const uClaimRewards = useClaimRewards()
   const [config] = useGet(() => getShareEarnConfig())
-  const [rewards, doGetRewards] = useGet(() => getEarnRewards(account), [account, isCrust])
+  const [mRewards, doGetRewards] = useGet(() => getEarnRewards(account), [account, isCrust], 'getEarnRewards')
+  const { rewards } = useAutoUpdateToStore({ key: 'rewards', value: mRewards })
   const [networkState] = useGet(() => getNetworkState(), [user.account])
   const [luckyNebie] = useGet(() => getLuckyNebie(), [user.account])
   const [granDraw, , loadingGrandDraw] = useGet(() => getGrandDraw(), [user.account])
@@ -357,7 +359,7 @@ function Index(props: Props) {
 
   const countdown = useMemo(() => {
     if (!luckyNebie || !bestNumberFinalized) return 0
-    return (luckyNebie.lastBlockNumber + luckyNebie.blockCount - bestNumberFinalized) * 6
+    return _.clamp(luckyNebie.lastBlockNumber + luckyNebie.blockCount - bestNumberFinalized, 0, luckyNebie.blockCount) * 6
   }, [luckyNebie, bestNumberFinalized])
   const fCountdown = useCountdown(countdown);
   const luckyDutation = useMemo(() => (luckyNebie?.blockCount || 300) / 10, [luckyNebie])
@@ -435,6 +437,7 @@ function Index(props: Props) {
             <div className="total">My Total Rewards:</div>
             <div className="total_reward"><span>{getFormatValue(rewards, 'total.total')}</span> CRU</div>
           </> : <div className="networks">
+            <div>Total User: <span>{getFormatValue(networkState, 'totalUser')}</span></div>
             <div>Premium User: <span>{getFormatValue(networkState, 'premiumUser')}</span></div>
             <div>Deposit Pool: <span>{getFormatValue(networkState, 'depositPool')} CRU</span></div>
             <div>Rewards Distributed: <span>{getFormatValue(networkState, 'rewardsDistributed')} CRU</span></div>
@@ -486,7 +489,7 @@ function Index(props: Props) {
         2. Each time a newly registered Premium User will refresh<br />
         the countdown to {luckyDutation}min and add {depositRewardAmount} CRU into the pool.<br />
         <div className="footer">
-          Best chance: <span>{getStrValue(luckyNebie, 'memberAddress')}</span>
+          Best chance: <span>{shortStr(getStrValue(luckyNebie, 'memberAddress'), 12)}</span>
         </div>
       </div>
       <DetailedRules target={'_blank'} href={docsUrl('/docs/CrustFiles_ShareandEarn/#lucky_newbie')}>Detailed Rules</DetailedRules>
