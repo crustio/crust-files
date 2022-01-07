@@ -4,6 +4,7 @@ import classNames from "classnames";
 import _ from 'lodash';
 import { useRouter } from "next/router";
 import React, { useEffect, useMemo, useState } from "react";
+import { Popup } from "semantic-ui-react";
 import styled, { keyframes } from "styled-components";
 import { PixelBoard, PixelBtn, PixelBtn1 } from "../components/effect/Pixels";
 import { Coin } from "../components/icons";
@@ -19,7 +20,7 @@ import { useToggle } from "../lib/hooks/useToggle";
 import { applyGrandDraw, getEarnRewards, getGrandApplyState, getGrandDraw, getLuckyNebie, getNetworkState, getShareEarnConfig } from "../lib/http/share_earn";
 import { useAutoUpdateToStore } from "../lib/initAppStore";
 import mDayjs from "../lib/mDayjs";
-import { docsUrl, formatCRU, getFormatValue, isSameCrustAddress, shortStr } from "../lib/utils";
+import { cutEnd, docsUrl, formatCRU, getFormatValue, isSameCrustAddress, shortStr } from "../lib/utils";
 export interface Props {
   className?: string
 }
@@ -371,11 +372,14 @@ function Index(props: Props) {
     return 0
   }, [granDraw])
 
+  const matchCount = granDraw?.grandDraw?.matchCount || 2
   const myTicket = useMemo(() => {
     if (depositDto && granDraw && depositDto.extrinsic_hash)
       return depositDto.extrinsic_hash.substring(depositDto.extrinsic_hash.length - granDraw.grandDraw.matchCount)
     return '--'
   }, [granDraw, depositDto])
+  const exHash = useMemo(() => depositDto?.extrinsic_hash || '-', [depositDto])
+  const cutExHash = useMemo(() => cutEnd(exHash, matchCount), [matchCount, exHash])
   // 未开启
   const GrandStat0 = granDraw && granDraw.drawState === 0
   // 已开启（可参与或已参与）
@@ -511,9 +515,21 @@ function Index(props: Props) {
         </div>
         <div className="right">
           <div className="title">
-            My Ticket: {
+            My Ticket Number: {
               isPremiumUser ?
-                <span>{myTicket}</span> :
+                <>
+                  <span>{myTicket}</span>
+                  <Popup
+                    position="top center"
+                    style={{ minWidth: 150, whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' }}
+                    content={<>
+                      This is the last <ColorSpan color="--primary-color3">{matchCount}</ColorSpan> digits of your deposit transaction hash - {cutExHash}
+                      <ColorSpan color="--primary-color3">{myTicket}</ColorSpan>
+                    </>}
+                    trigger={<span style={{ cursor: 'pointer', color: 'rgba(0,0,0,0.5)', fontSize: '1.71rem', marginLeft: 12 }} className="cru-fo-help-circle" />}
+                  />
+                </>
+                :
                 <span style={{ color: '#333333', fontSize: 20, verticalAlign: 'middle' }}>
                   - Get <span style={{ color: '#FF8D00', cursor: 'pointer' }} onClick={_clickGetPremium}>Premium User</span> to join the game.
                 </span>
