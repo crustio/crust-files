@@ -85,7 +85,7 @@ function MDropdown(props: Props) {
         {
           help && <Popup
             position={"top center"}
-            trigger={<span className="icon cru-fo-question" />}
+            trigger={<span className="icon cru-fo-help-circle" />}
             content={help} />
         }
 
