@@ -1,5 +1,7 @@
 import { AppProps } from 'next/app';
 import { useRouter } from 'next/router';
+import { useEffect } from 'react';
+import TagManager from 'react-gtm-module';
 import Head from "next/head";
 import React from "react";
 import MApp from '../components/root/MApp';
@@ -10,6 +12,10 @@ import '../styles/global.css';
 
 
 export default function App({ Component, ...props }: AppProps) {
+  useEffect(() => {
+    TagManager.initialize({ gtmId: 'GTM-NPZMBPN' });
+  }, []);
+
   const r = useRouter()
   if (r.pathname.startsWith('/docs')) {
     return <MDocs Component={Component} {...props} />
