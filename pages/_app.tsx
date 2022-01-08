@@ -30,7 +30,7 @@ export default function App({ Component, ...props }: AppProps) {
         <meta name="twitter:creator" content="@CrustNetwork" />
         <meta name="twitter:title" content="Crust Files" />
         <meta name="twitter:description" content="Click to see what I am sharing on Crust Files - the personal Web3.0 storage application." />
-        <meta name="twitter:image" content="https://gw.crustapps.net/ipfs/QmXFmy9kbfHJbac5bqGL5paEdXcwFuvHzzFQb1Lem7ZLCD?filename=Crust%20Files.png" />
+        <meta name="twitter:image" content="https://gw.crustapps.net/ipfs/QmfPTVDtSGuCp2mftrZdQE4Mf5FeYT1gYTiL9xTXoSEgqz?filename=Crust%20Files.png" />
       </Head>
       <MApp Component={Component} {...props} />
     </>
