@@ -2,6 +2,7 @@ import { useRouter } from "next/router";
 import React, { Dispatch, SetStateAction, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import store from 'store';
 import { Member } from '../http/types';
+import { formatToCrustAccount } from "../utils";
 import { Crust } from './Crust';
 import { Elrond } from "./Elrond";
 import { FlowM } from './Flow';
@@ -284,6 +285,7 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
         return;
       }
       if (f.wallet === 'crust') {
+        f.account = formatToCrustAccount(f.account)
         crust.init().then(() => crust.getAccounts())
           .then((accounts) => {
             if (accounts.includes(f.account)) {

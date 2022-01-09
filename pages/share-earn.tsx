@@ -393,12 +393,18 @@ function Index(props: Props) {
   const grandAppled = grandApplyState && grandApplyState.applyed
   const grandExpireTime = useMemo(() => {
     if (!granDraw || !bestNumberFinalized) {
-      return '0000-00-00 00:00 AM'
+      return '--'
     }
     const offS = (granDraw.grandDraw.expireBlock - bestNumberFinalized) * 6
-    return mDayjs().add(offS, 'second').format("YYYY-MM-DD hh:mm A")
+    return mDayjs.utc().add(offS, 'second').format("YYYY-MM-DD hh:mm UTC")
   }, [granDraw, bestNumberFinalized])
-
+  const offTime = useMemo(() => {
+    if (!granDraw || !bestNumberFinalized) {
+      return 0
+    }
+    return (granDraw.grandDraw.expireBlock - bestNumberFinalized) * 6
+  },[granDraw, bestNumberFinalized])
+  const grandExpireCountdown = useCountdown(offTime)
   const totalPending = getFormatValue(rewards, 'total.pending')
   const disabledClaimRewards = !uClaimRewards.ready || !isPremiumUser || onGoingClaim || !rewards || totalPending === '-' || totalPending === '0'
 
@@ -542,8 +548,8 @@ function Index(props: Props) {
             </div>}
           {
             GrandStat1 && <div>
-              Sign up before the draw time <span>{grandExpireTime} (est.)</span> at<br />
-              <span>Block #{getFormatValue(granDraw, 'grandDraw.expireBlock')}</span>
+              Sign up for the draw before Block <span>#{getFormatValue(granDraw, 'grandDraw.expireBlock')}</span><br />
+              Estimated time: <span>{grandExpireCountdown}</span> from now
               {showSignUpGrandDraw && <M_PixelBtn disabled={grandAppled} content={grandAppled ? "Sign Up Completed" : "Sign Up"} onClick={_clickSignUpGrandDraw} />}
             </div>}
           {

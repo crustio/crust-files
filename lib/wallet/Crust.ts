@@ -2,6 +2,7 @@ import {BaseWallet} from "./types";
 import {InjectedExtension, InjectedWindowProvider} from "@polkadot/extension-inject/types";
 import {stringToHex} from "@polkadot/util";
 import {sleep} from "./tools";
+import { formatToCrustAccount } from "../utils";
 
 
 export class Crust implements BaseWallet {
@@ -57,7 +58,7 @@ export class Crust implements BaseWallet {
       await this.enable()
       const accounts = await this.wallet.accounts.get()
       console.info('getAccounts::', accounts)
-      return accounts.map(a => a.address)
+      return accounts.map(a => formatToCrustAccount(a.address))
     } catch (e) {
       return []
     }
