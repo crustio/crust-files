@@ -403,7 +403,7 @@ function Index(props: Props) {
       return 0
     }
     return (granDraw.grandDraw.expireBlock - bestNumberFinalized) * 6
-  },[granDraw, bestNumberFinalized])
+  }, [granDraw, bestNumberFinalized])
   const grandExpireCountdown = useCountdown(offTime)
   const totalPending = getFormatValue(rewards, 'total.pending')
   const disabledClaimRewards = !uClaimRewards.ready || !isPremiumUser || onGoingClaim || !rewards || totalPending === '-' || totalPending === '0'
@@ -576,7 +576,7 @@ function Index(props: Props) {
         <M_PixelBtn disabled={disabledClaimRewards} content={onGoingClaim ? 'Ongoing Claim...' : 'Claim Rewards'} onClick={_clickClaimRewards} />
         {
           isPremiumUser ? <div style={{ marginTop: 8 }}>
-            You have {totalPending} CRU pending claim rewards.
+            {onGoingClaim ? `You have ${getFormatValue(rewards, 'total.ongoing')} CRU ongoing claim... Please wait` : `You have ${totalPending} CRU pending claim rewards.`}
           </div> :
             <div style={{ marginTop: 8 }}>
               <ColorSpan className="btn" onClick={() => r.push('/user')}>Get Premium</ColorSpan> User to claim your rewards.
