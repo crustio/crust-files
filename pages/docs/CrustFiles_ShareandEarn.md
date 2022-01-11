@@ -22,7 +22,6 @@ Download a Crust Wallet [here](https://chrome.google.com/webstore/detail/crust-w
 
 Get some CRU tokens [here](https://swap.crustapps.net/#/swap)
 
-
 <h2 id="invite_bonus">{`INVITE BONUS - detailed rules`}</h2>
 
 ### Basics
@@ -41,12 +40,11 @@ For every successful invitation:
 
 Your **nickname** will show on the share page both for you and the receiver.  
 
-1. Invite your friend  
+2. Invite your friend  
 
 Invite your friends to use Crust Files and become Premium Users.  
 
 Your **nickname** is the invitation code. Remind your friends to type in your **nickname** when they are registering a Premium User.  
-
 
 <h2 id="lucky_newbie">{`LUCKY NEWBIE - detailed rules`}</h2>
 
@@ -65,7 +63,6 @@ Any new Premium User has a chance to win the current prize pool!
 Registering a Premium User in Crust Files will generate an **on-chain transaction** that records the registration information. This transaction is the ONLY valid identifier to a Premium User's identity, and the ONLY basis for determining the winner in the LUCKY NEWBIE game (as well in the other two Reward Programs!).  
 
 Similarly, the timer in this game counts time according to the **block height** on Crust's blockchain, which produces a block every 6 seconds - 30 minutes = 300 blocks passed on-chain.  
-
 
 <h2 id="grand_draw">{`GRAND DRAW - detailed rules`}</h2>
 
@@ -89,8 +86,7 @@ You will have 3 days to sign up after the pool is unlocked. Click the 'Sign Up' 
 
 3. The draw result  
 
-In the sign up stage, a future block will be decided (by block height) to be the 'Draw Block'. The winners will be those whose 'Drawing Ticket' share the same last n (n could be 1, 2, or 3, should be pre-determined) digits with the 'Draw Block'.  
-
+In the sign up stage, a future block will be decided (by block height) to be the 'Draw Block'. The winners will be those whose 'Drawing Ticket' share the same last n (n could be 1, 2, or 3, should be pre-determined) digits with the block hash of the 'Draw Block'.  
 
 <h2 id="claim_rewards">{`Claim your rewards`}</h2>
 

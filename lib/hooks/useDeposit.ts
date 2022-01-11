@@ -55,7 +55,7 @@ export function useDeposit(dest: string, value: string, share_from?: string): Us
         const signer: Signer = {
             ...user.crust.wallet.signer,
             signPayload: (data) => {
-                // console.info('payload:', data)
+                console.info('payload:', data)
                 // msg = data
                 return user.crust.wallet.signer.signPayload(data)
             }
@@ -149,6 +149,7 @@ export function useClaim(): UseClaim {
         }))
         const statusCb: Callback<ISubmittableResult> = (res) => {
             api.setSigner(undefined)
+            ex.hash.toString()
             if (res.status.isFinalized) {
                 const exCompletd = !!findEvent(res, 'system(ExtrinsicSuccess)')
                 if (exCompletd) {

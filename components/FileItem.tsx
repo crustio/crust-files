@@ -128,7 +128,7 @@ function FileItem(props: Props) {
   // const r = useRouter()
   const user = useContextWrapLoginUser()
   const _onClickShare = () => {
-    window.open(createShareOrReceiveUrl(file, user), '_blank')
+    window.open(createShareOrReceiveUrl(file, user, true), '_blank')
   }
   const _onClickTweet = () => {
     const shareUrl = createShareOrReceiveUrl(file, user, true);

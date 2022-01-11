@@ -1,5 +1,6 @@
 import classNames from 'classnames';
 import { format } from 'date-fns';
+import { toBlob } from 'html-to-image';
 import _ from 'lodash';
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import styled from "styled-components";
@@ -14,12 +15,12 @@ import { CrustWalletDownUrl } from '../lib/config';
 import { useClaim, useDeposit } from "../lib/hooks/useDeposit";
 import { useGet } from "../lib/hooks/useGet";
 import { useGetDepost } from '../lib/hooks/useGetDeposit';
+import { useSafeState } from '../lib/hooks/useSafeState';
 import { getAccountByNickName, getDepositAddress, getNft, getShareEarnConfig, saveNft } from "../lib/http/share_earn";
 import { BlobFile } from '../lib/types';
 import { useAuthGateway, useAuthPinner } from '../lib/useAuth';
 import { useUpload } from '../lib/useUpload';
 import { formatCRU, trimZero } from '../lib/utils';
-import { toBlob } from 'html-to-image';
 
 export interface Props {
   className?: string
@@ -29,27 +30,32 @@ function Index(props: Props) {
   const { className } = props
   const { alert, loading } = useApp()
   const { isCrust, isPremiumUser, deposit, doGetDeposit, hasDeposit, user, loading: isLoadingDeposit } = useGetDepost()
-  const [nickError, setNickError] = useState<string>()
-  const [shareFrom, setShareFrom] = useState<string>()
-  const _onChangeNickname = useMemo(() => {
-    return _.debounce((e) => {
-      const nickName = e.target.value;
-      setNickError('')
-      setShareFrom('')
+  const [nickStat, setNickStat] = useSafeState<{ error?: string, shareFrom?: string, checking: boolean }>({ checking: false })
+  const [inputNickname, setInputNickname] = useState<string>()
+  const _onChangeNickname = (e) => setInputNickname(e.target.value)
+  const doChangeNickname = useMemo(() => {
+    return _.debounce((nickName: string) => {
+      setNickStat({ checking: true })
       if (nickName) {
         getAccountByNickName(nickName)
           .then((account) => {
-            if (account !== user.account){
-              setNickError('')
-              setShareFrom(account)
-            }else{
-              setNickError(`It can't be your own`)
+            if (account !== user.account) {
+              setNickStat({ checking: false, shareFrom: account })
+            } else {
+              setNickStat({ checking: false, error: `It can't be your own` })
             }
           })
-          .catch(() => setNickError('Not found'))
+          .catch(() => setNickStat({ checking: false, error: 'Not found' }))
+      } else {
+        setNickStat({ checking: false })
       }
-    }, 300)
+    }, 500)
   }, [user.account])
+  useEffect(() => {
+    setNickStat({ checking: true })
+    doChangeNickname(inputNickname)
+  }, [inputNickname])
+
 
   //
   const [value, setValue] = useState<string>()
@@ -83,14 +89,14 @@ function Index(props: Props) {
   }, [hasDeposit])
   useEffect(() => {
     if (!config) return
-    if (shareFrom) {
+    if (nickStat.shareFrom) {
       setValue(config.guaranteeDiscountWithReferer)
     } else {
       setValue(config.guaranteeAmount)
     }
-  }, [config, shareFrom])
+  }, [config, nickStat.shareFrom])
 
-  const uDeposit = useDeposit(dest, value, shareFrom)
+  const uDeposit = useDeposit(dest, value, nickStat.shareFrom)
   const uClaim = useClaim()
   useEffect(() => {
     let task
@@ -107,13 +113,14 @@ function Index(props: Props) {
     }
     return () => task && clearInterval(task)
   }, [uDeposit.finish, uClaim.finish])
+
   const onGoingDeposit = uDeposit.finish || (deposit && deposit.depositOngoing)
-  const disabledDeposit = !uDeposit.ready || !value || onGoingDeposit
+  const disabledDeposit = !uDeposit.ready || !value || onGoingDeposit || nickStat.checking
   const onGoingClaim = uClaim.finish || (deposit && deposit.claimOngoing)
   const disabledClaim = !uClaim.ready || onGoingClaim || (hasDeposit && deposit.deposit.expire_timestamp >= cTime)
   const _onClickDownCrustWallet = () => window.open(CrustWalletDownUrl, '_blank')
-  const _onClickDeposit = () => { uDeposit.start() }
-  const _onClickClaim = () => { uClaim.start() }
+  const _onClickDeposit = () => { !disabledDeposit && uDeposit.start() }
+  const _onClickClaim = () => { !disabledClaim && uClaim.start() }
 
   const { endpoint } = useAuthGateway()
   const { pinner } = useAuthPinner()
@@ -155,7 +162,7 @@ function Index(props: Props) {
   return <PageUserSideLayout path={'/user'} className={className}>
     <div className="user-Info">
       <div className="title">{isPremiumUser ? 'You are Premium User' : 'You are Trial User'}</div>
-      <div className="sub-text">Web3 Identity Logged-in：<span>{user.account}</span></div>
+      <div className="sub-text">Web3 Identity Logged-in: <span>{user.account}</span></div>
     </div>
     <div className="user-premium-panel">
       <div className="title">{'Why Premium?'}</div>
@@ -217,7 +224,7 @@ function Index(props: Props) {
             spellCheck="false"
             placeholder="Enter inviter’s Nickname（Leave blank if you have no inviter.）"
             onChange={_onChangeNickname} />
-          <span className="input-NickError">{nickError}</span>
+          {nickStat.error && <span className="input-NickError">{nickStat.error}</span>}
           <br />
           <Btn content={onGoingDeposit ? 'Please wait for transaction finalization…' : `Deposit ${fValue} CRU`} disabled={disabledDeposit} onClick={_onClickDeposit} />
           <a href="/docs/CrustFiles_Users" target="_blank">How to deposit?</a>

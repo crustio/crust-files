@@ -1,6 +1,6 @@
-import axios, { AxiosResponse, AxiosRequestConfig } from 'axios';
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { ShareEarnBaseUrl } from '../config';
-import { CommonResponse, Deposit, GrandApplyState, GrandDraw, LuckyNebie, Member, NetworkState, NFT, Reward, Rewards, ShareEarnConfig } from './types';
+import { BindAddress, CommonResponse, Deposit, GrandApplyState, GrandDraw, LuckyNebie, Member, NetworkState, NFT, NickPair, Reward, Rewards, RewardsHistory, ShareEarnConfig, Winner } from './types';
 // import _ from 'lodash';
 
 const base_url = ShareEarnBaseUrl
@@ -107,4 +107,24 @@ export function getNft(address: string) {
 
 export function saveNft(signature: string, cid: string) {
     return reqWithAuth(signature, '/auth/member/nft', { cid })
+}
+
+export function getRewardsHistory(address = '') {
+    return axios.post<CommonResponse<RewardsHistory>>(createUrl('/common/rewardsHistory'), { address })
+        .then(getData)
+}
+
+export function getBindEXAddress(address: string) {
+    return axios.post<CommonResponse<BindAddress[]>>(createUrl('/common/external/address'), { address })
+        .then(getData)
+}
+
+export function getNickPairList(addressList: string[]) {
+    return axios.post<CommonResponse<NickPair[]>>(createUrl('/common/members'), { address: addressList })
+        .then(getData)
+}
+
+export function getGrandDrawWinners(id: number) {
+    return axios.get<CommonResponse<Winner[]>>(createUrl(`/common/grandDraw/${id}/winners`))
+        .then(getData)
 }

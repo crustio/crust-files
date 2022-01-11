@@ -3,8 +3,10 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useMemo } from 'react';
 import styled from "styled-components";
 import { Pixel, PixelBtn } from '../../components/effect/Pixels';
+import { RowFlex } from '../../components/layout';
 import { Links } from '../../components/Links';
 import { BaseProps } from "../../components/types";
+import { useClipboard } from '../../lib/hooks/useClipboard';
 import { report } from '../../lib/http/report';
 import { ShareOptions } from '../../lib/types';
 
@@ -48,6 +50,8 @@ function _share(props: BaseProps) {
     const _onClickDown = () => {
         window.open(link, "_blank")
     }
+    const copy = useClipboard()
+    const _onClickCopy = () => { copy(window.location.href) }
     const _onClickToCrustFiles = () => push('/')
     // const _onClickAboutCrustFiles = () => openDocs('/docs/CrustFiles_Welcome')
     const from = options.from ? options.from : ''
@@ -58,15 +62,27 @@ function _share(props: BaseProps) {
             <div className="share--flex1" />
             <div className="share-info">
                 <div className="title">
-                    You are receiving a file
-                    {from && <><br />from <span>{from}</span>.</>}
+                    {from && <><span>{from}</span><br /></>}
+                    is sharing something<br />
+                    from Crust Files.
                 </div>
-                <div className='link'>{link}</div>
-                <PixelBtn
-                    onClick={_onClickDown}
-                    height={'4.29rem'}
-                    content="Open File"
-                />
+                <div className='link'>{`File CID: ${query.cid}`}</div>
+                <RowFlex>
+                    <PixelBtn
+                        onClick={_onClickDown}
+                        height={'4.29rem'}
+                        content="Open File"
+                    />
+                    <div style={{ width: '2.2857rem' }} />
+                    <PixelBtn
+                        onClick={_onClickCopy}
+                        color='#E46A11'
+                        fillColor='#FF8D00'
+                        height={'4.29rem'}
+                        content="Copy Link"
+                    />
+                </RowFlex>
+                <div className='go-to' onClick={_onClickToCrustFiles}>Go to Crust Files</div>
             </div>
             <div className="share--flex1" />
         </div>
@@ -91,7 +107,6 @@ function _share(props: BaseProps) {
                 User Rewards
             </div>
             <div className='footer'>
-                <div className='go-to' onClick={_onClickToCrustFiles}>Go to Crust Files</div>
                 <Links className='links' />
             </div>
         </div>
@@ -144,7 +159,14 @@ export default React.memo(styled(_share)`
                 margin-bottom: 6rem;
                 color: var(--secend-color);
             }
-            
+            .go-to {
+                font-size: 2rem;
+                margin-top: 5.4286rem;
+                line-height: 2.71rem;
+                color: black;
+                text-decoration: underline;
+                cursor: pointer;
+            }
         }
     }
     .share--pixels {
@@ -186,13 +208,6 @@ export default React.memo(styled(_share)`
             height: 2.71rem;
             align-items: center;
         }
-        .go-to {
-            font-size: 2rem;
-            line-height: 2.71rem;
 
-            color: white;
-            text-decoration: underline;
-            cursor: pointer;
-        }
     }
 `)

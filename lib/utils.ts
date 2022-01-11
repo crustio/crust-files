@@ -49,22 +49,25 @@ export const formatCRU = (cru: string | BN, decimals = 4): string => {
 export const openDocs = (path: string) => {
   window.open(`${window.location.origin}${path}`, '_blank')
 }
-export const docsUrl = (path: string) => `${window.location.origin}${path}`
+export const locationUrl = (path: string) => `${window.location.origin}${path}`
 
 export const formatNumber = (num: number): string => {
   return numbro(num).format()
 }
 
-
-export function getFormatValue(obj: any, key: string, def: any = '-') {
-  const v = _.get(obj, key, def)
-  if (v !== def && v !== null && v !== undefined) {
-    const num = _.toNumber(v)
+export function formatValue(value: any, def: any = '-') {
+  if (value !== def && value !== null && value !== undefined) {
+    const num = _.toNumber(value)
     const clampNum = num < 0 ? 0 : num
     return numbro(clampNum).format({ thousandSeparated: true })
   }
   return def
 }
+
+export function getFormatValue(obj: any, key: string, def: any = '-') {
+  return formatValue(_.get(obj, key, def), def)
+}
+
 
 
 export const findEvent = (res: ISubmittableResult, key: string) => {

@@ -12,7 +12,7 @@ import { useAutoUpdateToStore } from '../lib/initAppStore';
 import { getFormatValue, shortStr } from "../lib/utils";
 import { WalletName, WrapLoginUser } from "../lib/wallet/hooks";
 import { Links2 } from './Links';
-import ModalSelectAccount from "./ModalSelectAccount";
+import ModalSelectAccount from "./modal/ModalSelectAccount";
 
 export interface Props {
   className?: string,

@@ -76,7 +76,8 @@ export function createAuthIpfsPinner(t: TFunction): AuthIpfsPinner[] {
 
 export const MOBILE_WIDTH = 960;
 
-export const CrustWalletDownUrl = 'https://chrome.google.com/webstore/detail/crust-wallet/jccapkebeeiajkkdemacblkjhhhboiek'
+export const CrustWalletDownUrl = 'https://chrome.google.com/webstore/detail/crust-wallet/jccapkebeeiajkkdemacblkjhhhboiek';
+export const CrustGetCRU = 'https://swap.crustapps.net';
 
 // export const IS_DEV = process.env.NODE_ENV === 'development'
 // beta prod

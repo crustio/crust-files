@@ -129,3 +129,42 @@ export interface GrandApplyState {
 export interface NFT {
     cid: string
 }
+
+
+export interface RewardsHistory {
+    invite: {
+        amount: number
+        totalAmount: number
+        inviteCount: number
+        currentInvitation: string
+    }
+    newbie: {
+        totalAmount: number
+        claimList: { address: string, blockNumber: number, totalAmount: number }[]
+        amount: number
+    }
+    grandDraw: {
+        totalAmount: number
+        drawList: { id: number, totalAmount: number, blockNumber: number, blockHash: string, matchCount: number, winnerCount: number }[]
+        ownerList?: { id: number, amount: number, totalAmount: number, winnerCount }[]
+    }
+    claimRewards?: {
+        totalAmount: number
+        claimList?: { claimId: number, totalAmount: number, blockHash: string, txHash: string }[]
+    }
+}
+
+export interface BindAddress {
+    address: string,
+    chain_type: number
+}
+
+export interface NickPair {
+    address: string
+    nick_name: string
+}
+
+export interface Winner {
+    extrinsicHash: string,
+    memberAddress: string
+}

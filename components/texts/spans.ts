@@ -15,4 +15,3 @@ export const ColorSpan = styled.span.attrs((p: { color?: Colors }) => ({ color: 
         }
     }
 `
-

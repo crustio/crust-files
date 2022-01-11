@@ -7,7 +7,7 @@ const CacheObj: {
     }
 } = {}
 
-export function useGet<T>(get: () => Promise<T>, deeps: any[] = [], key?: string, time = 800): [T, () => void, boolean] {
+export function useGet<T>(get: () => Promise<T>, deeps: any[] = [], key?: string, time = 800): [T, () => Promise<T>, boolean] {
     const [value, setValue] = useState<T>()
     const [loading, setLoading] = useState(false)
     useEffect(() => {

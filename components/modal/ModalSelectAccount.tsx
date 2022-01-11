@@ -1,20 +1,22 @@
-import React, {useCallback, useMemo, useState} from "react";
-import {Dropdown, Modal, ModalProps} from "semantic-ui-react";
+import React, { useCallback, useMemo, useState } from "react";
+import { Dropdown, DropdownItemProps, Modal, ModalProps } from "semantic-ui-react";
 import styled from "styled-components";
-import Btn from "./Btn";
-import {WrapLoginUser} from "../lib/wallet/hooks";
-import {shortStr} from "../lib/utils";
-
+import Btn from "../Btn";
+import { WrapLoginUser } from "../../lib/wallet/hooks";
+import { shortStr } from "../../lib/utils";
+import { useGet } from "../../lib/hooks/useGet";
+import { getNickPairList } from "../../lib/http/share_earn";
+import _ from 'lodash';
 export interface Props extends ModalProps {
   toggleOpen: (open?: boolean) => void,
   user: WrapLoginUser,
 }
 
 function ModalSelectAccount(props: Props) {
-  const {user, toggleOpen, ...other} = props
+  const { user, toggleOpen, ...other } = props
   const [account, setAccount] = useState(user.account)
 
-  const _onChange = useCallback((_, {value}) => {
+  const _onChange = useCallback((_, { value }) => {
     setAccount(value)
   }, [])
 
@@ -29,27 +31,29 @@ function ModalSelectAccount(props: Props) {
     toggleOpen(false)
   }, [account, user])
 
-  const options = useMemo(() => {
+  const [pairs] = useGet(() => getNickPairList(user.accounts), [user.accounts, user.wallet === 'crust'])
+  const options: DropdownItemProps[] = useMemo(() => {
+    const pairsMap = _.keyBy(pairs || [], 'address')
     return user.accounts.map(item => ({
-      text: shortStr(item),
+      text: () => <>{shortStr(item)} <span style={{ float: 'right' }}>{_.get(pairsMap, `${item}.nick_name`, '')}</span></>,
       value: item
     }))
-  }, [user])
+  }, [user, pairs])
 
-  return <Modal closeIcon={<span className="close icon cru-fo-x"/>} onClose={() => toggleOpen(false)} {...other}>
-    <Modal.Header content={'Select Account'}/>
+  return <Modal closeIcon={<span className="close icon cru-fo-x" />} onClose={() => toggleOpen(false)} {...other}>
+    <Modal.Header content={'Select Account'} />
     <Modal.Content>
       <Dropdown
         fluid
         selection
-        icon={<span className="icon cru-fo cru-fo-chevron-down"/>}
+        icon={<span className="icon cru-fo cru-fo-chevron-down" />}
         defaultValue={account}
         options={options}
         onChange={_onChange}
       />
       <div className={"btns"}>
-        <Btn content={"Confirm"} onClick={_onClickConfirm}/>
-        <Btn content={"Cancel"} onClick={() => toggleOpen(false)}/>
+        <Btn content={"Confirm"} onClick={_onClickConfirm} />
+        <Btn content={"Cancel"} onClick={() => toggleOpen(false)} />
       </div>
     </Modal.Content>
   </Modal>
@@ -100,8 +104,9 @@ export default React.memo<Props>(styled(ModalSelectAccount)`
       box-shadow: unset !important;
 
       .icon {
-        float: right;
-        transform: translateX(1.2rem);
+        position: absolute;
+        right: .8rem;
+        top: .7rem;
       }
       
       .text {
