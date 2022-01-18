@@ -1,8 +1,8 @@
-import { BN, formatBalance } from '@polkadot/util'
-import { decodeAddress, encodeAddress } from '@polkadot/keyring'
-import type { ISubmittableResult } from '@polkadot/types/types'
+import { decodeAddress, encodeAddress } from '@polkadot/keyring';
+import type { ISubmittableResult } from '@polkadot/types/types';
+import { BN, formatBalance } from '@polkadot/util';
+import _ from 'lodash';
 import numbro from 'numbro';
-import _ from 'lodash'
 
 export const shortStr = (name: string, count = 6): string => {
   if (name.length > (count * 2)) {
@@ -85,4 +85,29 @@ export const isSameCrustAddress = (address1: string, address2: string) => {
 export const cutEnd = (str: string, end: number) => {
   if (str.length <= end) return str
   return str.substring(0, str.length - end)
+}
+
+// // abcdefghijklmnopqrstuvwxyzA-Z
+// export const zipStr = (str: string) => {
+//   return compress(str)
+// }
+
+// export const unZipStr = (str: string) => {
+//   return decompress(str)
+// }
+
+
+export const toHex = (str: string) => {
+  return Buffer.from(str, 'utf-8').toString('hex')
+}
+
+export const unHex = (hex: string) => {
+  return Buffer.from(hex, 'hex').toString('utf-8')
+}
+
+export const getErrorMsg = (error: any, def = 'Network Error') => {
+  if(!error) return def
+  if(typeof error === 'string') return error
+  if(typeof error.message === 'string' ) return error.message
+  return def
 }

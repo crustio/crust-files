@@ -18,7 +18,8 @@ import { GetNickname } from '../GetNickname';
 import Layout, { siteTitle } from "../layout";
 import Redirect from "../Redirect";
 import { BasePropsWithChildren } from "../types";
-
+import { ReCaptcha } from "../comom/ReCaptcha";
+import { initReCaptcha } from "../../lib/initGoogleReCaptcha";
 
 function initI18n() {
   const [init, setInit] = useState(false)
@@ -47,7 +48,8 @@ function MAppProvider(props: BasePropsWithChildren) {
   const api = initApi()
   const loading = initLoading()
   const store = initAppStore()
-  const appType = useMemo<AppType>(() => ({ alert, api, loading, store }), [alert, api, loading, store])
+  const recaptcha = initReCaptcha()
+  const appType = useMemo<AppType>(() => ({ alert, api, loading, store, recaptcha }), [alert, api, loading, store, recaptcha])
   return <AppProvider value={appType}>
     {props.children}
   </AppProvider>
@@ -91,6 +93,7 @@ function DefAppPage({ Component, pageProps }: AppProps) {
           </Redirect>
         }
         <MAppLoading />
+        <ReCaptcha/>
       </Layout>
       <AlertMessage />
     </MAppProvider>

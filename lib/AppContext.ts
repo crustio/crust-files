@@ -3,12 +3,14 @@ import { WrapAlert } from "./initAlert";
 import { ApiPromise } from "@polkadot/api";
 import { WrapLoading } from "./initLoading";
 import { WrapAppStore } from "./initAppStore";
+import { WrapReCaptcha } from "./initGoogleReCaptcha";
 
 export interface AppType {
   alert: WrapAlert
   api?: ApiPromise,
   loading: WrapLoading,
   store: WrapAppStore,
+  recaptcha: WrapReCaptcha,
 }
 
 export const AppContext = React.createContext<AppType>(null)

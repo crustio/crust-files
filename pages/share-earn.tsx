@@ -19,7 +19,7 @@ import { useGetDepost } from "../lib/hooks/useGetDeposit";
 import { useToggle } from "../lib/hooks/useToggle";
 import { applyGrandDraw, getEarnRewards, getGrandApplyState, getGrandDraw, getLuckyNebie, getNetworkState, getShareEarnConfig } from "../lib/http/share_earn";
 import { useAutoUpdateToStore } from "../lib/initAppStore";
-import { cutEnd, formatCRU, getFormatValue, isSameCrustAddress, locationUrl, shortStr } from "../lib/utils";
+import { cutEnd, formatCRU, getErrorMsg, getFormatValue, isSameCrustAddress, locationUrl, shortStr } from "../lib/utils";
 export interface Props {
   className?: string
 }
@@ -306,7 +306,7 @@ const RewardPrograms = styled.div`
 
 function Index(props: Props) {
   const { className } = props
-  const { api, alert, loading } = useApp()
+  const { api, alert, loading, recaptcha } = useApp()
   const r = useRouter()
   const [isMe, setIsMe] = useToggle(true)
   const { isPremiumUser, isCrust, depositDto, user } = useGetDepost()
@@ -417,13 +417,13 @@ function Index(props: Props) {
       const signature = await sign(msg, account)
       const perSignData = `crust-${msg}:${signature}`;
       const base64Signature = window.btoa(perSignData);
-      await applyGrandDraw(base64Signature)
+      const token = await recaptcha.getToken()
+      await applyGrandDraw(token, base64Signature)
       doGetGrandApplyState()
       loading.hide()
     } catch (error) {
       loading.hide()
-      const msg = typeof error === 'string' ? error : error.message || ''
-      if (msg) alert.error(msg)
+      alert.error(getErrorMsg(error))
     }
   }
   const _clickGetPremium = () => r.push('/user')

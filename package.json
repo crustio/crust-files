@@ -13,6 +13,7 @@
     "@crustio/type-definitions": "1.2.0",
     "@decooio/crust-fonts": "^1.1.0",
     "@elrondnetwork/erdjs": "^8.0.1-alpha.13",
+    "@hcaptcha/react-hcaptcha": "^1.0.0",
     "@mdx-js/loader": "^1.6.22",
     "@next/mdx": "^12.0.7",
     "@onflow/fcl": "^0.0.77",
