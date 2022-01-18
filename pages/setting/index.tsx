@@ -325,7 +325,7 @@ function Index(props: Props) {
           {exAddressError && <span className="input-EthError">{exAddressError}</span>}
           <br />
           <Btn disabled={disableBindEth} className='btn' style={{ width: 514, height: 40 }} onClick={_onClickBindEth}>Submit</Btn>
-          {!isPremiumUser && <span className='submit-tip'>Get Premium User to bind your ETH address.</span>}
+          {!isPremiumUser && <span className='submit-tip'>Get Premium User to bind your AirDrop addresses.</span>}
         </>}
     </MCard>
   </PageUserSideLayout>
