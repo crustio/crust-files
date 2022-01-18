@@ -78,7 +78,7 @@ function MDropdown(props: Props) {
 
   const groups: string[] = _.keys(groupOptions)
 
-  return <div className={className} onClick={() => toggleVisible()} ref={ref}>
+  return <div className={classNames(className, 'mdropdown')} onClick={() => toggleVisible()} ref={ref}>
     {
       label && <div className="label font-sans-semibold">
         {label}
@@ -120,79 +120,81 @@ function MDropdown(props: Props) {
 }
 
 export default React.memo<Props>(styled(MDropdown)`
-  position: relative;
-  width: 100%;
-  border-radius: 0.57rem;
-  border: 1px solid var(--line-color);
-  padding: 0.8rem 1rem;
-  cursor: pointer;
-
-  .label {
-    font-size: 1rem;
-    font-weight: 600;
-    white-space: nowrap;
-    color: var(--main-color);
-    margin-bottom: 0.6rem;
-
-    .icon {
-      font-size: 1.3rem;
-      position: relative;
-      top: 0.2rem;
-      margin-left: 0.86rem;
-      cursor: pointer;
-      color: var(--secend-color);
-    }
-  }
-
-  .dropIcon {
-    float: right;
+  &.mdropdown {
     position: relative;
-    top: -0.9rem;
-    right: 0;
-  }
-
-  .text {
-    font-size: 1rem;
-    color: #999999;
-  }
-
-  .options {
     width: 100%;
-    background: white;
-    position: absolute;
-    top: calc(100% + 1px);
-    left: 0;
-    z-index: 10;
-    border-radius: 4px;
+    border-radius: 0.57rem;
     border: 1px solid var(--line-color);
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.3);
+    padding: 0.8rem 1rem;
+    cursor: pointer;
 
-    .group {
+    .label {
+      font-size: 1rem;
+      font-weight: 600;
+      white-space: nowrap;
+      color: var(--main-color);
+      margin-bottom: 0.6rem;
 
-      .title {
+      .icon {
+        font-size: 1.3rem;
+        position: relative;
+        top: 0.2rem;
+        margin-left: 0.86rem;
         cursor: pointer;
-        border-top: 1px solid var(--line-color);
-        padding: 0.8rem 1rem;
-        font-size: 1.2rem;
-        font-weight: 500;
-
-        &:hover, &.active {
-          background: var(--line-color);
-        }
-
-        .dropIcon {
-          float: right;
-          right: 0.6rem;
-          top: 0rem;
-        }
+        color: var(--secend-color);
       }
+    }
 
-      .item {
-        padding: 0.6rem 1.6rem;
-        cursor: pointer;
+    .dropIcon {
+      float: right;
+      position: relative;
+      top: -0.9rem;
+      right: 0;
+    }
 
-        &:hover, &.active {
-          background: var(--line-color);
+    .text {
+      font-size: 1rem;
+      color: #999999;
+    }
+
+    .options {
+      width: 100%;
+      background: white;
+      position: absolute;
+      top: calc(100% + 1px);
+      left: 0;
+      z-index: 10;
+      border-radius: 4px;
+      border: 1px solid var(--line-color);
+      box-shadow: 0 1px 5px rgba(0, 0, 0, 0.3);
+
+      .group {
+
+        .title {
+          cursor: pointer;
+          border-top: 1px solid var(--line-color);
+          padding: 0.8rem 1rem;
+          font-size: 1.2rem;
+          font-weight: 500;
+
+          &:hover, &.active {
+            background: var(--line-color);
+          }
+
+          .dropIcon {
+            float: right;
+            right: 0.6rem;
+            top: 0rem;
+          }
+        }
+
+        .item {
+          padding: 0.6rem 1.6rem;
+          cursor: pointer;
+
+          &:hover, &.active {
+            background: var(--line-color);
+          }
         }
       }
     }

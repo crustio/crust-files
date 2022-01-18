@@ -168,9 +168,12 @@ export default function page() {
                             </Table.Body>
                         </MTable>
                         <StyleText className="style6">
-                            My prize
+                            {
+                                meGrandList.length > 0 ? <>My prize</>
+                                    : <>{`My prize: You haven't got any prize yet.`}</>
+                            }
                         </StyleText>
-                        <MTable >
+                        {meGrandList.length > 0 && <MTable >
                             <Table.Header>
                                 <Table.Row>
                                     <Table.HeaderCell>No.</Table.HeaderCell>
@@ -189,7 +192,7 @@ export default function page() {
                                     </Table.Row>)
                                 }
                             </Table.Body>
-                        </MTable>
+                        </MTable>}
 
                         {/* Claim Rewards */}
                         {showMe && <>
@@ -198,9 +201,12 @@ export default function page() {
                             </StyleText>
                             <StyleText className="style6">
                                 Total rewards claimed by me: <ColorSpan color="--primary-color3">{_.toNumber(data.claimRewards.totalAmount)}</ColorSpan> CRU<br />
-                                Historical claims
+                                {
+                                    data.claimRewards.claimList.length > 0 ? <>My Historical claims</>
+                                        : <>My historical claims: No claim history.</>
+                                }
                             </StyleText>
-                            <MTable >
+                            {data.claimRewards.claimList.length > 0 && <MTable >
                                 <Table.Header>
                                     <Table.Row>
                                         <Table.HeaderCell>No.</Table.HeaderCell>
@@ -218,7 +224,7 @@ export default function page() {
                                         </Table.Row>)
                                     }
                                 </Table.Body>
-                            </MTable>
+                            </MTable>}
                         </>}
                     </>}
 

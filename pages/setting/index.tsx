@@ -4,10 +4,11 @@ import FileSaver from 'file-saver';
 import { useRouter } from 'next/router';
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Accordion, AccordionContent, AccordionTitle, Dropdown, Segment } from "semantic-ui-react";
+import { Accordion, AccordionContent, AccordionTitle, Segment } from "semantic-ui-react";
 import styled from "styled-components";
 import Btn from "../../components/Btn";
 import { MCard } from '../../components/MCard';
+import MDropdown from '../../components/MDropdown';
 import ModalNewKey from "../../components/modal/ModalNewKey";
 import PageUserSideLayout from '../../components/PageUserSideLayout';
 import { AppContext } from "../../lib/AppContext";
@@ -25,53 +26,34 @@ import { useFiles, WalletName } from "../../lib/wallet/hooks";
 import { finalTxSignAndSend, sleep } from '../../lib/wallet/tools';
 
 
-const BindTypeDropdown = styled(Dropdown)`
-    &.ui.dropdown {
+const BindTypeDropdown = styled(MDropdown)`
+    &.mdropdown {
+      display: inline-block;
+      vertical-align: top;
       width: 100px !important;
-      min-width: unset !important;
       border-radius: 8px !important;
       border: 1px solid #999999 !important;
-      box-shadow: unset !important;
       margin-right: 8px !important;
       line-height: 40px;
       height: 40px;
       padding: 0 30px 0 14px;
-      .icon {
-        position: absolute;
-        right: 11px;
-        top: 10px;
-      }
-      
       .text {
-        font-size: 14px;
+        font-size: 14px !important;
+        line-height: 40px !important;
         font-weight: 500 !important;
         color: var(--main-color) !important;
         font-family: OpenSans-Medium sans-serif !important;
       }
+      .dropIcon {
+        position: absolute;
+        right: 11px;
+        top: 12px;
+      }
 
-      .menu {
-        background: #FFFFFF;
-        box-shadow: 0 0.57rem 1.43rem 0 rgba(0, 0, 0, 0.1) !important;
-        border-radius: 0.57rem !important;
-        border: 1px solid #EEEEEE !important;
-        padding: unset !important;
-        top: 100%;
-
+      .options {
         .item {
-          padding: 14px 11px !important;
-          border-radius: unset !important;
-          border-top: 1px solid #EEEEEE;
-          font-weight: 500;
-          color: var(--main-color) !important;
-          font-family: OpenSans-Medium sans-serif;
-
-          &:active {
-            background-color: #EEEEEE;
-          }
-        }
-
-        .item:first-child {
-          border-top: unset !important;
+          line-height: 24px;
+          padding: 4px 20px;
         }
       }
     }
