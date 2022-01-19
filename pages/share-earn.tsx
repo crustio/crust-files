@@ -19,8 +19,7 @@ import { useGetDepost } from "../lib/hooks/useGetDeposit";
 import { useToggle } from "../lib/hooks/useToggle";
 import { applyGrandDraw, getEarnRewards, getGrandApplyState, getGrandDraw, getLuckyNebie, getNetworkState, getShareEarnConfig } from "../lib/http/share_earn";
 import { useAutoUpdateToStore } from "../lib/initAppStore";
-import mDayjs from "../lib/mDayjs";
-import { cutEnd, docsUrl, formatCRU, getFormatValue, isSameCrustAddress, shortStr } from "../lib/utils";
+import { cutEnd, formatCRU, getFormatValue, isSameCrustAddress, locationUrl, shortStr } from "../lib/utils";
 export interface Props {
   className?: string
 }
@@ -54,17 +53,19 @@ const InviteBonusTitle = styled.div`
     color: var(--primary-color);
   }
 `
-
-const DetailedRules = styled.a`
-  position: absolute;
-  right: 2rem;
-  bottom: 2rem;
+const MLink = styled.a`
   white-space: nowrap;
   display: inline-block;
   font-size: 1rem;
   line-height: 1.36rem;
   color: var(--main-color);
   text-decoration: underline;
+`
+
+const DetailedRules = styled(MLink)`
+  position: absolute;
+  right: 2rem;
+  bottom: 2rem;
 `
 
 const You = styled.div`
@@ -321,6 +322,7 @@ function Index(props: Props) {
     return !!(user.account && granDraw && granDraw.members && granDraw.members
       .find(item => isSameCrustAddress(item.address, user.account)))
   }, [granDraw, user.account])
+
   const bestNumFinlized = useCall<BlockNumber>(api?.derive?.chain?.bestNumberFinalized);
   const [bestNumberFinalized, setBNF] = useState(0)
   useEffect(() => {
@@ -380,24 +382,14 @@ function Index(props: Props) {
   }, [granDraw, depositDto])
   const exHash = useMemo(() => depositDto?.extrinsic_hash || '-', [depositDto])
   const cutExHash = useMemo(() => cutEnd(exHash, matchCount), [matchCount, exHash])
-  // 未开启
-  const GrandStat0 = granDraw && granDraw.drawState === 0
-  // 已开启（可参与或已参与）
-  const GrandStat1 = granDraw && granDraw.drawState === 1
-  // 已开奖
-  const GrandStat2 = granDraw && granDraw.drawState === 2
-  const showGrandDraw = (GrandStat0 || GrandStat1 || GrandStat2) && !loadingGrandDraw
 
-  const [grandApplyState, doGetGrandApplyState] = useGet(() => getGrandApplyState(account), [account, isCrust, GrandStat1])
-  const showSignUpGrandDraw = isPremiumUser && GrandStat1
+  const hash = getStrValue(granDraw, 'grandDraw.blockHash') as string
+  const isMatched = useMemo(() => {
+    if (hash && myTicket) return hash.endsWith(myTicket)
+    return false
+  }, [hash, myTicket])
+  const [grandApplyState, doGetGrandApplyState, grandApplyLoading] = useGet(() => getGrandApplyState(account), [account, isCrust])
   const grandAppled = grandApplyState && grandApplyState.applyed
-  const grandExpireTime = useMemo(() => {
-    if (!granDraw || !bestNumberFinalized) {
-      return '--'
-    }
-    const offS = (granDraw.grandDraw.expireBlock - bestNumberFinalized) * 6
-    return mDayjs.utc().add(offS, 'second').format("YYYY-MM-DD hh:mm UTC")
-  }, [granDraw, bestNumberFinalized])
   const offTime = useMemo(() => {
     if (!granDraw || !bestNumberFinalized) {
       return 0
@@ -407,6 +399,15 @@ function Index(props: Props) {
   const grandExpireCountdown = useCountdown(offTime)
   const totalPending = getFormatValue(rewards, 'total.pending')
   const disabledClaimRewards = !uClaimRewards.ready || !isPremiumUser || onGoingClaim || !rewards || totalPending === '-' || totalPending === '0'
+
+  // 未开启
+  const GrandStat0 = granDraw && granDraw.drawState === 0
+  // 已开启（可参与或已参与）
+  const GrandStat1 = granDraw && granDraw.drawState === 1
+  // 已开奖
+  const GrandStat2 = granDraw && (granDraw.drawState === 2 || granDraw.drawState === 3)
+  const showGrandDraw = (GrandStat0 || GrandStat1 || GrandStat2) && !loadingGrandDraw && !grandApplyLoading
+  const showSignUpGrandDraw = isPremiumUser && GrandStat1
 
   const _clickSignUpGrandDraw = async () => {
     if (!account || !isCrust || !isPremiumUser || grandAppled) return
@@ -475,13 +476,17 @@ function Index(props: Props) {
       <PixelBtn1 className="top_btn">Invite Bonus</PixelBtn1>
       <EarnItemTip>1,000,000<br />CRU</EarnItemTip>
       <div className="left">
-        <InviteBonusTitle>Invite friends to Crust<br />Files and earn <span>CRU</span>.</InviteBonusTitle>
+        <InviteBonusTitle>
+          Invite friends to Crust<br />
+          Files and earn <span>CRU</span>.<br />
+          <MLink target={'_blank'} href={locationUrl('/invite_bonus_guide')}>How to invite?</MLink>
+        </InviteBonusTitle>
       </div>
       <You />
       <YouComment>Get <span>{youGet} CRU</span> Reward</YouComment>
       <YourFriend />
       <YourFriendComment>Get <span>{youFriendGet} CRU</span> Discount on<br />Premium User Deposit</YourFriendComment>
-      <DetailedRules target={'_blank'} href={docsUrl('/docs/CrustFiles_ShareandEarn/#invite_bonus')}>Detailed Rules</DetailedRules>
+      <DetailedRules target={'_blank'} href={locationUrl('/docs/CrustFiles_ShareandEarn/#invite_bonus')}>Detailed Rules</DetailedRules>
     </PixelBoard>
 
     <PixelBoard className="earn_item">
@@ -502,7 +507,7 @@ function Index(props: Props) {
           Best chance: <span>{shortStr(getStrValue(luckyNebie, 'memberAddress'), 12)}</span>
         </div>
       </div>
-      <DetailedRules target={'_blank'} href={docsUrl('/docs/CrustFiles_ShareandEarn/#lucky_newbie')}>Detailed Rules</DetailedRules>
+      <DetailedRules target={'_blank'} href={locationUrl('/docs/CrustFiles_ShareandEarn/#lucky_newbie')}>Detailed Rules</DetailedRules>
     </PixelBoard>
 
     {
@@ -554,12 +559,12 @@ function Index(props: Props) {
             </div>}
           {
             GrandStat2 && <div>
-              Block Hash of #{getFormatValue(granDraw, 'grandDraw.expireBlock')}: <span>{getStrValue(granDraw, 'grandDraw.blockHash')}</span><br />
+              Block Hash of #{getFormatValue(granDraw, 'grandDraw.expireBlock')}: <span>{hash}</span><br />
               Winning Condition: <span>The last {getStrValue(granDraw, 'grandDraw.matchCount')} digits match</span><br />
-              My Status: <span>{isGrandDrawWiner ? 'You are the Winner!' : 'Not Matched'}</span>
+              My Status: <span>{isGrandDrawWiner ? 'You are the Winner!' : !isMatched ? 'Not Matched' : 'Not Signed Up'}</span>
             </div>}
         </div>
-        <DetailedRules target={'_blank'} href={docsUrl('/docs/CrustFiles_ShareandEarn/#grand_draw')}>Detailed Rules</DetailedRules>
+        <DetailedRules target={'_blank'} href={locationUrl('/docs/CrustFiles_ShareandEarn/#grand_draw')}>Detailed Rules</DetailedRules>
       </PixelBoard>}
 
     <PixelBoard className="earn_item">
@@ -571,6 +576,7 @@ function Index(props: Props) {
           Lucky Newbie: <span>{getFormatValue(rewards, 'depositReward.total')}</span> CRU (<span>{getFormatValue(rewards, 'depositReward.claimed')}</span> CRU Claimed)<br />
           Grand Draw: <span>{getFormatValue(rewards, 'grandDraw.total')}</span> CRU (<span>{getFormatValue(rewards, 'grandDraw.claimed')}</span> CRU  Claimed)
         </div>
+        {isCrust && <MLink style={{ marginTop: '1rem' }} target={'_blank'} href={`${locationUrl('/rewards_history/')}?account=${user.account}`}>Check more detailed information & historical records about rewards</MLink>}
       </Rewards>
       <ClaimRewards>
         <M_PixelBtn disabled={disabledClaimRewards} content={onGoingClaim ? 'Ongoing Claim...' : 'Claim Rewards'} onClick={_clickClaimRewards} />
@@ -584,7 +590,7 @@ function Index(props: Props) {
         }
 
       </ClaimRewards>
-      <DetailedRules target={'_blank'} href={docsUrl('/docs/CrustFiles_ShareandEarn/#claim_rewards')}>Learn More</DetailedRules>
+      <DetailedRules target={'_blank'} href={locationUrl('/docs/CrustFiles_ShareandEarn/#claim_rewards')}>Learn More</DetailedRules>
     </PixelBoard>
   </PageUserSideLayout>
 }

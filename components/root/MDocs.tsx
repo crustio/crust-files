@@ -4,6 +4,7 @@ import Head from "next/head";
 import { useRouter } from 'next/router';
 import React from 'react';
 import styled from "styled-components";
+import { HeadFiles } from '../comom/HeadFiles';
 import { BaseProps } from '../types';
 
 interface Menu {
@@ -25,9 +26,7 @@ function _MDocs({ Component, pageProps, className }: AppProps & BaseProps) {
         <Head>
             <title>{'Crust Files Docs'}</title>
         </Head>
-        <div className="docs_head">
-            <img className="logo" src="/images/logo_22x.png" />
-        </div>
+        <HeadFiles/>
         <div className="docs_panel">
             <div className="left_menu">
                 {menus.map((m,index) =>
@@ -46,18 +45,7 @@ function _MDocs({ Component, pageProps, className }: AppProps & BaseProps) {
 
 export const MDocs = styled(_MDocs)`
     font-family: ---apple-system, BlinkMacSystemFont, "微软雅黑", 'Open Sans', sans-serif;
-    .docs_head{
-        width: 100vw;
-        height: 68px;
-        background-color: black;
-        .logo {
-            display: inline-block;
-            height: 26px;
-            width: auto;
-            margin-top: 21px;
-            margin-left: 28px;
-        }
-    }
+
     .docs_panel {
         display: flex;
         width:  100vw;

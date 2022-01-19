@@ -1,9 +1,9 @@
 import React, {useCallback, useState} from "react";
 import {Input, Modal, ModalProps} from "semantic-ui-react";
-import {parseUserCrypto, UserCrypto} from "../lib/crypto/useUserCrypto";
+import {parseUserCrypto, UserCrypto} from "../../lib/crypto/useUserCrypto";
 import styled from "styled-components";
-import Btn from "./Btn";
-import {WrapAlert} from "../lib/initAlert";
+import Btn from "../Btn";
+import {WrapAlert} from "../../lib/initAlert";
 
 export interface Props extends ModalProps {
   onSuccess: (nUc: UserCrypto) => void,

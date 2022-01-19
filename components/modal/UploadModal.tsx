@@ -6,15 +6,15 @@ import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, Modal, Progress, Radio } from 'semantic-ui-react';
 import styled from "styled-components";
-import { WrapUserCrypto } from "../lib/crypto/useUserCrypto";
-import { useToggle } from "../lib/hooks/useToggle";
-import { report } from '../lib/http/report';
-import { useAuthGateway, useAuthPinner } from '../lib/useAuth';
-import { useUpload } from '../lib/useUpload';
-import { WrapLoginUser } from '../lib/wallet/hooks';
-import { FileInfo, SaveFile } from '../lib/wallet/types';
-import Btn from "./Btn";
-import MDropdown from "./MDropdown";
+import { WrapUserCrypto } from "../../lib/crypto/useUserCrypto";
+import { useToggle } from "../../lib/hooks/useToggle";
+import { report } from '../../lib/http/report';
+import { useAuthGateway, useAuthPinner } from '../../lib/useAuth';
+import { useUpload } from '../../lib/useUpload';
+import { WrapLoginUser } from '../../lib/wallet/hooks';
+import { FileInfo, SaveFile } from '../../lib/wallet/types';
+import Btn from "../Btn";
+import MDropdown from "../MDropdown";
 
 
 const Contribute = styled.div`

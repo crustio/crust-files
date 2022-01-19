@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
+import Device from 'device.js';
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import { MOBILE_WIDTH } from "../lib/config";
 import { useContextWrapLoginUser } from "../lib/wallet/hooks";
 
 const NO_CHECK_USER = [
@@ -12,9 +12,10 @@ export default function Redirect(props: { children: any }) {
   const wUser = useContextWrapLoginUser();
   const router = useRouter();
   useEffect(() => {
-    if (router.pathname !== '/mobile' && window.innerWidth <= MOBILE_WIDTH) {
+    const isMobile = new Device().mobile
+    if (router.pathname !== '/mobile' && isMobile) {
       router.replace('/mobile')
-    } else if (router.pathname === '/mobile' && window.innerWidth > MOBILE_WIDTH) {
+    } else if (router.pathname === '/mobile' && !isMobile) {
       router.replace('/')
     }
   }, [router])

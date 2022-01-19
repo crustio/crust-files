@@ -9,7 +9,7 @@ import { Links } from "../components/Links";
 // import BgAnim from '../components/effect/BgAnim';
 import Logo from "../components/Logo";
 import { AppContext } from "../lib/AppContext";
-import { CrustWalletDownUrl } from "../lib/config";
+import { CrustGetCRU, CrustWalletDownUrl } from "../lib/config";
 import useParallax from "../lib/hooks/useParallax";
 import { report } from "../lib/http/report";
 import { openDocs } from "../lib/utils";
@@ -108,7 +108,7 @@ function Home({ className }: { className?: string }) {
   }, [])
 
   const _onClickCrustGetCru = useCallback(() => {
-    window.open('https://swap.crustapps.net', '_blank')
+    window.open(CrustGetCRU, '_blank')
   }, [])
 
   const _onClickPolkadotJs = useCallback(async () => {

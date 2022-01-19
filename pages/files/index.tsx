@@ -5,7 +5,7 @@ import { BtnUpload } from "../../components/BtnUpload";
 import FilesTable from "../../components/FilesTable";
 import { OnDrapDropFrame } from "../../components/OnDrapDropFrame";
 import PageUserSideLayout from "../../components/PageUserSideLayout";
-import UploadModal from "../../components/UploadModal";
+import UploadModal from "../../components/modal/UploadModal";
 import { useUserCrypto } from "../../lib/crypto/useUserCrypto";
 import { useGetDepost } from "../../lib/hooks/useGetDeposit";
 import useInputFile from "../../lib/hooks/useInputFile";
