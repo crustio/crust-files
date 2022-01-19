@@ -86,10 +86,11 @@ export default React.memo<Props>(styled(ModalWinner)`
   }
 
   .content {
+    overflow: auto;
+    height: 500px;
     padding: 1rem !important;
     border-bottom-right-radius: 0.6rem !important;
     border-bottom-left-radius: 0.6rem !important;
-
     /* .btns {
       padding-top: 2.3rem;
 
