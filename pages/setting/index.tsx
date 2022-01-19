@@ -30,7 +30,7 @@ const BindTypeDropdown = styled(MDropdown)`
     &.mdropdown {
       display: inline-block;
       vertical-align: top;
-      width: 100px !important;
+      width: 130px !important;
       border-radius: 8px !important;
       border: 1px solid #999999 !important;
       margin-right: 8px !important;
@@ -38,6 +38,7 @@ const BindTypeDropdown = styled(MDropdown)`
       height: 40px;
       padding: 0 30px 0 14px;
       .text {
+        white-space: nowrap;
         font-size: 14px !important;
         line-height: 40px !important;
         font-weight: 500 !important;
@@ -69,7 +70,7 @@ const BindAddressTypes: BindAddressType[] = ['eth', 'polygon', 'bsc']
 const OptionsMap: { [k in BindAddressType]: { text: string, value: BindAddressType } } = {
   'eth': { value: 'eth', text: 'ETH' },
   'polygon': { value: 'polygon', text: 'Polygon' },
-  'bsc': { value: 'bsc', text: 'BSC' },
+  'bsc': { value: 'bsc', text: 'BSC (BEP20)' },
 }
 
 const ChainTypeMap: { [k in number]: string } = {
@@ -324,7 +325,7 @@ function Index(props: Props) {
             onChange={_onChangeEthAddress} />
           {exAddressError && <span className="input-EthError">{exAddressError}</span>}
           <br />
-          <Btn disabled={disableBindEth} className='btn' style={{ width: 514, height: 40 }} onClick={_onClickBindEth}>Submit</Btn>
+          <Btn disabled={disableBindEth} className='btn' style={{ width: 544, height: 40 }} onClick={_onClickBindEth}>Submit</Btn>
           {!isPremiumUser && <span className='submit-tip'>Get Premium User to bind your AirDrop addresses.</span>}
         </>}
     </MCard>
