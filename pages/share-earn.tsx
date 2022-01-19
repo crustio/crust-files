@@ -448,7 +448,7 @@ function Index(props: Props) {
             <div className="total">My Total Rewards:</div>
             <div className="total_reward"><span>{getFormatValue(rewards, 'total.total')}</span> CRU</div>
           </> : <div className="networks">
-            {/* <div>Total User: <span>{getFormatValue(networkState, 'totalUser')}</span></div> */}
+            <div>Total User: <span>{getFormatValue(networkState, 'totalUser')}</span></div>
             <div>Premium User: <span>{getFormatValue(networkState, 'premiumUser')}</span></div>
             <div>Deposit Pool: <span>{getFormatValue(networkState, 'depositPool')} CRU</span></div>
             <div>Rewards Distributed: <span>{getFormatValue(networkState, 'rewardsDistributed')} CRU</span></div>
