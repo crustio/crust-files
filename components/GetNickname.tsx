@@ -6,15 +6,16 @@ import styled from "styled-components";
 import { useApp } from "../lib/AppContext";
 import { report } from '../lib/http/report';
 import { checkNickName, getMemberByAccount, getNickNameByAccount, setMyNickName } from '../lib/http/share_earn';
+import { getErrorMsg } from '../lib/utils';
 import { useContextWrapLoginUser } from "../lib/wallet/hooks";
 import { BaseProps } from "./types";
 import User from './User';
-
+// import { useGoogleReCaptcha } from 'react-google-recaptcha-v3'
 
 function _GetNickname(props: BaseProps) {
     const { className } = props
 
-    const { loading } = useApp()
+    const { loading, recaptcha } = useApp()
     const wUser = useContextWrapLoginUser()
     const { account, wallet, member } = wUser
     useEffect(() => {
@@ -37,13 +38,19 @@ function _GetNickname(props: BaseProps) {
         setNickName(e.target.value)
     }
     const _onClickContinue = async () => {
+        setErrorInfo('')
         if (nickStat !== 1) return
         try {
             const msg = wUser.account
             const signature = await wUser.sign(msg, wUser.account)
             const perSignData = `crust-${msg}:${signature}`;
-            const base64Signature = window.btoa(perSignData);
-            const member = await setMyNickName(nickName, base64Signature)
+            const base64Signature = window.btoa(perSignData)
+            const token = await recaptcha.getToken()
+            if (!token) return
+            loading.show()
+            // console.info('sign:', base64Signature)
+            // console.info('totke:', token)
+            const member = await setMyNickName(nickName, token, base64Signature)
             wUser.setMember(member)
             wUser.setNickName(member.nick_name)
             report({
@@ -53,8 +60,10 @@ function _GetNickname(props: BaseProps) {
                 data: {}
             })
             setNickName("")
+            loading.hide()
         } catch (e) {
-            setErrorInfo('This name is occupied!')
+            setErrorInfo(getErrorMsg(e))
+            loading.hide()
         }
     }
     //check nickname  (0: init)(-1: false)(1: true)

@@ -63,7 +63,7 @@ Go to Premium User page, and click Redeem Deposit button. An on-chain request tr
 
 Redeem Deposit will be processed on request from the blockchain. Please wait and check your wallet balance.  
 
-### Appendix: How to Deposit with Crust Network Extrinsics
+### Appendix 1: How to Deposit with Crust Network Extrinsics
 
 If you want to make a valid **Deposit Transaction** on your own (outside of Crust Files frontend), follow the instructions:  
 
@@ -86,6 +86,27 @@ The second one is a `system.remark(_remark)` with contents:
 }
 ```
 If you have an inviter, put inviter's Crust address in the "share_from" field.
+
+### Appendix 2: How to Claim Mis-Deposit Back
+
+Mis-deposit refers to the deposit transactions that do not meet our requirement.  
+
+For example, the transaction which contains inssuficient amount of CRU as required may leads to an invalid deposit.  
+
+If you want to claim back your funds transferred with mis-deposits, please follow these instructions:
+
+Send a `system.remark(_remark)` with contents
+
+```
+{
+  "scope": "crustFiles",
+  "env": "prod",
+  "action": "claimMisDeposit",
+}
+```
+from the same Crust address that has sent mis-deposit transactions.
+
+You will receive all of the mis-deposited funds (should be more than 0.1 CRU) within a single transfer with a charge of 0.1 CRU claim fee.
 
 
 

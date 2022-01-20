@@ -39,8 +39,8 @@ export function checkNickName(nickName: string, config?: AxiosRequestConfig): Pr
         .catch(() => false)
 }
 
-export function setMyNickName(nickName: string, signature: string) {
-    return reqWithAuth<Member>(signature, '/auth/signUp', { nickName })
+export function setMyNickName(nickName: string, verifyToken: string, signature: string) {
+    return reqWithAuth<Member>(signature, '/auth/signUp', { nickName, verifyToken })
 }
 
 export function getMemberByAccount(address: string) {
@@ -96,8 +96,8 @@ export function getGrandApplyState(address: string) {
         .then(getData)
 }
 
-export function applyGrandDraw(signature: string) {
-    return reqWithAuth(signature, '/auth/member/grand/apply')
+export function applyGrandDraw(verifyToken: string, signature: string) {
+    return reqWithAuth(signature, '/auth/member/grand/apply', { verifyToken })
 }
 
 export function getNft(address: string) {

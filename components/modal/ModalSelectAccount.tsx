@@ -7,6 +7,7 @@ import { shortStr } from "../../lib/utils";
 import { useGet } from "../../lib/hooks/useGet";
 import { getNickPairList } from "../../lib/http/share_earn";
 import _ from 'lodash';
+import { NickPair } from "../../lib/http/types";
 export interface Props extends ModalProps {
   toggleOpen: (open?: boolean) => void,
   user: WrapLoginUser,
@@ -31,7 +32,14 @@ function ModalSelectAccount(props: Props) {
     toggleOpen(false)
   }, [account, user])
 
-  const [pairs] = useGet(() => getNickPairList(user.accounts), [user.accounts, user.wallet === 'crust'])
+  const [pairs] = useGet(() => {
+    if (user.accounts.length > 50) {
+      const chunks = _.chunk(user.accounts, 50)
+      return Promise.all(chunks.map(acc => getNickPairList(acc)))
+        .then(data => _.flatten(data) as NickPair[])
+    }
+    return getNickPairList(user.accounts)
+  }, [user.accounts, user.wallet === 'crust'])
   const options: DropdownItemProps[] = useMemo(() => {
     const pairsMap = _.keyBy(pairs || [], 'address')
     return user.accounts.map(item => ({

@@ -83,3 +83,4 @@ export const CrustGetCRU = 'https://swap.crustapps.net';
 // beta prod
 export const ShareEarnENV = IS_DEV ? 'beta' : 'prod'
 export const ShareEarnBaseUrl = IS_DEV ? 'https://files-api.decoo.io' : 'https://api.crustfiles.com'
+export const RecaptchKey = IS_DEV ? 'f8bd392f-2ff5-4dc7-bedd-1be9f175885b' : '09ef6613-21f0-4fb6-ab1f-ded9bedb291e'
