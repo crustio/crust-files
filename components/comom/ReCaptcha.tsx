@@ -4,6 +4,7 @@ import { Dimmer, Loader } from "semantic-ui-react";
 import styled from "styled-components";
 import { useApp } from "../../lib/AppContext";
 import { RecaptchKey } from '../../lib/config';
+import Btn from '../Btn';
 import { BaseProps } from "../types";
 
 export type Props = BaseProps
@@ -14,6 +15,7 @@ function _ReCaptcha(props: Props) {
     const _onErrored = (error: string) => {
         alert.error(error)
     }
+    const _onCancel = () => { _onChange('') }
     return <>
         {
             showReCaptcha && <div
@@ -22,7 +24,7 @@ function _ReCaptcha(props: Props) {
                     display: 'flex',
                     position: 'fixed',
                     zIndex: 100000,
-                    background: '#ffffff',
+                    background: 'rgba(0,0,0,0.4)',
                     justifyContent: 'center',
                     alignItems: 'center',
                     left: 0,
@@ -30,22 +32,35 @@ function _ReCaptcha(props: Props) {
                     width: '100vw',
                     height: '100vh'
                 }}>
-                {
-                    loadingScript && <Dimmer active={true} inverted style={{ position: 'fixed', left: 0, top: 0, width: '100vw', height: '100vh' }}>
-                        <Loader size='large' inverted content={'Loading'} />
-                    </Dimmer>
-                }
-                {
-                    <HCaptcha
-                        languageOverride="en"
-                        sitekey={RecaptchKey}
-                        onLoad={_onLoaded}
-                        onVerify={_onChange}
-                        onError={_onErrored}
-                        onExpire={_onExpired}
-                    />
-                }
-
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    background: '#ffffff',
+                    borderRadius: 20,
+                    width: 500,
+                    height: 300,
+                }}>
+                    {
+                        loadingScript && <Dimmer active={true} inverted style={{ position: 'fixed', left: 0, top: 0, width: '100vw', height: '100vh' }}>
+                            <Loader size='large' inverted content={'Loading'} />
+                        </Dimmer>
+                    }
+                    {
+                        <HCaptcha
+                            languageOverride="en"
+                            // size='compact'
+                            sitekey={RecaptchKey}
+                            onLoad={_onLoaded}
+                            onVerify={_onChange}
+                            onError={_onErrored}
+                            onExpire={_onExpired}
+                        />
+                    }
+                    <div style={{ height: 40 }} />
+                    <Btn content="Cancel" onClick={_onCancel} />
+                </div>
             </div>
         }
     </>

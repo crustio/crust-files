@@ -418,6 +418,10 @@ function Index(props: Props) {
       const perSignData = `crust-${msg}:${signature}`;
       const base64Signature = window.btoa(perSignData);
       const token = await recaptcha.getToken()
+      if (!token) {
+        loading.hide()
+        return
+      }
       await applyGrandDraw(token, base64Signature)
       doGetGrandApplyState()
       loading.hide()

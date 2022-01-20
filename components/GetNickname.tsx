@@ -46,7 +46,8 @@ function _GetNickname(props: BaseProps) {
             const perSignData = `crust-${msg}:${signature}`;
             const base64Signature = window.btoa(perSignData)
             const token = await recaptcha.getToken()
-            if (!token) return setErrorInfo('ReCaptcha Error')
+            if (!token) return
+            loading.show()
             // console.info('sign:', base64Signature)
             // console.info('totke:', token)
             const member = await setMyNickName(nickName, token, base64Signature)
@@ -59,8 +60,10 @@ function _GetNickname(props: BaseProps) {
                 data: {}
             })
             setNickName("")
+            loading.hide()
         } catch (e) {
             setErrorInfo(getErrorMsg(e))
+            loading.hide()
         }
     }
     //check nickname  (0: init)(-1: false)(1: true)

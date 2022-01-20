@@ -24,10 +24,8 @@ export function initReCaptcha(): WrapReCaptcha {
     }
     const _onChange = (t: string) => {
         setToken(t)
-        if (t) {
-            if (callWrap.call) callWrap.call(t)
-            toggleShow(false)
-        }
+        if (callWrap.call) callWrap.call(t)
+        toggleShow(false)
     }
     const _onExpired = () => { setToken(undefined) }
     return {
