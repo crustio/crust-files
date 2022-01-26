@@ -6,47 +6,54 @@ import { Pixel, PixelBtn } from '../../components/effect/Pixels';
 import { RowFlex } from '../../components/layout';
 import { Links } from '../../components/Links';
 import { BaseProps } from "../../components/types";
+import { useApp } from '../../lib/AppContext';
 import { useClipboard } from '../../lib/hooks/useClipboard';
+import { useSafeState } from '../../lib/hooks/useSafeState';
 import { report } from '../../lib/http/report';
+import { getShortInfo } from '../../lib/http/share_earn';
 import { ShareOptions } from '../../lib/types';
+import { getErrorMsg } from '../../lib/utils';
 
 function _share(props: BaseProps) {
     const { className } = props
     const { query, push } = useRouter()
-    const options = useMemo<ShareOptions>(() => {
-        const hexStr = query.options as string
-        let options: ShareOptions = {
-            name: 'file',
-            encrypted: false,
-            isDir: false,
-            gateway: 'https://gw.crustapps.net',
-        }
-        if (hexStr) {
-            console.info('hexStr:', hexStr)
+    const { alert, loading } = useApp()
+    const [uiData, setUiData] = useSafeState<{ options: ShareOptions, cid: string }>()
+    const { options, cid } = uiData || {}
+    useEffect(() => {
+        if (query.cid) {
+            const hexStr = query.options as string
             const opt = JSON.parse(hexStr) as ShareOptions
-            options = { ...options, ...opt }
+            setUiData({ options: opt, cid: query.cid as string })
         }
-        return options
+        if (query.code) {
+            loading.show()
+            getShortInfo(query.code as string)
+                .then(v => setUiData({ ...v }))
+                .catch(e => alert.error(getErrorMsg(e)))
+                .then(loading.hide)
+        }
     }, [query])
     useEffect(() => {
-        if (query.cid && options) {
+        if (cid && options) {
             report({
                 type: 3,
                 walletType: options.fromWallet,
                 address: options.fromAccount,
                 data: {
-                    cid: query.cid,
+                    cid: cid,
                     fileType: options.isDir ? 1 : 0,
                     strategy: options.encrypted ? 1 : 0,
                     shareType: 1
                 }
             })
         }
-    }, [query.cid])
+    }, [cid, options])
     const link = useMemo(() => {
+        if (!options || !cid) return ''
         const base = options.gateway || "https://gw.crustapps.net"
-        return `${base}/ipfs/${query.cid}?filename=${options.name}`
-    }, [options, query.cid])
+        return `${base}/ipfs/${cid}?filename=${options.name}`
+    }, [options, cid])
     const _onClickDown = () => {
         window.open(link, "_blank")
     }
@@ -54,34 +61,38 @@ function _share(props: BaseProps) {
     const _onClickCopy = () => { copy(window.location.href) }
     const _onClickToCrustFiles = () => push('/')
     // const _onClickAboutCrustFiles = () => openDocs('/docs/CrustFiles_Welcome')
-    const from = options.from ? options.from : ''
+    const { from } = options || {}
 
     return <div className={classNames(className)}>
         <div className="share--panel">
             <img className="logo" src="/images/logo_12x.png" />
             <div className="share--flex1" />
             <div className="share-info">
-                <div className="title">
-                    {from && <><span>{from}</span><br /></>}
-                    is sharing something<br />
-                    from Crust Files.
-                </div>
-                <div className='link'>{`File CID: ${query.cid}`}</div>
-                <RowFlex>
-                    <PixelBtn
-                        onClick={_onClickDown}
-                        height={'4.29rem'}
-                        content="Open File"
-                    />
-                    <div style={{ width: '2.2857rem' }} />
-                    <PixelBtn
-                        onClick={_onClickCopy}
-                        color='#E46A11'
-                        fillColor='#FF8D00'
-                        height={'4.29rem'}
-                        content="Copy Link"
-                    />
-                </RowFlex>
+                {
+                    uiData && <>
+                        <div className="title">
+                            {from && <><span>{from}</span><br /></>}
+                            is sharing something<br />
+                            from Crust Files.
+                        </div>
+                        <div className='link'>{`File CID: ${cid}`}</div>
+                        <RowFlex>
+                            <PixelBtn
+                                onClick={_onClickDown}
+                                height={'4.29rem'}
+                                content="Open File"
+                            />
+                            <div style={{ width: '2.2857rem' }} />
+                            <PixelBtn
+                                onClick={_onClickCopy}
+                                color='#E46A11'
+                                fillColor='#FF8D00'
+                                height={'4.29rem'}
+                                content="Copy Link"
+                            />
+                        </RowFlex>
+                    </>
+                }
                 <div className='go-to' onClick={_onClickToCrustFiles}>Go to Crust Files</div>
             </div>
             <div className="share--flex1" />

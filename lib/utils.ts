@@ -105,7 +105,7 @@ export const unHex = (hex: string) => {
   return Buffer.from(hex, 'hex').toString('utf-8')
 }
 
-export const getErrorMsg = (error: any, def = 'Network Error') => {
+export const getErrorMsg = (error: any, def = 'Network Error'): string => {
   if(!error) return def
   if(typeof error === 'string') return error
   if(typeof error.message === 'string' ) return error.message

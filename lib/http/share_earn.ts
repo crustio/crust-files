@@ -1,6 +1,7 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { ShareEarnBaseUrl } from '../config';
-import { BindAddress, CommonResponse, Deposit, GrandApplyState, GrandDraw, LuckyNebie, Member, NetworkState, NFT, NickPair, Reward, Rewards, RewardsHistory, ShareEarnConfig, Winner } from './types';
+import { ShareOptions } from '../types';
+import { BindAddress, CommonResponse, Deposit, GrandApplyState, GrandDraw, LuckyNebie, Member, NetworkState, NFT, NickPair, Reward, Rewards, RewardsHistory, ShareEarnConfig, ShortInfo, Winner } from './types';
 // import _ from 'lodash';
 
 const base_url = ShareEarnBaseUrl
@@ -126,5 +127,15 @@ export function getNickPairList(addressList: string[]) {
 
 export function getGrandDrawWinners(id: number) {
     return axios.get<CommonResponse<Winner[]>>(createUrl(`/common/grandDraw/${id}/winners`))
+        .then(getData)
+}
+
+export function createShortUrl(cid: string, options: ShareOptions) {
+    return axios.post<CommonResponse<string>>(createUrl(`/common/calculateShortLinkHash`), { cid, options })
+        .then(getData)
+}
+
+export function getShortInfo(code: string) {
+    return axios.get<CommonResponse<ShortInfo>>(createUrl(`/common/shortLinkInfo/${code}`))
         .then(getData)
 }

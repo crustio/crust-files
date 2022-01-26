@@ -1,14 +1,15 @@
 import React, { useCallback } from "react";
-import { Segment } from "semantic-ui-react";
+import { Popup, Segment } from "semantic-ui-react";
 import styled from "styled-components";
 import { BtnUpload } from "../../components/BtnUpload";
 import FilesTable from "../../components/FilesTable";
+import UploadModal from "../../components/modal/UploadModal";
 import { OnDrapDropFrame } from "../../components/OnDrapDropFrame";
 import PageUserSideLayout from "../../components/PageUserSideLayout";
-import UploadModal from "../../components/modal/UploadModal";
 import { useUserCrypto } from "../../lib/crypto/useUserCrypto";
 import { useGetDepost } from "../../lib/hooks/useGetDeposit";
 import useInputFile from "../../lib/hooks/useInputFile";
+import { useFilesInfo } from "../../lib/useFilesInfo";
 import { useFiles } from "../../lib/wallet/hooks";
 import { FileInfo, SaveFile } from "../../lib/wallet/types";
 
@@ -34,6 +35,7 @@ function Index(p: { className?: string }) {
     }
     wInputFile.setFile(info)
   }
+  const { publicCount, publicSize } = useFilesInfo(wFiles)
 
   return <PageUserSideLayout path="/files" className={p.className}>
     <OnDrapDropFrame onDrop={_onDrop} />
@@ -45,8 +47,14 @@ function Index(p: { className?: string }) {
         type={'file'}
       />
       <div className={'upSlog'}>
-        <div className="title">Public</div>
-        <div className="content font-sans-regular">Your files will be just as they were meant to be. No encryption, open access for all. Great for storing and sharing non-sensitive files.</div>
+        <div>
+          <div className="title">Public</div>
+          <Popup
+            position={"top center"}
+            trigger={<span className="helper cru-fo-help-circle" />}
+            content={'Your files will be just as they were meant to be. No encryption, open access for all. Great for storing and sharing non-sensitive files.'} />
+        </div>
+        <div className="content font-sans-regular">File/Folder Stored: {publicCount}<span style={{marginLeft: '4rem'}}/>Space Usage: {publicSize}</div>
       </div>
       <BtnUpload
         onClickUpFile={wInputFile._onClickUpFile}
@@ -95,9 +103,15 @@ export default React.memo(styled(Index)`
       text-align: left;
       .title {
         display: inline-block;
-        font-size: 2.285714rem;
+        font-family: OpenSans-SemiBold;
+        font-size: 3.2857rem;
         line-height: 4.285714rem;
         border-bottom: 5px solid #92D8F7;
+      }
+      .helper {
+        font-size: 2.2rem;
+        margin-left: 1rem;
+        cursor: pointer;
       }
       .content {
         font-size: 1.7rem;

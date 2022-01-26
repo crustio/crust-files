@@ -1,8 +1,9 @@
-import {useCallback, useMemo, useState} from "react";
-
+import { useCallback, useMemo, useState } from "react";
+import _ from 'lodash';
 export interface AlertMsg {
   title?: string;
   type?: 'success' | 'info' | 'error' | 'warn',
+  modal?: boolean,
   msg: string,
 }
 
@@ -10,6 +11,7 @@ export interface WrapAlert {
   alert: (msg: AlertMsg) => void,
   alerts: AlertMsg[],
   error: (msg: string, title?: string) => void,
+  errorModal: (msg: string, title?: string) => void,
   info: (msg: string, title?: string) => void,
   warn: (msg: string, title?: string) => void,
   success: (msg: string, title?: string) => void,
@@ -22,26 +24,35 @@ const Tasks: any = {
 export function initAlert(): WrapAlert {
   const [alerts, setAlerts] = useState<AlertMsg[]>([])
   const alert = useCallback((msg: AlertMsg) => {
-    if (Tasks.last) {
-      clearTimeout(Tasks.last)
-      Tasks.last = 0
-    }
-    setAlerts(() => {
-      // return _.concat(old, msg)
-      return [msg]
+    // if (Tasks.last && !msg.modal) {
+    //   clearTimeout(Tasks.last)
+    //   Tasks.last = 0
+    // }
+    setAlerts((old) => {
+      return _.concat(old, msg)
     })
-    Tasks.last = setTimeout(() => {
-      Tasks.last = 0
-      setAlerts(() => {
-        // return _.drop(old)
-        return []
-      })
-    }, 5000)
+    if (!msg.modal) {
+      Tasks.last = setTimeout(() => {
+        Tasks.last = 0
+        setAlerts((old) => {
+          return _.drop(old)
+        })
+      }, 5000)
+    }
   }, [])
 
   const error = useCallback((msg: string, title?: string) => {
     alert({
       type: "error",
+      msg,
+      title
+    })
+  }, [alert])
+
+  const errorModal = useCallback((msg: string, title?: string) => {
+    alert({
+      type: "error",
+      modal: true,
       msg,
       title
     })
@@ -71,5 +82,5 @@ export function initAlert(): WrapAlert {
     })
   }, [alert])
 
-  return useMemo(() => ({alert, alerts, error, info, warn, success}), [alerts, alert, error, info, warn, success])
+  return useMemo(() => ({ alert, alerts, error, info, warn, success, errorModal }), [alerts, alert, error, info, warn, success, errorModal])
 }
