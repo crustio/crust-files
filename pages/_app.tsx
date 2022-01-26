@@ -1,5 +1,6 @@
 import { AppProps } from 'next/app';
 import { useRouter } from 'next/router';
+import Script from 'next/script';
 import { useEffect } from 'react';
 import TagManager from 'react-gtm-module';
 import Head from "next/head";
@@ -31,6 +32,21 @@ export default function App({ Component, ...props }: AppProps) {
         <meta name="twitter:title" content="Crust Files" />
         <meta name="twitter:description" content="Click to see what I am sharing on Crust Files - the personal Web3.0 storage application." />
         <meta name="twitter:image" content="https://gw.crustapps.net/ipfs/QmfPTVDtSGuCp2mftrZdQE4Mf5FeYT1gYTiL9xTXoSEgqz?filename=Crust%20Files.png" />
+
+        {/* Global site tag (gtag.js) - Google Analytics */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=UA-216468629-1"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'UA-216468629-1');
+          `}
+        </Script>
       </Head>
       <MApp Component={Component} {...props} />
     </>
