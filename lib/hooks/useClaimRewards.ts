@@ -63,7 +63,7 @@ export function useClaimRewards(): UseClaimRewards {
             .catch(error => {
                 const msg = getErrorMsg(error)
                 if (msg.includes('account balance too low')) {
-                    alert.modelError('account balance too low')
+                    alert.errorModal('account balance too low')
                 } else {
                     alert.error(msg)
                 }
