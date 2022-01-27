@@ -398,8 +398,8 @@ function Index(props: Props) {
   }, [granDraw, bestNumberFinalized])
   const grandExpireCountdown = useCountdown(offTime)
   const totalPending = getFormatValue(rewards, 'total.pending')
-  // const disabledClaimRewards = !uClaimRewards.ready || !isPremiumUser || onGoingClaim || !rewards || totalPending === '-' || totalPending === '0'
-  const disabledClaimRewards = !uClaimRewards.ready || onGoingClaim
+  const disabledClaimRewards = !uClaimRewards.ready || !isPremiumUser || onGoingClaim || !rewards || totalPending === '-' || totalPending === '0'
+  // const disabledClaimRewards = !uClaimRewards.ready || onGoingClaim
 
   // 未开启
   const GrandStat0 = granDraw && granDraw.drawState === 0
