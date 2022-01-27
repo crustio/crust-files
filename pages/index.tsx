@@ -363,7 +363,7 @@ function Home({ className }: { className?: string }) {
     const keys = _.keys(groupObj)
     return _.map(keys, (key) => {
       const items = groupObj[key]
-      const group = key
+      const group = key as WalletGroup['group']
       const g: WalletGroup = {
         items,
         group,
