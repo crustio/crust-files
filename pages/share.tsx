@@ -2,17 +2,17 @@ import classNames from 'classnames';
 import { useRouter } from 'next/router';
 import React, { useEffect, useMemo } from 'react';
 import styled from "styled-components";
-import { Pixel, PixelBtn } from '../../components/effect/Pixels';
-import { RowFlex } from '../../components/layout';
-import { Links } from '../../components/Links';
-import { BaseProps } from "../../components/types";
-import { useApp } from '../../lib/AppContext';
-import { useClipboard } from '../../lib/hooks/useClipboard';
-import { useSafeState } from '../../lib/hooks/useSafeState';
-import { report } from '../../lib/http/report';
-import { getShortInfo } from '../../lib/http/share_earn';
-import { ShareOptions } from '../../lib/types';
-import { getErrorMsg } from '../../lib/utils';
+import { Pixel, PixelBtn } from '../components/effect/Pixels';
+import { RowFlex } from '../components/layout';
+import { Links } from '../components/Links';
+import { BaseProps } from "../components/types";
+import { useApp } from '../lib/AppContext';
+import { useClipboard } from '../lib/hooks/useClipboard';
+import { useSafeState } from '../lib/hooks/useSafeState';
+import { report } from '../lib/http/report';
+import { getShortInfo } from '../lib/http/share_earn';
+import { ShareOptions } from '../lib/types';
+import { getErrorMsg } from '../lib/utils';
 
 function _share(props: BaseProps) {
     const { className } = props

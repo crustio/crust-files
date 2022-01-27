@@ -93,7 +93,7 @@ async function createShare(file: SaveFile, user: WrapLoginUser) {
       shareType: 0
     }
   })
-  return `${window.location.origin}/files/receive?code=${code}`
+  return `${window.location.origin}/share?code=${code}`
 }
 
 function parseStat(stat: any) {

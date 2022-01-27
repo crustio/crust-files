@@ -14,7 +14,9 @@ export interface WrapAlert {
   errorModal: (msg: string, title?: string) => void,
   info: (msg: string, title?: string) => void,
   warn: (msg: string, title?: string) => void,
+  warnModal: (msg: string, title?: string) => void,
   success: (msg: string, title?: string) => void,
+  close: (msg: AlertMsg) => void,
 }
 
 const Tasks: any = {
@@ -35,7 +37,9 @@ export function initAlert(): WrapAlert {
       Tasks.last = setTimeout(() => {
         Tasks.last = 0
         setAlerts((old) => {
-          return _.drop(old)
+          const drop = _.find(old, item => !item.modal)
+          if (drop) return _.filter(old, item => item !== drop)
+          return old
         })
       }, 5000)
     }
@@ -73,6 +77,14 @@ export function initAlert(): WrapAlert {
       title
     })
   }, [alert])
+  const warnModal = useCallback((msg: string, title?: string) => {
+    alert({
+      type: "warn",
+      modal: true,
+      msg,
+      title
+    })
+  }, [alert])
 
   const success = useCallback((msg: string, title?: string) => {
     alert({
@@ -81,6 +93,9 @@ export function initAlert(): WrapAlert {
       title
     })
   }, [alert])
+  const close = useCallback((msg: AlertMsg) => {
+    setAlerts((old) => _.filter(old, item => item !== msg))
+  }, [])
 
-  return useMemo(() => ({ alert, alerts, error, info, warn, success, errorModal }), [alerts, alert, error, info, warn, success, errorModal])
+  return useMemo(() => ({ alert, alerts, error, info, warn, success, errorModal, warnModal, close }), [alerts, alert, error, info, warn, success, errorModal, warnModal, close])
 }
