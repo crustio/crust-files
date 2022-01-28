@@ -1,3 +1,4 @@
+import { ShareOptions } from "../types";
 
 export interface CommonResponse<T> {
     code: number,
@@ -167,4 +168,9 @@ export interface NickPair {
 export interface Winner {
     extrinsicHash: string,
     memberAddress: string
+}
+
+export interface ShortInfo {
+    cid: string,
+    options: ShareOptions
 }

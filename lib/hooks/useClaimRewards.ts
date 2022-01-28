@@ -2,7 +2,7 @@ import type { Callback, ISubmittableResult, Signer } from '@polkadot/types/types
 import { useEffect, useState } from "react";
 import { useApp } from "../AppContext";
 import { ShareEarnENV } from "../config";
-import { findEvent } from "../utils";
+import { findEvent, getErrorMsg } from "../utils";
 import { useContextWrapLoginUser } from "../wallet/hooks";
 
 export interface UseClaimRewards {
@@ -61,12 +61,11 @@ export function useClaimRewards(): UseClaimRewards {
         }
         ex.signAndSend(user.account, { nonce: -1, tip: 0 }, statusCb)
             .catch(error => {
-                if (typeof error === 'string') {
-                    alert.error(error)
-                } else if (error && typeof error.message === 'string') {
-                    alert.error(error.message)
+                const msg = getErrorMsg(error)
+                if (msg.includes('account balance too low')) {
+                    alert.warnModal('Insufficient Funds!')
                 } else {
-                    console.error("Deposit:", JSON.stringify(error))
+                    alert.error(msg)
                 }
                 loading.hide()
             })

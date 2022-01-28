@@ -4,6 +4,7 @@ import { toBlob } from 'html-to-image';
 import _ from 'lodash';
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import styled from "styled-components";
+import { BindAirdrop } from '../components/BindAirdrop';
 import Btn from "../components/Btn";
 import { Badge } from '../components/effect/Badge';
 import { BadgeIcon1, BadgeIcon2 } from '../components/icons';
@@ -279,6 +280,7 @@ function Index(props: Props) {
 
       </MCard>
     }
+    <BindAirdrop />
   </PageUserSideLayout>
 }
 

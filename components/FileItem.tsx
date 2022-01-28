@@ -13,10 +13,10 @@ import { WrapUserCrypto } from "../lib/crypto/useUserCrypto";
 import { useCall } from "../lib/hooks/useCall";
 import { useClipboard } from "../lib/hooks/useClipboard";
 import { report } from "../lib/http/report";
-import { ShareOptions } from "../lib/types";
+import { createShortUrl } from "../lib/http/share_earn";
 import { useAuthGateway } from "../lib/useAuth";
-import { shortStr } from "../lib/utils";
-import { WrapLoginUser, useContextWrapLoginUser } from "../lib/wallet/hooks";
+import { getErrorMsg, shortStr } from "../lib/utils";
+import { useContextWrapLoginUser, WrapLoginUser } from "../lib/wallet/hooks";
 import { SaveFile } from "../lib/wallet/types";
 import Btn from "./Btn";
 
@@ -47,8 +47,33 @@ function createUrl(f: SaveFile, endpoints: AuthIpfsEndpoint[]) {
   return `${endpoint}/ipfs/${f.Hash}?filename=${f.Name}`;
 }
 
-function createShareOrReceiveUrl(file: SaveFile, user: WrapLoginUser, receive = false) {
-  const options: ShareOptions = {
+// function createShareOrReceiveUrl(file: SaveFile, user: WrapLoginUser, receive = false) {
+//   const options: ShareOptions = {
+//     name: file.Name,
+//     encrypted: file.Encrypted,
+//     gateway: file.UpEndpoint,
+//     fromAccount: user.account,
+//     fromWallet: user.wallet,
+//     from: user.nickName,
+//     isDir: !!file.items,
+//   }
+//   report({
+//     type: 3,
+//     walletType: user.wallet,
+//     address: user.account,
+//     data: {
+//       cid: file.Hash,
+//       fileType: file.items ? 1 : 0,
+//       strategy: file.Encrypted ? 1 : 0,
+//       shareType: 0
+//     }
+//   })
+//   const str = encodeURI(JSON.stringify(options))
+//   return receive ? `${window.location.origin}/files/receive?cid=${file.Hash}&options=${str}` : `${window.location.origin}/files/share?cid=${file.Hash}&options=${str}`;
+// }
+
+async function createShare(file: SaveFile, user: WrapLoginUser) {
+  const code = await createShortUrl(file.Hash, {
     name: file.Name,
     encrypted: file.Encrypted,
     gateway: file.UpEndpoint,
@@ -56,7 +81,7 @@ function createShareOrReceiveUrl(file: SaveFile, user: WrapLoginUser, receive = 
     fromWallet: user.wallet,
     from: user.nickName,
     isDir: !!file.items,
-  }
+  })
   report({
     type: 3,
     walletType: user.wallet,
@@ -68,8 +93,7 @@ function createShareOrReceiveUrl(file: SaveFile, user: WrapLoginUser, receive = 
       shareType: 0
     }
   })
-  const str = encodeURI(JSON.stringify(options))
-  return receive ? `${window.location.origin}/files/receive?cid=${file.Hash}&options=${str}` : `${window.location.origin}/files/share?cid=${file.Hash}&options=${str}`;
+  return `${window.location.origin}/share?code=${code}`
 }
 
 function parseStat(stat: any) {
@@ -127,16 +151,25 @@ function FileItem(props: Props) {
   // const _onClickCopy = useCallback(() => copy(createUrl(file, endpoints)), [file, endpoints])
   // const r = useRouter()
   const user = useContextWrapLoginUser()
-  const _onClickShare = () => {
-    window.open(createShareOrReceiveUrl(file, user, true), '_blank')
+  const _onClickShare = async () => {
+    try {
+      const shareUrl = await createShare(file, user)
+      window.open(shareUrl, '_blank')
+    } catch (error) {
+      alert.error(getErrorMsg(error))
+    }
   }
-  const _onClickTweet = () => {
-    const shareUrl = createShareOrReceiveUrl(file, user, true);
-    const text = user.nickName ?
-      `Check out what '${user.nickName}' is sharing on Crust Files!` :
-      `Check out what I am sharing on Crust Files!`;
-    const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURI(text)}&url=${encodeURIComponent(shareUrl)}&hashtags=web3,ipfs,crustnetwork,metaverse,crustfiles`;
-    window.open(tweetUrl, '_blank');
+  const _onClickTweet = async () => {
+    try {
+      const shareUrl = await createShare(file, user);
+      const text = user.nickName ?
+        `Check out what '${user.nickName}' is sharing on Crust Files!` :
+        `Check out what I am sharing on Crust Files!`;
+      const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURI(text)}&url=${encodeURIComponent(shareUrl)}&hashtags=web3,ipfs,crustnetwork,metaverse,crustfiles`;
+      window.open(tweetUrl, '_blank');
+    } catch (error) {
+      alert.error(getErrorMsg(error))
+    }
   }
 
   const queryFileApi = api && api.query?.market && api.query?.market.files
