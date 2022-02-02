@@ -8,6 +8,7 @@ import { useGetDepost } from "../lib/hooks/useGetDeposit";
 import { useSafeState } from "../lib/hooks/useSafeState";
 import { getBindEXAddress } from "../lib/http/share_earn";
 import { BindAddress } from "../lib/http/types";
+import { getErrorMsg } from "../lib/utils";
 import { finalTxSignAndSend, sleep } from "../lib/wallet/tools";
 import Btn from "./Btn";
 import { MCard } from "./MCard";
@@ -106,9 +107,14 @@ function _BindAirdrop(props: Props) {
                 if (data) break
             }
             loading.hide()
-        } catch (e) {
+        } catch (error) {
             loading.hide()
-            alert.error("Network Error")
+            const msg = getErrorMsg(error)
+            if (msg.includes('account balance too low')) {
+                alert.warnModal('Insufficient Funds!')
+            } else {
+                alert.error(msg)
+            }
         }
     }
     return <MCard className={className}>
