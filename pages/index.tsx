@@ -387,7 +387,10 @@ function Home({ className }: { className?: string }) {
         <PixelBg className="bg" />
         <div className="panel">
           <Logo className={"logo"} />
-          <div className="docs" onClick={() => openDocs('/docs/CrustFiles_Welcome')}>Docs</div>
+          <div className="tabs">
+            <div className="tutorial" onClick={() => window.open('https://www.youtube.com/watch?v=AXt-JjupBAo&t=69s', '_blank')}>Watch Tutorial</div>
+            <div className="docs" onClick={() => openDocs('/docs/CrustFiles_Welcome')}>Docs</div>
+          </div>
           <div style={{ flex: 1 }} />
           <div className="slog font-sans-semibold">
             Your<br />
@@ -470,14 +473,24 @@ export default React.memo(styled(Home)`
       overflow: auto;
       position: relative;
     }
-    .docs {
-      cursor: pointer;
-      position: absolute;
-      top: 3.57rem;
-      right: 2.3rem;
+    .tabs {
       font-size: 1.29rem;
       line-height: 1.79rem;
       font-weight: 600;
+      position: absolute;
+      top: 3.57rem;
+      right: 2.3rem;
+      .tutorial {
+        display: inline-block;
+        cursor: pointer;
+        margin-right: 2rem;
+        text-decoration: underline;
+        text-decoration-color: white;
+      }
+      .docs {
+        display: inline-block;
+        cursor: pointer;
+      }
     }
 
     .slog {
