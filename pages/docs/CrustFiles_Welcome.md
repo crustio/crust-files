@@ -20,5 +20,5 @@ The content from an encrypted file can be revealed by no one, except you.
 
 In Crust Files, you have 100% freedom to store, share and receive a file.  
 
-Your freedom to use it can be taken away by on one, except you.
+Your freedom to use it can be taken away by no one, except you.
 
