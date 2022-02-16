@@ -55,10 +55,12 @@ function MAppProvider(props: BasePropsWithChildren) {
   </AppProvider>
 }
 
-function MAppLoading() {
+function MAppLoading(p: { show?: boolean, msg?: string}) {
   const { loading } = useApp()
-  return <Dimmer active={loading.isLoading} inverted style={{ position: 'fixed', left: 0, top: 0, width: '100vw', height: '100vh' }}>
-    <Loader size='large' inverted content={loading.msg} />
+  const active = p.show || loading.isLoading
+  const msg =  p.show ? p.msg || 'Loading' : loading.msg 
+  return <Dimmer active={active} inverted style={{ position: 'fixed', left: 0, top: 0, width: '100vw', height: '100vh' }}>
+    <Loader size='large' inverted content={msg} />
   </Dimmer>
 }
 
@@ -92,7 +94,7 @@ function DefAppPage({ Component, pageProps }: AppProps) {
             <GetNickname />
           </Redirect>
         }
-        <MAppLoading />
+        <MAppLoading show={wUser.isLoad} />
         <ReCaptcha/>
       </Layout>
       <AlertMessage />

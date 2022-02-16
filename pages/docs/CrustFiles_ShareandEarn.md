@@ -30,7 +30,7 @@ Invite your friends to use Crust Files and become **Premium Users**.
 
 For every successful invitation:  
 
-- **YOU** get: **1 CRU reward**  
+- **YOU** get: **0.5 CRU reward**  
 
 - **YOUR FRIEND** gets: **1 CRU discount on his or her Premium User Deposit** and opportunities to win fantastic prizes across 3 Reward Programs   
 
