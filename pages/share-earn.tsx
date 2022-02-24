@@ -498,18 +498,23 @@ function Index(props: Props) {
       <PixelBtn1 className="top_btn">Lucky Newbie</PixelBtn1>
       <EarnItemTip>500,000<br />CRU</EarnItemTip>
       <div className="left">
-        <CoinCru><Coin /> {getFormatValue(luckyNebie, 'totalAmount')} CRU</CoinCru>
+        {/* <CoinCru><Coin /> {getFormatValue(luckyNebie, 'totalAmount')} CRU</CoinCru> */}
+        <CoinCru><Coin /> 0 CRU</CoinCru>
         <Trophy />
-        <TimeBlocks><span>{fCountdown}</span> (<span>{getFormatValue(luckyNebie, 'blockCount')}</span> blocks)</TimeBlocks>
+        {/* <TimeBlocks><span>{fCountdown}</span> (<span>{getFormatValue(luckyNebie, 'blockCount')}</span> blocks)</TimeBlocks> */}
       </div>
       <div className="right">
-        <div className="title">Rules:</div>
-        1. The last Premium User to join before the countdown reaches zero<br />
+        {/* <div className="title">Rules:</div> */}
+        <div className="title" style={{marginBottom: 8}}>Congratulations!</div>
+        {/* 1. The last Premium User to join before the countdown reaches zero<br />
         will be the winner of the current pool.<br />
         2. Each time a newly registered Premium User will refresh<br />
-        the countdown to {luckyDutation}min and add {depositRewardAmount} CRU into the pool.<br />
+        the countdown to {luckyDutation}min and add {depositRewardAmount} CRU into the pool.<br /> */}
+        The first Newbie Prize of 15,000 CRU has been claimed by <a target={'_blank'} href={`${locationUrl('/rewards_history/')}?account=${user.account}`} rel="noreferrer">this lucky user</a>.<br/>
+        More exciting User Rewards Programs are coming soon...
+
         <div className="footer">
-          Best chance: <span>{shortStr(getStrValue(luckyNebie, 'memberAddress'), 12)}</span>
+          {/* Best chance: <span>{shortStr(getStrValue(luckyNebie, 'memberAddress'), 12)}</span> */}
         </div>
       </div>
       <DetailedRules target={'_blank'} href={locationUrl('/docs/CrustFiles_ShareandEarn/#lucky_newbie')}>Detailed Rules</DetailedRules>
