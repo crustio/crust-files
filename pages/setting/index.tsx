@@ -154,10 +154,10 @@ function Index(props: Props) {
         <span className="bold-text font-sans-semibold">{userType}</span> {!isPremiumUser && <a onClick={() => r.push('/user')} rel="noreferrer">Get Premium</a>}
       </div>
       <div className="text font-sans-regular">
-        {`${t('File/Folder Stored:')} `} <span className="bold-text font-sans-semibold">{`${publicCount} in Public, ${valutCount} in Valut`}</span>
+        {`${t('File/Folder Stored:')} `} <span className="bold-text font-sans-semibold">{`${publicCount} in Public, ${valutCount} in Vault`}</span>
       </div>
       <div className="text font-sans-regular">
-        {`${t('Space Usage:')} `} <span className="bold-text font-sans-semibold">{`${publicSize} in Public, ${valutSize} in Valut`}</span>
+        {`${t('Space Usage:')} `} <span className="bold-text font-sans-semibold">{`${publicSize} in Public, ${valutSize} in Vault`}</span>
       </div>
     </Segment>
     <Segment basic className={"mcard"}>
