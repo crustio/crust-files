@@ -36,6 +36,12 @@ export function createAuthIpfsEndpoints(t: TFunction): AuthIpfsEndpoint[] {
       // group: "Public Gateway"
     },
     {
+      location: t('Beijing'),
+      text: t('⚡ Deklod'),
+      value: 'https://ipfs-gw.dkskcloud.com',
+      // group: "Public Gateway"
+    },
+    {
       location: t('Singapore'),
       text: t('DCF'),
       value: 'https://crustipfs.xyz',
@@ -46,13 +52,7 @@ export function createAuthIpfsEndpoints(t: TFunction): AuthIpfsEndpoint[] {
       text: t('Crust Network'),
       value: 'https://ipfs-gw.decloud.foundation',
       // group: "Public Gateway"
-    },
-    {
-      location: t('Beijing'),
-      text: t('Deklod'),
-      value: 'https://ipfs-gw.dkskcloud.com',
-      // group: "Public Gateway"
-    },
+    }
   ];
 }
 
