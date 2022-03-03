@@ -47,6 +47,12 @@ export function createAuthIpfsEndpoints(t: TFunction): AuthIpfsEndpoint[] {
       value: 'https://ipfs-gw.decloud.foundation',
       // group: "Public Gateway"
     },
+    {
+      location: t('Beijing'),
+      text: t('Deklod'),
+      value: 'https://ipfs-gw.dkskcloud.com',
+      // group: "Public Gateway"
+    },
   ];
 }
 
