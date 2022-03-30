@@ -7,6 +7,7 @@ import { Crust } from './Crust';
 import { Elrond } from "./Elrond";
 import { FlowM } from './Flow';
 import { Metamask } from './Metamask';
+import { MetaX } from "./MetaX";
 import { MWalletConnect } from "./MWalletConnect";
 import { NearM } from './Near';
 import { PolkadotJs } from "./PolkadotJs";
@@ -38,7 +39,7 @@ type KEYS = 'files:login' | 'pins:login'
 export class LoginUser {
   account = '';
   pubKey?: string;
-  wallet: 'crust' | 'polkadot-js' | 'metamask' | 'metamask-Moonriver' | 'metamask-Polygon' |
+  wallet: 'crust' | 'polkadot-js' | 'metamask' | 'metamask-Moonriver' | 'metamask-Polygon' | 'metax' |
     'near' | 'flow' | 'solana' | 'elrond' | 'wallet-connect';
   key?: KEYS = 'files:login';
 
@@ -49,6 +50,7 @@ export const WalletName: { [k in LoginUser['wallet']]: string } = {
   "metamask": 'MetaMask',
   "metamask-Polygon": "MetaMask",
   "metamask-Moonriver": "MetaMask",
+  "metax": "MetaX",
   "polkadot-js": "Polkadot Extension",
   "near": "Near Wallet",
   "elrond": "Elrond(Maiar Wallet)",
@@ -85,6 +87,7 @@ export interface WrapLoginUser extends LoginUser {
   crust: Crust,
   polkadotJs: PolkadotJs,
   metamask: Metamask,
+  metax: MetaX,
   near: NearM,
   flow: FlowM,
   solana: SolanaM,
@@ -171,6 +174,15 @@ export function useSign(wUser: WrapLoginUser): UseSign {
         }
       }))
     }
+
+    if (wUser.wallet === 'metax') {
+      setState((o) => ({
+        ...o, sign: async (data) => {
+          return wUser.metax.sign(data, wUser.account)
+        }
+      }))
+    }
+
     if (wUser.wallet === 'crust') {
       setState((o) => ({
         ...o, sign: async (data, account) => {
@@ -216,6 +228,7 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
   const crust = useMemo(() => new Crust(), [])
   const polkadotJs = useMemo(() => new PolkadotJs(), [])
   const metamask = useMemo(() => new Metamask(), []);
+  const metax = useMemo(() => new MetaX(), []);
   const near = useMemo(() => new NearM(), []);
   const flow = useMemo(() => new FlowM(), []);
   const solana = useMemo(() => new SolanaM(), []);
@@ -255,6 +268,22 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
       }
     }
   }, [metamask, setLoginUser, account])
+
+  useEffect(() => {
+    metax.onAccountChange = (data) => {
+      console.info('accountsChange::', data, account)
+      if (account.wallet !== 'metax') return
+      const accounts = data
+      if (accounts.length !== 0) {
+        setLoginUser({
+          account: accounts[0],
+          wallet: account.wallet
+        })
+      } else {
+        setLoginUser(defLoginUser)
+      }
+    }
+  }, [metax, setLoginUser, account])
 
   useEffect(() => {
     walletConnect.onAccountChanged = (data) => {
@@ -310,6 +339,18 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
             if (metamask.isAllowed && metamask.accounts.length) {
               setAccount({
                 account: metamask.accounts[0],
+                wallet: f.wallet
+              });
+            }
+          })
+          .then(() => setIsLoad(false))
+      } else if (f.wallet === 'metax') {
+        metax.init()
+          .then(() => {
+            console.info('doInit::', metax)
+            if (metax.isAllowed && metax.accounts.length) {
+              setAccount({
+                account: metax.accounts[0],
                 wallet: f.wallet
               });
             }
@@ -379,6 +420,7 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
       crust,
       polkadotJs,
       metamask,
+      metax,
       near,
       flow,
       solana,
@@ -392,7 +434,7 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
     return wrapLoginUser;
   }, [
     account, accounts, isLoad, setLoginUser, logout,
-    crust, polkadotJs, metamask, near, flow, solana,
+    crust, polkadotJs, metamask, metax, near, flow, solana,
     walletConnect, nickName, member, key
   ]);
   const uSign = useSign(wUser);
@@ -407,7 +449,7 @@ export function useContextWrapLoginUser(): WrapLoginUser {
 }
 
 export const getPerfix = (user: LoginUser): string => {
-  if (user.wallet.startsWith('metamask') || user.wallet === 'wallet-connect') {
+  if (user.wallet.startsWith('metamask') || user.wallet === 'metax' || user.wallet === 'wallet-connect') {
     return 'eth';
   }
 

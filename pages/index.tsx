@@ -46,7 +46,7 @@ function WalletItems(p: { gw: WalletGroup }) {
   const count = gw.items.length
   const { data } = useParallax(100, count)
   return <div
-    className="wallet_items"
+    className={classNames("wallet_items", { wallet_items_web3: gw.group === 'Web 3' })}
   >
     {
       gw.items.map((w, index) =>
@@ -168,6 +168,38 @@ function Home({ className }: { className?: string }) {
       setError(`MetaMask not installed`)
     }
   }, [user, t]);
+
+  const _onClickMetaX = useCallback(async () => {
+    setError('')
+    await user.metax.init()
+    const ethReq = user.metax.okexchain?.request;
+    if (user.metax.isInstalled && ethReq) {
+      ethReq<string[]>({
+        method: 'eth_requestAccounts'
+      })
+        .then((res) => {
+          console.info('accounts:', res);
+          const selectedAddress = user.metax.okexchain?.selectedAddress;
+          const wallet: LoginUser['wallet'] = 'metax';
+          if (selectedAddress && res.includes(selectedAddress)) {
+            setLogined({
+              account: selectedAddress,
+              wallet
+            });
+          } else if (res.length) {
+            setLogined({
+              account: res[0],
+              wallet
+            });
+          }
+        })
+        .catch((error) => {
+          console.error('accountsError:', error);
+        });
+    } else {
+      setError(`MetaX not installed`)
+    }
+  }, [user, t])
 
   const _onClickNear = useCallback(async () => {
     setError('')
@@ -331,6 +363,12 @@ function Home({ className }: { className?: string }) {
       },
       {
         group: 'Web 3',
+        name: 'MetaX',
+        image: '/images/wallet_metax.png',
+        onClick: _onClickMetaX,
+      },
+      {
+        group: 'Web 3',
         name: 'Solana',
         image: '/images/wallet_solana.png',
         onClick: _onClickSolana,
@@ -347,8 +385,6 @@ function Home({ className }: { className?: string }) {
         image: '/images/wallet_polkadot.png',
         onClick: _onClickPolkadotJs,
       },
-
-
       {
         group: 'WalletConnect',
         name: 'WalletConnect',
@@ -620,6 +656,9 @@ export default React.memo(styled(Home)`
         top: 1rem;
         right: 2rem;
         z-index: 2;
+      }
+      .wallet_items_web3 {
+        top: -6rem;
       }
     }
     .wallet_item {
