@@ -36,6 +36,8 @@ function getWalletIcon(user: WrapLoginUser): string {
       return '/images/wallet_solana.png';
     case "elrond":
       return '/images/wallet_elrond.png';
+    case "metax":
+      return '/images/wallet_metax.png';
     case "flow":
       return '/images/wallet_flow.png';
     case "wallet-connect": {
