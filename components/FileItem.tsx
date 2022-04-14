@@ -234,13 +234,13 @@ function FileItem(props: Props) {
         // success
         fStat.status = 'Success';
       }
-    } if (hasQueryFileApi && (new Date().getTime() - file.PinTime) >= FailedTime) {
+    } else if (hasQueryFileApi && (new Date().getTime() - file.PinTime) >= FailedTime) {
       // 'Failed'
       fStat.status = 'Failed'
     }
     if (!bestNumber) fStat.status = 'Loading'
     return fStat
-  }, [statV1, statV2, bestNumber])
+  }, [bestNumber])
 
 
   return <Table.Row className={className}>
