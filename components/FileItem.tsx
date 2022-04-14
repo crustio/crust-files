@@ -19,6 +19,7 @@ import { getErrorMsg, shortStr } from "../lib/utils";
 import { useContextWrapLoginUser, WrapLoginUser } from "../lib/wallet/hooks";
 import { SaveFile } from "../lib/wallet/types";
 import Btn from "./Btn";
+import { isFunction } from '@polkadot/util';
 
 export interface Props {
   type?: 'public' | 'vault',
@@ -172,7 +173,7 @@ function FileItem(props: Props) {
     }
   }
 
-  const queryFileApi = api && api.query?.market && api.query?.market.files
+  const queryFileApi = api && api.query?.market && (isFunction(api.query.market.filesV2) ? api.query.market.filesV2 : api.query.market.files)
   const hasQueryFileApi = !!queryFileApi
   const stat = useCall<{ isEmpty: boolean } | undefined | null>(queryFileApi, [file.Hash])
   const bestNum = useCall<BlockNumber>(api?.derive?.chain?.bestNumber);
