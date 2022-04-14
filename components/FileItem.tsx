@@ -240,7 +240,7 @@ function FileItem(props: Props) {
     }
     if (!bestNumber) fStat.status = 'Loading'
     return fStat
-  }, [bestNumber])
+  }, [statV1, statV2, bestNumber])
 
 
   return <Table.Row className={className}>
