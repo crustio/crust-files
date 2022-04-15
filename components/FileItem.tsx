@@ -19,6 +19,7 @@ import { getErrorMsg, shortStr } from "../lib/utils";
 import { useContextWrapLoginUser, WrapLoginUser } from "../lib/wallet/hooks";
 import { SaveFile } from "../lib/wallet/types";
 import Btn from "./Btn";
+import { isFunction } from '@polkadot/util';
 
 export interface Props {
   type?: 'public' | 'vault',
@@ -172,21 +173,49 @@ function FileItem(props: Props) {
     }
   }
 
-  const queryFileApi = api && api.query?.market && api.query?.market.files
-  const hasQueryFileApi = !!queryFileApi
-  const stat = useCall<{ isEmpty: boolean } | undefined | null>(queryFileApi, [file.Hash])
+  const queryFileApiV2 = api && api.query?.market && (isFunction(api.query.market.filesV2) ? api.query.market.filesV2 : api.query.market.files)
+  const queryFileApiV1 = api && api.query?.market && api.query.market.files;
+  const hasQueryFileApi = !!queryFileApiV2
+  const statV2 = useCall<{ isEmpty: boolean } | undefined | null>(queryFileApiV2, [file.Hash])
+  const statV1 = useCall<{ isEmpty: boolean } | undefined | null>(queryFileApiV1, [file.Hash])
   const bestNum = useCall<BlockNumber>(api?.derive?.chain?.bestNumber);
   const bestNumber = bestNum && bestNum.toNumber()
   const fileStat = useMemo<FileStat>(() => {
     const fStat: FileStat = { status: 'Submitted' }
-    if (stat && !stat.isEmpty) {
+    if (statV1 && !statV1.isEmpty) {
       const {
         expired_at,
         reported_replica_count,
         amount,
         file_size,
         prepaid,
-      } = parseStat(stat)
+      } = parseStat(statV1)
+      fStat.expireTime = expired_at;
+      fStat.amount = amount;
+      fStat.startTime = expired_at ? expired_at - 216000 : 0;
+      fStat.fileSize = file_size;
+      fStat.confirmedReplicas = reported_replica_count;
+      fStat.prepaid = prepaid;
+      if (expired_at && expired_at < bestNumber) {
+        // expired
+        fStat.status = 'Expired';
+      }
+      if (reported_replica_count < 1) {
+        // pending
+        fStat.status = 'Submitted';
+      }
+      if (expired_at && expired_at > bestNumber && reported_replica_count > 0) {
+        // success
+        fStat.status = 'Success';
+      }
+    } else if (statV2 && !statV2.isEmpty) {
+      const {
+        expired_at,
+        reported_replica_count,
+        amount,
+        file_size,
+        prepaid,
+      } = parseStat(statV2)
       fStat.expireTime = expired_at;
       fStat.amount = amount;
       fStat.startTime = expired_at ? expired_at - 216000 : 0;
@@ -211,7 +240,7 @@ function FileItem(props: Props) {
     }
     if (!bestNumber) fStat.status = 'Loading'
     return fStat
-  }, [stat, bestNumber])
+  }, [statV1, statV2, bestNumber])
 
 
   return <Table.Row className={className}>
