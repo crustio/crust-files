@@ -40,6 +40,7 @@ const menus: MenuItem[] = [
   { path: "/setting", icon: "cru-fo-settings", name: 'Settings' },
   { path: "/share-earn", icon: "cru-fo-share-2", name: 'Share-and-Earn' },
   { path: "/user", icon: "cru-fo-user", name: 'Premium User' },
+  { icon: "cru-fo-credit-card", name: 'Pay to Download',link: 'https://p2d.crustapps.net/' },
   { icon: "cru-fo-database", name: 'Get CRU', link: 'https://swap.crustapps.net' },
 ]
 
@@ -145,7 +146,7 @@ function SideLayout(props: Props) {
   </Sidebar.Pushable>
 }
 
-const sideWidth = '238px'
+const sideWidth = '240px'
 export default React.memo<Props>(styled(SideLayout)`
   height: 100vh;
   background: white;

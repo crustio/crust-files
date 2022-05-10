@@ -46,7 +46,7 @@ function WalletItems(p: { gw: WalletGroup }) {
   const count = gw.items.length
   const { data } = useParallax(100, count)
   return <div
-    className={classNames("wallet_items", { wallet_items_web3: gw.group === 'Web 3' })}
+    className={classNames("wallet_items", { wallet_items_web3: gw.group === 'Web 3', wallet_items_metamask: gw.group === 'MetaMask' })}
   >
     {
       gw.items.map((w, index) =>
@@ -148,6 +148,8 @@ function Home({ className }: { className?: string }) {
           const wallet: LoginUser['wallet'] =
             w.name === 'Polygon' ? 'metamask-Polygon' :
               w.name === 'Moonriver' ? 'metamask-Moonriver' :
+                w.name === 'BSC' ? 'metamask-BSC' :
+                  w.name === 'HECO' ? 'metamask-HECO':
                 'metamask'
           if (selectedAddress && res.includes(selectedAddress)) {
             setLogined({
@@ -347,6 +349,18 @@ function Home({ className }: { className?: string }) {
         group: 'MetaMask',
         name: 'Moonriver',
         image: '/images/wallet_moonriver.png',
+        onClick: _onClickMetamask,
+      },
+      {
+        group: 'MetaMask',
+        name: 'BSC',
+        image: '/images/wallet_bsc.png',
+        onClick: _onClickMetamask,
+      },
+      {
+        group: 'MetaMask',
+        name: 'HECO',
+        image: '/images/wallet_heco.png',
         onClick: _onClickMetamask,
       },
       {
@@ -658,6 +672,9 @@ export default React.memo(styled(Home)`
         z-index: 2;
       }
       .wallet_items_web3 {
+        top: -6rem;
+      }
+      .wallet_items_metamask{
         top: -6rem;
       }
     }
