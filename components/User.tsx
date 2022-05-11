@@ -30,6 +30,10 @@ function getWalletIcon(user: WrapLoginUser): string {
       return '/images/wallet_polygon.png';
     case "metamask-Moonriver":
       return '/images/wallet_moonriver.png';
+    case "metamask-BSC":
+      return '/images/wallet_bsc.png';
+    case "metamask-HECO":
+      return '/images/wallet_heco.png';
     case "near":
       return '/images/wallet_near.png';
     case "solana":
