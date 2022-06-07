@@ -144,12 +144,14 @@ function Home({ className }: { className?: string }) {
       })
         .then((res) => {
           console.info('accounts:', res);
+          console.info(`'LoginUser['wallet']:'`, w.name);
           const selectedAddress = user.metamask.ethereum?.selectedAddress;
           const wallet: LoginUser['wallet'] =
             w.name === 'Polygon' ? 'metamask-Polygon' :
               w.name === 'Moonriver' ? 'metamask-Moonriver' :
                 w.name === 'BSC' ? 'metamask-BSC' :
                   w.name === 'HECO' ? 'metamask-HECO':
+                    w.name === 'Cubechain' ? 'metamask-Cubechain':
                 'metamask'
           if (selectedAddress && res.includes(selectedAddress)) {
             setLogined({
@@ -361,6 +363,12 @@ function Home({ className }: { className?: string }) {
         group: 'MetaMask',
         name: 'HECO',
         image: '/images/wallet_heco.png',
+        onClick: _onClickMetamask,
+      },
+      {
+        group: 'MetaMask',
+        name: 'Cubechain',
+        image: '/images/wallet_cube.png',
         onClick: _onClickMetamask,
       },
       {
