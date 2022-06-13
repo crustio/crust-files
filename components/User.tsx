@@ -34,6 +34,8 @@ function getWalletIcon(user: WrapLoginUser): string {
       return '/images/wallet_bsc.png';
     case "metamask-HECO":
       return '/images/wallet_heco.png';
+    case "metamask-Cubechain":
+      return '/images/wallet_cube.png';
     case "near":
       return '/images/wallet_near.png';
     case "solana":

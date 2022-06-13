@@ -39,7 +39,7 @@ type KEYS = 'files:login' | 'pins:login'
 export class LoginUser {
   account = '';
   pubKey?: string;
-  wallet: 'crust' | 'polkadot-js' | 'metamask' | 'metamask-Moonriver' | 'metamask-Polygon' | 'metamask-BSC' | 'metamask-HECO' | 'metax' |
+  wallet: 'crust' | 'polkadot-js' | 'metamask' | 'metamask-Moonriver' | 'metamask-Polygon' | 'metamask-BSC' | 'metamask-HECO' | 'metamask-Cubechain' | 'metax' |
     'near' | 'flow' | 'solana' | 'elrond' | 'wallet-connect';
   key?: KEYS = 'files:login';
 
@@ -52,6 +52,7 @@ export const WalletName: { [k in LoginUser['wallet']]: string } = {
   "metamask-Moonriver": "MetaMask",
   "metamask-BSC": "MetaMask",
   "metamask-HECO": "MetaMask",
+  "metamask-Cubechain": "MetaMask",
   "metax": "MetaX",
   "polkadot-js": "Polkadot Extension",
   "near": "Near Wallet",
