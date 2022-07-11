@@ -87,7 +87,7 @@ function Index(props: Props) {
   const periodTime = useMemo(() => {
     if (!hasDeposit) return '--:--:--'
     return format(deposit.deposit.expire_timestamp * 1000, "yyyy-MM-dd")
-  }, [hasDeposit])
+  }, [hasDeposit, deposit])
   useEffect(() => {
     if (!config) return
     if (nickStat.shareFrom) {
@@ -241,7 +241,7 @@ function Index(props: Props) {
           <Btn content={onGoingClaim ? 'Ongoing Redeem...' : `Redeem ${fCalimValue} CRU`} disabled={disabledClaim} onClick={_onClickClaim} />
           <a href="/docs/CrustFiles_Users" target="_blank">Learn more about Redeem Rules.</a>
         </div>
-        {onGoingClaim && <div className="tip">Redeem will be done in less than 24 hours. Check your balance later.</div>}
+        {onGoingClaim && <div className="tip">Redeem funds will be processed every Wednesday.</div>}
       </MCard>}
     {
       isPremiumUser && !loadNft && <MCard>
