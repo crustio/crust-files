@@ -35,12 +35,12 @@ export function createAuthIpfsEndpoints(t: TFunction): AuthIpfsEndpoint[] {
       value: 'https://crustwebsites.net',
       // group: "Public Gateway"
     },
-    {
-      location: t('Beijing'),
-      text: t('⚡ Deklod'),
-      value: 'https://ipfs-gw.dkskcloud.com',
-      // group: "Public Gateway"
-    },
+    // {
+    //   location: t('Beijing'),
+    //   text: t('⚡ Deklod'),
+    //   value: 'https://ipfs-gw.dkskcloud.com',
+    //   // group: "Public Gateway"
+    // },
     {
       location: t('Singapore'),
       text: t('DCF'),
