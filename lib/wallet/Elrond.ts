@@ -1,8 +1,8 @@
 import {BaseWallet} from "./types";
 import {
-  ExtensionProvider,
   Address,
-  SignableMessage
+  SignableMessage,
+  ExtensionProvider
 } from '@elrondnetwork/erdjs';
 
 export class Elrond implements BaseWallet {
