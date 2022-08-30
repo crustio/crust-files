@@ -21,6 +21,12 @@ interface ItemWallet {
   group: 'Crust' | 'Polkadot' | 'MetaMask' | 'Web 3' | 'WalletConnect'
 }
 
+declare global {
+  interface Window {
+    martian: any;
+  }
+}
+
 interface Wallet extends ItemWallet {
   onClick: (w: Wallet) => void
 }
@@ -297,6 +303,23 @@ function Home({ className }: { className?: string }) {
     });
   }, [user, t])
 
+  const _onClickAptos = useCallback(async () => {
+    setError('')
+    await user.aptos.init();
+    const martianProvider = await user.aptos.provider;
+    if (!martianProvider) {
+      setError(`Aptos (Martian Wallet) not installed`)
+      return
+    }
+    const connectInfo = user.aptos.connectInfo;
+    setLogined({
+      // eslint-disable-next-line
+      account: connectInfo.address,
+      wallet: 'aptos',
+      pubKey: connectInfo.publicKey
+    });
+  }, [user, t])
+
   const _onClickWalletConnect = useCallback(async () => {
     await user.walletConnect.init()
     try {
@@ -382,6 +405,12 @@ function Home({ className }: { className?: string }) {
         name: 'Elrond',
         image: '/images/wallet_elrond.png',
         onClick: _onClickElrond,
+      },
+      {
+        group: 'Web 3',
+        name: 'Aptos',
+        image: '/images/aptos.svg',
+        onClick: _onClickAptos,
       },
       {
         group: 'Web 3',
