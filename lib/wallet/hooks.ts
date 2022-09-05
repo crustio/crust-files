@@ -420,7 +420,7 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
       await walletConnect.connect?.killSession()
     } else if (account.wallet === 'aptos') {
       if (aptos.provider) {
-        await aptos.provider.disconnect()
+        aptos.provider.disconnect().then().catch()
       }
     }
 

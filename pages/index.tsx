@@ -307,6 +307,7 @@ function Home({ className }: { className?: string }) {
     setError('')
     await user.aptos.init();
     const martianProvider = await user.aptos.provider;
+    console.log('!martianProvider', !martianProvider)
     if (!martianProvider) {
       setError(`Aptos (Martian Wallet) not installed`)
       return

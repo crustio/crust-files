@@ -14,17 +14,22 @@ export class Aptos implements BaseWallet {
           return (window.martian);
         }
         return null;
-        // window.open("https://www.martianwallet.xyz/", "_blank");
     };
-    if (this.isInit) return
     const provider = await getProvider();
-    const connectInfo = await provider.connect();
-    console.log('connectInfo: ', connectInfo)
-    if (connectInfo) {
-      this.provider = provider;
-      this.connectInfo = connectInfo;
+    console.log('provider: ', provider)
+    if (provider) {
+        provider.connect().then(connected => {
+            console.log('connectInfo: ', connected)
+            if (connected) {
+                this.provider = provider;
+                this.connectInfo = connected;
+            }
+            this.isInit = true
+        }).catch(_err => {
+            this.provider = null;
+            this.connectInfo = null;
+        });     
     }
-    this.isInit = true
   }
 
 
