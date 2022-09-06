@@ -305,20 +305,36 @@ function Home({ className }: { className?: string }) {
 
   const _onClickAptos = useCallback(async () => {
     setError('')
-    await user.aptos.init();
-    const martianProvider = await user.aptos.provider;
-    console.log('!martianProvider', !martianProvider)
-    if (!martianProvider) {
+    const getProvider = () => {
+      if ("martian" in window) {
+          return (window.martian);
+      }
+      return null;
+    };
+    const provider = getProvider();
+    if (provider) {
+      provider.connect().then(connected => {
+          console.log('connectInfo: ', connected)
+          if (connected) {
+            user.aptos.provider = provider;
+            setLogined({
+              // eslint-disable-next-line
+              account: connected.address,
+              wallet: 'aptos',
+              pubKey: connected.publicKey
+            });
+          } else {
+            setError(`Aptos (Martian Wallet) not installed`)
+            return
+          }
+      }).catch(_err => {
+        setError(`Aptos (Martian Wallet) not installed`)
+        return
+      });     
+    } else {
       setError(`Aptos (Martian Wallet) not installed`)
       return
     }
-    const connectInfo = user.aptos.connectInfo;
-    setLogined({
-      // eslint-disable-next-line
-      account: connectInfo.address,
-      wallet: 'aptos',
-      pubKey: connectInfo.publicKey
-    });
   }, [user, t])
 
   const _onClickWalletConnect = useCallback(async () => {
