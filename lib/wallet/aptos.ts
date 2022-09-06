@@ -9,29 +9,8 @@ export class Aptos implements BaseWallet {
   connectInfo: any;
 
   async init() {
-    const getProvider = () => {
-        if ("martian" in window) {
-          return (window.martian);
-        }
-        return null;
-    };
-    const provider = await getProvider();
-    console.log('provider: ', provider)
-    if (provider) {
-        provider.connect().then(connected => {
-            console.log('connectInfo: ', connected)
-            if (connected) {
-                this.provider = provider;
-                this.connectInfo = connected;
-            }
-            this.isInit = true
-        }).catch(_err => {
-            this.provider = null;
-            this.connectInfo = null;
-        });     
-    }
+      // pass it
   }
-
 
   sign(data: string): Promise<string> {
     return this.provider.signMessage(data).then(message => { 
