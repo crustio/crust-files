@@ -13,7 +13,7 @@ export class Aptos implements BaseWallet {
   }
 
   sign(data: string): Promise<string> {
-    return this.provider.signMessage(data).then(message => { 
+    return this.provider.signMessage({ message: data }).then(message => { 
       return `${message.signature}`;
     })
     .catch((err) => {
