@@ -31,7 +31,7 @@ export default function Redirect(props: { children: any }) {
     return null
   }
   
-  if (wUser.account && (router.pathname === '' || router.pathname === '/')) {
+  if (wUser.account && wUser.authBasic && (router.pathname === '' || router.pathname === '/')) {
     router.replace(`/home/${window.location.search}`)
     return null
   }

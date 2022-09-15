@@ -12,9 +12,10 @@ import { AppContext } from "../lib/AppContext";
 import { CrustGetCRU, CrustWalletDownUrl } from "../lib/config";
 import useParallax from "../lib/hooks/useParallax";
 import { report } from "../lib/http/report";
+import { BaseWallet } from "../lib/types";
 import { openDocs } from "../lib/utils";
 import { nearConfig } from "../lib/wallet/config";
-import { lastUser, LoginUser, useContextWrapLoginUser } from "../lib/wallet/hooks";
+import { getPerfix, lastUser, LoginUser, useContextWrapLoginUser } from "../lib/wallet/hooks";
 interface ItemWallet {
   name: string,
   image: string,
@@ -77,6 +78,43 @@ function Home({ className }: { className?: string }) {
       alert.error(data)
     }
   }
+
+
+  const loginedSign = (u: LoginUser, wallet: BaseWallet) => {
+    // const prefix = getPerfix(user);
+    console.log('u:::', u)
+    const msg = u.wallet === 'near' || u.wallet === 'aptos' ? u.pubKey || '' : u.account;
+    const prefix = getPerfix(u);
+    console.log('msg::', msg)
+    console.log('account::', u.account)
+    console.log('prefix::', prefix)
+    wallet.sign(msg, u.account).then(signature => {
+      if (signature.length) {
+        const perSignData = user.wallet === 'elrond' ? signature : `${prefix}-${msg}:${signature}`;
+        const base64Signature = window.btoa(perSignData);
+        const authBasic = `Basic ${base64Signature}`;
+        const authBearer = `Bearer ${base64Signature}`;
+        user.setLoginUser({
+          ...u,
+          authBasic,
+          authBearer
+        })
+      } else {
+        user.setLoginUser({
+          ...u,
+          authBasic: null,
+          authBearer: null
+        });
+      }
+    }).catch(() => {
+      user.setLoginUser({
+        ...u,
+        authBasic: null,
+        authBearer: null
+      });
+    })
+  }
+
   const setLogined = (u: LoginUser) => {
     user.setLoginUser(u)
     report({
@@ -94,7 +132,7 @@ function Home({ className }: { className?: string }) {
         setError(`Crust Wallet not installed`)
         return
       }
-      const accounts = await user.crust.login()
+      const accounts = await user.crust.login();
       const last = lastUser('crust')
       if (last && accounts.includes(last.account)) {
         setLogined(last)
@@ -129,6 +167,7 @@ function Home({ className }: { className?: string }) {
       const last = lastUser('polkadot-js')
       if (last && accounts.includes(last.account)) {
         setLogined(last)
+        loginedSign(last, user.polkadotJs);
       } else if (accounts.length > 0) {
         setLogined({
           account: accounts[0],
@@ -164,6 +203,10 @@ function Home({ className }: { className?: string }) {
               account: selectedAddress,
               wallet
             });
+            loginedSign({
+              account: selectedAddress,
+              wallet
+            }, user.metamask);
           } else if (res.length) {
             setLogined({
               account: res[0],
@@ -313,7 +356,7 @@ function Home({ className }: { className?: string }) {
     };
     const provider = getProvider();
     if (provider) {
-      provider.connect().then(connected => {
+      provider.connect().then(async connected => {
           console.log('connectInfo: ', connected)
           if (connected) {
             user.aptos.provider = provider;
@@ -323,6 +366,8 @@ function Home({ className }: { className?: string }) {
               wallet: 'aptos',
               pubKey: connected.publicKey
             });
+            // console.log('user:::', user)
+            // await loginedSign();
           } else {
             setError(`Aptos (Martian Wallet) not installed`)
             return

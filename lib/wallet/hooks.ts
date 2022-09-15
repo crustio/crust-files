@@ -43,7 +43,8 @@ export class LoginUser {
   wallet: 'crust' | 'polkadot-js' | 'metamask' | 'metamask-Moonriver' | 'metamask-Polygon' | 'metamask-BSC' | 'metamask-HECO' | 'metamask-Cubechain' | 'metax' |
     'near' | 'flow' | 'solana' | 'elrond' | 'wallet-connect' | 'aptos';
   key?: KEYS = 'files:login';
-
+  authBasic?: string;
+  authBearer?: string;
 }
 
 export const WalletName: { [k in LoginUser['wallet']]: string } = {
@@ -75,6 +76,8 @@ export function lastUser(wallet: LoginUser['wallet'], key: KEYS = 'files:login')
 }
 
 export function saveLastUser(wallet: LoginUser['wallet'], data: LoginUser, key: KEYS = 'files:login') {
+  data.authBasic = null;
+  data.authBearer = null;
   store.set(`${key}:${wallet}:last`, data)
 }
 
@@ -99,6 +102,8 @@ export interface WrapLoginUser extends LoginUser {
   elrond: Elrond,
   walletConnect: MWalletConnect,
   aptos: Aptos,
+  authBasic?: string;
+  authBearer?: string;
 }
 
 const defFilesObj: Files = { files: [], isLoad: true };
@@ -229,7 +234,7 @@ export function useSign(wUser: WrapLoginUser): UseSign {
   return state;
 }
 
-const defLoginUser: LoginUser = { account: '', wallet: 'crust', key: 'files:login' };
+const defLoginUser: LoginUser = { account: '', wallet: 'crust', key: 'files:login', authBasic: null, authBearer: null };
 
 export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
   const [account, setAccount] = useState<LoginUser>(defLoginUser);
