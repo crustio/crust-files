@@ -76,8 +76,6 @@ export function lastUser(wallet: LoginUser['wallet'], key: KEYS = 'files:login')
 }
 
 export function saveLastUser(wallet: LoginUser['wallet'], data: LoginUser, key: KEYS = 'files:login') {
-  data.authBasic = null;
-  data.authBearer = null;
   store.set(`${key}:${wallet}:last`, data)
 }
 
@@ -257,7 +255,6 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
 
   const setLoginUser = useCallback((loginUser: LoginUser) => {
     const nAccount = { ...loginUser, key };
-
     setAccount((old) => {
       if (old.wallet === 'near') {
         // eslint-disable-next-line
@@ -328,7 +325,7 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
     try {
       const f = store.get(key, defLoginUser) as LoginUser;
       setAccounts(undefined)
-      if (f === defLoginUser || f.account === '') {
+      if (f === defLoginUser || f.account === '' || !f.authBasic) {
         setIsLoad(false)
         return;
       }
@@ -358,7 +355,9 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
             if (metamask.isAllowed && metamask.accounts.length) {
               setAccount({
                 account: metamask.accounts[0],
-                wallet: f.wallet
+                wallet: f.wallet,
+                authBasic: f.authBasic,
+                authBearer: f.authBearer
               });
             }
           })
@@ -370,7 +369,9 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
             if (metax.isAllowed && metax.accounts.length) {
               setAccount({
                 account: metax.accounts[0],
-                wallet: f.wallet
+                wallet: f.wallet,
+                authBasic: f.authBasic,
+                authBearer: f.authBearer
               });
             }
           })

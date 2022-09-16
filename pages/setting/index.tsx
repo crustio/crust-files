@@ -43,6 +43,7 @@ function Index(props: Props) {
   const isCrust = user.wallet === 'crust'
   const wFiles = useFiles();
   const { publicCount, publicSize, valutCount, valutSize} = useFilesInfo(wFiles);
+  console.log('user::', user)
 
   const importInputRef = useRef<HTMLInputElement>(null);
   const _clickImport = useCallback(() => {
@@ -158,6 +159,12 @@ function Index(props: Props) {
       </div>
       <div className="text font-sans-regular">
         {`${t('Space Usage:')} `} <span className="bold-text font-sans-semibold">{`${publicSize} in Public, ${valutSize} in Vault`}</span>
+      </div>
+      <div className="text font-sans-regular">
+        {`${t('Access token:')} `} <span className="bold-text font-sans-semibold" style={{ "wordBreak": 'break-all' }}>
+          {user.authBasic}
+          <span className="icon cru-fo-copy" onClick={() => copy(user.authBasic)} />
+        </span>
       </div>
     </Segment>
     <Segment basic className={"mcard"}>
