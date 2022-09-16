@@ -287,7 +287,7 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
 
   useEffect(() => {
     metax.onAccountChange = (data) => {
-      console.info('accountsChange::', data, account)
+      // console.info('accountsChange::', data, account)
       if (account.wallet !== 'metax') return
       const accounts = data
       if (accounts.length !== 0) {
