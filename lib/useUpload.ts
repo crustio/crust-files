@@ -66,13 +66,15 @@ export function useUpload(user: WrapLoginUser, options: Options): UseUpload {
             // 1: sign
             setBusy(true);
 
-            const prefix = getPerfix(user);
+            // const prefix = getPerfix(user);
             const msg = user.wallet === 'near' || user.wallet === 'aptos' ? user.pubKey || '' : user.account;
-            const signature = await user.sign(msg, user.account);
-            const perSignData = user.wallet === 'elrond' ? signature : `${prefix}-${msg}:${signature}`;
-            const base64Signature = window.btoa(perSignData);
-            const AuthBasic = `Basic ${base64Signature}`;
-            const AuthBearer = `Bearer ${base64Signature}`;
+            // const signature = await user.sign(msg, user.account);
+            // const perSignData = user.wallet === 'elrond' ? signature : `${prefix}-${msg}:${signature}`;
+            // const base64Signature = window.btoa(perSignData);
+            // const AuthBasic = `Basic ${base64Signature}`;
+            // const AuthBearer = `Bearer ${base64Signature}`;
+            const AuthBasic = user.authBasic;
+            const AuthBearer = user.authBearer;
             // 2: up file
             const cancel = axios.CancelToken.source();
 
@@ -163,7 +165,7 @@ export function useUpload(user: WrapLoginUser, options: Options): UseUpload {
             }
             const params: Params = {
                 msg,
-                signature: signature
+                signature: user.signature
             }
             return [sf, params]
         } catch (e) {

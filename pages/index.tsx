@@ -93,20 +93,17 @@ function Home({ className }: { className?: string }) {
         user.setLoginUser({
           ...u,
           authBasic,
-          authBearer
+          authBearer,
+          signature
         })
       } else {
         user.setLoginUser({
           ...u,
-          authBasic: null,
-          authBearer: null
         });
       }
     }).catch(() => {
       user.setLoginUser({
         ...u,
-        authBasic: null,
-        authBearer: null
       });
     })
   }

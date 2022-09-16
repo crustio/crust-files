@@ -36,15 +36,16 @@ function ModalSelectAccount(props: Props) {
             account,
             pubKey: user.pubKey,
             authBasic,
-            authBearer
+            authBearer,
+            signature
           })
         } else {
           user.setLoginUser({
             wallet: user.wallet,
             account,
             pubKey: user.pubKey,
-            authBasic: null,
-            authBearer: null
+            // authBasic: null,
+            // authBearer: null
           });
         }
       }).catch(() => {
@@ -52,8 +53,8 @@ function ModalSelectAccount(props: Props) {
           wallet: user.wallet,
           account,
           pubKey: user.pubKey,
-          authBasic: null,
-          authBearer: null
+          // authBasic: null,
+          // authBearer: null
         });
       })
       // user.setLoginUser({
