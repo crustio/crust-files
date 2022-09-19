@@ -170,7 +170,7 @@ function Index(props: Props) {
       <div className="permium-trial">
         <div className="mtable premium">
           <div className="t-title">Premium User</div>
-          <div className="t-item">End-2-end File Encryption<img className="icon" src="/images/icon_hook.png" /></div>
+          {/* <div className="t-item">End-2-end File Encryption<img className="icon" src="/images/icon_hook.png" /></div> */}
           <div className="t-item"><span>Maximum Upload Size of</span><span className='primary'>1GB</span></div>
           <div className="t-item two">
             <span style={{ marginRight: 6 }}><span className='primary'>Renew</span> On-chain Storage Order &</span>
@@ -187,7 +187,7 @@ function Index(props: Props) {
         </div>
         <div className="mtable trial">
           <div className="t-title">Trial User</div>
-          <div className="t-item">End-2-end File Encryption<img className="icon" src="/images/icon_fork.png" /></div>
+          {/* <div className="t-item">End-2-end File Encryption<img className="icon" src="/images/icon_fork.png" /></div> */}
           <div className="t-item"><span>Maximum Upload Size of </span><span className='primary'>40MB</span></div>
           <div className="t-item"><span>Storage Order Expires in</span><span className='primary'>6 Months</span></div>
           <div className="t-item"><span className='primary'>Limited</span> <span>Space</span></div>

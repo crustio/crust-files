@@ -37,7 +37,7 @@ function Vault(p: { className?: string }) {
     wInputFile.setFile(info)
   }
   const noSecret = uc.init && !uc.secret
-  const disabledUpload = !isPremiumUser || noSecret
+  const disabledUpload = noSecret
   const { valutCount, valutSize } = useFilesInfo(wFiles)
 
   return <PageUserSideLayout path={'/files/vault'} className={p.className}>
@@ -66,13 +66,13 @@ function Vault(p: { className?: string }) {
           onClickUpFile={() => !disabledUpload && wInputFile._onClickUpFile()}
         // onClickUpFolder={wInputFile._onClickUpFolder}
         />
-        {!isPremiumUser && <div className="unValut">Get <span onClick={() => r.push('/user')}>Premium</span> to Unlock.</div>}
+        {/* {!isPremiumUser && <div className="unValut">Get <span onClick={() => r.push('/user')}>Premium</span> to Unlock.</div>} */}
         {isPremiumUser && noSecret && <div className="unValut">Set your <span onClick={() => r.push('/setting')}>Encryption Key</span> first.</div>}
       </div>
 
       {
         wInputFile.file && <UploadModal
-          isPremium={isPremiumUser}
+          isPremium={true}
           type="vault"
           file={wInputFile.file}
           user={user}

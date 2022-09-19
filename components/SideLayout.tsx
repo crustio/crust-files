@@ -38,9 +38,9 @@ const menus: MenuItem[] = [
     ]
   },
   { path: "/setting", icon: "cru-fo-settings", name: 'Settings' },
-  { path: "/share-earn", icon: "cru-fo-share-2", name: 'Share-and-Earn' },
+  // { path: "/share-earn", icon: "cru-fo-share-2", name: 'Share-and-Earn' },
   { path: "/user", icon: "cru-fo-user", name: 'Premium User' },
-  { icon: "cru-fo-credit-card", name: 'Pay to Download',link: 'https://p2d.crustapps.net/' },
+  // { icon: "cru-fo-credit-card", name: 'Pay to Download',link: 'https://p2d.crustapps.net/' },
   { icon: "cru-fo-database", name: 'Get CRU', link: 'https://swap.crustapps.net' },
 ]
 
