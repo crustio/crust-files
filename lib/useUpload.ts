@@ -73,8 +73,8 @@ export function useUpload(user: WrapLoginUser, options: Options): UseUpload {
             // const base64Signature = window.btoa(perSignData);
             // const AuthBasic = `Basic ${base64Signature}`;
             // const AuthBearer = `Bearer ${base64Signature}`;
-            const AuthBasic = user.authBasic;
-            const AuthBearer = user.authBearer;
+            const AuthBasic = `Basic ${user.authBasic}`;
+            const AuthBearer = `Bearer ${user.authBearer}`;
             // 2: up file
             const cancel = axios.CancelToken.source();
 

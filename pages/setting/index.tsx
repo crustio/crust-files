@@ -160,6 +160,11 @@ function Index(props: Props) {
       <div className="text font-sans-regular">
         {`${t('Space Usage:')} `} <span className="bold-text font-sans-semibold">{`${publicSize} in Public, ${valutSize} in Vault`}</span>
       </div>
+    </Segment>
+    <Segment basic className={"mcard"}>
+      <div className="title font-sans-semibold">
+        {t('Developer Profile')}
+      </div>
       <div className="text font-sans-regular">
         {`${t('Access token:')} `} <span className="bold-text font-sans-semibold" style={{ "wordBreak": 'break-all' }}>
           {user.authBasic}

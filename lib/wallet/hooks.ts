@@ -277,37 +277,6 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
       if (!account.wallet.startsWith('metamask')) return
       const accounts = data
       if (accounts.length !== 0) {
-        // const prefix = 'eth';
-        // const msg = account.account;
-        // metamask.sign(msg, msg).then(signature => {
-        //   if (signature.length) {
-        //     const perSignData =`${prefix}-${msg}:${signature}`;
-        //     const base64Signature = window.btoa(perSignData);
-        //     const authBasic = `Basic ${base64Signature}`;
-        //     const authBearer = `Bearer ${base64Signature}`;
-        //     setLoginUser({
-        //       wallet: account.wallet,
-        //       account: account.account,
-        //       pubKey: account.pubKey,
-        //       authBasic,
-        //       authBearer
-        //     })
-        //   } else {
-        //     setLoginUser({
-        //       wallet: account.wallet,
-        //       account: account.account,
-        //       authBasic: null,
-        //       authBearer: null
-        //     });
-        //   }
-        // }).catch(() => {
-        //   setLoginUser({
-        //     wallet: account.wallet,
-        //     account: account.account,
-        //     authBasic: null,
-        //     authBearer: null
-        //   });
-        // })
         setLoginUser({
           account: accounts[0],
           wallet: account.wallet
@@ -324,37 +293,6 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
       if (account.wallet !== 'metax') return
       const accounts = data
       if (accounts.length !== 0) {
-        // const prefix = 'eth';
-        // const msg = account.account;
-        // metax.sign(msg, msg).then(signature => {
-        //   if (signature.length) {
-        //     const perSignData =`${prefix}-${msg}:${signature}`;
-        //     const base64Signature = window.btoa(perSignData);
-        //     const authBasic = `Basic ${base64Signature}`;
-        //     const authBearer = `Bearer ${base64Signature}`;
-        //     setLoginUser({
-        //       wallet: account.wallet,
-        //       account: account.account,
-        //       pubKey: account.pubKey,
-        //       authBasic,
-        //       authBearer
-        //     })
-        //   } else {
-        //     setLoginUser({
-        //       wallet: account.wallet,
-        //       account: account.account,
-        //       authBasic: null,
-        //       authBearer: null
-        //     });
-        //   }
-        // }).catch(() => {
-        //   setLoginUser({
-        //     wallet: account.wallet,
-        //     account: account.account,
-        //     authBasic: null,
-        //     authBearer: null
-        //   });
-        // })
         setLoginUser({
           account: accounts[0],
           wallet: account.wallet
@@ -370,37 +308,6 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
       if (account.wallet !== 'wallet-connect') return
       if (data.length) {
         console.info('wallet-connet:changed:', data)
-        // const prefix = 'eth';
-        // const msg = account.account;
-        // walletConnect.sign(msg, msg).then(signature => {
-        //   if (signature.length) {
-        //     const perSignData =`${prefix}-${msg}:${signature}`;
-        //     const base64Signature = window.btoa(perSignData);
-        //     const authBasic = `Basic ${base64Signature}`;
-        //     const authBearer = `Bearer ${base64Signature}`;
-        //     setLoginUser({
-        //       wallet: account.wallet,
-        //       account: account.account,
-        //       pubKey: account.pubKey,
-        //       authBasic,
-        //       authBearer
-        //     })
-        //   } else {
-        //     setLoginUser({
-        //       wallet: account.wallet,
-        //       account: account.account,
-        //       authBasic: null,
-        //       authBearer: null
-        //     });
-        //   }
-        // }).catch(() => {
-        //   setLoginUser({
-        //     wallet: account.wallet,
-        //     account: account.account,
-        //     authBasic: null,
-        //     authBearer: null
-        //   });
-        // })
         setLoginUser({
           account: data[0],
           wallet: account.wallet

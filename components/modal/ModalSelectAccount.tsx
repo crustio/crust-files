@@ -29,8 +29,8 @@ function ModalSelectAccount(props: Props) {
         if (signature.length) {
           const perSignData = user.wallet === 'elrond' ? signature : `${prefix}-${msg}:${signature}`;
           const base64Signature = window.btoa(perSignData);
-          const authBasic = `Basic ${base64Signature}`;
-          const authBearer = `Bearer ${base64Signature}`;
+          const authBasic = `${base64Signature}`;
+          const authBearer = `${base64Signature}`;
           user.setLoginUser({
             wallet: user.wallet,
             account,
