@@ -12,6 +12,7 @@ function home(p: BaseProps) {
     const _onClickShareAndEarn = () => r.push('/share-earn')
     const _onClickVault = () => isPremiumUser && r.push('/files/vault')
     const _onClickUser = () => r.push('/user')
+    const _onClickPay2Download = () => { window.location.href = 'https://p2d.crustapps.net/' }
 
     return <PageUserSideLayout path='/home' className={p.className}>
         <div className="home--slog">
@@ -50,7 +51,7 @@ function home(p: BaseProps) {
                   </div>
                 </div>
             </div>
-            <div className="home--card">
+            <div className="home--card" onClick={_onClickPay2Download}>
                 <div className="home--card--inner">
                   <div className="home--card--front">
                     <img src="/images/w3.png" className="img-fluid" />
