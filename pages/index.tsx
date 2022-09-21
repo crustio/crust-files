@@ -12,9 +12,10 @@ import { AppContext } from "../lib/AppContext";
 import { CrustGetCRU, CrustWalletDownUrl } from "../lib/config";
 import useParallax from "../lib/hooks/useParallax";
 import { report } from "../lib/http/report";
+import { BaseWallet } from "../lib/types";
 import { openDocs } from "../lib/utils";
 import { nearConfig } from "../lib/wallet/config";
-import { lastUser, LoginUser, useContextWrapLoginUser } from "../lib/wallet/hooks";
+import { getPerfix, lastUser, LoginUser, useContextWrapLoginUser } from "../lib/wallet/hooks";
 interface ItemWallet {
   name: string,
   image: string,
@@ -77,8 +78,39 @@ function Home({ className }: { className?: string }) {
       alert.error(data)
     }
   }
-  const setLogined = (u: LoginUser) => {
+
+
+  const loginedSign = (u: LoginUser, wallet: BaseWallet) => {
+    // const prefix = getPerfix(user);
+    const msg = u.wallet === 'near' || u.wallet === 'aptos' ? u.pubKey || '' : u.account;
+    const prefix = getPerfix(u);
+    wallet.sign(msg, u.account).then(signature => {
+      if (signature.length) {
+        const perSignData = user.wallet === 'elrond' ? signature : `${prefix}-${msg}:${signature}`;
+        const base64Signature = window.btoa(perSignData);
+        const authBasic = `${base64Signature}`;
+        const authBearer = `${base64Signature}`;
+        user.setLoginUser({
+          ...u,
+          authBasic,
+          authBearer,
+          signature
+        })
+      } else {
+        user.setLoginUser({
+          ...u,
+        });
+      }
+    }).catch(() => {
+      user.setLoginUser({
+        ...u,
+      });
+    })
+  }
+
+  const setLogined = (u: LoginUser, wallet: BaseWallet) => {
     user.setLoginUser(u)
+    loginedSign(u, wallet)
     report({
       type: 1,
       walletType: u.wallet,
@@ -94,15 +126,15 @@ function Home({ className }: { className?: string }) {
         setError(`Crust Wallet not installed`)
         return
       }
-      const accounts = await user.crust.login()
+      const accounts = await user.crust.login();
       const last = lastUser('crust')
       if (last && accounts.includes(last.account)) {
-        setLogined(last)
+        setLogined(last, user.crust)
       } else if (accounts.length > 0) {
         setLogined({
           account: accounts[0],
           wallet: 'crust',
-        })
+        }, user.crust)
       }
     } catch (e) {
       console.error(e)
@@ -128,12 +160,12 @@ function Home({ className }: { className?: string }) {
       const accounts = await user.polkadotJs.login()
       const last = lastUser('polkadot-js')
       if (last && accounts.includes(last.account)) {
-        setLogined(last)
+        loginedSign(last, user.polkadotJs);
       } else if (accounts.length > 0) {
         setLogined({
           account: accounts[0],
           wallet: 'polkadot-js'
-        })
+        }, user.polkadotJs)
       }
     } catch (e) {
       console.error(e)
@@ -163,12 +195,12 @@ function Home({ className }: { className?: string }) {
             setLogined({
               account: selectedAddress,
               wallet
-            });
+            }, user.metamask);
           } else if (res.length) {
             setLogined({
               account: res[0],
               wallet
-            });
+            }, user.metamask);
           }
         })
         .catch((error) => {
@@ -195,12 +227,12 @@ function Home({ className }: { className?: string }) {
             setLogined({
               account: selectedAddress,
               wallet
-            });
+            }, user.metax);
           } else if (res.length) {
             setLogined({
               account: res[0],
               wallet
-            });
+            }, user.metax);
           }
         })
         .catch((error) => {
@@ -225,7 +257,7 @@ function Home({ className }: { className?: string }) {
             account: user.near.wallet.getAccountId() as string,
             wallet: 'near',
             pubKey: user.near.keyPair.getPublicKey().toString().substring(8)
-          })
+          }, user.near)
         }
       })
       .catch(console.error)
@@ -249,7 +281,7 @@ function Home({ className }: { className?: string }) {
       // eslint-disable-next-line
       account: flowUser.addr,
       wallet: 'flow'
-    });
+    }, user.flow);
   }, [user]);
 
   const _onClickSolana = useCallback(async () => {
@@ -265,7 +297,7 @@ function Home({ className }: { className?: string }) {
         // eslint-disable-next-line
         account: user.solana.solana.publicKey.toBase58(),
         wallet: 'solana'
-      });
+      }, user.solana);
 
       return;
     }
@@ -278,7 +310,7 @@ function Home({ className }: { className?: string }) {
         // eslint-disable-next-line
         account: user.solana.solana.publicKey.toBase58(),
         wallet: 'solana'
-      });
+      }, user.solana);
     });
   }, [user, t]);
 
@@ -300,7 +332,7 @@ function Home({ className }: { className?: string }) {
       // eslint-disable-next-line
       account: address,
       wallet: 'elrond'
-    });
+    }, user.elrond);
   }, [user, t])
 
   const _onClickAptos = useCallback(async () => {
@@ -313,7 +345,7 @@ function Home({ className }: { className?: string }) {
     };
     const provider = getProvider();
     if (provider) {
-      provider.connect().then(connected => {
+      provider.connect().then(async connected => {
           console.log('connectInfo: ', connected)
           if (connected) {
             user.aptos.provider = provider;
@@ -322,7 +354,9 @@ function Home({ className }: { className?: string }) {
               account: connected.address,
               wallet: 'aptos',
               pubKey: connected.publicKey
-            });
+            }, user.aptos);
+            // console.log('user:::', user)
+            // await loginedSign();
           } else {
             setError(`Aptos (Martian Wallet) not installed`)
             return
@@ -350,7 +384,7 @@ function Home({ className }: { className?: string }) {
       setLogined({
         account: accounts[0],
         wallet: 'wallet-connect'
-      })
+      }, user.walletConnect)
     })
   }, [user])
 

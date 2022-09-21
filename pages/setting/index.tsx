@@ -43,6 +43,7 @@ function Index(props: Props) {
   const isCrust = user.wallet === 'crust'
   const wFiles = useFiles();
   const { publicCount, publicSize, valutCount, valutSize} = useFilesInfo(wFiles);
+  console.log('user::', user)
 
   const importInputRef = useRef<HTMLInputElement>(null);
   const _clickImport = useCallback(() => {
@@ -162,12 +163,23 @@ function Index(props: Props) {
     </Segment>
     <Segment basic className={"mcard"}>
       <div className="title font-sans-semibold">
+        {t('Developer Profile')}
+      </div>
+      <div className="text font-sans-regular">
+        {`${t('Access token:')} `} <span className="bold-text font-sans-semibold" style={{ "wordBreak": 'break-all' }}>
+          {user.authBasic}
+          <span className="icon cru-fo-copy" onClick={() => copy(user.authBasic)} />
+        </span>
+      </div>
+    </Segment>
+    <Segment basic className={"mcard"}>
+      {/* <div className="title font-sans-semibold">
         {t('User Data Management')}
       </div>
       <div className="text font-sans-regular">
         {`${t('Your user data (including three File Lists and one File Encryption Key) are cached on your local devices. If you want to migrate your user data to a new device, use Export & Import function.')} `}
         <span style={{ color: '#f47e6b' }}>Attention Please! If you want to switch device or explorer, please follow the following steps: 1) Export your user data from old device/explorer. 2) Log in to Crust Files in your new device/explorer. 3) Import the user data. 4) Enjoy Crust Files!</span>
-      </div>
+      </div> */}
       <Accordion>
         <AccordionTitle active={showFileEncryption} onClick={() => toggleFileEncryption()}>
           <div className="title font-sans-semibold">

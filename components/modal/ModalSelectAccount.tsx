@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import { Dropdown, DropdownItemProps, Modal, ModalProps } from "semantic-ui-react";
 import styled from "styled-components";
 import Btn from "../Btn";
-import { WrapLoginUser } from "../../lib/wallet/hooks";
+import { getPerfix, WrapLoginUser } from "../../lib/wallet/hooks";
 import { shortStr } from "../../lib/utils";
 import { useGet } from "../../lib/hooks/useGet";
 import { getNickPairList } from "../../lib/http/share_earn";
@@ -23,11 +23,45 @@ function ModalSelectAccount(props: Props) {
 
   const _onClickConfirm = useCallback(() => {
     if (user.account !== account) {
-      user.setLoginUser({
-        wallet: user.wallet,
-        account,
-        pubKey: user.pubKey
+      const prefix = getPerfix(user);
+      const msg = user.wallet === 'near' || user.wallet === 'aptos' ? user.pubKey || '' : user.account;
+      user.sign(msg, user.account).then(signature => {
+        if (signature.length) {
+          const perSignData = user.wallet === 'elrond' ? signature : `${prefix}-${msg}:${signature}`;
+          const base64Signature = window.btoa(perSignData);
+          const authBasic = `${base64Signature}`;
+          const authBearer = `${base64Signature}`;
+          user.setLoginUser({
+            wallet: user.wallet,
+            account,
+            pubKey: user.pubKey,
+            authBasic,
+            authBearer,
+            signature
+          })
+        } else {
+          user.setLoginUser({
+            wallet: user.wallet,
+            account,
+            pubKey: user.pubKey,
+            // authBasic: null,
+            // authBearer: null
+          });
+        }
+      }).catch(() => {
+        user.setLoginUser({
+          wallet: user.wallet,
+          account,
+          pubKey: user.pubKey,
+          // authBasic: null,
+          // authBearer: null
+        });
       })
+      // user.setLoginUser({
+      //   wallet: user.wallet,
+      //   account,
+      //   pubKey: user.pubKey
+      // })
     }
     toggleOpen(false)
   }, [account, user])

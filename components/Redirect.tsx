@@ -26,12 +26,12 @@ export default function Redirect(props: { children: any }) {
   if (NO_CHECK_USER.includes(router.pathname)) return props.children;
 
   // check user
-  if (!wUser.account && (router.pathname !== '' && router.pathname !== '/')) {
+  if ((!wUser.account || !wUser.authBasic) && (router.pathname !== '' && router.pathname !== '/')) {
     router.replace('/')
     return null
   }
   
-  if (wUser.account && (router.pathname === '' || router.pathname === '/')) {
+  if (wUser.account && wUser.authBasic && (router.pathname === '' || router.pathname === '/')) {
     router.replace(`/home/${window.location.search}`)
     return null
   }
