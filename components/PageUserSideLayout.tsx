@@ -28,6 +28,7 @@ export default React.memo<Props>(styled(_PageUserSideLayout)`
         width: 100%;
         overflow: auto;
         flex: 1;
+        position: relative;
     }
     .pusl_center_flex_content {
         flex-shrink: 0;
