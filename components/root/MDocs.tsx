@@ -10,10 +10,16 @@ import { BaseProps } from '../types';
 interface Menu {
     name: string,
     path: string,
+    children?: Menu[];
 }
 
 const menus: Menu[] = [
-    { name: 'Welcome', path: '/docs/CrustFiles_Welcome' },
+    { name: 'Welcome', path: '/docs/CrustFiles_Welcome',
+        children: [{
+            name: 'Welcome1',
+            path: '/docs/CrustFiles_Welcome'
+        }]
+    },
     { name: 'FAQ', path: '/docs/CrustFiles_FAQ' },
     { name: 'Users', path: '/docs/CrustFiles_Users' },
     { name: 'Share-and-Earn', path: '/docs/CrustFiles_ShareandEarn' },
@@ -29,11 +35,21 @@ function _MDocs({ Component, pageProps, className }: AppProps & BaseProps) {
         <HeadFiles/>
         <div className="docs_panel">
             <div className="left_menu">
-                {menus.map((m,index) =>
-                    <div
-                        key={`docs_menu_${index}`}
-                        className={classNames("item", { active: m.path === r.pathname })}
-                        onClick={() => { r.push(m.path) }}>{m.name}</div>)}
+                {menus.map((m,index) =>{
+                    return <>
+                        <div
+                            key={`docs_menu_${index}`}
+                            className={classNames("item", { active: m.path === r.pathname })}
+                            onClick={() => { r.push(m.path) }}>{m.name}</div>
+                        { m.children?.map((c,cindex) => 
+                            <div
+                                key={`docs_menu_${cindex}`}
+                                style={{ paddingLeft: 30 }}
+                                className={classNames("item", { active: c.path === r.pathname })}
+                                onClick={() => { r.push(c.path) }}>{c.name}</div>)}    
+                    </>
+                   
+                })}
             </div>
             <div className="md_content">
                 <Component {...pageProps} />
