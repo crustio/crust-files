@@ -23,12 +23,12 @@ export function createAuthIpfsEndpoints(t: TFunction): AuthIpfsEndpoint[] {
     //   value: 'https://beta.ipfs-auth.decoo.io'
     // },
     // for prod
-    // {
-    //   location: t('️Shanghai'),
-    //   text: t('️⚡ Thunder Gateway'),
-    //   value: 'https://gw.crustapps.net',
-    //   // group: "Thunder Gateway"
-    // },
+    {
+      location: t('️Shanghai'),
+      text: t('️⚡ Thunder Gateway'),
+      value: 'https://gw.crustapps.net',
+      // group: "Thunder Gateway"
+    },
     {
       location: t('Seattle'),
       text: t('⚡ Thunder Gateway'),
