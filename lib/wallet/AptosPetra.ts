@@ -13,7 +13,7 @@ export class AptosPetra implements BaseWallet {
   }
 
   sign(data: string): Promise<string> {
-    return this.provider.signMessage({ message: data }).then(message => { 
+    return this.provider.signMessage({ message: data, nonce: "crust" }).then(message => { 
       return `${message.signature}`;
     })
     .catch((err) => {

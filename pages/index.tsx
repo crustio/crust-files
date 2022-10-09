@@ -83,7 +83,7 @@ function Home({ className }: { className?: string }) {
 
   const loginedSign = (u: LoginUser, wallet: BaseWallet) => {
     // const prefix = getPerfix(user);
-    const msg = u.wallet === 'near' || u.wallet === 'aptos-martian' ? u.pubKey || '' : u.account;
+    const msg = u.wallet === 'near' || u.wallet === 'aptos-martian' || u.wallet == 'aptos-petra' ? u.pubKey || '' : u.account;
     const prefix = getPerfix(u);
     wallet.sign(msg, u.account).then(signature => {
       if (signature.length) {
@@ -496,15 +496,15 @@ function Home({ className }: { className?: string }) {
       },
       {
         group: 'Web 3',
-        name: 'Aptos',
+        name: 'Aptos Petra',
         image: '/images/aptos.svg',
-        onClick: _onClickAptosMartian,
+        onClick: _onClickAptosPetra,
       },
       {
         group: 'Web 3',
-        name: 'Aptos',
+        name: 'Aptos Martian',
         image: '/images/aptos.svg',
-        onClick: _onClickAptosPetra,
+        onClick: _onClickAptosMartian,
       },
       {
         group: 'Web 3',
