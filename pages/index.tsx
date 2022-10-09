@@ -537,7 +537,7 @@ function Home({ className }: { className?: string }) {
         onClick: _onClickWalletConnect,
       }
     ]
-  }, [_onClickCrust, _onClickCrustDown, _onClickCrustGetCru, _onClickPolkadotJs, _onClickMetamask, _onClickNear, _onClickFlow, _onClickSolana, _onClickElrond, _onClickWalletConnect])
+  }, [_onClickCrust, _onClickCrustDown, _onClickCrustGetCru, _onClickPolkadotJs, _onClickMetamask, _onClickNear, _onClickFlow, _onClickSolana, _onClickElrond, _onClickWalletConnect, _onClickAptosMartian, _onClickAptosPetra])
 
   const groupWallets = useMemo<WalletGroup[]>(() => {
     const groupObj = _.groupBy(wallets, 'group')
