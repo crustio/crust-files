@@ -67,7 +67,7 @@ export function useUpload(user: WrapLoginUser, options: Options): UseUpload {
             setBusy(true);
 
             // const prefix = getPerfix(user);
-            const msg = user.wallet === 'near' || user.wallet === 'aptos' ? user.pubKey || '' : user.account;
+            const msg = user.wallet === 'near' || user.wallet === 'aptos-martian' || user.wallet === 'aptos-petra' ? user.pubKey || '' : user.account;
             // const signature = await user.sign(msg, user.account);
             // const perSignData = user.wallet === 'elrond' ? signature : `${prefix}-${msg}:${signature}`;
             // const base64Signature = window.btoa(perSignData);

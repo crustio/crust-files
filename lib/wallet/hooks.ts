@@ -3,7 +3,8 @@ import React, { Dispatch, SetStateAction, useCallback, useContext, useEffect, us
 import store from 'store';
 import { Member } from '../http/types';
 import { formatToCrustAccount } from "../utils";
-import { Aptos } from "./aptos";
+import { AptosMartian } from "./AptosMartian";
+import { AptosPetra } from "./AptosPetra";
 import { Crust } from './Crust';
 import { Elrond } from "./Elrond";
 import { FlowM } from './Flow';
@@ -41,7 +42,7 @@ export class LoginUser {
   account = '';
   pubKey?: string;
   wallet: 'crust' | 'polkadot-js' | 'metamask' | 'metamask-Moonriver' | 'metamask-Polygon' | 'metamask-BSC' | 'metamask-HECO' | 'metamask-Cubechain' | 'metax' |
-    'near' | 'flow' | 'solana' | 'elrond' | 'wallet-connect' | 'aptos';
+    'near' | 'flow' | 'solana' | 'elrond' | 'wallet-connect' | 'aptos-martian' | 'aptos-petra';
   key?: KEYS = 'files:login';
   authBasic?: string;
   authBearer?: string;
@@ -63,7 +64,8 @@ export const WalletName: { [k in LoginUser['wallet']]: string } = {
   "flow": "Flow Wallet",
   "solana": "Solana(Phantom Wallet)",
   "wallet-connect": "WalletConnect",
-  "aptos": "Aptos"
+  "aptos-martian": "Aptos",
+  "aptos-petra": "Aptos",
 }
 
 
@@ -100,7 +102,8 @@ export interface WrapLoginUser extends LoginUser {
   solana: SolanaM,
   elrond: Elrond,
   walletConnect: MWalletConnect,
-  aptos: Aptos,
+  aptosMartian: AptosMartian,
+  aptosPetra: AptosPetra,
   authBasic?: string;
   authBearer?: string;
   signature?: string;
@@ -222,10 +225,17 @@ export function useSign(wUser: WrapLoginUser): UseSign {
         }
       }))
     }
-    if (wUser.wallet === 'aptos') {
+    if (wUser.wallet === 'aptos-martian') {
       setState((o) => ({
         ...o, sign: async (data) => {
-          return wUser.aptos.sign(data)
+          return wUser.aptosMartian.sign(data)
+        }
+      }))
+    }
+    if (wUser.wallet === 'aptos-petra') {
+      setState((o) => ({
+        ...o, sign: async (data) => {
+          return wUser.aptosPetra.sign(data)
         }
       }))
     }
@@ -251,7 +261,8 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
   const flow = useMemo(() => new FlowM(), []);
   const solana = useMemo(() => new SolanaM(), []);
   const elrond = useMemo(() => new Elrond(), []);
-  const aptos = useMemo(() => new Aptos(), []);
+  const aptosMartian = useMemo(() => new AptosMartian(), []);
+  const aptosPetra = useMemo(() => new AptosPetra(), []);
   const walletConnect = useMemo(() => new MWalletConnect(), []);
   const r = useRouter()
 
@@ -402,8 +413,12 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
         walletConnect.init()
           .then(() => setAccount(f))
           .then(() => setIsLoad(false))
-      } else if (f.wallet === 'aptos') {
-        aptos.init()
+      } else if (f.wallet === 'aptos-martian') {
+        aptosMartian.init()
+          .then(() => setAccount(f))
+          .then(() => setIsLoad(false))
+      } else if (f.wallet === 'aptos-petra') {
+        aptosPetra.init()
           .then(() => setAccount(f))
           .then(() => setIsLoad(false))
       } else {
@@ -430,9 +445,13 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
       }
     } else if (account.wallet === 'wallet-connect') {
       await walletConnect.connect?.killSession()
-    } else if (account.wallet === 'aptos') {
-      if (aptos.provider) {
-        aptos.provider.disconnect().then().catch()
+    } else if (account.wallet === 'aptos-martian') {
+      if (aptosMartian.provider) {
+        aptosMartian.provider.disconnect().then().catch()
+      }
+    } else if (account.wallet === 'aptos-petra') {
+      if (aptosPetra.provider) {
+        aptosPetra.provider.disconnect().then().catch()
       }
     }
 
@@ -455,7 +474,8 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
       flow,
       solana,
       elrond,
-      aptos,
+      aptosMartian,
+      aptosPetra,
       walletConnect,
       nickName,
       setNickName,
@@ -466,7 +486,7 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
   }, [
     account, accounts, isLoad, setLoginUser, logout,
     crust, polkadotJs, metamask, metax, near, flow, solana,
-    walletConnect, nickName, member, key, aptos
+    walletConnect, nickName, member, key, aptosMartian, aptosPetra
   ]);
   const uSign = useSign(wUser);
   wUser.sign = uSign.sign;
@@ -500,7 +520,11 @@ export const getPerfix = (user: LoginUser): string => {
     return 'elrond';
   }
   
-  if (user.wallet == 'aptos') {
+  if (user.wallet == 'aptos-martian') {
+    return 'aptos';
+  }
+
+  if (user.wallet == 'aptos-petra') {
     return 'aptos';
   }
  

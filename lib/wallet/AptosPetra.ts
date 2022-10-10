@@ -1,7 +1,7 @@
 import { BaseWallet } from "./types";
 
 
-export class Aptos implements BaseWallet {
+export class AptosPetra implements BaseWallet {
   isInit = false;
 
   provider?: any;
@@ -13,11 +13,11 @@ export class Aptos implements BaseWallet {
   }
 
   sign(data: string): Promise<string> {
-    return this.provider.signMessage({ message: data }).then(message => { 
+    return this.provider.signMessage({ message: data, nonce: "crust" }).then(message => { 
       return `${message.signature}`;
     })
     .catch((err) => {
-      console.error('Aptos wallet signMessage error', err);
+      console.error('Aptos Petra wallet signMessage error', err);
       return '';
     });
   }

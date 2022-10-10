@@ -24,7 +24,7 @@ function ModalSelectAccount(props: Props) {
   const _onClickConfirm = useCallback(() => {
     if (user.account !== account) {
       const prefix = getPerfix(user);
-      const msg = user.wallet === 'near' || user.wallet === 'aptos' ? user.pubKey || '' : user.account;
+      const msg = user.wallet === 'near' || user.wallet === 'aptos-martian' || user.wallet === 'aptos-petra' ? user.pubKey || '' : user.account;
       user.sign(msg, user.account).then(signature => {
         if (signature.length) {
           const perSignData = user.wallet === 'elrond' ? signature : `${prefix}-${msg}:${signature}`;

@@ -25,6 +25,7 @@ interface ItemWallet {
 declare global {
   interface Window {
     martian: any;
+    aptos: any
   }
 }
 
@@ -82,7 +83,7 @@ function Home({ className }: { className?: string }) {
 
   const loginedSign = (u: LoginUser, wallet: BaseWallet) => {
     // const prefix = getPerfix(user);
-    const msg = u.wallet === 'near' || u.wallet === 'aptos' ? u.pubKey || '' : u.account;
+    const msg = u.wallet === 'near' || u.wallet === 'aptos-martian' || u.wallet == 'aptos-petra' ? u.pubKey || '' : u.account;
     const prefix = getPerfix(u);
     wallet.sign(msg, u.account).then(signature => {
       if (signature.length) {
@@ -335,7 +336,7 @@ function Home({ className }: { className?: string }) {
     }, user.elrond);
   }, [user, t])
 
-  const _onClickAptos = useCallback(async () => {
+  const _onClickAptosMartian = useCallback(async () => {
     setError('')
     const getProvider = () => {
       if ("martian" in window) {
@@ -348,13 +349,13 @@ function Home({ className }: { className?: string }) {
       provider.connect().then(async connected => {
           console.log('connectInfo: ', connected)
           if (connected) {
-            user.aptos.provider = provider;
+            user.aptosMartian.provider = provider;
             setLogined({
               // eslint-disable-next-line
               account: connected.address,
-              wallet: 'aptos',
+              wallet: 'aptos-martian',
               pubKey: connected.publicKey
-            }, user.aptos);
+            }, user.aptosMartian);
             // console.log('user:::', user)
             // await loginedSign();
           } else {
@@ -367,6 +368,42 @@ function Home({ className }: { className?: string }) {
       });     
     } else {
       setError(`Aptos (Martian Wallet) not installed`)
+      return
+    }
+  }, [user, t])
+
+  const _onClickAptosPetra = useCallback(async () => {
+    setError('')
+    const getProvider = () => {
+      if ("aptos" in window) {
+          return (window.aptos);
+      }
+      return null;
+    };
+    const provider = getProvider();
+    if (provider) {
+      provider.connect().then(async connected => {
+          console.log('connectInfo: ', connected)
+          if (connected) {
+            user.aptosPetra.provider = provider;
+            setLogined({
+              // eslint-disable-next-line
+              account: connected.address,
+              wallet: 'aptos-petra',
+              pubKey: connected.publicKey
+            }, user.aptosPetra);
+            // console.log('user:::', user)
+            // await loginedSign();
+          } else {
+            setError(`Aptos (Petra Wallet) not installed`)
+            return
+          }
+      }).catch(_err => {
+        setError(`Aptos (Petra Wallet) not installed`)
+        return
+      });     
+    } else {
+      setError(`Aptos (Petra Wallet) not installed`)
       return
     }
   }, [user, t])
@@ -459,9 +496,15 @@ function Home({ className }: { className?: string }) {
       },
       {
         group: 'Web 3',
-        name: 'Aptos',
+        name: 'Aptos Petra',
         image: '/images/aptos.svg',
-        onClick: _onClickAptos,
+        onClick: _onClickAptosPetra,
+      },
+      {
+        group: 'Web 3',
+        name: 'Aptos Martian',
+        image: '/images/aptos.svg',
+        onClick: _onClickAptosMartian,
       },
       {
         group: 'Web 3',
@@ -494,7 +537,7 @@ function Home({ className }: { className?: string }) {
         onClick: _onClickWalletConnect,
       }
     ]
-  }, [_onClickCrust, _onClickCrustDown, _onClickCrustGetCru, _onClickPolkadotJs, _onClickMetamask, _onClickNear, _onClickFlow, _onClickSolana, _onClickElrond, _onClickWalletConnect])
+  }, [_onClickCrust, _onClickCrustDown, _onClickCrustGetCru, _onClickPolkadotJs, _onClickMetamask, _onClickNear, _onClickFlow, _onClickSolana, _onClickElrond, _onClickWalletConnect, _onClickAptosMartian, _onClickAptosPetra])
 
   const groupWallets = useMemo<WalletGroup[]>(() => {
     const groupObj = _.groupBy(wallets, 'group')
