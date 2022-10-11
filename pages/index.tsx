@@ -503,7 +503,7 @@ function Home({ className }: { className?: string }) {
       {
         group: 'Web 3',
         name: 'Aptos Martian',
-        image: '/images/aptos.svg',
+        image: '/images/martian.png',
         onClick: _onClickAptosMartian,
       },
       {
