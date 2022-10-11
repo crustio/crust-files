@@ -64,7 +64,7 @@ export const WalletName: { [k in LoginUser['wallet']]: string } = {
   "flow": "Flow Wallet",
   "solana": "Solana(Phantom Wallet)",
   "wallet-connect": "WalletConnect",
-  "aptos-martian": "Aptos",
+  "aptos-martian": "Aptos Martian",
   "aptos-petra": "Aptos",
 }
 
