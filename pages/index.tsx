@@ -87,7 +87,7 @@ function Home({ className }: { className?: string }) {
     const prefix = getPerfix(u);
     wallet.sign(msg, u.account).then(signature => {
       if (signature.length) {
-        const perSignData = user.wallet === 'elrond' ? signature : `${prefix}-${msg}:${signature}`;
+        const perSignData = u.wallet === 'elrond' ? signature : `${prefix}-${msg}:${signature}`;
         const base64Signature = window.btoa(perSignData);
         const authBasic = `${base64Signature}`;
         const authBearer = `${base64Signature}`;

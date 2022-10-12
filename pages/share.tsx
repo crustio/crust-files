@@ -44,7 +44,8 @@ function _share(props: BaseProps) {
                     cid: cid,
                     fileType: options.isDir ? 1 : 0,
                     strategy: options.encrypted ? 1 : 0,
-                    shareType: 1
+                    shareType: 1,
+                    fileName: options.name
                 }
             })
         }

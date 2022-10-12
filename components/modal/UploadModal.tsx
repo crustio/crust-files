@@ -77,6 +77,7 @@ function UploadModal(p: Props): React.ReactElement<Props> {
             cid: saveFile.Hash,
             fileType: _.size(saveFile.items) ? 1 : 0,
             strategy: saveFile.Encrypted ? 1 : 0,
+            fileName: saveFile.Name
           }
         })
       }).catch(console.error)
