@@ -16,7 +16,7 @@ import { useGetDepost } from '../../lib/hooks/useGetDeposit';
 import { useToggle } from "../../lib/hooks/useToggle";
 import { ExportObj, SaveFile } from "../../lib/types";
 import { useFilesInfo } from '../../lib/useFilesInfo';
-import { useFiles, WalletName } from "../../lib/wallet/hooks";
+import { loadFiles, useFiles, WalletName } from "../../lib/wallet/hooks";
 export interface Props {
   className?: string
 }

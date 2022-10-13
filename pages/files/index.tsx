@@ -10,14 +10,16 @@ import { useUserCrypto } from "../../lib/crypto/useUserCrypto";
 import { useGetDepost } from "../../lib/hooks/useGetDeposit";
 import useInputFile from "../../lib/hooks/useInputFile";
 import { useFilesInfo } from "../../lib/useFilesInfo";
-import { useFiles } from "../../lib/wallet/hooks";
+import { loadFiles, useFiles } from "../../lib/wallet/hooks";
 import { FileInfo, SaveFile } from "../../lib/wallet/types";
 
 function Index(p: { className?: string }) {
   const wFiles = useFiles();
+  console.log('wFiles::', wFiles)
   const uc = useUserCrypto()
   const wInputFile = useInputFile()
   const { isPremiumUser, user } = useGetDepost()
+  loadFiles(0, user.wallet, user.authBasic)
 
   const _onClose = () => wInputFile.setFile(undefined);
 

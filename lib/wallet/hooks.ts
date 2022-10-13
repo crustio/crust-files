@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import React, { Dispatch, SetStateAction, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import store from 'store';
+import { getUserFiles } from "../http/api";
 import { Member } from '../http/types';
 import { formatToCrustAccount } from "../utils";
 import { AptosMartian } from "./AptosMartian";
@@ -115,6 +116,11 @@ const initPinTime = (fileObj: Files) => {
   fileObj.files.forEach((file) => {
     if (!file.PinTime) file.PinTime = new Date().getTime()
   })
+}
+
+export function loadFiles(strategy: number, walletType: string, signature: string) {
+  const [filesObj, setFilesObj] = useState<Files>(defFilesObj);
+  getUserFiles(strategy, walletType, signature).then(res => console.log('user files::', res))
 }
 
 export function useFiles(key: KEYS_FILES = 'files'): WrapFiles {

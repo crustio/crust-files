@@ -91,7 +91,8 @@ async function createShare(file: SaveFile, user: WrapLoginUser) {
       cid: file.Hash,
       fileType: file.items ? 1 : 0,
       strategy: file.Encrypted ? 1 : 0,
-      shareType: 0
+      shareType: 0,
+      fineName: file.Name
     }
   })
   return `${window.location.origin}/share?code=${code}`
