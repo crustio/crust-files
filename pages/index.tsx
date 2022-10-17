@@ -803,7 +803,7 @@ export default React.memo(styled(Home)`
         z-index: 2;
       }
       .wallet_items_web3 {
-        top: -16rem;
+        top: -20rem;
       }
       .wallet_items_metamask{
         top: -6rem;
