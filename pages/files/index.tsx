@@ -19,7 +19,8 @@ function Index(p: { className?: string }) {
   const uc = useUserCrypto()
   const wInputFile = useInputFile()
   const { isPremiumUser, user } = useGetDepost()
-  loadFiles(0, user.wallet, user.authBasic)
+  const loadedFiles = loadFiles(0, user.wallet, user.authBasic)
+  console.log('loadedFiles:::', loadedFiles)
 
   const _onClose = () => wInputFile.setFile(undefined);
 

@@ -120,7 +120,27 @@ const initPinTime = (fileObj: Files) => {
 
 export function loadFiles(strategy: number, walletType: string, signature: string) {
   const [filesObj, setFilesObj] = useState<Files>(defFilesObj);
-  getUserFiles(strategy, walletType, signature).then(res => console.log('user files::', res))
+  getUserFiles(strategy, walletType, signature).then((res: any) => {
+    console.log('user files::', res)
+    setFilesObj({
+      isLoad: false,
+      files: res.files
+    })
+  })
+  const setFiles = useCallback((nFiles: SaveFile[]) => {
+    const nFilesObj = { ...filesObj, files: nFiles };
+    // init file.PinTime
+    initPinTime(nFilesObj)
+    setFilesObj(nFilesObj);
+  }, [filesObj]);
+
+  const deleteItem = useCallback((f: SaveFile) => {
+    if (f.Hash) {
+      setFiles(filesObj.files.filter(file => file.Hash !== f.Hash))
+    }
+  }, [filesObj, setFiles])
+
+  return useMemo(() => ({ ...filesObj, setFiles, deleteItem }), [filesObj, setFiles, deleteItem]);
 }
 
 export function useFiles(key: KEYS_FILES = 'files'): WrapFiles {
