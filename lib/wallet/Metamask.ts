@@ -80,6 +80,7 @@ export class Metamask implements BaseWallet {
   }
 
   sign(data: string, account?: string): Promise<string> {
+    console.log('data:::', data)
     const msg = Buffer.from(data, 'utf8').toString('hex');
     // const msg = data;
 

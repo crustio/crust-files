@@ -16,10 +16,12 @@ import { BaseWallet } from "../lib/types";
 import { openDocs } from "../lib/utils";
 import { nearConfig } from "../lib/wallet/config";
 import { getPerfix, lastUser, LoginUser, useContextWrapLoginUser } from "../lib/wallet/hooks";
+import { useWeb3Auth } from "../lib/web3auth/web3auth";
+
 interface ItemWallet {
   name: string,
   image: string,
-  group: 'Crust' | 'Polkadot' | 'MetaMask' | 'Web 3' | 'WalletConnect'
+  group: 'Crust' | 'Polkadot' | 'MetaMask' | 'Web 3' | 'WalletConnect' | 'Web3Auth'
 }
 
 declare global {
@@ -80,12 +82,14 @@ function Home({ className }: { className?: string }) {
     }
   }
 
+  const { provider, login, getAccounts, web3Auth, signMessage } = useWeb3Auth();
 
   const loginedSign = (u: LoginUser, wallet: BaseWallet) => {
     // const prefix = getPerfix(user);
-    const msg = u.wallet === 'near' || u.wallet === 'aptos-martian' || u.wallet == 'aptos-petra' ? u.pubKey || '' : u.account;
+    const msg = u.wallet === 'near' || u.wallet === 'aptos-martian' || u.wallet == 'aptos-petra' || u.wallet === 'web3auth' ? u.pubKey || '' : u.account;
     const prefix = getPerfix(u);
     wallet.sign(msg, u.account).then(signature => {
+      console.log('Login signature:::', signature)
       if (signature.length) {
         const perSignData = user.wallet === 'elrond' ? signature : `${prefix}-${msg}:${signature}`;
         const base64Signature = window.btoa(perSignData);
@@ -425,6 +429,63 @@ function Home({ className }: { className?: string }) {
     })
   }, [user])
 
+  const _onClickWeb3Auth = useCallback(async () => {
+    if (web3Auth) {
+      try {
+        const userInfo = await web3Auth.getUserInfo()
+        console.log('userInfo:::', userInfo)
+
+        if (provider && userInfo) {
+          // console.log('userInfo:::', userInfo)
+          // await web3Auth.logout()
+          // login().then(async () => {
+          //   const accounts = await getAccounts()
+          //   console.log('accounts:::', accounts)
+          //   setLogined({
+          //     account: userInfo.name,
+          //     wallet: 'web3auth',
+          //     pubKey: accounts?.[0],
+          //     profileImage: userInfo.profileImage
+          //   }, user.web3AuthWallet)
+          // })
+       
+          const accounts = await getAccounts()
+          console.log('accounts:::', accounts)
+          const hehe = await signMessage(accounts[0])
+          console.log('hehe:::', hehe)
+          setLogined({
+            account: userInfo.name,
+            wallet: 'web3auth',
+            pubKey: accounts?.[0],
+            profileImage: userInfo.profileImage
+          }, user.web3AuthWallet)
+        } else {
+          login().then(async () => {
+            const accounts = await getAccounts()
+            console.log('accounts:::', accounts)
+            setLogined({
+              account: userInfo.name,
+              wallet: 'web3auth',
+              pubKey: accounts?.[0],
+              profileImage: userInfo.profileImage
+            }, user.web3AuthWallet)
+          })
+        }
+      } catch (error) {
+        login().then(async () => {
+          const userInfo = await web3Auth.getUserInfo()
+          const accounts = await getAccounts()
+          setLogined({
+            account: userInfo.name,
+            wallet: 'web3auth',
+            pubKey: accounts?.[0],
+            profileImage: userInfo.profileImage
+          }, user.web3AuthWallet)
+        })
+      }
+    }
+  }, [user, provider])
+
   const wallets = useMemo<Wallet[]>(() => {
     return [
       {
@@ -535,6 +596,12 @@ function Home({ className }: { className?: string }) {
         name: 'WalletConnect',
         image: '/images/wallet_connect.png',
         onClick: _onClickWalletConnect,
+      },
+      {
+        group: 'WalletConnect',
+        name: 'Web3Auth',
+        image: '/images/wallet_connect.png',
+        onClick: _onClickWeb3Auth,
       }
     ]
   }, [_onClickCrust, _onClickCrustDown, _onClickCrustGetCru, _onClickPolkadotJs, _onClickMetamask, _onClickNear, _onClickFlow, _onClickSolana, _onClickElrond, _onClickWalletConnect, _onClickAptosMartian, _onClickAptosPetra])
@@ -645,7 +712,7 @@ export default React.memo(styled(Home)`
       z-index: 0;
     }
     .panel {
-      z-index: 1;
+      // z-index: 1;
       display: flex;
       width: 100%;
       height: 100%;

@@ -7,6 +7,7 @@ import 'semantic-ui-css/semantic.min.css';
 import MApp from '../components/root/MApp';
 import MDocs from '../components/root/MDocs';
 import { useGaPageView } from '../lib/ga';
+import { Web3AuthProvider } from '../lib/web3auth/web3auth';
 import '../styles/global.css';
 
 
@@ -29,7 +30,9 @@ export default function App({ Component, ...props }: AppProps) {
         <meta name="twitter:description" content="Click to see what I am sharing on Crust Files - the personal Web3.0 storage application." />
         <meta name="twitter:image" content="https://gw.crustapps.net/ipfs/QmfPTVDtSGuCp2mftrZdQE4Mf5FeYT1gYTiL9xTXoSEgqz?filename=Crust%20Files.png" />
       </Head>
-      <MApp Component={Component} {...props} />
+      <Web3AuthProvider web3AuthNetwork={'mainnet'}>
+        <MApp Component={Component} {...props} />
+      </Web3AuthProvider>
     </>
   )
 }
