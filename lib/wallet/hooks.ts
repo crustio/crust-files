@@ -161,7 +161,7 @@ export function useFiles(key: KEYS_FILES = 'files'): WrapFiles {
 
 export function useSign(wUser: WrapLoginUser): UseSign {
   const [state, setState] = useState<UseSign>({});
-  const { provider } = useWeb3Auth();
+  const { provider, signMessage } = useWeb3Auth();
 
   useEffect(() => {
     if (!wUser.account) return;
@@ -250,7 +250,7 @@ export function useSign(wUser: WrapLoginUser): UseSign {
     if (wUser.wallet === 'web3auth') {
       setState((o) => ({
         ...o, sign: async (data) => {
-          return wUser.web3AuthWallet.sign(data)
+          return signMessage(data)
         }
       }))
     }
@@ -262,7 +262,7 @@ export function useSign(wUser: WrapLoginUser): UseSign {
 const defLoginUser: LoginUser = { account: '', wallet: 'crust', key: 'files:login', authBasic: null, authBearer: null };
 
 export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
-  const { provider, signMessage, logout: logoutWeb3Auth } = useWeb3Auth();
+  const { signMessage, logout: logoutWeb3Auth } = useWeb3Auth();
 
   const [account, setAccount] = useState<LoginUser>(defLoginUser);
   const [accounts, setAccounts] = useState<WrapLoginUser['accounts']>()
@@ -281,7 +281,7 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
   const aptosMartian = useMemo(() => new AptosMartian(), []);
   const aptosPetra = useMemo(() => new AptosPetra(), []);
   const walletConnect = useMemo(() => new MWalletConnect(), []);
-  const web3AuthWallet = useMemo(() => new Web3AuthWallet(signMessage), [provider])
+  const web3AuthWallet = useMemo(() => new Web3AuthWallet(signMessage), [])
   const r = useRouter()
 
   const setLoginUser = useCallback((loginUser: LoginUser) => {
@@ -507,7 +507,7 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
   }, [
     account, accounts, isLoad, setLoginUser, logout,
     crust, polkadotJs, metamask, metax, near, flow, solana,
-    walletConnect, nickName, member, key, aptosMartian, aptosPetra, web3AuthWallet, provider
+    walletConnect, nickName, member, key, aptosMartian, aptosPetra, web3AuthWallet
   ]);
   const uSign = useSign(wUser);
   wUser.sign = uSign.sign;

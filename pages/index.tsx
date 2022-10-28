@@ -82,40 +82,66 @@ function Home({ className }: { className?: string }) {
     }
   }
 
-  const { provider, login, getAccounts, web3Auth, signMessage } = useWeb3Auth();
+  const { provider, login, getAccounts, web3Auth, signMessage, logout, isLoading } = useWeb3Auth();
 
-  const loginedSign = (u: LoginUser, wallet: BaseWallet) => {
+  const loginedSign = (u: LoginUser, wallet: BaseWallet, signMessage?: (msg: string) => Promise<any>) => {
     // const prefix = getPerfix(user);
     const msg = u.wallet === 'near' || u.wallet === 'aptos-martian' || u.wallet == 'aptos-petra' || u.wallet === 'web3auth' ? u.pubKey || '' : u.account;
     const prefix = getPerfix(u);
-    wallet.sign(msg, u.account).then(signature => {
-      console.log('Login signature:::', signature)
-      if (signature.length) {
-        const perSignData = user.wallet === 'elrond' ? signature : `${prefix}-${msg}:${signature}`;
-        const base64Signature = window.btoa(perSignData);
-        const authBasic = `${base64Signature}`;
-        const authBearer = `${base64Signature}`;
-        user.setLoginUser({
-          ...u,
-          authBasic,
-          authBearer,
-          signature
-        })
-      } else {
+    if (signMessage) {
+      signMessage(msg).then(signature => {
+        console.log('Login signature:::', signature)
+        if (signature.length) {
+          const perSignData = `${prefix}-${msg}:${signature}`;
+          const base64Signature = window.btoa(perSignData);
+          const authBasic = `${base64Signature}`;
+          const authBearer = `${base64Signature}`;
+          user.setLoginUser({
+            ...u,
+            authBasic,
+            authBearer,
+            signature
+          })
+        } else {
+          user.setLoginUser({
+            ...u,
+          });
+        }
+      }).catch(() => {
         user.setLoginUser({
           ...u,
         });
-      }
-    }).catch(() => {
-      user.setLoginUser({
-        ...u,
-      });
-    })
+      })
+    } else {
+      wallet.sign(msg, u.account).then(signature => {
+        console.log('Login signature:::', signature)
+        if (signature.length) {
+          const perSignData = user.wallet === 'elrond' ? signature : `${prefix}-${msg}:${signature}`;
+          const base64Signature = window.btoa(perSignData);
+          const authBasic = `${base64Signature}`;
+          const authBearer = `${base64Signature}`;
+          user.setLoginUser({
+            ...u,
+            authBasic,
+            authBearer,
+            signature
+          })
+        } else {
+          user.setLoginUser({
+            ...u,
+          });
+        }
+      }).catch(() => {
+        user.setLoginUser({
+          ...u,
+        });
+      })
+    }
   }
 
-  const setLogined = (u: LoginUser, wallet: BaseWallet) => {
+  const setLogined = (u: LoginUser, wallet: BaseWallet, signMessage?: (msg: string) => Promise<any>) => {
     user.setLoginUser(u)
-    loginedSign(u, wallet)
+    loginedSign(u, wallet, signMessage)
     report({
       type: 1,
       walletType: u.wallet,
@@ -431,44 +457,36 @@ function Home({ className }: { className?: string }) {
 
   const _onClickWeb3Auth = useCallback(async () => {
     if (web3Auth) {
+      console.log('isLoading:::: nmdb', isLoading)
       try {
         const userInfo = await web3Auth.getUserInfo()
         console.log('userInfo:::', userInfo)
 
         if (provider && userInfo) {
-          // console.log('userInfo:::', userInfo)
-          // await web3Auth.logout()
-          // login().then(async () => {
-          //   const accounts = await getAccounts()
-          //   console.log('accounts:::', accounts)
-          //   setLogined({
-          //     account: userInfo.name,
-          //     wallet: 'web3auth',
-          //     pubKey: accounts?.[0],
-          //     profileImage: userInfo.profileImage
-          //   }, user.web3AuthWallet)
-          // })
-       
+          
           const accounts = await getAccounts()
           console.log('accounts:::', accounts)
-          const hehe = await signMessage(accounts[0])
-          console.log('hehe:::', hehe)
+          const hehe = await signMessage(accounts?.[0])
+          console.log('hehe上:::', hehe)
           setLogined({
             account: userInfo.name,
             wallet: 'web3auth',
             pubKey: accounts?.[0],
             profileImage: userInfo.profileImage
-          }, user.web3AuthWallet)
+          }, user.web3AuthWallet, signMessage)
+          
         } else {
           login().then(async () => {
             const accounts = await getAccounts()
             console.log('accounts:::', accounts)
+            const hehe = await signMessage(accounts?.[0])
+            console.log('hehe下:::', hehe)
             setLogined({
               account: userInfo.name,
               wallet: 'web3auth',
               pubKey: accounts?.[0],
               profileImage: userInfo.profileImage
-            }, user.web3AuthWallet)
+            }, user.web3AuthWallet, signMessage)
           })
         }
       } catch (error) {
@@ -480,11 +498,11 @@ function Home({ className }: { className?: string }) {
             wallet: 'web3auth',
             pubKey: accounts?.[0],
             profileImage: userInfo.profileImage
-          }, user.web3AuthWallet)
+          }, user.web3AuthWallet, signMessage)
         })
       }
     }
-  }, [user, provider])
+  }, [user, provider, web3Auth, signMessage])
 
   const wallets = useMemo<Wallet[]>(() => {
     return [
