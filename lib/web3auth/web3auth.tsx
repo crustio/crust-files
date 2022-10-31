@@ -1,15 +1,13 @@
 import { ADAPTER_EVENTS, SafeEventEmitterProvider } from "@web3auth/base";
 import { Web3Auth } from "@web3auth/modal";
-import { createContext, FunctionComponent, ReactNode, useCallback, useContext, useEffect, useState } from "react";
+import { createContext, FunctionComponent, ReactNode, useCallback, useContext, useEffect, useLayoutEffect, useState } from "react";
 import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import ethProvider from "./ethProvider";
-import { flushSync } from "react-dom";
-import { setupUnitTestWatcherTimeouts } from "@elrondnetwork/erdjs/out/testutils";
 
 export interface IWeb3AuthContext {
     web3Auth: Web3Auth | null;
     provider: IWalletProvider | null;
-    login: () => Promise<void>;
+    login: () => Promise<IWalletProvider | null>;
     logout: () => Promise<void>;
     getUserInfo: () => Promise<any>;
     signMessage: (msg: string) => Promise<any>;
@@ -20,12 +18,12 @@ export interface IWeb3AuthContext {
 export const Web3AuthContext = createContext<IWeb3AuthContext>({
     web3Auth: null,
     provider: null,
-    login: async () => { },
+    login: async () => null,
     logout: async () => { },
     getUserInfo: async () => { },
     signMessage: async () => { },
     getAccounts: async () => { },
-    isLoading: false
+    isLoading: true
 });
 
 interface IWeb3AuthProps {
@@ -53,18 +51,13 @@ export function useWeb3Auth(): IWeb3AuthContext {
 export const Web3AuthProvider: FunctionComponent<IWeb3AuthState> = ({ children }: IWeb3AuthProps) => {
     const [web3Auth, setWeb3Auth] = useState<Web3Auth | null>(null);
     const [provider, setProvider] = useState<IWalletProvider | null>(null);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
     const setWalletProvider = useCallback(
         (web3authProvider: SafeEventEmitterProvider) => {
             const walletProvider = ethProvider(web3authProvider);
             console.log(`init provider`)
             setProvider(walletProvider);
-            setIsLoading(true)
-            console.log('provider nmb', provider)
-            console.log(`isLoading::: nmb333`, isLoading)
-            console.log('provider nmb2222', walletProvider)
-
         }, []
     );
 
@@ -74,13 +67,10 @@ export const Web3AuthProvider: FunctionComponent<IWeb3AuthState> = ({ children }
             web3auth.on(ADAPTER_EVENTS.CONNECTED, (data: unknown) => {
                 console.log("Yeah!, you are successfully logged in", data);
                 setWalletProvider(web3auth.provider!);
-                console.log('web3auth.provider::::', web3auth.provider)
-
             });
 
             web3auth.on(ADAPTER_EVENTS.CONNECTING, () => {
                 console.log("connecting");
-                setWalletProvider(web3auth.provider!);
             });
 
             web3auth.on(ADAPTER_EVENTS.DISCONNECTED, () => {
@@ -111,11 +101,10 @@ export const Web3AuthProvider: FunctionComponent<IWeb3AuthState> = ({ children }
                 subscribeAuthEvents(web3AuthInstance);
                 setWeb3Auth(web3AuthInstance);
                 await web3AuthInstance.initModal();
-                console.log('web3AuthInstance.provider::::', web3AuthInstance.provider)
-                setWalletProvider(web3AuthInstance.provider!);
             } catch (error) {
                 console.error(error);
             } finally {
+                setIsLoading(false)
             }
         }
         init();
@@ -127,12 +116,12 @@ export const Web3AuthProvider: FunctionComponent<IWeb3AuthState> = ({ children }
             return;
         }
         try {
-            const localProvider = await web3Auth.connect()
-            // setWalletProvider(localProvider!);
+            const localProvider = await web3Auth.connect();
+            setWalletProvider(localProvider!);
+            return ethProvider(localProvider!)
         } catch (error) {
             console.error("web3auth login error ", error)
         }
-        // setWalletProvider(localProvider!);
     };
 
     const getAccounts = async () => {
@@ -165,11 +154,7 @@ export const Web3AuthProvider: FunctionComponent<IWeb3AuthState> = ({ children }
             return;
         }
         await web3Auth.logout();
-        // setProvider(null);
-        window.sessionStorage.clear();
     };
-
-    // web3Auth.logout().then(() => console.log('haha'))
 
     const contextProvider = {
         web3Auth,

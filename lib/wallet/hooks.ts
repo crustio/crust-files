@@ -161,7 +161,6 @@ export function useFiles(key: KEYS_FILES = 'files'): WrapFiles {
 
 export function useSign(wUser: WrapLoginUser): UseSign {
   const [state, setState] = useState<UseSign>({});
-  const { provider, signMessage } = useWeb3Auth();
 
   useEffect(() => {
     if (!wUser.account) return;
@@ -250,11 +249,11 @@ export function useSign(wUser: WrapLoginUser): UseSign {
     if (wUser.wallet === 'web3auth') {
       setState((o) => ({
         ...o, sign: async (data) => {
-          return signMessage(data)
+          return wUser.web3AuthWallet.sign(data)
         }
       }))
     }
-  }, [wUser, provider]);
+  }, [wUser]);
 
   return state;
 }
@@ -437,6 +436,10 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
           .then(() => setIsLoad(false))
       } else if (f.wallet === 'aptos-petra') {
         aptosPetra.init()
+          .then(() => setAccount(f))
+          .then(() => setIsLoad(false))
+      } else if (f.wallet === 'web3auth') {
+        web3AuthWallet.init()
           .then(() => setAccount(f))
           .then(() => setIsLoad(false))
       } else {

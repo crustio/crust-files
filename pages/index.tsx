@@ -41,6 +41,7 @@ const IMGS = {
   'MetaMask': '/images/group_wallet_metamask.png',
   'Web 3': '/images/group_wallet_other.png',
   'WalletConnect': '/images/group_wallet_connect.png',
+  'Web3Auth': '/images/web3auth.png'
 }
 
 interface WalletGroup {
@@ -82,66 +83,40 @@ function Home({ className }: { className?: string }) {
     }
   }
 
-  const { provider, login, getAccounts, web3Auth, signMessage, logout, isLoading } = useWeb3Auth();
+  const { login, web3Auth } = useWeb3Auth();
 
-  const loginedSign = (u: LoginUser, wallet: BaseWallet, signMessage?: (msg: string) => Promise<any>) => {
+  const loginedSign = (u: LoginUser, wallet: BaseWallet) => {
     // const prefix = getPerfix(user);
     const msg = u.wallet === 'near' || u.wallet === 'aptos-martian' || u.wallet == 'aptos-petra' || u.wallet === 'web3auth' ? u.pubKey || '' : u.account;
     const prefix = getPerfix(u);
-    if (signMessage) {
-      signMessage(msg).then(signature => {
-        console.log('Login signature:::', signature)
-        if (signature.length) {
-          const perSignData = `${prefix}-${msg}:${signature}`;
-          const base64Signature = window.btoa(perSignData);
-          const authBasic = `${base64Signature}`;
-          const authBearer = `${base64Signature}`;
-          user.setLoginUser({
-            ...u,
-            authBasic,
-            authBearer,
-            signature
-          })
-        } else {
-          user.setLoginUser({
-            ...u,
-          });
-        }
-      }).catch(() => {
+    wallet.sign(msg, u.account).then(signature => {
+      console.log('Login signature:::', signature)
+      if (signature.length) {
+        const perSignData = user.wallet === 'elrond' ? signature : `${prefix}-${msg}:${signature}`;
+        const base64Signature = window.btoa(perSignData);
+        const authBasic = `${base64Signature}`;
+        const authBearer = `${base64Signature}`;
+        user.setLoginUser({
+          ...u,
+          authBasic,
+          authBearer,
+          signature
+        })
+      } else {
         user.setLoginUser({
           ...u,
         });
-      })
-    } else {
-      wallet.sign(msg, u.account).then(signature => {
-        console.log('Login signature:::', signature)
-        if (signature.length) {
-          const perSignData = user.wallet === 'elrond' ? signature : `${prefix}-${msg}:${signature}`;
-          const base64Signature = window.btoa(perSignData);
-          const authBasic = `${base64Signature}`;
-          const authBearer = `${base64Signature}`;
-          user.setLoginUser({
-            ...u,
-            authBasic,
-            authBearer,
-            signature
-          })
-        } else {
-          user.setLoginUser({
-            ...u,
-          });
-        }
-      }).catch(() => {
-        user.setLoginUser({
-          ...u,
-        });
-      })
-    }
+      }
+    }).catch(() => {
+      user.setLoginUser({
+        ...u,
+      });
+    })
   }
 
-  const setLogined = (u: LoginUser, wallet: BaseWallet, signMessage?: (msg: string) => Promise<any>) => {
+  const setLogined = (u: LoginUser, wallet: BaseWallet) => {
     user.setLoginUser(u)
-    loginedSign(u, wallet, signMessage)
+    loginedSign(u, wallet)
     report({
       type: 1,
       walletType: u.wallet,
@@ -457,52 +432,19 @@ function Home({ className }: { className?: string }) {
 
   const _onClickWeb3Auth = useCallback(async () => {
     if (web3Auth) {
-      console.log('isLoading:::: nmdb', isLoading)
-      try {
-        const userInfo = await web3Auth.getUserInfo()
-        console.log('userInfo:::', userInfo)
-
-        if (provider && userInfo) {
-          
-          const accounts = await getAccounts()
-          console.log('accounts:::', accounts)
-          const hehe = await signMessage(accounts?.[0])
-          console.log('hehe上:::', hehe)
-          setLogined({
-            account: userInfo.name,
-            wallet: 'web3auth',
-            pubKey: accounts?.[0],
-            profileImage: userInfo.profileImage
-          }, user.web3AuthWallet, signMessage)
-          
-        } else {
-          login().then(async () => {
-            const accounts = await getAccounts()
-            console.log('accounts:::', accounts)
-            const hehe = await signMessage(accounts?.[0])
-            console.log('hehe下:::', hehe)
-            setLogined({
-              account: userInfo.name,
-              wallet: 'web3auth',
-              pubKey: accounts?.[0],
-              profileImage: userInfo.profileImage
-            }, user.web3AuthWallet, signMessage)
-          })
-        }
-      } catch (error) {
-        login().then(async () => {
-          const userInfo = await web3Auth.getUserInfo()
-          const accounts = await getAccounts()
-          setLogined({
-            account: userInfo.name,
-            wallet: 'web3auth',
-            pubKey: accounts?.[0],
-            profileImage: userInfo.profileImage
-          }, user.web3AuthWallet, signMessage)
-        })
-      }
+      const provider = await login();
+      user.web3AuthWallet.provider = provider;
+      const accounts = await provider.getAccounts()
+      const userInfo = await web3Auth.getUserInfo()
+      console.log('userInfo::', userInfo)
+      setLogined({
+        account: userInfo.name,
+        wallet: 'web3auth',
+        pubKey: accounts?.[0],
+        profileImage: userInfo.profileImage
+      }, user.web3AuthWallet)
     }
-  }, [user, provider, web3Auth, signMessage])
+  }, [user])
 
   const wallets = useMemo<Wallet[]>(() => {
     return [
@@ -616,13 +558,13 @@ function Home({ className }: { className?: string }) {
         onClick: _onClickWalletConnect,
       },
       {
-        group: 'WalletConnect',
+        group: 'Web3Auth',
         name: 'Web3Auth',
-        image: '/images/wallet_connect.png',
+        image: '/images/web3auth.png',
         onClick: _onClickWeb3Auth,
       }
     ]
-  }, [_onClickCrust, _onClickCrustDown, _onClickCrustGetCru, _onClickPolkadotJs, _onClickMetamask, _onClickNear, _onClickFlow, _onClickSolana, _onClickElrond, _onClickWalletConnect, _onClickAptosMartian, _onClickAptosPetra])
+  }, [_onClickCrust, _onClickCrustDown, _onClickCrustGetCru, _onClickPolkadotJs, _onClickMetamask, _onClickNear, _onClickFlow, _onClickSolana, _onClickElrond, _onClickWalletConnect, _onClickAptosMartian, _onClickAptosPetra, _onClickWeb3Auth])
 
   const groupWallets = useMemo<WalletGroup[]>(() => {
     const groupObj = _.groupBy(wallets, 'group')
@@ -643,7 +585,7 @@ function Home({ className }: { className?: string }) {
   }, [wallets])
 
   const [hoverWalletGroup, setHoverWalletGroup] = useState<WalletGroup | null>(null)
-  const { data } = useParallax(100, 5)
+  const { data } = useParallax(100, 6)
 
   return (
 

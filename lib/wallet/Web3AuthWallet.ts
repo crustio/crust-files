@@ -1,3 +1,4 @@
+import { IWalletProvider } from '../web3auth/web3auth';
 import { BaseWallet } from './types';
 
 export interface MetamaskReqOptions {
@@ -9,6 +10,7 @@ export interface MetamaskReqOptions {
 export class Web3AuthWallet implements BaseWallet {
   isInit = false;
   signMessage: (msg: string) => Promise<any>;
+  provider: IWalletProvider | null;
 
   constructor(sign?: (msg: string) => Promise<any>) {
     this.signMessage = sign
@@ -19,9 +21,7 @@ export class Web3AuthWallet implements BaseWallet {
   }
 
   sign(data: string) {
-    console.log(`data::::`, data)
-    return this.signMessage(data).then(res => {
-        console.log('res:::', res) 
+    return this.provider.signMessage(data).then(res => {
         return res 
     })
   }

@@ -26,8 +26,6 @@ export default function Redirect(props: { children: any }) {
   if (NO_CHECK_USER.includes(router.pathname)) return props.children;
 
   // check user
-  console.log('wUser.account', wUser.account)
-  console.log('wUser.authBasic', wUser.authBasic)
   if ((!wUser.account || !wUser.authBasic) && (router.pathname !== '' && router.pathname !== '/')) {
     router.replace('/')
     return null
