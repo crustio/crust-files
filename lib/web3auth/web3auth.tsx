@@ -3,6 +3,7 @@ import { Web3Auth } from "@web3auth/modal";
 import React, { createContext, FunctionComponent, ReactNode, useCallback, useContext, useEffect, useState } from "react";
 import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import ethProvider from "./ethProvider";
+import { CHAIN_NAMESPACES } from "@web3auth/base";
 
 export interface IWeb3AuthContext {
     web3Auth: Web3Auth | null;
@@ -87,8 +88,13 @@ export const Web3AuthProvider: FunctionComponent<IWeb3AuthState> = ({ children }
                 const clientId = "BJdVBLPZjv_tUQWzrTAtF8kydEGTVtAHz0BrTe8twICNMzY4aTlrw1gl2cP8PB6I5HCDCfTOJxfTV4QEbkm_2Gg";
                 const web3AuthInstance = new Web3Auth({
                     chainConfig: {
-                        chainNamespace: "eip155",
+                        displayName: "Ethereum Mainnet",
+                        chainNamespace: CHAIN_NAMESPACES.EIP155,
                         chainId: "0x1",
+                        rpcTarget: `https://mainnet.infura.io/v3/776218ac4734478c90191dde8cae483c`,
+                        blockExplorer: "https://etherscan.io/",
+                        ticker: "ETH",
+                        tickerName: "Ethereum",
                     },
                     // get your client id from https://dashboard.web3auth.io
                     clientId,

@@ -21,7 +21,7 @@ import { useWeb3Auth } from "../lib/web3auth/web3auth";
 interface ItemWallet {
   name: string,
   image: string,
-  group: 'Crust' | 'Polkadot' | 'MetaMask' | 'Web 3' | 'WalletConnect' | 'Web3Auth'
+  group: 'Crust' | 'Polkadot' | 'MetaMask' | 'Web3' | 'WalletConnect' | 'Web3Auth'
 }
 
 declare global {
@@ -39,7 +39,7 @@ const IMGS = {
   'Crust': '/images/group_wallet_crust.png',
   'Polkadot': '/images/group_wallet_polkadot.png',
   'MetaMask': '/images/group_wallet_metamask.png',
-  'Web 3': '/images/group_wallet_other.png',
+  'Web3': '/images/group_wallet_other.png',
   'WalletConnect': '/images/group_wallet_connect.png',
   'Web3Auth': '/images/web3auth.png'
 }
@@ -57,7 +57,7 @@ function WalletItems(p: { gw: WalletGroup }) {
   const count = gw.items.length
   const { data } = useParallax(100, count)
   return <div
-    className={classNames("wallet_items", { wallet_items_web3: gw.group === 'Web 3', wallet_items_metamask: gw.group === 'MetaMask' })}
+    className={classNames("wallet_items", { wallet_items_web3: gw.group === 'Web3', wallet_items_metamask: gw.group === 'MetaMask' })}
   >
     {
       gw.items.map((w, index) =>
@@ -438,10 +438,10 @@ function Home({ className }: { className?: string }) {
       const userInfo = await web3Auth.getUserInfo()
       console.log('userInfo::', userInfo)
       setLogined({
-        account: userInfo.name,
+        account: userInfo.name ? userInfo.name : accounts?.[0],
         wallet: 'web3auth',
         pubKey: accounts?.[0],
-        profileImage: userInfo.profileImage
+        profileImage: userInfo.profileImage ? userInfo.profileImage : '/images/web3auth.png'
       }, user.web3AuthWallet)
     }
   }, [user])
@@ -504,43 +504,43 @@ function Home({ className }: { className?: string }) {
         onClick: _onClickMetamask,
       },
       {
-        group: 'Web 3',
+        group: 'Web3',
         name: 'Near',
         image: '/images/wallet_near.png',
         onClick: _onClickNear,
       },
       {
-        group: 'Web 3',
+        group: 'Web3',
         name: 'Elrond',
         image: '/images/wallet_elrond.png',
         onClick: _onClickElrond,
       },
       {
-        group: 'Web 3',
+        group: 'Web3',
         name: 'Aptos Petra',
         image: '/images/aptos.svg',
         onClick: _onClickAptosPetra,
       },
       {
-        group: 'Web 3',
+        group: 'Web3',
         name: 'Aptos Martian',
         image: '/images/martian.png',
         onClick: _onClickAptosMartian,
       },
       {
-        group: 'Web 3',
+        group: 'Web3',
         name: 'MetaX',
         image: '/images/wallet_metax.png',
         onClick: _onClickMetaX,
       },
       {
-        group: 'Web 3',
+        group: 'Web3',
         name: 'Solana',
         image: '/images/wallet_solana.png',
         onClick: _onClickSolana,
       },
       {
-        group: 'Web 3',
+        group: 'Web3',
         name: 'Flow',
         image: '/images/wallet_flow.png',
         onClick: _onClickFlow,
@@ -559,7 +559,7 @@ function Home({ className }: { className?: string }) {
       },
       {
         group: 'Web3Auth',
-        name: 'Web3Auth',
+        name: 'Web2',
         image: '/images/web3auth.png',
         onClick: _onClickWeb3Auth,
       }
