@@ -12,10 +12,6 @@ export class Web3AuthWallet implements BaseWallet {
   signMessage: (msg: string) => Promise<any>;
   provider: IWalletProvider | null;
 
-  constructor(sign?: (msg: string) => Promise<any>) {
-    this.signMessage = sign
-  }
-
   async init() {
     // pass it
   }

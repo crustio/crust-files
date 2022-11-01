@@ -261,7 +261,7 @@ export function useSign(wUser: WrapLoginUser): UseSign {
 const defLoginUser: LoginUser = { account: '', wallet: 'crust', key: 'files:login', authBasic: null, authBearer: null };
 
 export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
-  const { signMessage, logout: logoutWeb3Auth } = useWeb3Auth();
+  const { logout: logoutWeb3Auth } = useWeb3Auth();
 
   const [account, setAccount] = useState<LoginUser>(defLoginUser);
   const [accounts, setAccounts] = useState<WrapLoginUser['accounts']>()
@@ -280,7 +280,7 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
   const aptosMartian = useMemo(() => new AptosMartian(), []);
   const aptosPetra = useMemo(() => new AptosPetra(), []);
   const walletConnect = useMemo(() => new MWalletConnect(), []);
-  const web3AuthWallet = useMemo(() => new Web3AuthWallet(signMessage), [])
+  const web3AuthWallet = useMemo(() => new Web3AuthWallet(), [])
   const r = useRouter()
 
   const setLoginUser = useCallback((loginUser: LoginUser) => {
