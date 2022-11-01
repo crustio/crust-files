@@ -117,6 +117,7 @@ export const Web3AuthProvider: FunctionComponent<IWeb3AuthState> = ({ children }
     }, []);
 
     const login = async () => {
+        console.log(`login`)
         if (!web3Auth) {
             console.log("web3auth not initialized yet");
             return;
@@ -126,7 +127,11 @@ export const Web3AuthProvider: FunctionComponent<IWeb3AuthState> = ({ children }
             // setWalletProvider(localProvider!);
             // console.log(`Already logined:::`, ethProvider(localProvider!))
             return new Promise<IWalletProvider>((resolve, _) => {
-                web3Auth.connect().then(localProvider => resolve(ethProvider(localProvider!)))
+                web3Auth.connect().then(localProvider => resolve(ethProvider(localProvider!))).catch(err => {
+                    console.log(`connect error::`, err)
+                    resolve(null)
+                    // new Promise((resolve, _) => resolve(login()))
+                })
             })
             // return ethProvider(localProvider!)
         } catch (error) {

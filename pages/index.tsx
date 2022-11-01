@@ -433,6 +433,9 @@ function Home({ className }: { className?: string }) {
   const _onClickWeb3Auth = useCallback(async () => {
     if (web3Auth) {
       const provider = await login();
+      if (!provider) {
+        _onClickWeb3Auth()
+      }
       if (provider) {
         user.web3AuthWallet.provider = provider;
         const accounts = await provider.getAccounts()
