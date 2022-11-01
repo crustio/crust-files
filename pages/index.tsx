@@ -21,7 +21,7 @@ import { useWeb3Auth } from "../lib/web3auth/web3auth";
 interface ItemWallet {
   name: string,
   image: string,
-  group: 'Crust' | 'Polkadot' | 'MetaMask' | 'Web3' | 'WalletConnect' | 'Web3Auth'
+  group: 'Crust' | 'Polkadot' | 'MetaMask' | 'Web3' | 'WalletConnect' | 'Web2'
 }
 
 declare global {
@@ -41,7 +41,7 @@ const IMGS = {
   'MetaMask': '/images/group_wallet_metamask.png',
   'Web3': '/images/group_wallet_other.png',
   'WalletConnect': '/images/group_wallet_connect.png',
-  'Web3Auth': '/images/web3auth.png'
+  'Web2': '/images/web3auth.png'
 }
 
 interface WalletGroup {
@@ -433,16 +433,18 @@ function Home({ className }: { className?: string }) {
   const _onClickWeb3Auth = useCallback(async () => {
     if (web3Auth) {
       const provider = await login();
-      user.web3AuthWallet.provider = provider;
-      const accounts = await provider.getAccounts()
-      const userInfo = await web3Auth.getUserInfo()
-      console.log('userInfo::', userInfo)
-      setLogined({
-        account: userInfo.name ? userInfo.name : accounts?.[0],
-        wallet: 'web3auth',
-        pubKey: accounts?.[0],
-        profileImage: userInfo.profileImage ? userInfo.profileImage : '/images/web3auth.png'
-      }, user.web3AuthWallet)
+      if (provider) {
+        user.web3AuthWallet.provider = provider;
+        const accounts = await provider.getAccounts()
+        const userInfo = await web3Auth.getUserInfo()
+        console.log('userInfo::', userInfo)
+        setLogined({
+          account: userInfo.name ? userInfo.name : accounts?.[0],
+          wallet: 'web3auth',
+          pubKey: accounts?.[0],
+          profileImage: userInfo.profileImage ? userInfo.profileImage : '/images/web3auth.png'
+        }, user.web3AuthWallet)
+      }
     }
   }, [user])
 
@@ -558,7 +560,7 @@ function Home({ className }: { className?: string }) {
         onClick: _onClickWalletConnect,
       },
       {
-        group: 'Web3Auth',
+        group: 'Web2',
         name: 'Web2',
         image: '/images/web3auth.png',
         onClick: _onClickWeb3Auth,
