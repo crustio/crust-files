@@ -122,9 +122,13 @@ export const Web3AuthProvider: FunctionComponent<IWeb3AuthState> = ({ children }
             return;
         }
         try {
-            const localProvider = await web3Auth.connect();
+            // const localProvider = await web3Auth.connect();
             // setWalletProvider(localProvider!);
-            return ethProvider(localProvider!)
+            // console.log(`Already logined:::`, ethProvider(localProvider!))
+            return new Promise<IWalletProvider>((resolve, _) => {
+                web3Auth.connect().then(localProvider => resolve(ethProvider(localProvider!)))
+            })
+            // return ethProvider(localProvider!)
         } catch (error) {
             console.error("web3auth login error ", error)
         }

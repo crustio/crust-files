@@ -446,7 +446,7 @@ function Home({ className }: { className?: string }) {
         }, user.web3AuthWallet)
       }
     }
-  }, [user])
+  }, [user, t])
 
   const wallets = useMemo<Wallet[]>(() => {
     return [
