@@ -84,7 +84,7 @@ export const Web3AuthProvider: FunctionComponent<IWeb3AuthState> = ({ children }
 
         async function init() {
             try {
-                const clientId = "BJhKkhmg9eMSuTidmnab8XxXpjS-lqvqpmcz-HtQAoo6Im66KN6NeEHNyUs4RUA1nvs2znvuk8vQ57FTrrtiPws";
+                const clientId = "BJdVBLPZjv_tUQWzrTAtF8kydEGTVtAHz0BrTe8twICNMzY4aTlrw1gl2cP8PB6I5HCDCfTOJxfTV4QEbkm_2Gg";
                 const web3AuthInstance = new Web3Auth({
                     chainConfig: {
                         chainNamespace: "eip155",
