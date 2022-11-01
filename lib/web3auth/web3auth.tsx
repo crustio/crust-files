@@ -1,6 +1,6 @@
 import { ADAPTER_EVENTS, SafeEventEmitterProvider } from "@web3auth/base";
 import { Web3Auth } from "@web3auth/modal";
-import { createContext, FunctionComponent, ReactNode, useCallback, useContext, useEffect, useLayoutEffect, useState } from "react";
+import React, { createContext, FunctionComponent, ReactNode, useCallback, useContext, useEffect, useState } from "react";
 import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import ethProvider from "./ethProvider";
 
