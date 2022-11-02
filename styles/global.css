@@ -15,6 +15,10 @@
   --modal-radius: 0.57rem;
 }
 
+#w3a-modal {
+  z-index: 10 !important;
+}
+
 @font-face {
   font-family: "OpenSans-Medium";
   src: url("../public/fonts/OpenSans-Medium.ttf") format("truetype");

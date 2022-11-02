@@ -1,8 +1,10 @@
+import { Web3Auth } from "@web3auth/modal";
 import { useRouter } from "next/router";
 import React, { Dispatch, SetStateAction, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import store from 'store';
 import { Member } from '../http/types';
 import { formatToCrustAccount } from "../utils";
+import { useWeb3Auth } from "../web3auth/web3auth";
 import { AptosMartian } from "./AptosMartian";
 import { AptosPetra } from "./AptosPetra";
 import { Crust } from './Crust';
@@ -15,6 +17,7 @@ import { NearM } from './Near';
 import { PolkadotJs } from "./PolkadotJs";
 import { SolanaM } from './SolanaM';
 import { SaveFile } from './types';
+import { Web3AuthWallet } from "./Web3AuthWallet";
 
 // eslint-disable-next-line
 const fcl = require('@onflow/fcl');
@@ -42,11 +45,12 @@ export class LoginUser {
   account = '';
   pubKey?: string;
   wallet: 'crust' | 'polkadot-js' | 'metamask' | 'metamask-Moonriver' | 'metamask-Polygon' | 'metamask-BSC' | 'metamask-HECO' | 'metamask-Cubechain' | 'metax' |
-    'near' | 'flow' | 'solana' | 'elrond' | 'wallet-connect' | 'aptos-martian' | 'aptos-petra';
+    'near' | 'flow' | 'solana' | 'elrond' | 'wallet-connect' | 'aptos-martian' | 'aptos-petra' | 'web3auth';
   key?: KEYS = 'files:login';
   authBasic?: string;
   authBearer?: string;
   signature?: string;
+  profileImage?: string;
 }
 
 export const WalletName: { [k in LoginUser['wallet']]: string } = {
@@ -66,6 +70,7 @@ export const WalletName: { [k in LoginUser['wallet']]: string } = {
   "wallet-connect": "WalletConnect",
   "aptos-martian": "Aptos Martian",
   "aptos-petra": "Aptos",
+  "web3auth": "Web3Auth"
 }
 
 
@@ -104,9 +109,11 @@ export interface WrapLoginUser extends LoginUser {
   walletConnect: MWalletConnect,
   aptosMartian: AptosMartian,
   aptosPetra: AptosPetra,
+  web3AuthWallet: Web3AuthWallet,
   authBasic?: string;
   authBearer?: string;
   signature?: string;
+  profileImage?: string;
 }
 
 const defFilesObj: Files = { files: [], isLoad: true };
@@ -239,6 +246,13 @@ export function useSign(wUser: WrapLoginUser): UseSign {
         }
       }))
     }
+    if (wUser.wallet === 'web3auth') {
+      setState((o) => ({
+        ...o, sign: async (data) => {
+          return wUser.web3AuthWallet.sign(data)
+        }
+      }))
+    }
   }, [wUser]);
 
   return state;
@@ -247,6 +261,8 @@ export function useSign(wUser: WrapLoginUser): UseSign {
 const defLoginUser: LoginUser = { account: '', wallet: 'crust', key: 'files:login', authBasic: null, authBearer: null };
 
 export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
+  const { logout: logoutWeb3Auth } = useWeb3Auth();
+
   const [account, setAccount] = useState<LoginUser>(defLoginUser);
   const [accounts, setAccounts] = useState<WrapLoginUser['accounts']>()
   const [nickName, setNickName] = useState('')
@@ -264,6 +280,7 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
   const aptosMartian = useMemo(() => new AptosMartian(), []);
   const aptosPetra = useMemo(() => new AptosPetra(), []);
   const walletConnect = useMemo(() => new MWalletConnect(), []);
+  const web3AuthWallet = useMemo(() => new Web3AuthWallet(), [])
   const r = useRouter()
 
   const setLoginUser = useCallback((loginUser: LoginUser) => {
@@ -421,6 +438,10 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
         aptosPetra.init()
           .then(() => setAccount(f))
           .then(() => setIsLoad(false))
+      } else if (f.wallet === 'web3auth') {
+        web3AuthWallet.init()
+          .then(() => setAccount(f))
+          .then(() => setIsLoad(false))
       } else {
         setIsLoad(false)
       }
@@ -452,7 +473,9 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
     } else if (account.wallet === 'aptos-petra') {
       if (aptosPetra.provider) {
         aptosPetra.provider.disconnect().then().catch()
-      }
+      } 
+    } else if (account.wallet === 'web3auth') {
+      logoutWeb3Auth().then().catch()
     }
 
     setLoginUser({ ...defLoginUser });
@@ -476,6 +499,7 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
       elrond,
       aptosMartian,
       aptosPetra,
+      web3AuthWallet,
       walletConnect,
       nickName,
       setNickName,
@@ -486,7 +510,7 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
   }, [
     account, accounts, isLoad, setLoginUser, logout,
     crust, polkadotJs, metamask, metax, near, flow, solana,
-    walletConnect, nickName, member, key, aptosMartian, aptosPetra
+    walletConnect, nickName, member, key, aptosMartian, aptosPetra, web3AuthWallet
   ]);
   const uSign = useSign(wUser);
   wUser.sign = uSign.sign;
@@ -500,7 +524,7 @@ export function useContextWrapLoginUser(): WrapLoginUser {
 }
 
 export const getPerfix = (user: LoginUser): string => {
-  if (user.wallet.startsWith('metamask') || user.wallet === 'metax' || user.wallet === 'wallet-connect') {
+  if (user.wallet.startsWith('metamask') || user.wallet === 'metax' || user.wallet === 'wallet-connect' || user.wallet === 'web3auth') {
     return 'eth';
   }
 
