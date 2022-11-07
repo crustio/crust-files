@@ -16,6 +16,7 @@ import { MWalletConnect } from "./MWalletConnect";
 import { NearM } from './Near';
 import { PolkadotJs } from "./PolkadotJs";
 import { SolanaM } from './SolanaM';
+import { SubWallet } from "./SubWallet";
 import { SaveFile } from './types';
 import { Web3AuthWallet } from "./Web3AuthWallet";
 
@@ -45,7 +46,7 @@ export class LoginUser {
   account = '';
   pubKey?: string;
   wallet: 'crust' | 'polkadot-js' | 'metamask' | 'metamask-Moonriver' | 'metamask-Polygon' | 'metamask-BSC' | 'metamask-HECO' | 'metamask-Cubechain' | 'metax' |
-    'near' | 'flow' | 'solana' | 'elrond' | 'wallet-connect' | 'aptos-martian' | 'aptos-petra' | 'web3auth';
+    'near' | 'flow' | 'solana' | 'elrond' | 'wallet-connect' | 'aptos-martian' | 'aptos-petra' | 'web3auth' | 'subWallet';
   key?: KEYS = 'files:login';
   authBasic?: string;
   authBearer?: string;
@@ -70,7 +71,8 @@ export const WalletName: { [k in LoginUser['wallet']]: string } = {
   "wallet-connect": "WalletConnect",
   "aptos-martian": "Aptos Martian",
   "aptos-petra": "Aptos",
-  "web3auth": "Web3Auth"
+  "web3auth": "Web3Auth",
+  "subWallet": "subWallet"
 }
 
 
@@ -106,6 +108,7 @@ export interface WrapLoginUser extends LoginUser {
   flow: FlowM,
   solana: SolanaM,
   elrond: Elrond,
+  subWallet: SubWallet,
   walletConnect: MWalletConnect,
   aptosMartian: AptosMartian,
   aptosPetra: AptosPetra,
@@ -253,6 +256,13 @@ export function useSign(wUser: WrapLoginUser): UseSign {
         }
       }))
     }
+    if (wUser.wallet === 'subWallet') {
+      setState((o) => ({
+        ...o, sign: async (data, account) => {
+          return wUser.subWallet.sign(data, account)
+        }
+      }))
+    }
   }, [wUser]);
 
   return state;
@@ -271,6 +281,7 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
   const [isLoad, setIsLoad] = useState(true);
   const crust = useMemo(() => new Crust(), [])
   const polkadotJs = useMemo(() => new PolkadotJs(), [])
+  const subWallet = useMemo(() => new SubWallet(), [])
   const metamask = useMemo(() => new Metamask(), []);
   const metax = useMemo(() => new MetaX(), []);
   const near = useMemo(() => new NearM(), []);
@@ -371,6 +382,15 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
           .then(() => setIsLoad(false))
       } else if (f.wallet === 'polkadot-js') {
         polkadotJs.init().then(() => polkadotJs.getAccounts())
+          .then((accounts) => {
+            if (accounts.includes(f.account)) {
+              setAccounts(accounts)
+              setAccount(f)
+            }
+          })
+          .then(() => setIsLoad(false))
+      } else if (f.wallet === 'subWallet') {
+        subWallet.init().then(() => subWallet.getAccounts())
           .then((accounts) => {
             if (accounts.includes(f.account)) {
               setAccounts(accounts)
@@ -491,6 +511,7 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
       logout,
       crust,
       polkadotJs,
+      subWallet,
       metamask,
       metax,
       near,

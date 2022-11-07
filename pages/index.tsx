@@ -178,6 +178,29 @@ function Home({ className }: { className?: string }) {
     }
   }, [user, t])
 
+  const _onClickSubWallet = useCallback(async () => {
+    try {
+      setError('')
+      await user.subWallet.init()
+      if (!user.subWallet.provider) {
+        setError(`SubWallet (Extension) not installed`)
+        return
+      }
+      const accounts = await user.subWallet.login()
+      const last = lastUser('subWallet')
+      if (last && accounts.includes(last.account)) {
+        loginedSign(last, user.subWallet);
+      } else if (accounts.length > 0) {
+        setLogined({
+          account: accounts[0],
+          wallet: 'subWallet'
+        }, user.subWallet)
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }, [user, t])
+
   const _onClickMetamask = useCallback(async (w: Wallet) => {
     setError('')
     await user.metamask.init()
@@ -555,6 +578,12 @@ function Home({ className }: { className?: string }) {
         name: 'Polkadot',
         image: '/images/wallet_polkadot.png',
         onClick: _onClickPolkadotJs,
+      },
+      {
+        group: 'Polkadot',
+        name: 'SubWallet',
+        image: '/images/subwallet.png',
+        onClick: _onClickSubWallet,
       },
       {
         group: 'WalletConnect',

@@ -24,6 +24,8 @@ function getWalletIcon(user: WrapLoginUser): string {
       return '/images/wallet_crust.png';
     case "polkadot-js":
       return '/images/group_wallet_polkadot.png';
+    case "subWallet":
+      return '/images/subwallet.png';
     case "metamask":
       return '/images/wallet_ethereum.png';
     case "metamask-Polygon":
