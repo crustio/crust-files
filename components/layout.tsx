@@ -51,7 +51,7 @@ function Layout({
 
 export default React.memo(styled(Layout)`
   width: 100%;
-  height: 100vh;
-  max-height: 100vh;
+  height: 100%;
+  max-height: 100%;
   overflow: auto;
 `)

@@ -690,13 +690,13 @@ export default React.memo(styled(Home)`
   color: white;
   display: flex;
   width: 100%;
-  height: 100vh;
-  min-height: 40rem;
+  height: 100%;
+  min-height: 100vh;
   overflow-x: auto;
   .left_panel {
     background-color: #000000;
     flex: 1;
-    height: 100%;
+    // height: 100%;
     position: relative;
     .bg {
       overflow: hidden;
@@ -753,7 +753,7 @@ export default React.memo(styled(Home)`
   }
   .center_panel {
     width: 25.71rem;
-    height: 100%;
+    // height: 100%;
     flex-shrink: 0;
     position: relative;
     .cosmos {
@@ -780,7 +780,7 @@ export default React.memo(styled(Home)`
   .right_panel {
     background-color: var(--primary-color);
     width: 21.07rem;
-    height: 100%;
+    // height: 100%;
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
