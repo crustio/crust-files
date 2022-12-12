@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import React, { useMemo } from "react";
 import { Grid, Segment, Sidebar } from 'semantic-ui-react';
 import styled from "styled-components";
+import { CrustGetCRU } from "../lib/config";
 import { useSessionState } from "../lib/hooks/useSessionState";
 import { PixelBtn } from "./effect/Pixels";
 import Logo from "./Logo";
@@ -41,7 +42,7 @@ const menus: MenuItem[] = [
   // { path: "/share-earn", icon: "cru-fo-share-2", name: 'Share-and-Earn' },
   { path: "/user", icon: "cru-fo-user", name: 'Premium User' },
   // { icon: "cru-fo-credit-card", name: 'Pay to Download',link: 'https://p2d.crustapps.net/' },
-  { icon: "cru-fo-database", name: 'Get CRU', link: 'https://swap.crustapps.net' },
+  { icon: "cru-fo-database", name: 'Get CRU', link: CrustGetCRU },
 ]
 
 interface GroupMenuProps {

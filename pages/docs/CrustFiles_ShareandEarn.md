@@ -1,3 +1,4 @@
+
 # Share-and-Earn
 
 <font size="6">Share Crust Files with your friends,</font>  
@@ -20,7 +21,7 @@ To join Share-and-Earn and earn rewards, sign in with a <font color="red">Crust 
 
 Download a Crust Wallet [here](https://chrome.google.com/webstore/detail/crust-wallet/jccapkebeeiajkkdemacblkjhhhboiek?hl=en)  
 
-Get some CRU tokens [here](https://swap.crustapps.net/#/swap)
+Get some CRU tokens [here](https://swap.crust.network)
 
 <h2 id="invite_bonus">{`INVITE BONUS - detailed rules`}</h2>
 
