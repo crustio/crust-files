@@ -51,7 +51,7 @@ function _share(props: BaseProps) {
     }, [cid, options])
     const link = useMemo(() => {
         if (!options || !cid) return ''
-        const base = options.gateway || "https://gw.crustapps.net"
+        const base = options.gateway || "https://gw.crustfiles.net"
         return `${base}/ipfs/${cid}?filename=${options.name}`
     }, [options, cid])
     const _onClickDown = () => {
