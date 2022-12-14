@@ -31,10 +31,10 @@ export interface Props {
 
 type Status = 'Loading' | 'Submitted' | 'Expired' | 'Success' | 'Failed';
 
-const GATEWAYS = [
-  'https://gw.crustfiles.net',
-  'https://gw.crustfiles.app',
-  'https://ipfs-gw.decloud.foundation'
+export const GATEWAYS = [
+  'https://crustipfs.live',
+  'https://crustipfs.art',
+  'https://crustipfs.info'
 ]
 
 export interface FileStat {
@@ -48,7 +48,7 @@ export interface FileStat {
 }
 
 function createUrl(f: SaveFile, endpoints: AuthIpfsEndpoint[]) {
-  const p = endpoints.find((e) => e.value === f.UpEndpoint);
+  // const p = endpoints.find((e) => e.value === f.UpEndpoint);
   // const endpoint = (p && p.value) || endpoints[0].value;
   const timestamp = new Date().getTime()
   const endpoint = GATEWAYS[timestamp % 3]
