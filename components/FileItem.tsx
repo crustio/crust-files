@@ -31,6 +31,12 @@ export interface Props {
 
 type Status = 'Loading' | 'Submitted' | 'Expired' | 'Success' | 'Failed';
 
+export const GATEWAYS = [
+  'https://crustipfs.live',
+  'https://crustipfs.art',
+  'https://crustipfs.info'
+]
+
 export interface FileStat {
   status: Status
   expireTime?: number
@@ -42,8 +48,10 @@ export interface FileStat {
 }
 
 function createUrl(f: SaveFile, endpoints: AuthIpfsEndpoint[]) {
-  const p = endpoints.find((e) => e.value === f.UpEndpoint);
-  const endpoint = (p && p.value) || endpoints[0].value;
+  // const p = endpoints.find((e) => e.value === f.UpEndpoint);
+  // const endpoint = (p && p.value) || endpoints[0].value;
+  const timestamp = new Date().getTime()
+  const endpoint = GATEWAYS[timestamp % 3]
 
   return `${endpoint}/ipfs/${f.Hash}?filename=${f.Name}`;
 }

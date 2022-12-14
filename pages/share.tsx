@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useMemo } from 'react';
 import styled from "styled-components";
 import { Pixel, PixelBtn } from '../components/effect/Pixels';
+import { GATEWAYS } from '../components/FileItem';
 import { RowFlex } from '../components/layout';
 import { Links } from '../components/Links';
 import { BaseProps } from "../components/types";
@@ -51,7 +52,9 @@ function _share(props: BaseProps) {
     }, [cid, options])
     const link = useMemo(() => {
         if (!options || !cid) return ''
-        const base = options.gateway || "https://gw.crustfiles.net"
+        // const base = options.gateway || "https://gw.crustfiles.net"
+        const timestamp = new Date().getTime()
+        const base = GATEWAYS[timestamp % 3]
         return `${base}/ipfs/${cid}?filename=${options.name}`
     }, [options, cid])
     const _onClickDown = () => {
