@@ -88,7 +88,7 @@ export const CrustGetCRU = 'https://swap.crust.network';
 // export const IS_DEV = process.env.NODE_ENV === 'development'
 // beta prod
 export const ShareEarnENV = IS_DEV ? 'beta' : 'prod'
-export const ShareEarnBaseUrl = IS_DEV ? 'https://files-api.decoo.io' : 'https://api.crustfiles.com'
+export const ShareEarnBaseUrl = IS_DEV ? 'https://files-api.decoo.io' : 'https://api.crustfiles.io'
 export const RecaptchKey = IS_DEV ? 'f8bd392f-2ff5-4dc7-bedd-1be9f175885b' : '09ef6613-21f0-4fb6-ab1f-ded9bedb291e'
 export const GA_ID = IS_DEV ? 'G-HH6CWDPZJ2' : 'G-LP5BSW8V06'
 export const GTM_ID = 'GTM-NPZMBPN'
