@@ -43,8 +43,6 @@ function Layout({
           content="Crust Files, the Web3.0 file storage application"
         />
         <meta name="og:title" content={siteTitle} />
-        <meta name='twitter:title' content='Crust Files | The Twitter Files' />
-        <meta name='twitter:description' content='Your first personal Web3.0 storage in the Metaverse.' />
       </Head>
       {children}
     </div>
