@@ -54,7 +54,7 @@ function _share(props: BaseProps) {
         if (!options || !cid) return ''
         // const base = options.gateway || "https://gw.crustfiles.net"
         const timestamp = new Date().getTime()
-        const base = GATEWAYS[timestamp % 3]
+        const base = GATEWAYS[timestamp % 8]
         return `${base}/ipfs/${cid}?filename=${options.name}`
     }, [options, cid])
     const _onClickDown = () => {
