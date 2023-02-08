@@ -17,6 +17,7 @@ import { NearM } from './Near';
 import { PolkadotJs } from "./PolkadotJs";
 import { SolanaM } from './SolanaM';
 import { SubWallet } from "./SubWallet";
+import { Talisman } from "./Talisman";
 import { SaveFile } from './types';
 import { Web3AuthWallet } from "./Web3AuthWallet";
 
@@ -46,7 +47,7 @@ export class LoginUser {
   account = '';
   pubKey?: string;
   wallet: 'crust' | 'polkadot-js' | 'metamask' | 'metamask-Moonriver' | 'metamask-Polygon' | 'metamask-BSC' | 'metamask-HECO' | 'metamask-Cubechain' | 'metax' |
-    'near' | 'flow' | 'solana' | 'elrond' | 'wallet-connect' | 'aptos-martian' | 'aptos-petra' | 'web3auth' | 'subWallet';
+    'near' | 'flow' | 'solana' | 'elrond' | 'wallet-connect' | 'aptos-martian' | 'aptos-petra' | 'web3auth' | 'subWallet' | 'talisman';
   key?: KEYS = 'files:login';
   authBasic?: string;
   authBearer?: string;
@@ -72,7 +73,8 @@ export const WalletName: { [k in LoginUser['wallet']]: string } = {
   "aptos-martian": "Aptos Martian",
   "aptos-petra": "Aptos",
   "web3auth": "Web3Auth",
-  "subWallet": "subWallet"
+  "subWallet": "subWallet",
+  "talisman": "talisman"
 }
 
 
@@ -109,6 +111,7 @@ export interface WrapLoginUser extends LoginUser {
   solana: SolanaM,
   elrond: Elrond,
   subWallet: SubWallet,
+  talisman: Talisman,
   walletConnect: MWalletConnect,
   aptosMartian: AptosMartian,
   aptosPetra: AptosPetra,
@@ -221,6 +224,13 @@ export function useSign(wUser: WrapLoginUser): UseSign {
         }
       }))
     }
+    if (wUser.wallet === 'talisman') {
+      setState((o) => ({
+        ...o, sign: async (data, account) => {
+          return wUser.talisman.sign(data, account)
+        }
+      }))
+    }
     if (wUser.wallet === 'elrond') {
       setState((o) => ({
         ...o, sign: async () => {
@@ -282,6 +292,7 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
   const crust = useMemo(() => new Crust(), [])
   const polkadotJs = useMemo(() => new PolkadotJs(), [])
   const subWallet = useMemo(() => new SubWallet(), [])
+  const talisman = useMemo(() => new Talisman(), [])
   const metamask = useMemo(() => new Metamask(), []);
   const metax = useMemo(() => new MetaX(), []);
   const near = useMemo(() => new NearM(), []);
@@ -462,6 +473,16 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
         web3AuthWallet.init()
           .then(() => setAccount(f))
           .then(() => setIsLoad(false))
+      } else if (f.wallet === 'talisman') {
+        talisman.init()
+          .then(() => talisman.getAccounts())
+          .then((accounts) => {
+            if (accounts.includes(f.account)) {
+              setAccounts(accounts)
+              setAccount(f)
+            }
+          })
+          .then(() => setIsLoad(false))
       } else {
         setIsLoad(false)
       }
@@ -526,11 +547,12 @@ export function useLoginUser(key: KEYS = 'files:login'): WrapLoginUser {
       setNickName,
       setMember,
       member,
+      talisman
     };
     return wrapLoginUser;
   }, [
     account, accounts, isLoad, setLoginUser, logout,
-    crust, polkadotJs, metamask, metax, near, flow, solana,
+    crust, polkadotJs, metamask, metax, near, flow, solana, talisman,
     walletConnect, nickName, member, key, aptosMartian, aptosPetra, web3AuthWallet
   ]);
   const uSign = useSign(wUser);

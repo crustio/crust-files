@@ -201,6 +201,30 @@ function Home({ className }: { className?: string }) {
     }
   }, [user, t])
 
+  const _onClickTalisman = useCallback(async () => {
+    try {
+      setError('')
+
+      await user.talisman.init()
+      if (!user.talisman.provider) {
+        setError(`Talisman (Extension) not installed`)
+        return
+      }
+      const accounts = await user.talisman.login()
+      const last = lastUser('talisman')
+      if (last && accounts.includes(last.account)) {
+        loginedSign(last, user.talisman);
+      } else if (accounts.length > 0) {
+        setLogined({
+          account: accounts[0],
+          wallet: 'talisman'
+        }, user.talisman)
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }, [user, t])
+
   const _onClickMetamask = useCallback(async (w: Wallet) => {
     setError('')
     await user.metamask.init()
@@ -584,6 +608,12 @@ function Home({ className }: { className?: string }) {
         name: 'SubWallet',
         image: '/images/subwallet.png',
         onClick: _onClickSubWallet,
+      },
+      {
+        group: 'Polkadot',
+        name: 'Talisman',
+        image: '/images/talisman.png',
+        onClick: _onClickTalisman,
       },
       {
         group: 'WalletConnect',
