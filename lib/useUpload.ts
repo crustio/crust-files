@@ -145,15 +145,16 @@ export function useUpload(user: WrapLoginUser, options: Options): UseUpload {
             setUpState({ progress: 99, up: true })
             // remote pin order
             const PinEndpoint = pinner.value;
-            await axios.request({
-                data: {
+            await axios.post(
+                `${PinEndpoint}/psa/pins`,
+                {
                     cid: upRes.Hash,
                     name: upRes.Name
                 },
-                headers: { Authorization: AuthBearer },
-                method: 'POST',
-                url: `${PinEndpoint}/psa/pins`
-            });
+                {
+                    headers: { authorization: AuthBearer, "Access-Control-Allow-Origin": "*" },
+                }
+            );
 
             setUpState({ progress: 100, up: false });
             const sf: SaveFile = {

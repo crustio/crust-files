@@ -39,7 +39,14 @@ export class Talisman implements BaseWallet {
   async sign(data: string, account: string | undefined): Promise<string> {
     if (!this.provider) throw "Error: no wallet"
     if (!this.wallet.signer) throw "Error: wallet error no signer"
-    const res: { signature } = await this.wallet.signer.signRaw({
+    const accounts = await new Promise((resolve, _) => {
+        this.provider.subscribeAccounts((accounts) => {
+            resolve(accounts)
+        });
+    }) as unknown as any[]
+    const walletAccount = accounts.find(e => e.address === account)
+    console.log('walletAccount:::', walletAccount)
+    const res: { signature } = await walletAccount.signer.signRaw({
       address: account,
       type: 'bytes',
       data: stringToHex(data)
