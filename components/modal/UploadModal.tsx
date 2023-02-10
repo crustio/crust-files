@@ -60,6 +60,11 @@ function UploadModal(p: Props): React.ReactElement<Props> {
     if (cancelUp) cancelUp.cancel();
     onClose();
   }, [cancelUp, onClose]);
+  console.log('filesize error', fileSizeError)
+  console.log('isVault error', isVault)
+  console.log('uc.secret', uc.secret)
+  console.log('user.account', user.account)
+  console.log('!user.sign', !user.sign)
 
   const disabledSingAndUpload = fileSizeError || (isVault && !uc.secret) || !user.account || !user.sign
   const _onClickUp = () => {
