@@ -43,7 +43,6 @@ function Index(props: Props) {
   const isCrust = user.wallet === 'crust'
   const wFiles = useFiles();
   const { publicCount, publicSize, valutCount, valutSize} = useFilesInfo(wFiles);
-  console.log('user::', user)
 
   const importInputRef = useRef<HTMLInputElement>(null);
   const _clickImport = useCallback(() => {

@@ -90,7 +90,6 @@ function Home({ className }: { className?: string }) {
     const msg = u.wallet === 'near' || u.wallet === 'aptos-martian' || u.wallet == 'aptos-petra' || u.wallet === 'web3auth' ? u.pubKey || '' : u.account;
     const prefix = getPerfix(u);
     wallet.sign(msg, u.account).then(signature => {
-      console.log('Login signature:::', signature)
       if (signature.length) {
         const perSignData = user.wallet === 'elrond' ? signature : `${prefix}-${msg}:${signature}`;
         const base64Signature = window.btoa(perSignData);

@@ -152,7 +152,7 @@ export function useUpload(user: WrapLoginUser, options: Options): UseUpload {
                     name: upRes.Name
                 },
                 {
-                    headers: { authorization: AuthBearer, "Access-Control-Allow-Origin": "*" },
+                    headers: { authorization: AuthBearer },
                 }
             );
 

@@ -45,11 +45,15 @@ export class Talisman implements BaseWallet {
         });
     }) as unknown as any[]
     const walletAccount = accounts.find(e => e.address === account)
+    /**
+     * walletAccount.type:  "ethereum" | "sr25519"
+     */
     console.log('walletAccount:::', walletAccount)
+
     const res: { signature } = await walletAccount.signer.signRaw({
-      address: account,
-      type: 'bytes',
-      data: stringToHex(data)
+        address: account,
+        type: 'bytes',
+        data
     })
     return res.signature;
   }
