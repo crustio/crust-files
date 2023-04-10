@@ -29,12 +29,12 @@ export function createAuthIpfsEndpoints(t: TFunction): AuthIpfsEndpoint[] {
       value: 'https://gw.crustfiles.net',
       // group: "Thunder Gateway"
     },
-    {
-      location: t('Seattle'),
-      text: t('⚡ Thunder Gateway'),
-      value: 'https://gw.crustfiles.app',
+    //{
+    //  location: t('Seattle'),
+    //  text: t('⚡ Thunder Gateway'),
+    //  value: 'https://gw.crustfiles.app',
       // group: "Public Gateway"
-    },
+    //},
     // {
     //   location: t('Beijing'),
     //   text: t('⚡ Deklod'),
