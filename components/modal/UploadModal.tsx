@@ -43,12 +43,12 @@ function UploadModal(p: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { endpoint, endpoints, onChangeEndpoint } = useAuthGateway();
   const { onChangePinner, pinner, pins } = useAuthPinner();
-  const [isPermanent, setPermanent] = useToggle(false);
+  const [isPermanent, setPermanent] = useToggle(true);
   const fileSize = useMemo(() => {
-    if(file.file) return file.file.size;
-    if(file.files) return _.sumBy(file.files, 'size') + 1000;
-    return 0
-  }, [file])
+    if (file.file) return file.file.size;
+    if (file.files) return _.sumBy(file.files, "size") + 1000;
+    return 0;
+  }, [file]);
   const { pin, fee, chainId } = useEvmPin(fileSize, isPermanent);
   const isEvmPin = !!pin;
   const encrypt = isVault && !!uc.secret;
@@ -145,12 +145,15 @@ function UploadModal(p: Props): React.ReactElement<Props> {
                 <Card.Content>
                   <Card.Header content={"Permanent storage"} />
                   <Card.Description
-                    content={"Non-permanent storage, the guarantee period for the file is only 6 months."}
+                    style={{ color: isPermanent ? "transparent" : undefined }}
+                    content={
+                      isPermanent ? "-" : "Non-permanent storage, the guarantee period for the file is only 6 months."
+                    }
                   />
                   <Radio toggle defaultChecked={isPermanent} onChange={(_e, { checked }) => setPermanent(checked)} />
                 </Card.Content>
               </Card>
-              <div style={{ padding: '0 20px'}}>Storage fee: {fee}</div>
+              <div style={{ padding: "0 20px" }}>Storage fee: {fee}</div>
             </>
           ) : (
             <>
@@ -250,6 +253,7 @@ export default React.memo<Props>(styled(UploadModal)`
     .content > .description {
       font-size: 1rem;
       color: #999999;
+
       font-family: OpenSans-Regular;
     }
   }
