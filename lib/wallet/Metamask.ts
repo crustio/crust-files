@@ -4,7 +4,7 @@ import { providers } from "ethers";
 
 export interface MetamaskReqOptions {
   from?: string;
-  params?: (string | object)[];
+  params?: (string | any)[];
   method: string;
 }
 

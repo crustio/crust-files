@@ -50,6 +50,7 @@ function UploadModal(p: Props): React.ReactElement<Props> {
     return 0
   }, [file])
   const { pin, fee, chainId } = useEvmPin(fileSize, isPermanent);
+  const isEvmPin = !!pin;
   const encrypt = isVault && !!uc.secret;
   const [showOptions, toggleShowOptions] = useToggle();
   const { error, cancelUp, upState, upload, isBusy, fileSizeError } = useUpload(user, {
@@ -138,7 +139,7 @@ function UploadModal(p: Props): React.ReactElement<Props> {
             />
           </Card>
 
-          {!!pin ? (
+          {isEvmPin ? (
             <>
               <Card fluid className="encryption">
                 <Card.Content>

@@ -1,9 +1,7 @@
 import { BaseWallet } from "./types";
 import WalletConnect from "@walletconnect/client";
-import WalletConnectProvider from "@walletconnect/ethereum-provider";
 import QRCodeModal from "@walletconnect/qrcode-modal";
 import { convertUtf8ToHex } from "@walletconnect/utils";
-import { providers } from "ethers";
 
 export class MWalletConnect implements BaseWallet {
   isInit = false;
