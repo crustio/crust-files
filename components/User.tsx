@@ -157,11 +157,11 @@ function User(props: Props) {
   const chains = useMemo(() => {
     return [
       { name: "Ethereum", image: "/images/chain/ethereum.png", chainId: 1 },
-      { name: "Polygon", image: "/images/chain/polygon.png", chainId: 137 },
+      // { name: "Polygon", image: "/images/chain/polygon.png", chainId: 137 },
       { name: "Optimism", image: "/images/chain/optimism.png", chainId: 10 },
       { name: "Arbitrum", image: "/images/chain/arbitrum.png", chainId: 42161 },
-      { name: "Celo", image: "/images/chain/celo.png", chainId: 42220 },
-      { name: "BNB Chain", image: "/images/chain/bsc.png", chainId: 56 },
+      // { name: "Celo", image: "/images/chain/celo.png", chainId: 42220 },
+      // { name: "BNB Chain", image: "/images/chain/bsc.png", chainId: 56 },
       { name: "zkSync", image: "/images/chain/zksync.png", chainId: 324 },
     ];
   }, []);
