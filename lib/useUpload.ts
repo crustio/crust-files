@@ -5,6 +5,9 @@ import { encryptFile } from "./crypto/encryption";
 import { readFileAsync } from "./crypto/useUserCrypto";
 import { FileInfo, SaveFile, UploadRes } from "./types";
 import { getPerfix, WrapLoginUser } from "./wallet/hooks";
+import { UseEvmPin } from './useEvmPin';
+import { BigNumber } from 'ethers';
+import { parseEther } from 'ethers/lib/utils';
 
 export interface Params {
     signature: string,
@@ -30,7 +33,10 @@ export interface Options {
     isPremium?: boolean,
     endpoint: AuthIpfsEndpoint,
     pinner: AuthIpfsPinner,
+    pin?: UseEvmPin['pin'],
+    chainId?: number
 }
+
 
 export function useUpload(user: WrapLoginUser, options: Options): UseUpload {
     const [error, setError] = useState<string>()
@@ -43,7 +49,9 @@ export function useUpload(user: WrapLoginUser, options: Options): UseUpload {
         file,
         isPremium = false,
         endpoint,
-        pinner
+        pinner,
+        pin,
+        chainId
     } = options
     const mMax = useMemo(() => isPremium ? MAX_PREMIUM : MAX, [isPremium])
     const fileSizeError = useMemo(() => {
@@ -144,18 +152,26 @@ export function useUpload(user: WrapLoginUser, options: Options): UseUpload {
             setCancelUp(null);
             setUpState({ progress: 99, up: true })
             // remote pin order
-            const PinEndpoint = pinner.value;
-            await axios.post(
-                `${PinEndpoint}/psa/pins`,
-                {
-                    cid: upRes.Hash,
-                    name: upRes.Name
-                },
-                {
-                    headers: { authorization: AuthBearer },
-                }
-            );
-
+            
+            let PinEndpoint = undefined;
+            let PinTx = undefined;
+            let PinChainId = undefined;
+            if(pin){
+                PinChainId = chainId;
+                PinTx = await pin(upRes.Hash)
+            }else{
+                PinEndpoint = pinner.value
+                await axios.post(
+                    `${PinEndpoint}/psa/pins`,
+                    {
+                        cid: upRes.Hash,
+                        name: upRes.Name
+                    },
+                    {
+                        headers: { authorization: AuthBearer },
+                    }
+                );
+            }
             setUpState({ progress: 100, up: false });
             const sf: SaveFile = {
                 ...upRes,
@@ -163,6 +179,8 @@ export function useUpload(user: WrapLoginUser, options: Options): UseUpload {
                 PinTime: new Date().getTime(),
                 UpEndpoint,
                 Encrypted: isEncrypt,
+                PinTx,
+                PinChainId,
             }
             const params: Params = {
                 msg,

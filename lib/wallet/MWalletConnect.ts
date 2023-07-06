@@ -1,7 +1,9 @@
 import { BaseWallet } from "./types";
 import WalletConnect from "@walletconnect/client";
+import WalletConnectProvider from "@walletconnect/ethereum-provider";
 import QRCodeModal from "@walletconnect/qrcode-modal";
 import { convertUtf8ToHex } from "@walletconnect/utils";
+import { providers } from "ethers";
 
 export class MWalletConnect implements BaseWallet {
   isInit = false;
@@ -11,7 +13,12 @@ export class MWalletConnect implements BaseWallet {
 
   onAccountChanged?: (data: string[]) => void
   onDisconnect?: () => void
+  onChainChange?: (chainId: number) => void;
 
+  getProvider() {
+    if(!this.connect)
+    return undefined;
+  }
   async init() {
     this.connect = new WalletConnect({
       bridge: "https://bridge.walletconnect.org", // Required

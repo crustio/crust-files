@@ -114,6 +114,8 @@ export const Web3AuthProvider: FunctionComponent<IWeb3AuthState> = ({ children }
             }
         }
         init();
+        console.info('doWeb3Init')
+        return () => {}
     }, []);
 
     const login = async () => {

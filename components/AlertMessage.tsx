@@ -87,13 +87,13 @@ export default React.memo(styled(AlertMessage)`
     border: 0.07rem solid #EEEEEE;
     
     &.isMain {
-      background-color: rgba(255, 255, 255, 0.15);
+      /* background-color: rgba(255, 255, 255, 0.15); */
       border: unset;
       margin-right: 3.4rem;
-      align-self: flex-end;
+      /* align-self: flex-end; */
 
       .content {
-        color: white !important;
+        /* color: white !important; */
       }
     }
 

@@ -55,9 +55,9 @@ export interface FileStat {
 function createUrl(f: SaveFile, endpoints: AuthIpfsEndpoint[]) {
   // const p = endpoints.find((e) => e.value === f.UpEndpoint);
   // const endpoint = (p && p.value) || endpoints[0].value;
-  const timestamp = new Date().getTime()
-  const endpoint = GATEWAYS[timestamp % 8]
-
+  // const timestamp = new Date().getTime()
+  // const endpoint = GATEWAYS[timestamp % 8]
+  const endpoint = "https://ipfs.io"
   return `${endpoint}/ipfs/${f.Hash}?filename=${f.Name}`;
 }
 
