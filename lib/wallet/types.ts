@@ -1,8 +1,11 @@
+import { providers } from "ethers";
+
 // 0.Base
 export interface BaseWallet {
   isInit: boolean
   init: () => Promise<void>
   sign: (data: string, account?: string) => Promise<string>
+  getProvider?: () => providers.Web3Provider|undefined
 }
 
 // other
@@ -19,6 +22,8 @@ export interface SaveFile extends UploadRes {
   PinTime: number,
   Account?: string,
   Encrypted?: boolean,
+  PinTx?: string,
+  PinChainId?: number
 }
 
 export interface DirFile extends File {

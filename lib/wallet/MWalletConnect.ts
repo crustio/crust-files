@@ -11,7 +11,12 @@ export class MWalletConnect implements BaseWallet {
 
   onAccountChanged?: (data: string[]) => void
   onDisconnect?: () => void
+  onChainChange?: (chainId: number) => void;
 
+  getProvider() {
+    if(!this.connect)
+    return undefined;
+  }
   async init() {
     this.connect = new WalletConnect({
       bridge: "https://bridge.walletconnect.org", // Required
