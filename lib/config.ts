@@ -52,6 +52,56 @@ export function createAuthIpfsEndpoints(t: TFunction): AuthIpfsEndpoint[] {
       text: t('Crust Network'),
       value: 'https://ipfs-gw.decloud.foundation',
       // group: "Public Gateway"
+    },
+    {
+      location: t('Henan'),
+      text: t('️Crust IPFS GW'),
+      value: 'https://gw.w3ipfs.cn:10443'
+    },
+    {
+      location: t('Los Angeles'),
+      text: t('️Crust IPFS GW'),
+      value: 'https://gw.smallwolf.me'
+    },
+    {
+      location: t('Henan'),
+      text: t('️Crust IPFS GW'),
+      value: 'https://gw.w3ipfs.com:7443'
+    },  
+    {
+      location: t('Henan Unicom'),
+      text: t('️Crust IPFS GW'),
+      value: 'https://gw.w3ipfs.net:7443'
+    },
+    {
+      location: t('Helsinki'),
+      text: t('️crust-fans'),
+      value: 'https://crust.fans'
+    },
+    {
+      location: t('Phoenix'),
+      text: t('️crustgateway'),
+      value: 'https://crustgateway.com'
+    },
+    {
+      location: t('Germany'),
+      text: t('️crustgateway-de'),
+      value: 'https://crustgateway.online'
+    },
+    {
+      location: t('Los Angeles'),
+      text: t('️Crust IPFS GW'),
+      value: 'https://gw.w3ipfs.org.cn'
+    },
+    {
+      location: t('Shanghai'),
+      text: t('Area51-GW'),
+      value: 'https://223.111.148.195'
+    },
+    {
+      location: t('Shanghai'),
+      text: t('Crato-GW'),
+      value: 'https://223.111.148.196'
     }
   ];
 }
