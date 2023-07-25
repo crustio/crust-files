@@ -23,7 +23,7 @@ export function useEvmPin(size: number, isPermanent: boolean): UseEvmPin {
     const id = uniqueId();
     uniq.current = id;
     setFee("-");
-    if (wallet === "metamask") {
+    if (wallet === "metamask" && evms) {
       evms
         .getPrice(BigNumber.from(size), isPermanent)
         .then((price) => {
@@ -43,5 +43,5 @@ export function useEvmPin(size: number, isPermanent: boolean): UseEvmPin {
     const { transactionHash } = await tx.wait();
     return transactionHash;
   };
-  return { pin, chainId, fee };
+  return { pin: evms ? pin : undefined, chainId, fee };
 }
