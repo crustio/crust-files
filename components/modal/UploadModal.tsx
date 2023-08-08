@@ -45,9 +45,9 @@ function UploadModal(p: Props): React.ReactElement<Props> {
   const { onChangePinner, pinner, pins } = useAuthPinner();
   const [isPermanent, setPermanent] = useToggle(true);
   const fileSize = useMemo(() => {
-    if (file.file) return file.file.size;
-    if (file.files) return _.sumBy(file.files, "size") + 1000;
-    return 0;
+    const size = file.file ? file.file.size : file.files ? _.sumBy(file.files, "size") + 1024 : 0
+    if(size === 0) return size;
+    return size + Math.round(size * 0.2)
   }, [file]);
   const { pin, fee, chainId } = useEvmPin(fileSize, isPermanent);
   const isEvmPin = !!pin;
