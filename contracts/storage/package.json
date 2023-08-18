@@ -1,0 +1,17 @@
+{
+  "name": "storage",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^2.0.1",
+    "@oasisprotocol/sapphire-hardhat": "^2.16.1",
+    "cross-env": "^7.0.3",
+    "hardhat": "^2.17.1"
+  }
+}
