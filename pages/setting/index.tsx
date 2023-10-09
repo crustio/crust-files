@@ -1,4 +1,5 @@
 import classNames from 'classnames';
+import Web3 from "web3";
 import FileSaver from 'file-saver';
 import { useRouter } from 'next/router';
 import React, { useCallback, useContext, useEffect, useMemo, useRef } from "react";
@@ -17,6 +18,202 @@ import { useToggle } from "../../lib/hooks/useToggle";
 import { ExportObj, SaveFile } from "../../lib/types";
 import { useFilesInfo } from '../../lib/useFilesInfo';
 import { useFiles, WalletName } from "../../lib/wallet/hooks";
+
+const StorageSecretsABI = [
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "creator",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      }
+    ],
+    "name": "SecretCreated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "creator",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      }
+    ],
+    "name": "SecretRevealed",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "_metas",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "creator",
+        "type": "address"
+      },
+      {
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "name": "_nameMetas",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "isExist",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "internalType": "bytes",
+        "name": "secret",
+        "type": "bytes"
+      }
+    ],
+    "name": "createSecret",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "offset",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "count",
+        "type": "uint256"
+      }
+    ],
+    "name": "getMetas",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "creator",
+            "type": "address"
+          },
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct StorageSecrets.SecretMetadata[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      }
+    ],
+    "name": "revealNameSecret",
+    "outputs": [
+      {
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      }
+    ],
+    "name": "revealSecret",
+    "outputs": [
+      {
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+];
+
+const StorageSecretsAddress = "0x41C716d69F7ae771406288F79eE0eB4bFc36719e";
+
 export interface Props {
   className?: string
 }
@@ -42,7 +239,7 @@ function Index(props: Props) {
   }, [user, isPremiumUser])
   const isCrust = user.wallet === 'crust'
   const wFiles = useFiles();
-  const { publicCount, publicSize, valutCount, valutSize} = useFilesInfo(wFiles);
+  const { publicCount, publicSize, valutCount, valutSize } = useFilesInfo(wFiles);
 
   const importInputRef = useRef<HTMLInputElement>(null);
   const _clickImport = useCallback(() => {
@@ -113,6 +310,44 @@ function Index(props: Props) {
 
     FileSaver.saveAs(blob, 'backup.json');
   }, [wFiles, uc]);
+
+
+  const _clickUpload = useCallback(async () => {
+    console.log(uc.secret)
+    if (uc.secret) {
+      let injectedProvider = false;
+      if (typeof window.ethereum !== 'undefined') {
+        injectedProvider = true
+      }
+      const isMetaMask = injectedProvider ? window.ethereum.isMetaMask : false
+
+      if (isMetaMask) {
+        const web3 = new Web3(window.ethereum);
+        const storageSecretsContract = new web3.eth.Contract(StorageSecretsABI as any, StorageSecretsAddress);
+        const sig = await web3.eth.personal.sign("secret", user.account, "123456");        
+        await storageSecretsContract.methods.createSecret(sig.substring(2, 12), Buffer.from(uc.secret)).send({ from: user.account, });
+      }
+    }
+  }, [uc]);
+
+  const _clickDownload = useCallback(async () => {
+    let injectedProvider = false;
+    if (typeof window.ethereum !== 'undefined') {
+      injectedProvider = true
+    }
+    const isMetaMask = injectedProvider ? window.ethereum.isMetaMask : false
+
+    if (isMetaMask) {
+      const web3 = new Web3(window.ethereum);
+      const storageSecretsContract = new web3.eth.Contract(StorageSecretsABI as any, StorageSecretsAddress);
+      const sig = await web3.eth.personal.sign("secret", user.account, "123456");
+      console.log(sig);
+      const secret = await storageSecretsContract.methods.revealNameSecret(sig.substring(2, 12)).call();
+      if (secret !== null && secret !== "") {
+        console.log(Buffer.from(secret.slice(2), 'hex').toString());
+      }
+    }
+  }, [uc]);
 
   return <PageUserSideLayout path={'/setting'} className={className}>
     <input
@@ -210,6 +445,8 @@ function Index(props: Props) {
       <div className={'btns'}>
         <Btn content={t('Export')} onClick={_clickExport} />
         <Btn content={t('Import')} onClick={_clickImport} />
+        <Btn content={t('Upload to Oasis')} onClick={_clickUpload} />
+        <Btn content={t('Download from Oasis')} onClick={_clickDownload} />
       </div>
     </Segment>
     <BindAirdrop />
@@ -261,7 +498,7 @@ export default React.memo<Props>(styled(Index)`
 
     .btns {
       margin-top: 1.7rem;
-      button:first-child {
+      button: {
         margin-right: 1rem;
       }
     }

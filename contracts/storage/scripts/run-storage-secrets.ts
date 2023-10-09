@@ -12,20 +12,10 @@ async function main() {
   await tx.wait(3);
   try {
     console.log('Checking the secret1');
-    const secret1 = await storageSecrets.callStatic.revealSecret(0);
+    const secret1 = await storageSecrets.callStatic.revealSecret('secret2');
     console.log('The secret1 ingredient is', Buffer.from(secret1.slice(2), 'hex').toString());
   } catch (e: any) {
     console.log('failed to fetch secret1:', e.message);
-  }
-
-  const tx2 = await storageSecrets.createSecret('secret2', Buffer.from('abc efg'));
-  await tx2.wait(3);
-  try {
-    console.log('Checking the secret2');
-    const secret2 = await storageSecrets.connect(ethers.provider).callStatic.revealNameSecret('secret2');
-    console.log('The lastest secret2 ingredient is', Buffer.from(secret2.slice(2), 'hex').toString());
-  } catch (e: any) {
-    console.log('failed to fetch secret2:', e.message);
   }
 }
 

@@ -28,6 +28,7 @@ declare global {
   interface Window {
     martian: any;
     aptos: any;
+    ethereum?: any;
   }
 }
 
