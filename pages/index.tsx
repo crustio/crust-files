@@ -18,6 +18,7 @@ import { nearConfig } from "../lib/wallet/config";
 import { LoginUser, getPerfix, lastUser, useContextWrapLoginUser } from "../lib/wallet/hooks";
 import { useWeb3Auth } from "../lib/web3auth/web3auth";
 import { FiChevronDown, FiChevronLeft, FiChevronUp, FiDownload } from "react-icons/fi";
+import { StorageChainConfig } from "./setting";
 interface ItemWallet {
   name: string;
   image: string;
@@ -282,6 +283,50 @@ function Home({ className }: { className?: string }) {
                 user.metamask
               );
             } else if (res.length) {
+              setLogined(
+                {
+                  account: res[0],
+                  wallet,
+                },
+                user.metamask
+              );
+            }
+          })
+          .catch((error) => {
+            console.error("accountsError:", error);
+          });
+      } else {
+        setError(`MetaMask not installed`);
+      }
+    },
+    [user, t]
+  );
+
+  const _onClickOasis = useCallback(
+    async (w: Wallet) => {
+      setError("");
+      await user.metamask.init();
+      const ethReq = user.metamask.ethereum?.request;
+      if (user.metamask.isInstalled && ethReq) {
+        ethReq<string[]>({
+          method: "eth_requestAccounts",
+        })
+          .then((res) => {
+            console.info("accounts:", res);
+            console.info(`'LoginUser['wallet']:'`, w.name);
+            const selectedAddress = user.metamask.ethereum?.selectedAddress;
+            const wallet = "metamask";
+            if (selectedAddress && res.includes(selectedAddress)) {
+              user.metamask.switchAndInstallChain(StorageChainConfig);
+              setLogined(
+                {
+                  account: selectedAddress,
+                  wallet,
+                },
+                user.metamask
+              );
+            } else if (res.length) {
+              user.metamask.switchAndInstallChain(StorageChainConfig);
               setLogined(
                 {
                   account: res[0],
@@ -708,6 +753,12 @@ function Home({ className }: { className?: string }) {
         name: "Talisman",
         image: "/images/talisman.png",
         onClick: _onClickTalisman,
+      },
+      {
+        group: "MetaMask",
+        name: "Oasis",
+        image: "/images/oasis.png",
+        onClick: _onClickOasis,
       },
       // {
       //   group: "WalletConnect",

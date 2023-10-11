@@ -19,200 +19,19 @@ import { ExportObj, SaveFile } from "../../lib/types";
 import { useFilesInfo } from '../../lib/useFilesInfo';
 import { useFiles, WalletName } from "../../lib/wallet/hooks";
 
-const StorageSecretsABI = [
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "creator",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "string",
-        "name": "name",
-        "type": "string"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "index",
-        "type": "uint256"
-      }
-    ],
-    "name": "SecretCreated",
-    "type": "event"
+export const StorageChainConfig = {
+  chainId: '0x5aff',
+  chainName: 'Oasis Sapphire Testnet',
+  nativeCurrency: {
+    name: 'TEST',
+    symbol: 'TEST',
+    decimals: 18,
   },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "creator",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "string",
-        "name": "name",
-        "type": "string"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "index",
-        "type": "uint256"
-      }
-    ],
-    "name": "SecretRevealed",
-    "type": "event"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "_metas",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "creator",
-        "type": "address"
-      },
-      {
-        "internalType": "string",
-        "name": "name",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "name": "_nameMetas",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "index",
-        "type": "uint256"
-      },
-      {
-        "internalType": "bool",
-        "name": "isExist",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "name",
-        "type": "string"
-      },
-      {
-        "internalType": "bytes",
-        "name": "secret",
-        "type": "bytes"
-      }
-    ],
-    "name": "createSecret",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "offset",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "count",
-        "type": "uint256"
-      }
-    ],
-    "name": "getMetas",
-    "outputs": [
-      {
-        "components": [
-          {
-            "internalType": "address",
-            "name": "creator",
-            "type": "address"
-          },
-          {
-            "internalType": "string",
-            "name": "name",
-            "type": "string"
-          }
-        ],
-        "internalType": "struct StorageSecrets.SecretMetadata[]",
-        "name": "",
-        "type": "tuple[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "name",
-        "type": "string"
-      }
-    ],
-    "name": "revealNameSecret",
-    "outputs": [
-      {
-        "internalType": "bytes",
-        "name": "",
-        "type": "bytes"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "index",
-        "type": "uint256"
-      }
-    ],
-    "name": "revealSecret",
-    "outputs": [
-      {
-        "internalType": "bytes",
-        "name": "",
-        "type": "bytes"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  }
-];
-
-const StorageSecretsAddress = "0x41C716d69F7ae771406288F79eE0eB4bFc36719e";
+  rpcUrls: ['https://testnet.sapphire.oasis.dev/'],
+  blockExplorerUrls: ['https://testnet.explorer.sapphire.oasis.dev'],
+}
+const StorageSecretsABI = [{ "type": "function", "stateMutability": "nonpayable", "outputs": [], "name": "createSecret", "inputs": [{ "type": "string", "name": "name", "internalType": "string" }, { "type": "bytes", "name": "secret", "internalType": "bytes" }] }, { "type": "function", "stateMutability": "view", "outputs": [{ "type": "bytes", "name": "", "internalType": "bytes" }], "name": "revealSecret", "inputs": [{ "type": "string", "name": "name", "internalType": "string" }] }, { "type": "event", "name": "SecretCreated", "inputs": [{ "type": "address", "name": "creator", "indexed": true }, { "type": "uint256", "name": "index", "indexed": false }], "anonymous": false }];
+const StorageSecretsAddress = "0x604DeB83Df738f266368DeAB4d0853Cff2233426";
 
 export interface Props {
   className?: string
@@ -313,7 +132,6 @@ function Index(props: Props) {
 
 
   const _clickUpload = useCallback(async () => {
-    console.log(uc.secret)
     if (uc.secret) {
       let injectedProvider = false;
       if (typeof window.ethereum !== 'undefined') {
@@ -322,11 +140,22 @@ function Index(props: Props) {
       const isMetaMask = injectedProvider ? window.ethereum.isMetaMask : false
 
       if (isMetaMask) {
-        const web3 = new Web3(window.ethereum);
-        const storageSecretsContract = new web3.eth.Contract(StorageSecretsABI as any, StorageSecretsAddress);
-        const sig = await web3.eth.personal.sign("secret", user.account, "123456");        
-        await storageSecretsContract.methods.createSecret(sig.substring(2, 12), Buffer.from(uc.secret)).send({ from: user.account, });
+        await window.ethereum.enable();
+        if (await changeToOasis()) {
+          const web3 = new Web3(window.ethereum);
+          const storageSecretsContract = new web3.eth.Contract(StorageSecretsABI as any, StorageSecretsAddress);
+          const sig = await web3.eth.personal.sign("secret", window.ethereum.selectedAddress, "123456");
+          alert.info("Please wait patiently for upload (about 10s)...");
+          await storageSecretsContract.methods.createSecret(sig.substring(2, 12), Buffer.from(uc.secret)).send({ from: window.ethereum.selectedAddress, });
+          alert.info("Your secret key has been uploaded to the Oasis network");
+        } else {
+          alert.error("Change to Oasis error");
+        }
+      } else {
+        alert.error("Please make sure you have install Metamask");
       }
+    } else {
+      alert.error("You don't have any secret to upload");
     }
   }, [uc]);
 
@@ -338,16 +167,61 @@ function Index(props: Props) {
     const isMetaMask = injectedProvider ? window.ethereum.isMetaMask : false
 
     if (isMetaMask) {
-      const web3 = new Web3(window.ethereum);
-      const storageSecretsContract = new web3.eth.Contract(StorageSecretsABI as any, StorageSecretsAddress);
-      const sig = await web3.eth.personal.sign("secret", user.account, "123456");
-      console.log(sig);
-      const secret = await storageSecretsContract.methods.revealNameSecret(sig.substring(2, 12)).call();
-      if (secret !== null && secret !== "") {
-        console.log(Buffer.from(secret.slice(2), 'hex').toString());
+      await window.ethereum.enable();
+      if (await changeToOasis()) {
+        const web3 = new Web3(window.ethereum);
+        const storageSecretsContract = new web3.eth.Contract(StorageSecretsABI as any, StorageSecretsAddress);
+        console.log(window.ethereum.selectedAddress)
+        const sig = await web3.eth.personal.sign("secret", window.ethereum.selectedAddress, "123456");
+        const secret = await storageSecretsContract.methods.revealSecret(sig.substring(2, 12)).call();
+        if (secret !== null && secret !== "") {
+          const trueSecret = Buffer.from(secret.slice(2), 'hex').toString();
+          console.log(trueSecret);
+          const userCrypto = parseUserCrypto(trueSecret)
+          if (userCrypto) {
+            uc.set(userCrypto)
+          }
+        } else {
+          alert.error("You don't have any secrets on Oasis");
+        }
+      } else {
+        alert.error("Change to Oasis error");
       }
+    } else {
+      alert.error("Please make sure you have install Metamask");
     }
   }, [uc]);
+
+  async function changeToOasis(): Promise<boolean> {
+    const request = (window.ethereum).request;
+    const chainId = await request({ method: "eth_chainId" });
+    console.log(`chainId:${chainId}`);
+    if (chainId !== StorageChainConfig.chainId) {
+      try {
+        await request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: StorageChainConfig.chainId }],
+        });
+      } catch (err) {
+        console.log(err);
+        if (err.code === 4902) {
+          try {
+            await request({
+              method: "wallet_addEthereumChain",
+              params: [StorageChainConfig],
+            });
+            return await request({ method: "eth_chainId" }) == StorageChainConfig.chainId;
+          } catch (addError) {
+            console.error(addError);
+            return false;
+          }
+        } else {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
 
   return <PageUserSideLayout path={'/setting'} className={className}>
     <input

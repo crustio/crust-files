@@ -124,4 +124,28 @@ export class Metamask implements BaseWallet {
       })
       .then(() => true);
   }
+
+  switchAndInstallChain(chaincfg: any): Promise<boolean> {
+    if (!this.ethereum?.request) return Promise.reject("Error");
+    return this.ethereum.request({
+      from: this.ethereum.selectedAddress,
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId: chaincfg.chainId }],
+    })
+      .then(() => true)
+      .catch((err) => {
+        if (err.code === 4902) {
+          this.ethereum.request({
+            method: "wallet_addEthereumChain",
+            params: [chaincfg],
+          }).then(() => true)
+            .catch((addError) => {
+              console.error(addError);
+              return false;
+            })
+        } else {
+          return false;
+        }
+      });
+  }
 }
