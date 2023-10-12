@@ -20,18 +20,18 @@ import { useFilesInfo } from '../../lib/useFilesInfo';
 import { useFiles, WalletName } from "../../lib/wallet/hooks";
 
 export const StorageChainConfig = {
-  chainId: '0x5aff',
-  chainName: 'Oasis Sapphire Testnet',
+  chainId: '0x5afe',
+  chainName: 'Oasis Sapphire',
   nativeCurrency: {
-    name: 'TEST',
-    symbol: 'TEST',
+    name: 'ROSE',
+    symbol: 'ROSE',
     decimals: 18,
   },
-  rpcUrls: ['https://testnet.sapphire.oasis.dev/'],
-  blockExplorerUrls: ['https://testnet.explorer.sapphire.oasis.dev'],
+  rpcUrls: ['https://sapphire.oasis.io/'],
+  blockExplorerUrls: ['https://explorer.sapphire.oasis.io'],
 }
 const StorageSecretsABI = [{ "type": "function", "stateMutability": "nonpayable", "outputs": [], "name": "createSecret", "inputs": [{ "type": "string", "name": "name", "internalType": "string" }, { "type": "bytes", "name": "secret", "internalType": "bytes" }] }, { "type": "function", "stateMutability": "view", "outputs": [{ "type": "bytes", "name": "", "internalType": "bytes" }], "name": "revealSecret", "inputs": [{ "type": "string", "name": "name", "internalType": "string" }] }, { "type": "event", "name": "SecretCreated", "inputs": [{ "type": "address", "name": "creator", "indexed": true }, { "type": "uint256", "name": "index", "indexed": false }], "anonymous": false }];
-const StorageSecretsAddress = "0x604DeB83Df738f266368DeAB4d0853Cff2233426";
+const StorageSecretsAddress = "0x744772c372ea818C0779148CF215C0C642053Ee6";
 
 export interface Props {
   className?: string
@@ -145,7 +145,7 @@ function Index(props: Props) {
           const web3 = new Web3(window.ethereum);
           const storageSecretsContract = new web3.eth.Contract(StorageSecretsABI as any, StorageSecretsAddress);
           const sig = await web3.eth.personal.sign("secret", window.ethereum.selectedAddress, "123456");
-          alert.info("Please wait patiently for upload (about 10s)...");
+          alert.info("Please wait patiently for upload (about 30s)...");
           await storageSecretsContract.methods.createSecret(sig.substring(2, 12), Buffer.from(uc.secret)).send({ from: window.ethereum.selectedAddress, });
           alert.info("Your secret key has been uploaded to the Oasis network");
         } else {
@@ -286,7 +286,7 @@ function Index(props: Props) {
       </div>
       <div className="text font-sans-regular">
         {`${t('Your user data (including three File Lists and one File Encryption Key) are cached on your local devices. If you want to migrate your user data to a new device, use Export & Import function.')} `}
-        <span style={{ color: '#f47e6b' }}>Attention Please! If you want to switch device or explorer, please follow the following steps: 1) Export your user data from old device/explorer. 2) Log in to Crust Files in your new device/explorer. 3) Import the user data. 4) Enjoy Crust Files!</span>
+        <span style={{ color: '#f47e6b' }}>Attention Please! If you want to switch device or explorer, please follow the following steps: 1) Export your user data from old device/explorer. 2) Log in to Crust Files in your new device/explorer. 3) Import the user data. 4) Enjoy Crust Files! PS: Another way you can spend some ROSE tokens to safely and securely store your private keys on the Oasis sapphire network</span>
       </div>
       <Accordion>
         <AccordionTitle active={showFileEncryption} onClick={() => toggleFileEncryption()}>
