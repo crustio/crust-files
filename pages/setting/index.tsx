@@ -319,8 +319,8 @@ function Index(props: Props) {
       <div className={'btns'}>
         <Btn content={t('Export')} onClick={_clickExport} />
         <Btn content={t('Import')} onClick={_clickImport} />
-        <Btn content={t('Upload to Oasis')} onClick={_clickUpload} />
-        <Btn content={t('Download from Oasis')} onClick={_clickDownload} />
+        <Btn content={t('Upload key to Oasis')} onClick={_clickUpload} />
+        <Btn content={t('Download key from Oasis')} onClick={_clickDownload} />
       </div>
     </Segment>
     <BindAirdrop />
