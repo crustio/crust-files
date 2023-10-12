@@ -59,7 +59,8 @@ export class LoginUser {
     | "aptos-petra"
     | "web3auth"
     | "subWallet"
-    | "talisman";
+    | "talisman"
+    | "oasis";
   key?: KEYS = "files:login";
   authBasic?: string;
   authBearer?: string;
@@ -87,6 +88,7 @@ export const WalletName: { [k in LoginUser["wallet"]]: string } = {
   web3auth: "Web3Auth",
   subWallet: "subWallet",
   talisman: "talisman",
+  oasis: "Oasis",
 };
 
 const NEED_REMEMBER_WALLET: LoginUser["wallet"][] = ["crust", "polkadot-js"];
@@ -209,6 +211,7 @@ const WALLETMAP: { [k in LoginUser["wallet"]]: BaseWallet } = {
   "aptos-petra": new AptosPetra(),
   "wallet-connect": new MWalletConnect(),
   web3auth: new Web3AuthWallet(),
+  oasis: new Metamask(),
 };
 
 export function useLoginUser(key: KEYS = "files:login"): WrapLoginUser {

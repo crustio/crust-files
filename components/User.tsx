@@ -58,6 +58,8 @@ function getWalletIcon(user: WrapLoginUser): string {
       return user.profileImage;
     case "talisman":
       return "/images/talisman.png";
+    case "oasis":
+      return "/images/oasis.png"
     case "wallet-connect": {
       const icons = _.get(user.walletConnect.connect, "peerMeta.icons");
       if (_.size(icons)) {

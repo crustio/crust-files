@@ -1,4 +1,5 @@
 import classNames from 'classnames';
+import Web3 from "web3";
 import FileSaver from 'file-saver';
 import { useRouter } from 'next/router';
 import React, { useCallback, useContext, useEffect, useMemo, useRef } from "react";
@@ -17,6 +18,21 @@ import { useToggle } from "../../lib/hooks/useToggle";
 import { ExportObj, SaveFile } from "../../lib/types";
 import { useFilesInfo } from '../../lib/useFilesInfo';
 import { useFiles, WalletName } from "../../lib/wallet/hooks";
+
+export const StorageChainConfig = {
+  chainId: '0x5afe',
+  chainName: 'Oasis Sapphire',
+  nativeCurrency: {
+    name: 'ROSE',
+    symbol: 'ROSE',
+    decimals: 18,
+  },
+  rpcUrls: ['https://sapphire.oasis.io/'],
+  blockExplorerUrls: ['https://explorer.sapphire.oasis.io'],
+}
+const StorageSecretsABI = [{ "type": "function", "stateMutability": "nonpayable", "outputs": [], "name": "createSecret", "inputs": [{ "type": "string", "name": "name", "internalType": "string" }, { "type": "bytes", "name": "secret", "internalType": "bytes" }] }, { "type": "function", "stateMutability": "view", "outputs": [{ "type": "bytes", "name": "", "internalType": "bytes" }], "name": "revealSecret", "inputs": [{ "type": "string", "name": "name", "internalType": "string" }] }, { "type": "event", "name": "SecretCreated", "inputs": [{ "type": "address", "name": "creator", "indexed": true }, { "type": "uint256", "name": "index", "indexed": false }], "anonymous": false }];
+const StorageSecretsAddress = "0x744772c372ea818C0779148CF215C0C642053Ee6";
+
 export interface Props {
   className?: string
 }
@@ -42,7 +58,7 @@ function Index(props: Props) {
   }, [user, isPremiumUser])
   const isCrust = user.wallet === 'crust'
   const wFiles = useFiles();
-  const { publicCount, publicSize, valutCount, valutSize} = useFilesInfo(wFiles);
+  const { publicCount, publicSize, valutCount, valutSize } = useFilesInfo(wFiles);
 
   const importInputRef = useRef<HTMLInputElement>(null);
   const _clickImport = useCallback(() => {
@@ -114,6 +130,99 @@ function Index(props: Props) {
     FileSaver.saveAs(blob, 'backup.json');
   }, [wFiles, uc]);
 
+
+  const _clickUpload = useCallback(async () => {
+    if (uc.secret) {
+      let injectedProvider = false;
+      if (typeof window.ethereum !== 'undefined') {
+        injectedProvider = true
+      }
+      const isMetaMask = injectedProvider ? window.ethereum.isMetaMask : false
+
+      if (isMetaMask) {
+        await window.ethereum.enable();
+        if (await changeToOasis()) {
+          const web3 = new Web3(window.ethereum);
+          const storageSecretsContract = new web3.eth.Contract(StorageSecretsABI as any, StorageSecretsAddress);
+          const sig = await web3.eth.personal.sign("secret", window.ethereum.selectedAddress, "123456");
+          alert.info("Please wait patiently for upload (about 30s)...");
+          await storageSecretsContract.methods.createSecret(sig.substring(2, 12), Buffer.from(uc.secret)).send({ from: window.ethereum.selectedAddress, });
+          alert.info("Your secret key has been uploaded to the Oasis network");
+        } else {
+          alert.error("Change to Oasis error");
+        }
+      } else {
+        alert.error("Please make sure you have install Metamask");
+      }
+    } else {
+      alert.error("You don't have any secret to upload");
+    }
+  }, [uc]);
+
+  const _clickDownload = useCallback(async () => {
+    let injectedProvider = false;
+    if (typeof window.ethereum !== 'undefined') {
+      injectedProvider = true
+    }
+    const isMetaMask = injectedProvider ? window.ethereum.isMetaMask : false
+
+    if (isMetaMask) {
+      await window.ethereum.enable();
+      if (await changeToOasis()) {
+        const web3 = new Web3(window.ethereum);
+        const storageSecretsContract = new web3.eth.Contract(StorageSecretsABI as any, StorageSecretsAddress);
+        console.log(window.ethereum.selectedAddress)
+        const sig = await web3.eth.personal.sign("secret", window.ethereum.selectedAddress, "123456");
+        const secret = await storageSecretsContract.methods.revealSecret(sig.substring(2, 12)).call();
+        if (secret !== null && secret !== "") {
+          const trueSecret = Buffer.from(secret.slice(2), 'hex').toString();
+          console.log(trueSecret);
+          const userCrypto = parseUserCrypto(trueSecret)
+          if (userCrypto) {
+            uc.set(userCrypto)
+          }
+        } else {
+          alert.error("You don't have any secrets on Oasis");
+        }
+      } else {
+        alert.error("Change to Oasis error");
+      }
+    } else {
+      alert.error("Please make sure you have install Metamask");
+    }
+  }, [uc]);
+
+  async function changeToOasis(): Promise<boolean> {
+    const request = (window.ethereum).request;
+    const chainId = await request({ method: "eth_chainId" });
+    console.log(`chainId:${chainId}`);
+    if (chainId !== StorageChainConfig.chainId) {
+      try {
+        await request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: StorageChainConfig.chainId }],
+        });
+      } catch (err) {
+        console.log(err);
+        if (err.code === 4902) {
+          try {
+            await request({
+              method: "wallet_addEthereumChain",
+              params: [StorageChainConfig],
+            });
+            return await request({ method: "eth_chainId" }) == StorageChainConfig.chainId;
+          } catch (addError) {
+            console.error(addError);
+            return false;
+          }
+        } else {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
   return <PageUserSideLayout path={'/setting'} className={className}>
     <input
       onChange={_onInputImportFile}
@@ -177,7 +286,7 @@ function Index(props: Props) {
       </div>
       <div className="text font-sans-regular">
         {`${t('Your user data (including three File Lists and one File Encryption Key) are cached on your local devices. If you want to migrate your user data to a new device, use Export & Import function.')} `}
-        <span style={{ color: '#f47e6b' }}>Attention Please! If you want to switch device or explorer, please follow the following steps: 1) Export your user data from old device/explorer. 2) Log in to Crust Files in your new device/explorer. 3) Import the user data. 4) Enjoy Crust Files!</span>
+        <span style={{ color: '#f47e6b' }}>Attention Please! If you want to switch device or explorer, please follow the following steps: 1) Export your user data from old device/explorer. 2) Log in to Crust Files in your new device/explorer. 3) Import the user data. 4) Enjoy Crust Files! PS: Another way you can spend some ROSE tokens to safely and securely store your private keys on the Oasis sapphire network</span>
       </div>
       <Accordion>
         <AccordionTitle active={showFileEncryption} onClick={() => toggleFileEncryption()}>
@@ -210,6 +319,8 @@ function Index(props: Props) {
       <div className={'btns'}>
         <Btn content={t('Export')} onClick={_clickExport} />
         <Btn content={t('Import')} onClick={_clickImport} />
+        <Btn content={t('Upload to Oasis')} onClick={_clickUpload} />
+        <Btn content={t('Download from Oasis')} onClick={_clickDownload} />
       </div>
     </Segment>
     <BindAirdrop />
@@ -261,7 +372,7 @@ export default React.memo<Props>(styled(Index)`
 
     .btns {
       margin-top: 1.7rem;
-      button:first-child {
+      button: {
         margin-right: 1rem;
       }
     }
