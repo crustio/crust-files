@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import Web3 from "web3";
 import FileSaver from 'file-saver';
 import { useRouter } from 'next/router';
-import React, { useCallback, useContext, useEffect, useMemo, useRef } from "react";
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Accordion, AccordionContent, AccordionTitle, Segment } from "semantic-ui-react";
 import styled from "styled-components";
@@ -18,6 +18,8 @@ import { useToggle } from "../../lib/hooks/useToggle";
 import { ExportObj, SaveFile } from "../../lib/types";
 import { useFilesInfo } from '../../lib/useFilesInfo';
 import { useFiles, WalletName } from "../../lib/wallet/hooks";
+import { AllDownloadGateways, useDownloadGateway } from '../../lib/hooks/useDownloadGateway';
+import MDropdown from '../../components/MDropdown';
 
 export const StorageChainConfig = {
   chainId: '0x5afe',
@@ -43,6 +45,7 @@ function Index(props: Props) {
   const { className } = props
   const { t } = useTranslation()
   const uc = useUserCrypto()
+  const dg = useDownloadGateway()
   const r = useRouter()
   const { alert } = useContext(AppContext)
   const [open, toggleOpen] = useToggle(false)
@@ -223,6 +226,23 @@ function Index(props: Props) {
     return true;
   }
 
+  const _onDowloadGateChange = useCallback((_, { value }) => {
+    dg.set(value)
+  }, [])
+
+  const [tempDownloadGateway, setTempDownloadGateway] = useState<string>("")
+  const _onChangeInputDownloadGateway = (e) => {
+    setTempDownloadGateway(e.target.value)
+  }
+
+  const _OnSaveDownloadGateway = () => {
+    if (tempDownloadGateway == null || tempDownloadGateway == "") {
+      alert.error("Please give right gateway");
+      return;
+    }
+    dg.set(tempDownloadGateway)
+  }
+
   return <PageUserSideLayout path={'/setting'} className={className}>
     <input
       onChange={_onInputImportFile}
@@ -268,6 +288,33 @@ function Index(props: Props) {
       <div className="text font-sans-regular">
         {`${t('Space Usage:')} `} <span className="bold-text font-sans-semibold">{`${publicSize} in Public, ${valutSize} in Vault`}</span>
       </div>
+    </Segment>
+    <Segment basic className={"mcard"}>
+      <div className="title font-sans-semibold">
+        {t('IPFS Gateway settings for download')}
+      </div>
+      <div className="text font-sans-regular">
+        {`${t('Default gateway:')} `}
+        <span className="bold-text font-sans-semibold">{dg.gateway}</span>
+      </div>
+
+      <div className="text font-sans-regular">
+        {`${t('Select a gateway from community contribution:')} `}
+        <SelectDownloadGatewayDropdown
+          icon={<span className="dropdown icon" />}
+          options={AllDownloadGateways}
+          onChange={_onDowloadGateChange}
+        />
+      </div>
+
+      <div className="text font-sans-regular">Customized:</div>
+      <input
+        className='input-dowload-gateway'
+        spellCheck="false"
+        onChange={_onChangeInputDownloadGateway}
+        placeholder={t('Customize your download gateway')}
+      />
+      <Btn content={t('Save')} style={{ height: 25, lineHeight: '0px' }} onClick={_OnSaveDownloadGateway} />
     </Segment>
     <Segment basic className={"mcard"}>
       <div className="title font-sans-semibold">
@@ -327,6 +374,40 @@ function Index(props: Props) {
   </PageUserSideLayout>
 }
 
+const SelectDownloadGatewayDropdown = styled(MDropdown)`
+    &.mdropdown {
+      display: inline-block;
+      vertical-align: top;
+      width: 230px !important;
+      border-radius: 8px !important;
+      border: 1px solid #999999 !important;
+      margin-right: 8px !important;
+      line-height: 25px;
+      height: 25px;
+      padding: 0 30px 0 14px;
+      .text {
+        white-space: nowrap;
+        font-size: 14 !important;
+        line-height: 25px !important;
+        font-weight: 500 !important;
+        color: var(--main-color) !important;
+        font-family: OpenSans-SemiBold !important;
+      }
+      .dropIcon {
+        position: absolute;
+        right: 11px;
+        top: 6px;
+      }
+
+      .options {
+        .item {
+          line-height: 24px;
+          padding: 4px 20px;
+        }
+      }
+    }
+`
+
 export default React.memo<Props>(styled(Index)`
   .pusl_center_flex_content {
     min-width: 60rem;
@@ -374,6 +455,26 @@ export default React.memo<Props>(styled(Index)`
       margin-top: 1.7rem;
       button: {
         margin-right: 1rem;
+      }
+    }
+
+    .input-dowload-gateway {
+      vertical-align: top;
+      display: inline-block;
+      min-width: 406px;
+      margin-bottom: 12px;
+      margin-right: 12px;
+      height: 25px;
+      line-height: 25px;
+      border: 1px solid #999999;
+      font-family: OpenSans-Regular;
+      outline: unset;
+      border-radius: 8px;
+      padding-left: 16px;
+      padding-right: 16px;
+      font-size: 10px;
+      &::placeholder{
+        color: #999999;
       }
     }
   }
