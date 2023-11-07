@@ -3,7 +3,7 @@ import axios from "axios";
 import { saveAs } from 'file-saver';
 import filesize from "filesize";
 import _ from 'lodash';
-import React, { useCallback, useContext, useMemo } from "react";
+import React, { useCallback, useContext, useMemo, useState } from "react";
 import { Icon, Popup, Table } from "semantic-ui-react";
 import styled from "styled-components";
 import { AppContext } from "../lib/AppContext";
@@ -20,6 +20,7 @@ import { useContextWrapLoginUser, WrapLoginUser } from "../lib/wallet/hooks";
 import { SaveFile } from "../lib/wallet/types";
 import Btn from "./Btn";
 import { isFunction } from '@polkadot/util';
+import { useDownloadGateway } from "../lib/hooks/useDownloadGateway";
 
 export interface Props {
   type?: 'public' | 'vault',
@@ -52,12 +53,12 @@ export interface FileStat {
   prepaid?: boolean
 }
 
-function createUrl(f: SaveFile, endpoints: AuthIpfsEndpoint[]) {
+function createUrl(f: SaveFile, endpoints: AuthIpfsEndpoint[], downloadGateway: string) {
   // const p = endpoints.find((e) => e.value === f.UpEndpoint);
   // const endpoint = (p && p.value) || endpoints[0].value;
   // const timestamp = new Date().getTime()
   // const endpoint = GATEWAYS[timestamp % 8]
-  const endpoint = "https://crustipfs.mobi"
+  const endpoint = downloadGateway
   return `${endpoint}/ipfs/${f.Hash}?filename=${f.Name}`;
 }
 
@@ -133,13 +134,15 @@ function FileItem(props: Props) {
   const copy = useClipboard();
   const { api, alert, loading } = useContext(AppContext)
   const { endpoints } = useAuthGateway()
+  const { gateway } = useDownloadGateway();
   const _onClickDelete = () => { onDelete(file) }
   const _onClickOpen = useCallback(async () => {
     if (file.Encrypted && _.size(file.items) === 0) {
       try {
         if (!uc.secret) return;
         loading.show()
-        const res = await axios.get<ArrayBuffer>(createUrl(file, endpoints), { responseType: "arraybuffer" })
+        const url = createUrl(file, endpoints, gateway);
+        const res = await axios.get<ArrayBuffer>(url, { responseType: "arraybuffer" })
         console.info('res::', res)
         const time1 = new Date().getTime()
         const decryptData = await decryptFile(res.data, uc.secret)
@@ -156,9 +159,10 @@ function FileItem(props: Props) {
         alert.error("Decrypt error")
       }
     } else {
-      window.open(createUrl(file, endpoints), '_blank')
+      const url = createUrl(file, endpoints, gateway)
+      window.open(url, '_blank')
     }
-  }, [uc, file, endpoints])
+  }, [uc, file, endpoints, gateway])
   const _onClickSearch = () => {
     window.open(`https://ipfs-scan.io?cid=${file.Hash}`, '_blank')
   }
