@@ -8,8 +8,11 @@ export interface DownloadGateway {
 export const AllDownloadGateways: { text: string, value: string }[] = [
     { text: 'https://ipfs.io', value: 'https://ipfs.io' },
     { text: 'https://crustipfs.mobi', value: 'https://crustipfs.mobi' },
+    { text: 'https://crust.fans', value: 'https://crust.fans' },
     { text: 'https://crustipfs.world', value: 'https://crustipfs.world' },
+    { text: 'https://crustgateway.online', value: 'https://crustgateway.online' },
     { text: 'https://crustipfs.info', value: 'https://crustipfs.info' },
+    { text: 'https://gw.w3ipfs.org.cn', value: 'https://gw.w3ipfs.org.cn' },
     { text: 'https://crustipfs.art', value: 'https://crustipfs.art' }
 ]
 
