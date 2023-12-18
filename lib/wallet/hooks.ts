@@ -7,6 +7,7 @@ import { useWeb3Auth } from "../web3auth/web3auth";
 import { AptosMartian } from "./AptosMartian";
 import { AptosPetra } from "./AptosPetra";
 import { Crust } from "./Crust";
+import { Algorand } from "./Algorand";
 import { Elrond } from "./Elrond";
 import { FlowM } from "./Flow";
 import { Metamask } from "./Metamask";
@@ -53,6 +54,7 @@ export class LoginUser {
     | "near"
     | "flow"
     | "solana"
+    | "algorand"
     | "elrond"
     | "wallet-connect"
     | "aptos-martian"
@@ -78,6 +80,7 @@ export const WalletName: { [k in LoginUser["wallet"]]: string } = {
   // "metamask-Cubechain": "MetaMask",
   metax: "MetaX",
   "polkadot-js": "Polkadot Extension",
+  algorand: "Algorand Wallet",
   near: "Near Wallet",
   elrond: "Elrond(Maiar Wallet)",
   flow: "Flow Wallet",
@@ -120,6 +123,7 @@ export interface WrapLoginUser extends LoginUser {
   flow: FlowM;
   solana: SolanaM;
   elrond: Elrond;
+  algorand: Algorand;
   subWallet: SubWallet;
   talisman: Talisman;
   walletConnect: MWalletConnect;
@@ -206,6 +210,7 @@ const WALLETMAP: { [k in LoginUser["wallet"]]: BaseWallet } = {
   near: new NearM(),
   flow: new FlowM(),
   solana: new SolanaM(),
+  algorand: new Algorand(),
   elrond: new Elrond(),
   "aptos-martian": new AptosMartian(),
   "aptos-petra": new AptosPetra(),
@@ -397,7 +402,7 @@ export function useLoginUser(key: KEYS = "files:login"): WrapLoginUser {
           })
           .then(() => setIsLoad(false));
       } else if (
-        ["solana", "flow", "elrond", "wallet-connect", "aptos-martian", "aptos-petra", "web3auth", "talisman"].includes(
+        ["solana", "flow", "elrond", "algorand", "wallet-connect", "aptos-martian", "aptos-petra", "web3auth", "talisman"].includes(
           f.wallet
         )
       ) {
@@ -450,6 +455,11 @@ export function useLoginUser(key: KEYS = "files:login"): WrapLoginUser {
       logoutWeb3Auth()
         .then()
         .catch();
+    } else if (account.wallet === "algorand") {
+      const algorand = WALLETMAP["algorand"] as Algorand;
+      algorand.wallet.disconnect();
+      algorand.isInit = false;
+      algorand.account = null;
     }
 
     setLoginUser({ ...defLoginUser });
@@ -472,6 +482,7 @@ export function useLoginUser(key: KEYS = "files:login"): WrapLoginUser {
       near: WALLETMAP['near'] as any,
       flow: WALLETMAP['flow'] as any,
       solana: WALLETMAP['solana'] as any,
+      algorand: WALLETMAP['algorand'] as any,
       elrond: WALLETMAP['elrond'] as any,
       aptosMartian: WALLETMAP['aptos-martian'] as any,
       aptosPetra: WALLETMAP['aptos-petra'] as any,
@@ -520,6 +531,10 @@ export const getPerfix = (user: LoginUser): string => {
 
   if (user.wallet === "elrond") {
     return "elrond";
+  }
+
+  if (user.wallet === "algorand") {
+    return "algo";
   }
 
   if (user.wallet == "aptos-martian") {

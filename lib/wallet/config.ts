@@ -7,6 +7,14 @@ export interface WrapNearConfig extends NearConfig {
   contractName: string;
 }
 
+export interface WrapAlgorandConfig {
+  token: string;
+  chainId: number;
+  applicationId: number;
+  applicationAddress: string;
+  algodUrl: string;
+}
+
 export const nearConfig: WrapNearConfig = {
   // test
   // networkId: 'testnet',
@@ -21,6 +29,20 @@ export const nearConfig: WrapNearConfig = {
   walletUrl: "https://wallet.near.org",
   helperUrl: "https://helper.mainnet.near.org",
 };
+
+export const algorandConfig: WrapAlgorandConfig = {
+  token: 'a'.repeat(64),
+  // test
+  // chainId: 416002,
+  // applicationId: 507867511,
+  // applicationAddress: '3QRYDF6T2JR5SM2O7TVZMBGX25IPSCWC2TL4KFJV6OKC4QAKLI5EWTXZYI',
+  // algodUrl: 'https://testnet-api.algonode.cloud',
+  // prod
+  chainId: 416001,
+  applicationId: 1275319623,
+  applicationAddress: 'SLNGOJJFB3ERUUZUAAOVW6DWH3NKKQMGZWH26IBIU34EHM3AU24Y5VIH3E',
+  algodUrl: 'https://mainnet-api.algonode.cloud',
+}
 
 /**
  * 
@@ -56,6 +78,8 @@ export const EVMStorageContract: { [k: number]: string } = {
 };
 
 export const CHAIN_SYMBOL: {[k: number]: string} = {
+  416001: "ALGO",
+  // 416002: "ALGO",
   137: "Matic",
   56: "BNB"
 }

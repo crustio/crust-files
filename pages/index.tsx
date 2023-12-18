@@ -471,6 +471,25 @@ function Home({ className }: { className?: string }) {
     });
   }, [user, t]);
 
+  const _onClickAlgorand = useCallback(async () => {
+    setError("");
+    await user.algorand.init();
+    if (!user.algorand.wallet) {
+      setError(`Algorand (Pera Wallet) not connected`);
+      return;
+    }
+    const address = user.algorand.account;
+
+    setLogined(
+      {
+        // eslint-disable-next-line
+        account: address,
+        wallet: "algorand",
+      },
+      user.algorand
+    );
+  }, [user, t]);
+
   const _onClickElrond = useCallback(async () => {
     setError("");
     await user.elrond.init();
@@ -696,6 +715,12 @@ function Home({ className }: { className?: string }) {
       // },
       {
         group: "Web3",
+        name: "Algorand",
+        image: "/images/wallet_algorand.png",
+        onClick: _onClickAlgorand,
+      },
+      {
+        group: "Web3",
         name: "Near",
         image: "/images/wallet_near.png",
         onClick: _onClickNear,
@@ -783,6 +808,7 @@ function Home({ className }: { className?: string }) {
     _onClickFlow,
     _onClickSolana,
     _onClickElrond,
+    _onClickAlgorand,
     _onClickWalletConnect,
     _onClickAptosMartian,
     _onClickAptosPetra,
