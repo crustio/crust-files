@@ -1,0 +1,189 @@
+{
+    "name": "StorageOrder",
+    "methods": [
+        {
+            "name": "create",
+            "args": [],
+            "returns": {
+                "type": "void"
+            }
+        },
+        {
+            "name": "bootstrap",
+            "args": [
+                {
+                    "type": "pay",
+                    "name": "seed"
+                },
+                {
+                    "type": "uint64",
+                    "name": "base_price"
+                },
+                {
+                    "type": "uint64",
+                    "name": "byte_price"
+                },
+                {
+                    "type": "uint64",
+                    "name": "size_limit"
+                },
+                {
+                    "type": "uint64",
+                    "name": "service_rate"
+                },
+                {
+                    "type": "uint64",
+                    "name": "algo_price"
+                },
+                {
+                    "type": "uint64",
+                    "name": "cru_price"
+                }
+            ],
+            "returns": {
+                "type": "void"
+            }
+        },
+        {
+            "name": "set_base_price",
+            "args": [
+                {
+                    "type": "uint64",
+                    "name": "price"
+                }
+            ],
+            "returns": {
+                "type": "void"
+            }
+        },
+        {
+            "name": "set_byte_price",
+            "args": [
+                {
+                    "type": "uint64",
+                    "name": "price"
+                }
+            ],
+            "returns": {
+                "type": "void"
+            }
+        },
+        {
+            "name": "set_size_limit",
+            "args": [
+                {
+                    "type": "uint64",
+                    "name": "size"
+                }
+            ],
+            "returns": {
+                "type": "void"
+            }
+        },
+        {
+            "name": "set_service_rate",
+            "args": [
+                {
+                    "type": "uint64",
+                    "name": "rate"
+                }
+            ],
+            "returns": {
+                "type": "void"
+            }
+        },
+        {
+            "name": "set_algo_cru_price",
+            "args": [
+                {
+                    "type": "uint64",
+                    "name": "algo_price"
+                },
+                {
+                    "type": "uint64",
+                    "name": "cru_price"
+                }
+            ],
+            "returns": {
+                "type": "void"
+            }
+        },
+        {
+            "name": "add_order_node",
+            "args": [
+                {
+                    "type": "address",
+                    "name": "address"
+                }
+            ],
+            "returns": {
+                "type": "void"
+            }
+        },
+        {
+            "name": "remove_order_node",
+            "args": [
+                {
+                    "type": "address",
+                    "name": "address"
+                }
+            ],
+            "returns": {
+                "type": "void"
+            }
+        },
+        {
+            "name": "get_random_order_node",
+            "args": [],
+            "returns": {
+                "type": "address"
+            }
+        },
+        {
+            "name": "get_price",
+            "args": [
+                {
+                    "type": "uint64",
+                    "name": "size"
+                },
+                {
+                    "type": "bool",
+                    "name": "is_permanent"
+                }
+            ],
+            "returns": {
+                "type": "uint64"
+            }
+        },
+        {
+            "name": "place_order",
+            "args": [
+                {
+                    "type": "pay",
+                    "name": "seed"
+                },
+                {
+                    "type": "account",
+                    "name": "merchant"
+                },
+                {
+                    "type": "string",
+                    "name": "cid"
+                },
+                {
+                    "type": "uint64",
+                    "name": "size"
+                },
+                {
+                    "type": "bool",
+                    "name": "is_permanent"
+                }
+            ],
+            "returns": {
+                "type": "void"
+            }
+        }
+    ],
+    "networks": {},
+    "desc": "This is storage order contract used to place order"
+}

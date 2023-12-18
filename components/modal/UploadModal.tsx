@@ -11,11 +11,12 @@ import { useToggle } from "../../lib/hooks/useToggle";
 import { report } from "../../lib/http/report";
 import { useAuthGateway, useAuthPinner } from "../../lib/useAuth";
 import { useUpload } from "../../lib/useUpload";
-import { WrapLoginUser } from "../../lib/wallet/hooks";
+import { WrapLoginUser, useContextWrapLoginUser } from "../../lib/wallet/hooks";
 import { FileInfo, SaveFile } from "../../lib/wallet/types";
 import Btn from "../Btn";
 import MDropdown from "../MDropdown";
 import { useEvmPin } from "../../lib/useEvmPin";
+import { useAlgoPin } from "../../lib/useAlgoPin";
 
 const Contribute = styled.div`
   cursor: pointer;
@@ -38,6 +39,7 @@ export interface Props {
 const NOOP = (): void => undefined;
 
 function UploadModal(p: Props): React.ReactElement<Props> {
+  const { wallet } = useContextWrapLoginUser();
   const { className, uc, file, onClose = NOOP, onSuccess = NOOP, user, type, isPremium } = p;
   const isVault = type === "vault";
   const { t } = useTranslation();
@@ -49,7 +51,7 @@ function UploadModal(p: Props): React.ReactElement<Props> {
     if(size === 0) return size;
     return size + Math.round(size * 0.2)
   }, [file]);
-  const { pin, fee, chainId } = useEvmPin(fileSize, isPermanent);
+  const { pin, fee, chainId } = wallet === 'algorand' ? useAlgoPin(fileSize, isPermanent) : useEvmPin(fileSize, isPermanent);
   const isEvmPin = !!pin;
   const encrypt = isVault && !!uc.secret;
   const [showOptions, toggleShowOptions] = useToggle();
