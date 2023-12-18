@@ -18,11 +18,10 @@ export class Algorand implements BaseWallet {
       if (!this.wallet.isConnected || !accounts.length) {
         accounts = await this.wallet.connect();
       }
-      const that = this;
       this.wallet.connector?.on("disconnect", () => {
-        that.wallet.disconnect();
-        that.account = null;
-        that.isInit = false;
+        this.wallet.disconnect();
+        this.account = null;
+        this.isInit = false;
       });
       this.account = accounts[0];
       this.isInit = true
