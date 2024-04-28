@@ -167,6 +167,8 @@ function User(props: Props) {
       // { name: "Celo", image: "/images/chain/celo.png", chainId: 42220 },
       // { name: "BNB Chain", image: "/images/chain/bsc.png", chainId: 56 },
       { name: "zkSync", image: "/images/chain/zksync.png", chainId: 324 },
+      { name: "Blast", image: "/images/chain/blast.png", chainId: 81457 },
+      { name: "Base", image: "/images/chain/base.png", chainId: 8453 },
     ];
   }, []);
 

@@ -75,6 +75,11 @@ export const EVMStorageContract: { [k: number]: string } = {
   42220: "",
   // BNB Chain
   56: "",
+
+  // Blast
+  81457: "",
+  // Base
+  8453: "0xf063a29f03d0a02fd96f270ee4f59158ef3d4860",
 };
 
 export const CHAIN_SYMBOL: {[k: number]: string} = {
