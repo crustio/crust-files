@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { NearConfig } from "near-api-js/lib/near";
-
+import { mainnet, optimism, arbitrum, base, zkSync, blast } from "viem/chains";
+import { defineChain } from "viem";
 export interface WrapNearConfig extends NearConfig {
   contractName: string;
 }
@@ -31,7 +32,7 @@ export const nearConfig: WrapNearConfig = {
 };
 
 export const algorandConfig: WrapAlgorandConfig = {
-  token: 'a'.repeat(64),
+  token: "a".repeat(64),
   // test
   // chainId: 416002,
   // applicationId: 507867511,
@@ -40,10 +41,39 @@ export const algorandConfig: WrapAlgorandConfig = {
   // prod
   chainId: 416001,
   applicationId: 1275319623,
-  applicationAddress: 'SLNGOJJFB3ERUUZUAAOVW6DWH3NKKQMGZWH26IBIU34EHM3AU24Y5VIH3E',
-  algodUrl: 'https://mainnet-api.algonode.cloud',
-}
+  applicationAddress: "SLNGOJJFB3ERUUZUAAOVW6DWH3NKKQMGZWH26IBIU34EHM3AU24Y5VIH3E",
+  algodUrl: "https://mainnet-api.algonode.cloud",
+};
 
+const crustEvmParachainTest = defineChain({
+  testnet: true,
+  id: 366666,
+  name: "Crust EVM Parachain Test",
+  nativeCurrency: { name: "CRU", symbol: "CRU", decimals: 18 },
+  blockExplorers: {
+    default: {
+      name: "Crust EVM Parachain Test",
+      url: " https://evmexplorer.tanssi-chains.network",
+    },
+  },
+  rpcUrls: {
+    default: {
+      http: ["https://fraa-flashbox-2952-rpc.a.stagenet.tanssi.network"],
+    },
+  },
+});
+
+export const SupportEVMChains = [mainnet, optimism, arbitrum, zkSync, blast, base, crustEvmParachainTest];
+
+export const EVMChains = {
+  mainnet,
+  optimism,
+  arbitrum,
+  zkSync,
+  blast,
+  base,
+  crustEvmParachainTest,
+};
 /**
  * 
  * eth: 0xE391613d2056e47F74ED5eF1d443d4CDB21AAAd9
@@ -58,17 +88,17 @@ zksync era testnet:  0x6C0445ec09d49214Cbc21E3DC032d3dEA25ce2Ae
  */
 export const EVMStorageContract: { [k: number]: string } = {
   // Ethereum
-  1: "0xE391613d2056e47F74ED5eF1d443d4CDB21AAAd9",
-  5: "0xDE52b55C3Ee0765d17564631570ec8E7fD3D499a",// ethereum goerli
+  [mainnet.id]: "0xE391613d2056e47F74ED5eF1d443d4CDB21AAAd9",
+  5: "0xDE52b55C3Ee0765d17564631570ec8E7fD3D499a", // ethereum goerli
   // Optimism
-  10: "0xf8e6F7bb144D3475fcf39Bd879510Fa93C775ee2",
+  [optimism.id]: "0xf8e6F7bb144D3475fcf39Bd879510Fa93C775ee2",
   420: "0x06Ae21caEEA438Aa3AA4D353332a7C124f8dF3c7", // op goerli
   // Arbitrum
-  42161: "0x9ae6c9d00fde0e0f774693ca6099d06dfe2001c6",
-  421613: "0x9AE6C9d00Fde0e0F774693Ca6099d06dfe2001C6",//arb goerli
+  [arbitrum.id]: "0x9ae6c9d00fde0e0f774693ca6099d06dfe2001c6",
+  421613: "0x9AE6C9d00Fde0e0F774693Ca6099d06dfe2001C6", //arb goerli
   // zkSync
-  324: "0xfa866AbF8F0b8f154654DEd956B2467dFB6A4135",// zkSync
-  280: "0x6C0445ec09d49214Cbc21E3DC032d3dEA25ce2Ae",// zksync era testnet
+  [zkSync.id]: "0xfa866AbF8F0b8f154654DEd956B2467dFB6A4135", // zkSync
+  280: "0x6C0445ec09d49214Cbc21E3DC032d3dEA25ce2Ae", // zksync era testnet
   // Polygon
   137: "",
   // Celo
@@ -77,17 +107,22 @@ export const EVMStorageContract: { [k: number]: string } = {
   56: "",
 
   // Blast
-  81457: "",
+  [blast.id]: "0xf063A29f03d0A02FD96f270EE4F59158EF3d4860",
   // Base
-  8453: "0xf063a29f03d0a02fd96f270ee4f59158ef3d4860",
+  [base.id]: "0xf063a29f03d0a02fd96f270ee4f59158ef3d4860",
+
+  // Crust Evm Parachain
+  [crustEvmParachainTest.id]: "0xA40179e57280585D88899b2032E7eCF13B3B6c72",
 };
 
-export const CHAIN_SYMBOL: {[k: number]: string} = {
+export const CHAIN_SYMBOL: { [k: number]: string } = {
   416001: "ALGO",
   // 416002: "ALGO",
   137: "Matic",
-  56: "BNB"
-}
+  56: "BNB",
+  // Crust Evm Parachain
+  [crustEvmParachainTest.id]: "CRU",
+};
 
 export const EVMStorageABI = [
   { inputs: [], stateMutability: "nonpayable", type: "constructor" },

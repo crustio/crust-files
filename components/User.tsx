@@ -9,13 +9,14 @@ import { useGetDepost } from "../lib/hooks/useGetDeposit";
 import { useToggle } from "../lib/hooks/useToggle";
 import { getEarnRewards } from "../lib/http/share_earn";
 import { useAutoUpdateToStore } from "../lib/initAppStore";
-import { getFormatValue, shortStr } from "../lib/utils";
+import { getFormatValue, shortStr, toHex } from "../lib/utils";
 import { WalletName, WrapLoginUser } from "../lib/wallet/hooks";
 import { Links2 } from "./Links";
 import ModalSelectAccount from "./modal/ModalSelectAccount";
 import { FiCheck, FiChevronDown, FiChevronUp } from "react-icons/fi";
 import useOnClickOutside from "../lib/hooks/useOnClickOut";
-
+import { EVMChains } from "../lib/wallet/config";
+import { numberToHex } from "viem";
 export interface Props {
   className?: string;
 }
@@ -61,7 +62,7 @@ function getWalletIcon(user: WrapLoginUser): string {
     case "talisman":
       return "/images/talisman.png";
     case "oasis":
-      return "/images/oasis.png"
+      return "/images/oasis.png";
     case "wallet-connect": {
       const icons = _.get(user.walletConnect.connect, "peerMeta.icons");
       if (_.size(icons)) {
@@ -151,7 +152,7 @@ function User(props: Props) {
   };
   const copy = useClipboard();
   const { isPremiumUser, isCrust, user } = useGetDepost();
-  const [ftmAccount,ftmAccont2] = useMemo(() => [shortStr(user.account),shortStr(user.account, 14)],[user])
+  const [ftmAccount, ftmAccont2] = useMemo(() => [shortStr(user.account), shortStr(user.account, 14)], [user]);
   const _onClickLogout = useCallback(user.logout, [user]);
   const showSwitchAccount = user.wallet === "crust" || user.wallet === "polkadot-js";
   const [mRewards] = useGet(() => getEarnRewards(user.account), [user.account, isCrust], "getEarnRewards");
@@ -160,15 +161,21 @@ function User(props: Props) {
   const r = useRouter();
   const chains = useMemo(() => {
     return [
-      { name: "Ethereum", image: "/images/chain/ethereum.png", chainId: 1 },
+      { name: "Ethereum", image: "/images/chain/ethereum.png", chainId: EVMChains.mainnet.id, chain: EVMChains.mainnet },
       // { name: "Polygon", image: "/images/chain/polygon.png", chainId: 137 },
-      { name: "Optimism", image: "/images/chain/optimism.png", chainId: 10 },
-      { name: "Arbitrum", image: "/images/chain/arbitrum.png", chainId: 42161 },
+      { name: "Optimism", image: "/images/chain/optimism.png", chainId: EVMChains.optimism.id, chain: EVMChains.optimism },
+      { name: "Arbitrum", image: "/images/chain/arbitrum.png", chainId: EVMChains.arbitrum.id, chain: EVMChains.arbitrum },
       // { name: "Celo", image: "/images/chain/celo.png", chainId: 42220 },
       // { name: "BNB Chain", image: "/images/chain/bsc.png", chainId: 56 },
-      { name: "zkSync", image: "/images/chain/zksync.png", chainId: 324 },
-      { name: "Blast", image: "/images/chain/blast.png", chainId: 81457 },
-      { name: "Base", image: "/images/chain/base.png", chainId: 8453 },
+      { name: "zkSync", image: "/images/chain/zksync.png", chainId: EVMChains.zkSync.id, chain: EVMChains.zkSync },
+      { name: "Blast", image: "/images/chain/blast.png", chainId: EVMChains.blast.id, chain: EVMChains.blast },
+      { name: "Base", image: "/images/chain/base.png", chainId: EVMChains.base.id, chain: EVMChains.base },
+      {
+        name: "Crust EVM Parachain",
+        image: "/images/chain/crust_evm_test.png",
+        chainId: EVMChains.crustEvmParachainTest.id,
+        chain: EVMChains.crustEvmParachainTest,
+      },
     ];
   }, []);
 
@@ -236,12 +243,13 @@ function User(props: Props) {
                   background: "white",
                   boxShadow: "0 0.57rem 1.43rem 0 rgba(0, 0, 0, 0.1)",
                   borderRadius: 14,
-                  width: 190,
+                  width: "max-content",
                   gap: 10,
                   display: "flex",
                   flexDirection: "column",
                   border: "0.07rem solid #eeeeee",
                   padding: 16,
+                  whiteSpace: "nowrap",
                   // marginTop: "1.6rem !important",
                 }}
               >
@@ -250,9 +258,17 @@ function User(props: Props) {
                     key={`mi_${i}`}
                     onClick={() => {
                       chainId !== c.chainId &&
-                        user.metamask.switchChain(c.chainId).catch((err) => {
-                          console.info("error:", err);
-                        });
+                        user.metamask
+                          .switchAndInstallChain({
+                            chainId: numberToHex(c.chainId),
+                            chainName: c.chain.name,
+                            nativeCurrency: c.chain.nativeCurrency,
+                            rpcUrls: c.chain.rpcUrls.default.http,
+                            blockExplorerUrls: [c.chain.blockExplorers.default.url],
+                          })
+                          .catch((err) => {
+                            console.info("error:", err);
+                          });
                     }}
                     style={{ display: "flex", gap: 10, alignItems: "center", cursor: "pointer" }}
                   >
