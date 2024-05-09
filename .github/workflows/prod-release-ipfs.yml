@@ -28,6 +28,7 @@ jobs:
         with:
           path: './out'
           seeds: ${{ secrets.CRUST_SEEDS }}
+          gateway: 'https://gw.crustfiles.net'
 
       - name: Place storage order on Crust
         uses: crustio/ipfs-crust-action@v2.0.3
