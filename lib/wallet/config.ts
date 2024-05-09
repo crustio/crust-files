@@ -74,30 +74,19 @@ export const EVMChains = {
   base,
   crustEvmParachainTest,
 };
-/**
- * 
- * eth: 0xE391613d2056e47F74ED5eF1d443d4CDB21AAAd9
-op: 0xf8e6F7bb144D3475fcf39Bd879510Fa93C775ee2
-arb1: 0x9ae6c9d00fde0e0f774693ca6099d06dfe2001c6
-zkSync: 0xfa866AbF8F0b8f154654DEd956B2467dFB6A4135
 
-eth goerli: 0xDE52b55C3Ee0765d17564631570ec8E7fD3D499a
-arb1 goerli: 0x9AE6C9d00Fde0e0F774693Ca6099d06dfe2001C6
-op goerli: 0x06Ae21caEEA438Aa3AA4D353332a7C124f8dF3c7
-zksync era testnet:  0x6C0445ec09d49214Cbc21E3DC032d3dEA25ce2Ae
- */
 export const EVMStorageContract: { [k: number]: string } = {
   // Ethereum
-  [mainnet.id]: "0xE391613d2056e47F74ED5eF1d443d4CDB21AAAd9",
+  [mainnet.id]: "0xf063A29f03d0A02FD96f270EE4F59158EF3d4860",
   5: "0xDE52b55C3Ee0765d17564631570ec8E7fD3D499a", // ethereum goerli
   // Optimism
-  [optimism.id]: "0xf8e6F7bb144D3475fcf39Bd879510Fa93C775ee2",
+  [optimism.id]: "0xf063A29f03d0A02FD96f270EE4F59158EF3d4860",
   420: "0x06Ae21caEEA438Aa3AA4D353332a7C124f8dF3c7", // op goerli
   // Arbitrum
-  [arbitrum.id]: "0x9ae6c9d00fde0e0f774693ca6099d06dfe2001c6",
+  [arbitrum.id]: "0xf063A29f03d0A02FD96f270EE4F59158EF3d4860",
   421613: "0x9AE6C9d00Fde0e0F774693Ca6099d06dfe2001C6", //arb goerli
   // zkSync
-  [zkSync.id]: "0xfa866AbF8F0b8f154654DEd956B2467dFB6A4135", // zkSync
+  [zkSync.id]: "0x61ecfA2C8dF06A4f941A8529E4B707488B74e3bE", // zkSync
   280: "0x6C0445ec09d49214Cbc21E3DC032d3dEA25ce2Ae", // zksync era testnet
   // Polygon
   137: "",
