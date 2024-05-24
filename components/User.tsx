@@ -70,6 +70,8 @@ function getWalletIcon(user: WrapLoginUser): string {
       }
       return "/images/wallet_connect.png";
     }
+    case "mimir":
+      return "/images/wallet_mimir.svg";
     default:
       return "";
   }

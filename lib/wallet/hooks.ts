@@ -20,9 +20,46 @@ import { SubWallet } from "./SubWallet";
 import { Talisman } from "./Talisman";
 import { BaseWallet, SaveFile } from "./types";
 import { Web3AuthWallet } from "./Web3AuthWallet";
+import { Mimir } from "./Mimir";
+import { templateApi } from "../initApi";
+
+import { signatureVerify } from "@polkadot/util-crypto";
+import { u8aToHex, numberToHex } from "@polkadot/util";
+import { ApiPromise } from "@polkadot/api";
+import { GenericExtrinsicEra, GenericSignerPayload } from "@polkadot/types";
+import { SubmittableExtrinsic } from "@polkadot/api/types";
+import { SignerPayloadJSON } from "@polkadot/types/types";
+import { ExtrinsicPayloadV4 } from "@polkadot/types/interfaces/extrinsics";
 
 // eslint-disable-next-line
 const fcl = require("@onflow/fcl");
+
+/**
+ * getPayloadHex
+ * @param {ApiPromise} api
+ * @returns
+ */
+export async function payloadTools(api: ApiPromise, address: string) {
+  function makeEraOptions({ header, nonce, mortalLength }) {
+    return {
+      blockHash: "0x8b404e7ed8789d813982b9cb4c8b664c05b3fbf433309f603af014ec9ce56a8c", // header.hash,
+      genesisHash: "0x8b404e7ed8789d813982b9cb4c8b664c05b3fbf433309f603af014ec9ce56a8c",
+      runtimeVersion: api.runtimeVersion,
+      signedExtensions: api.registry.signedExtensions,
+      // @ts-ignore
+      version: api.extrinsicType,
+      era: api.registry.createTypeUnsafe<GenericExtrinsicEra>("ExtrinsicEra", [{ current: 1, period: 55 }]),
+      nonce,
+      tip: 0,
+      assetId: 0,
+    };
+  }
+  const signInfo = await api.derive.tx.signingInfo(address);
+  const earOptions = makeEraOptions(signInfo);
+  return {
+    signOptions: earOptions,
+  };
+}
 
 export interface Files {
   files: SaveFile[];
@@ -62,7 +99,9 @@ export class LoginUser {
     | "web3auth"
     | "subWallet"
     | "talisman"
-    | "oasis";
+    | "oasis"
+    | "mimir";
+
   key?: KEYS = "files:login";
   authBasic?: string;
   authBearer?: string;
@@ -92,6 +131,7 @@ export const WalletName: { [k in LoginUser["wallet"]]: string } = {
   subWallet: "subWallet",
   talisman: "talisman",
   oasis: "Oasis",
+  mimir: "Mimir",
 };
 
 const NEED_REMEMBER_WALLET: LoginUser["wallet"][] = ["crust", "polkadot-js"];
@@ -130,6 +170,7 @@ export interface WrapLoginUser extends LoginUser {
   aptosMartian: AptosMartian;
   aptosPetra: AptosPetra;
   web3AuthWallet: Web3AuthWallet;
+  mimir: Mimir;
   authBasic?: string;
   authBearer?: string;
   signature?: string;
@@ -194,7 +235,7 @@ export function useSign(wUser: WrapLoginUser): UseSign {
         return wUser.useWallet?.sign(data, wUser.account);
       },
     }));
-  },[wUser]);
+  }, [wUser]);
   return state;
 }
 
@@ -217,6 +258,7 @@ const WALLETMAP: { [k in LoginUser["wallet"]]: BaseWallet } = {
   "wallet-connect": new MWalletConnect(),
   web3auth: new Web3AuthWallet(),
   oasis: new Metamask(),
+  mimir: new Mimir(),
 };
 
 export function useLoginUser(key: KEYS = "files:login"): WrapLoginUser {
@@ -233,7 +275,7 @@ export function useLoginUser(key: KEYS = "files:login"): WrapLoginUser {
   const setLoginUser = useCallback(
     (loginUser: LoginUser) => {
       const nAccount = { ...loginUser, key };
-      console.info('nAccount:', nAccount)
+      console.info("nAccount:", nAccount);
       setAccount((old) => {
         if (old.wallet === "near") {
           // eslint-disable-next-line
@@ -300,11 +342,72 @@ export function useLoginUser(key: KEYS = "files:login"): WrapLoginUser {
   }, [setLoginUser, account]);
 
   useEffect(() => {
-    try {
+    const initialize = async () => {
       const f = store.get(key, defLoginUser) as LoginUser;
-
       setAccounts(undefined);
-
+      const mimir = WALLETMAP.mimir as Mimir;
+      await mimir.init();
+      if (mimir.provider) {
+        let accounts = await mimir.getAccounts();
+        accounts = accounts.map((item) => formatToCrustAccount(item));
+        setAccounts(accounts);
+        console.info("mimir:accounts", accounts);
+        if (f.account && f.wallet == "mimir" && accounts.includes(f.account)) {
+          setAccount(f);
+        } else if (accounts.length) {
+          // use remark as singmsg
+          const api = await templateApi();
+          const address = accounts[0];
+          const remark = api.tx.system.remark("Signature for CrustFiles");
+          const { signOptions } = await payloadTools(api, address);
+          const res = await mimir.wallet.signer.signPayload({
+            address,
+            blockHash: signOptions.blockHash,
+            genesisHash: signOptions.genesisHash,
+            blockNumber: "0x0",
+            era: signOptions.era.toHex(),
+            method: remark.inner.method.toHex(),
+            nonce: signOptions.nonce.toHex(),
+            tip: numberToHex(signOptions.tip),
+            specVersion: signOptions.runtimeVersion.toHex(),
+            transactionVersion: signOptions.runtimeVersion.toHex(),
+            signedExtensions: signOptions.signedExtensions,
+            version: 4,
+          });
+          console.info("mimir:res:", res);
+          const payload = (res as any).payload as SignerPayloadJSON;
+          const era = api.registry.createType<GenericExtrinsicEra>("ExtrinsicEra", payload.era)
+          console.info('era:', era.toHex(), payload.era)
+          const signPayload = remark.inner.signature.createPayload(remark.inner.method, {
+            era,
+            blockHash: payload.blockHash,
+            genesisHash: payload.genesisHash,
+            nonce: payload.nonce,
+            runtimeVersion: signOptions.runtimeVersion,
+          })
+          const payloadU8a = signPayload.toU8a({ method: true });
+          const hexData = u8aToHex(payloadU8a.length > 256 ? api.registry.hash(payloadU8a) : payloadU8a);
+          const signature = res.signature;
+          const prefix = getPerfix({ wallet: "mimir", account: address });
+          const perSignData = `${prefix}-${address}-${hexData}:${signature}`;
+          const base64Signature = window.btoa(perSignData);
+          const authBasic = `${base64Signature}`;
+          const authBearer = `${base64Signature}`;
+          const acc: LoginUser = {
+            wallet: "mimir",
+            account: address,
+            authBasic,
+            authBearer,
+            signature,
+          };
+          const sv = signatureVerify(hexData, signature, address);
+          console.info("mimir:valid", sv.isValid);
+          setAccount(acc);
+          sv.isValid && store.set(key, acc);
+        }
+        setIsLoad(false);
+        return;
+      }
       if (f === defLoginUser || f.account === "" || !f.authBasic) {
         setIsLoad(false);
         return;
@@ -356,7 +459,7 @@ export function useLoginUser(key: KEYS = "files:login"): WrapLoginUser {
             if (metamask.isAllowed && metamask.accounts.length) {
               setAccount({
                 account: metamask.accounts[0],
-                wallet: 'metamask',
+                wallet: "metamask",
                 authBasic: f.authBasic,
                 authBearer: f.authBearer,
               });
@@ -412,11 +515,12 @@ export function useLoginUser(key: KEYS = "files:login"): WrapLoginUser {
       } else {
         setIsLoad(false);
       }
-    } catch (e) {
-      setIsLoad(false);
+    };
+    initialize().catch((e) => {
       console.error(e);
-    }
-  }, [key, r]);
+      setIsLoad(false);
+    });
+  }, [key, r.pathname]);
 
   const logout = useCallback(async () => {
     if (account.wallet === "flow") {
@@ -474,21 +578,22 @@ export function useLoginUser(key: KEYS = "files:login"): WrapLoginUser {
       setLoginUser,
       logout,
       useWallet: WALLETMAP[account.wallet],
-      crust: WALLETMAP['crust'] as any,
-      polkadotJs: WALLETMAP['polkadot-js'] as any,
-      subWallet: WALLETMAP['subWallet'] as any,
-      metamask: WALLETMAP['metamask'] as any,
-      metax: WALLETMAP['metax'] as any,
-      near: WALLETMAP['near'] as any,
-      flow: WALLETMAP['flow'] as any,
-      solana: WALLETMAP['solana'] as any,
-      algorand: WALLETMAP['algorand'] as any,
-      elrond: WALLETMAP['elrond'] as any,
-      aptosMartian: WALLETMAP['aptos-martian'] as any,
-      aptosPetra: WALLETMAP['aptos-petra'] as any,
-      web3AuthWallet: WALLETMAP['web3auth'] as any,
-      walletConnect: WALLETMAP['wallet-connect'] as any,
-      talisman: WALLETMAP['talisman'] as any,
+      crust: WALLETMAP["crust"] as any,
+      polkadotJs: WALLETMAP["polkadot-js"] as any,
+      subWallet: WALLETMAP["subWallet"] as any,
+      metamask: WALLETMAP["metamask"] as any,
+      metax: WALLETMAP["metax"] as any,
+      near: WALLETMAP["near"] as any,
+      flow: WALLETMAP["flow"] as any,
+      solana: WALLETMAP["solana"] as any,
+      algorand: WALLETMAP["algorand"] as any,
+      elrond: WALLETMAP["elrond"] as any,
+      aptosMartian: WALLETMAP["aptos-martian"] as any,
+      aptosPetra: WALLETMAP["aptos-petra"] as any,
+      web3AuthWallet: WALLETMAP["web3auth"] as any,
+      walletConnect: WALLETMAP["wallet-connect"] as any,
+      talisman: WALLETMAP["talisman"] as any,
+      mimir: WALLETMAP["mimir"] as any,
       nickName,
       setNickName,
       setMember,
@@ -508,12 +613,7 @@ export function useContextWrapLoginUser(): WrapLoginUser {
 }
 
 export const getPerfix = (user: LoginUser): string => {
-  if (
-    user.wallet.startsWith("metamask") ||
-    user.wallet === "metax" ||
-    user.wallet === "wallet-connect" ||
-    user.wallet === "web3auth"
-  ) {
+  if (user.wallet.startsWith("metamask") || user.wallet === "metax" || user.wallet === "wallet-connect" || user.wallet === "web3auth") {
     return "eth";
   }
 
