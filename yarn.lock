@@ -10467,8 +10467,8 @@ react-fast-compare@^3.0.1:
 
 react-gtm-module@^2.0.11:
   version "2.0.11"
-  resolved "https://registry.nlark.com/react-gtm-module/download/react-gtm-module-2.0.11.tgz#14484dac8257acd93614e347c32da9c5ac524206"
-  integrity sha1-FEhNrIJXrNk2FONHwy2pxaxSQgY=
+  resolved "https://registry.npmjs.org/react-gtm-module/-/react-gtm-module-2.0.11.tgz#14484dac8257acd93614e347c32da9c5ac524206"
+  integrity sha512-8gyj4TTxeP7eEyc2QKawEuQoAZdjKvMY4pgWfycGmqGByhs17fR+zEBs0JUDq4US/l+vbTl+6zvUIx27iDo/Vw==
 
 react-i18next@^11.12.0:
   version "11.12.0"
