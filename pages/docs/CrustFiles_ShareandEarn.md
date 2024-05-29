@@ -1,12 +1,6 @@
 
 # Share-and-Earn
 
-<font size="6">Share Crust Files with your friends,</font>  
-
-<font size="6">Earn $50,000,000 in User Rewards!</font>
-
-Join our 3 Reward Programs: **INVITE BONUS**, **LUCKY NEWBIE**, and **GRAND DRAW**!
-
 ## Initiatives
 
 We never wanted our promotion to be just another old-fashioned invite-and-earn gimmick. Instead, we've put our minds and hearts to work and are excited to share with you: **Crust Files Share-and-Earn!**  
@@ -46,48 +40,6 @@ Your **nickname** will show on the share page both for you and the receiver.
 Invite your friends to use Crust Files and become Premium Users.  
 
 Your **nickname** is the invitation code. Remind your friends to type in your **nickname** when they are registering a Premium User.  
-
-<h2 id="lucky_newbie">{`LUCKY NEWBIE - detailed rules`}</h2>
-
-### Basics  
-
-This is a non-stop game. Any newly registered Premium User has a chance to win the entire prize pool if the winning conditions are met:  
-
-**The last Premium User to join before the countdown reaches zero is the winner of the current pool. Every time a new Premium User joins, the countdown timer resets to 30 minutes and 0.4 CRU is added to the prize pool.**  
-
-The size of prize pool will continue to grow if: 1) No one meets the winning condition, and 2) before it reaches the cap. The cap is currently set to 100,000 CRU. When the cap is reached, the prize will be moved to the GRAND DRAW pool.
-
-### How to play
-
-Any new Premium User has a chance to win the current prize pool!  
-
-Registering a Premium User in Crust Files will generate an **on-chain transaction** that records the registration information. This transaction is the ONLY valid identifier to a Premium User's identity, and the ONLY basis for determining the winner in the LUCKY NEWBIE game (as well in the other two Reward Programs!).  
-
-Similarly, the timer in this game counts time according to the **block height** on Crust's blockchain, which produces a block every 6 seconds - 30 minutes = 300 blocks passed on-chain.  
-
-<h2 id="grand_draw">{`GRAND DRAW - detailed rules`}</h2>
-
-### Basics
-
-This is a lucky draw game.  
-
-Every time the total number of Premium Users hits a certain milestone, a lucky draw will be held. The prize pool will grow bigger with every milestone we hit.  
-
-We define a valid Premium User by a specific on-chain transaction that marks his/her registration. We then take the **tx hash** of this transaction as one's permanent **Draw Ticket**. Every Premium User can find their Draw Ticket on the Share-and-Earn page.  
-
-### How to play
-
-1. Wait until the pool gets unlocked  
-
-Each time a new milestone is reached a new pool will be unlocked (open for sign up). Keep an eye on the progress for the next unlock!  
-
-2. Sign up for the draw  
-
-You will have 3 days to sign up after the pool is unlocked. Click the 'Sign Up' button before the due date to participate in the draw for the next pool.  
-
-3. The draw result  
-
-In the sign up stage, a future block will be decided (by block height) to be the 'Draw Block'. The winners will be those whose 'Drawing Ticket' share the same last n (n could be 1, 2, or 3, should be pre-determined) digits with the block hash of the 'Draw Block'.  
 
 <h2 id="claim_rewards">{`Claim your rewards`}</h2>
 

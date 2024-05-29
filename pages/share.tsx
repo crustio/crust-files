@@ -115,10 +115,6 @@ function _share(props: BaseProps) {
                 first personal<br />
                 Web3.0 storage<br />
                 in the Metaverse.<br />
-                <br />
-                now with<br />
-                <span>$50,000,000</span> <br />
-                User Rewards
             </div>
             <div className='footer'>
                 <Links className='links' />
