@@ -253,8 +253,9 @@ const ClaimRewards = styled.div`
   line-height: 1.79rem;
   display: flex;
   height: 100%;
-  padding-top: 1.43rem;
-  margin-right: 4rem;
+  padding-bottom: 1.25rem;
+  /* padding-top: 1.43rem; */
+  /* margin-right: 4rem; */
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -407,7 +408,7 @@ function Index(props: Props) {
   const GrandStat1 = granDraw && granDraw.drawState === 1
   // 已开奖
   const GrandStat2 = granDraw && (granDraw.drawState === 2 || granDraw.drawState === 3)
-  const showGrandDraw = (GrandStat0 || GrandStat1 || GrandStat2) && !loadingGrandDraw && !grandApplyLoading
+  const showGrandDraw = false && (GrandStat0 || GrandStat1 || GrandStat2) && !loadingGrandDraw && !grandApplyLoading
   const showSignUpGrandDraw = isPremiumUser && GrandStat1
 
   const _clickSignUpGrandDraw = async () => {
@@ -439,9 +440,7 @@ function Index(props: Props) {
       <div className="text">
         <span>Share</span> Crust Files with <br />
         your friends,<br />
-        <span>Earn $50,000,000</span>
-        <br />
-        in User Rewards.
+        <span>Earn CRU Token</span>
       </div>
       <PixelBoard className="top_card">
         <div className="btns">
@@ -452,12 +451,23 @@ function Index(props: Props) {
           isMe ? <>
             <div className="total">My Total Rewards:</div>
             <div className="total_reward"><span>{getFormatValue(rewards, 'total.total')}</span> CRU</div>
+            <ClaimRewards>
+              <M_PixelBtn disabled={disabledClaimRewards} content={onGoingClaim ? 'Ongoing Claim...' : 'Claim Rewards'} onClick={_clickClaimRewards} />
+              {
+                isPremiumUser ? <div style={{ marginTop: 8 }}>
+                  {onGoingClaim ? `You have ${getFormatValue(rewards, 'total.ongoing')} CRU ongoing claim... Please wait` : `You have ${totalPending} CRU pending claim rewards.`}
+                </div> :
+                  <div style={{ marginTop: 8 }}>
+                    <ColorSpan className="btn" onClick={() => r.push('/user')}>Get Premium</ColorSpan> User to claim your rewards.
+                  </div>
+              }
+            </ClaimRewards>
           </> : <div className="networks">
             <div>Total User: <span>{getFormatValue(networkState, 'totalUser')}</span></div>
             <div>Premium User: <span>{getFormatValue(networkState, 'premiumUser')}</span></div>
             <div>Deposit Pool: <span>{getFormatValue(networkState, 'depositPool')} CRU</span></div>
             <div>Rewards Distributed: <span>{getFormatValue(networkState, 'rewardsDistributed')} CRU</span></div>
-            <div>Remaining Rewards: <span>{getFormatValue(networkState, 'remainingRewards')} CRU</span></div>
+            {/* <div>Remaining Rewards: <span>{getFormatValue(networkState, 'remainingRewards')} CRU</span></div> */}
           </div>
         }
       </PixelBoard>
@@ -467,12 +477,12 @@ function Index(props: Props) {
       <img className="like" src="/images/like.svg" />
       <div className="programs">
         <Marquee>
-          <span>3</span> Reward Programs
-          <span>3</span> Reward Programs
-          <span>3</span> Reward Programs
-          <span>3</span> Reward Programs
-          <span>3</span> Reward Programs
-          <span>3</span> Reward Programs
+          <span>1</span> Reward Programs
+          <span>1</span> Reward Programs
+          <span>1</span> Reward Programs
+          <span>1</span> Reward Programs
+          <span>1</span> Reward Programs
+          <span>1</span> Reward Programs
         </Marquee>
       </div>
     </RewardPrograms>
@@ -494,7 +504,7 @@ function Index(props: Props) {
       <DetailedRules target={'_blank'} href={locationUrl('/docs/CrustFiles_ShareandEarn/#invite_bonus')}>Detailed Rules</DetailedRules>
     </PixelBoard>
 
-    <PixelBoard className="earn_item">
+    <PixelBoard className="earn_item" style={{ display: 'none' }}>
       <PixelBtn1 className="top_btn">Lucky Newbie</PixelBtn1>
       <EarnItemTip>500,000<br />CRU</EarnItemTip>
       <div className="left">
@@ -577,7 +587,7 @@ function Index(props: Props) {
         <DetailedRules target={'_blank'} href={locationUrl('/docs/CrustFiles_ShareandEarn/#grand_draw')}>Detailed Rules</DetailedRules>
       </PixelBoard>}
 
-    <PixelBoard className="earn_item">
+    <PixelBoard className="earn_item"  style={{ display: 'none' }}>
       <Rewards>
         <div className="title">My Rewards:</div>
         <div className="sub">
@@ -588,18 +598,7 @@ function Index(props: Props) {
         </div>
         {isCrust && <MLink style={{ marginTop: '1rem' }} target={'_blank'} href={`${locationUrl('/rewards_history/')}?account=${user.account}`}>Check more detailed information & historical records about rewards</MLink>}
       </Rewards>
-      <ClaimRewards>
-        <M_PixelBtn disabled={disabledClaimRewards} content={onGoingClaim ? 'Ongoing Claim...' : 'Claim Rewards'} onClick={_clickClaimRewards} />
-        {
-          isPremiumUser ? <div style={{ marginTop: 8 }}>
-            {onGoingClaim ? `You have ${getFormatValue(rewards, 'total.ongoing')} CRU ongoing claim... Please wait` : `You have ${totalPending} CRU pending claim rewards.`}
-          </div> :
-            <div style={{ marginTop: 8 }}>
-              <ColorSpan className="btn" onClick={() => r.push('/user')}>Get Premium</ColorSpan> User to claim your rewards.
-            </div>
-        }
-
-      </ClaimRewards>
+      
       <DetailedRules target={'_blank'} href={locationUrl('/docs/CrustFiles_ShareandEarn/#claim_rewards')}>Learn More</DetailedRules>
     </PixelBoard>
   </PageUserSideLayout>
@@ -622,7 +621,8 @@ export default React.memo<Props>(styled(Index)`
         }
       }
       .top_card {
-        height: 17.14rem;
+        /* height: 17.14rem; */
+        /* height: 24rem; */
         min-width: 40.86rem;
         display: flex;
         flex-direction: column;
@@ -657,6 +657,7 @@ export default React.memo<Props>(styled(Index)`
           line-height: 2rem;
           font-weight: 600;
           text-align: left;
+          padding: 3.7rem 0;
           span {
             float: right;
             color: #216CFF;
