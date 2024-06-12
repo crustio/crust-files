@@ -191,6 +191,14 @@ export function useUpload(user: WrapLoginUser, options: Options): UseUpload {
             setUpState({ progress: 0, up: false });
             setBusy(false);
             console.error(e);
+            if(e?.data?.code === -32000){
+                setError('Insufficient Wallet Balance!');
+                return 
+            }
+            if(e?.code === 'ACTION_REJECTED'){
+                setError('User has rejected the operation.');
+                return 
+            }
             setError('Network Error,Please try to switch a Gateway.');
             throw e
         }

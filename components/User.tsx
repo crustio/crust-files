@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { useRouter } from "next/router";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Dropdown, Item, Segment } from "semantic-ui-react";
 import styled from "styled-components";
 import { useClipboard } from "../lib/hooks/useClipboard";
@@ -180,6 +180,23 @@ function User(props: Props) {
       },
     ];
   }, []);
+
+
+  useEffect(() => {
+    document.addEventListener('click', handleDocumentClick);
+    return () => {
+      document.removeEventListener('click', handleDocumentClick);
+
+    }
+  })
+
+  const handleDocumentClick = (e: Event) => {
+
+    if (!ref.current.contains(e.target as Node)
+      && ref.current !== e.target) {
+      setShowChains(false)
+    }
+  };
 
   const renderGoToGetPermium = () => {
     return (
