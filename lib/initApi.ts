@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { ApiPromise, WsProvider } from "@polkadot/api";
+import { ApiOptions } from "@polkadot/api/types";
 import { typesBundleForPolkadot } from "@crustio/type-definitions";
 const wss = ["wss://rpc.crust.network", "wss://rpc-crust-mainnet.decoo.io"];
 
-export async function templateApi(): Promise<ApiPromise> {
-  const provider = new WsProvider(wss, 5000);
+export async function templateApi(providerIn?: ApiOptions['provider']): Promise<ApiPromise> {
+  const provider = providerIn ?? new WsProvider(wss, 5000);
   provider.on("error", console.error);
   return await new ApiPromise({
-    provider,
+    provider: provider,
     typesBundle: typesBundleForPolkadot,
   }).isReady;
 }

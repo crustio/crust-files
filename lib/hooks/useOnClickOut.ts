@@ -9,9 +9,9 @@ export default function useOnClickOutside(
       if (!ref.current || ref.current === e.target || ref.current.contains(e.target)) return;
       if (handler) handler(e)
     }
-    document?.addEventListener('mouseup', handleClickOutside)
+    document?.addEventListener('click', handleClickOutside)
     return () => {
-      document?.removeEventListener('mouseup', handleClickOutside)
+      document?.removeEventListener('click', handleClickOutside)
     }
   }, [ref.current])
   return ref

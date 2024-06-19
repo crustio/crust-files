@@ -18,48 +18,12 @@ import { PolkadotJs } from "./PolkadotJs";
 import { SolanaM } from "./SolanaM";
 import { SubWallet } from "./SubWallet";
 import { Talisman } from "./Talisman";
-import { BaseWallet, SaveFile } from "./types";
+import { BaseWallet, KEY_TYPE, LoginUser, SaveFile, WalletType } from "./types";
 import { Web3AuthWallet } from "./Web3AuthWallet";
 import { Mimir } from "./Mimir";
-import { templateApi } from "../initApi";
-
-import { signatureVerify } from "@polkadot/util-crypto";
-import { u8aToHex, numberToHex } from "@polkadot/util";
-import { ApiPromise } from "@polkadot/api";
-import { GenericExtrinsicEra, GenericSignerPayload } from "@polkadot/types";
-import { SubmittableExtrinsic } from "@polkadot/api/types";
-import { SignerPayloadJSON } from "@polkadot/types/types";
-import { ExtrinsicPayloadV4 } from "@polkadot/types/interfaces/extrinsics";
 
 // eslint-disable-next-line
 const fcl = require("@onflow/fcl");
-
-/**
- * getPayloadHex
- * @param {ApiPromise} api
- * @returns
- */
-export async function payloadTools(api: ApiPromise, address: string) {
-  function makeEraOptions({ header, nonce, mortalLength }) {
-    return {
-      blockHash: "0x8b404e7ed8789d813982b9cb4c8b664c05b3fbf433309f603af014ec9ce56a8c", // header.hash,
-      genesisHash: "0x8b404e7ed8789d813982b9cb4c8b664c05b3fbf433309f603af014ec9ce56a8c",
-      runtimeVersion: api.runtimeVersion,
-      signedExtensions: api.registry.signedExtensions,
-      // @ts-ignore
-      version: api.extrinsicType,
-      era: api.registry.createTypeUnsafe<GenericExtrinsicEra>("ExtrinsicEra", [{ current: 1, period: 55 }]),
-      nonce,
-      tip: 0,
-      assetId: 0,
-    };
-  }
-  const signInfo = await api.derive.tx.signingInfo(address);
-  const earOptions = makeEraOptions(signInfo);
-  return {
-    signOptions: earOptions,
-  };
-}
 
 export interface Files {
   files: SaveFile[];
@@ -78,38 +42,7 @@ export interface UseSign {
   sign?: (data: string, password?: string) => Promise<string>;
 }
 
-type KEYS = "files:login" | "pins:login";
-
-export class LoginUser {
-  account = "";
-  pubKey?: string;
-  wallet:
-    | "crust"
-    | "polkadot-js"
-    | "metamask"
-    | "metax"
-    | "near"
-    | "flow"
-    | "solana"
-    | "algorand"
-    | "elrond"
-    | "wallet-connect"
-    | "aptos-martian"
-    | "aptos-petra"
-    | "web3auth"
-    | "subWallet"
-    | "talisman"
-    | "oasis"
-    | "mimir";
-
-  key?: KEYS = "files:login";
-  authBasic?: string;
-  authBearer?: string;
-  signature?: string;
-  profileImage?: string;
-}
-
-export const WalletName: { [k in LoginUser["wallet"]]: string } = {
+export const WalletName: { [k in WalletType]: string } = {
   crust: "Crust Wallet",
   metamask: "MetaMask",
   // "metamask-Polygon": "MetaMask",
@@ -134,13 +67,13 @@ export const WalletName: { [k in LoginUser["wallet"]]: string } = {
   mimir: "Mimir",
 };
 
-const NEED_REMEMBER_WALLET: LoginUser["wallet"][] = ["crust", "polkadot-js"];
+const NEED_REMEMBER_WALLET: WalletType[] = ["crust", "polkadot-js"];
 
-export function lastUser(wallet: LoginUser["wallet"], key: KEYS = "files:login"): LoginUser | undefined {
+export function lastUser(wallet: WalletType, key: KEY_TYPE = "files:login"): LoginUser | undefined {
   return store.get(`${key}:${wallet}:last`) as LoginUser;
 }
 
-export function saveLastUser(wallet: LoginUser["wallet"], data: LoginUser, key: KEYS = "files:login") {
+export function saveLastUser(wallet: WalletType, data: LoginUser, key: KEY_TYPE = "files:login") {
   store.set(`${key}:${wallet}:last`, data);
 }
 
@@ -241,7 +174,7 @@ export function useSign(wUser: WrapLoginUser): UseSign {
 
 const defLoginUser: LoginUser = { account: "", wallet: "crust", key: "files:login", authBasic: null, authBearer: null };
 
-const WALLETMAP: { [k in LoginUser["wallet"]]: BaseWallet } = {
+const WALLETMAP: { [k in WalletType]: BaseWallet } = {
   crust: new Crust(),
   "polkadot-js": new PolkadotJs(),
   subWallet: new SubWallet(),
@@ -261,7 +194,7 @@ const WALLETMAP: { [k in LoginUser["wallet"]]: BaseWallet } = {
   mimir: new Mimir(),
 };
 
-export function useLoginUser(key: KEYS = "files:login"): WrapLoginUser {
+export function useLoginUser(key: KEY_TYPE = "files:login"): WrapLoginUser {
   const { logout: logoutWeb3Auth } = useWeb3Auth();
 
   const [account, setAccount] = useState<LoginUser>(defLoginUser);
@@ -348,63 +281,10 @@ export function useLoginUser(key: KEYS = "files:login"): WrapLoginUser {
       const mimir = WALLETMAP.mimir as Mimir;
       await mimir.init();
       if (mimir.provider) {
-        let accounts = await mimir.getAccounts();
-        accounts = accounts.map((item) => formatToCrustAccount(item));
+        let [accounts, account] = await mimir.login(f);
         setAccounts(accounts);
-        console.info("mimir:accounts", accounts);
-        if (f.account && f.wallet == "mimir" && accounts.includes(f.account)) {
-          setAccount(f);
-        } else if (accounts.length) {
-          // use remark as singmsg
-          const api = await templateApi();
-          const address = accounts[0];
-          const remark = api.tx.system.remark("Signature for CrustFiles");
-          const { signOptions } = await payloadTools(api, address);
-          const res = await mimir.wallet.signer.signPayload({
-            address,
-            blockHash: signOptions.blockHash,
-            genesisHash: signOptions.genesisHash,
-            blockNumber: "0x0",
-            era: signOptions.era.toHex(),
-            method: remark.inner.method.toHex(),
-            nonce: signOptions.nonce.toHex(),
-            tip: numberToHex(signOptions.tip),
-            specVersion: signOptions.runtimeVersion.toHex(),
-            transactionVersion: signOptions.runtimeVersion.toHex(),
-            signedExtensions: signOptions.signedExtensions,
-            version: 4,
-          });
-          console.info("mimir:res:", res);
-          const payload = (res as any).payload as SignerPayloadJSON;
-          const era = api.registry.createType<GenericExtrinsicEra>("ExtrinsicEra", payload.era)
-          console.info('era:', era.toHex(), payload.era)
-          const signPayload = remark.inner.signature.createPayload(remark.inner.method, {
-            era,
-            blockHash: payload.blockHash,
-            genesisHash: payload.genesisHash,
-            nonce: payload.nonce,
-            runtimeVersion: signOptions.runtimeVersion,
-          })
-          const payloadU8a = signPayload.toU8a({ method: true });
-          const hexData = u8aToHex(payloadU8a.length > 256 ? api.registry.hash(payloadU8a) : payloadU8a);
-          const signature = res.signature;
-          const prefix = getPerfix({ wallet: "mimir", account: address });
-          const perSignData = `${prefix}-${address}-${hexData}:${signature}`;
-          const base64Signature = window.btoa(perSignData);
-          const authBasic = `${base64Signature}`;
-          const authBearer = `${base64Signature}`;
-          const acc: LoginUser = {
-            wallet: "mimir",
-            account: address,
-            authBasic,
-            authBearer,
-            signature,
-          };
-          const sv = signatureVerify(hexData, signature, address);
-          console.info("mimir:valid", sv.isValid);
-          setAccount(acc);
-          sv.isValid && store.set(key, acc);
-        }
+        setAccount(account);
+        store.set(key, account);
         setIsLoad(false);
         return;
       }
@@ -612,38 +492,3 @@ export function useContextWrapLoginUser(): WrapLoginUser {
   return useContext(ContextWrapLoginUser);
 }
 
-export const getPerfix = (user: LoginUser): string => {
-  if (user.wallet.startsWith("metamask") || user.wallet === "metax" || user.wallet === "wallet-connect" || user.wallet === "web3auth") {
-    return "eth";
-  }
-
-  if (user.wallet === "near") {
-    return "near";
-  }
-
-  if (user.wallet === "flow") {
-    return "flow";
-  }
-
-  if (user.wallet === "solana") {
-    return "sol";
-  }
-
-  if (user.wallet === "elrond") {
-    return "elrond";
-  }
-
-  if (user.wallet === "algorand") {
-    return "algo";
-  }
-
-  if (user.wallet == "aptos-martian") {
-    return "aptos";
-  }
-
-  if (user.wallet == "aptos-petra") {
-    return "aptos";
-  }
-
-  return "substrate";
-};

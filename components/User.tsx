@@ -181,23 +181,6 @@ function User(props: Props) {
     ];
   }, []);
 
-
-  useEffect(() => {
-    document.addEventListener('click', handleDocumentClick);
-    return () => {
-      document.removeEventListener('click', handleDocumentClick);
-
-    }
-  })
-
-  const handleDocumentClick = (e: Event) => {
-
-    if (!ref.current.contains(e.target as Node)
-      && ref.current !== e.target) {
-      setShowChains(false)
-    }
-  };
-
   const renderGoToGetPermium = () => {
     return (
       <span className="go-to" onClick={() => r.push("/user")}>

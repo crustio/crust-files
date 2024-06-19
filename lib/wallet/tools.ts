@@ -1,5 +1,6 @@
 import { SubmittableExtrinsic } from "@polkadot/api/types"
 import { ISubmittableResult } from "@polkadot/types/types"
+import { LoginUser } from "./types"
 
 export function sleep(time: number): Promise<void> {
   return new Promise<void>((resolve => {
@@ -44,3 +45,39 @@ export function finalTxSend(tx: SubmittableExtrinsic<'promise', ISubmittableResu
     }).catch(reject)
   })
 }
+
+export const getPerfix = (user: LoginUser): string => {
+  if (user.wallet.startsWith("metamask") || user.wallet === "metax" || user.wallet === "wallet-connect" || user.wallet === "web3auth") {
+    return "eth";
+  }
+
+  if (user.wallet === "near") {
+    return "near";
+  }
+
+  if (user.wallet === "flow") {
+    return "flow";
+  }
+
+  if (user.wallet === "solana") {
+    return "sol";
+  }
+
+  if (user.wallet === "elrond") {
+    return "elrond";
+  }
+
+  if (user.wallet === "algorand") {
+    return "algo";
+  }
+
+  if (user.wallet == "aptos-martian") {
+    return "aptos";
+  }
+
+  if (user.wallet == "aptos-petra") {
+    return "aptos";
+  }
+
+  return "substrate";
+};

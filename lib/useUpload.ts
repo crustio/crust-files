@@ -4,10 +4,8 @@ import { AuthIpfsEndpoint, AuthIpfsPinner } from "./config";
 import { encryptFile } from "./crypto/encryption";
 import { readFileAsync } from "./crypto/useUserCrypto";
 import { FileInfo, SaveFile, UploadRes } from "./types";
-import { getPerfix, WrapLoginUser } from "./wallet/hooks";
 import { UseEvmPin } from './useEvmPin';
-import { BigNumber } from 'ethers';
-import { parseEther } from 'ethers/lib/utils';
+import { WrapLoginUser } from "./wallet/hooks";
 
 export interface Params {
     signature: string,

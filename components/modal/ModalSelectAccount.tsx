@@ -2,12 +2,13 @@ import React, { useCallback, useMemo, useState } from "react";
 import { Dropdown, DropdownItemProps, Modal, ModalProps } from "semantic-ui-react";
 import styled from "styled-components";
 import Btn from "../Btn";
-import { getPerfix, WrapLoginUser } from "../../lib/wallet/hooks";
+import { WrapLoginUser } from "../../lib/wallet/hooks";
 import { shortStr } from "../../lib/utils";
 import { useGet } from "../../lib/hooks/useGet";
 import { getNickPairList } from "../../lib/http/share_earn";
 import _ from 'lodash';
 import { NickPair } from "../../lib/http/types";
+import { getPerfix } from "../../lib/wallet/tools";
 export interface Props extends ModalProps {
   toggleOpen: (open?: boolean) => void,
   user: WrapLoginUser,

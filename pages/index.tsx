@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import _ from "lodash";
-import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import styled from "styled-components";
 import { Links } from "../components/Links";
@@ -8,17 +8,18 @@ import { PixelBg } from "../components/effect/PixelBg";
 import { Pixel } from "../components/effect/Pixels";
 // import BgAnim from '../components/effect/BgAnim';
 import Logo from "../components/Logo";
-import { AppContext } from "../lib/AppContext";
+import { AppContext, useApp } from "../lib/AppContext";
 import { CrustGetCRU, CrustWalletDownUrl } from "../lib/config";
 import useParallax from "../lib/hooks/useParallax";
 import { report } from "../lib/http/report";
-import { BaseWallet } from "../lib/types";
+import { BaseWallet, LoginUser } from "../lib/types";
 import { openDocs } from "../lib/utils";
 import { nearConfig } from "../lib/wallet/config";
-import { LoginUser, getPerfix, lastUser, useContextWrapLoginUser } from "../lib/wallet/hooks";
+import { lastUser, useContextWrapLoginUser } from "../lib/wallet/hooks";
 import { useWeb3Auth } from "../lib/web3auth/web3auth";
 import { FiChevronDown, FiChevronLeft, FiChevronUp, FiDownload } from "react-icons/fi";
 import { StorageChainConfig } from "./setting";
+import { getPerfix } from "../lib/wallet/tools";
 interface ItemWallet {
   name: string;
   image: string;
@@ -639,6 +640,24 @@ function Home({ className }: { className?: string }) {
       }
     }
   }, [user, t]);
+  const app = useApp()
+  const _onClickMimir = useCallback(async () => {
+    try {
+      app.loading.show()
+      await user.mimir.init();
+      if (user.mimir.provider) {
+        const [_accounts,luser] = await user.mimir.login()
+        setLogined(luser, user.mimir);
+      } else {
+        window.open("https://app.mimir.global", "_blank");
+      }
+    } catch (error) {
+      console.info('mimir:login:error:', error)
+    } finally{
+      app.loading.hide()
+    }
+  }, [user]);
+
   const crustWallet = useMemo<Wallet>(
     () => ({ group: "Crust", name: "Crust Wallet", image: "/images/wallet_crust.png", onClick: _onClickCrust }),
     [_onClickCrust]
@@ -780,6 +799,12 @@ function Home({ className }: { className?: string }) {
         onClick: _onClickTalisman,
       },
       {
+        group: "Polkadot",
+        name: "Mimir",
+        image: "/images/wallet_mimir.svg",
+        onClick: _onClickMimir,
+      },
+      {
         group: "MetaMask",
         name: "Oasis",
         image: "/images/oasis.png",
@@ -813,6 +838,7 @@ function Home({ className }: { className?: string }) {
     _onClickAptosMartian,
     _onClickAptosPetra,
     _onClickWeb3Auth,
+    _onClickMimir
   ]);
 
   const groupWallets = useMemo<WalletGroup[]>(() => {
@@ -846,10 +872,7 @@ function Home({ className }: { className?: string }) {
           <Logo className={"logo"} />
           <div className="tabs">
             <Links className="links" size={24} space={20} />
-            <div
-              className="tutorial"
-              onClick={() => window.open("https://www.youtube.com/watch?v=AXt-JjupBAo&t=69s", "_blank")}
-            >
+            <div className="tutorial" onClick={() => window.open("https://www.youtube.com/watch?v=AXt-JjupBAo&t=69s", "_blank")}>
               Watch Tutorial
             </div>
             <div className="docs" onClick={() => openDocs("/docs/CrustFiles_Welcome")}>
@@ -902,11 +925,7 @@ function Home({ className }: { className?: string }) {
                 {showMore && (
                   <div className="more_wallets">
                     {wallets.map((w, index) => (
-                      <div
-                        key={`wallet_item_${index}`}
-                        onClick={() => w.onClick(w)}
-                        className={classNames("wallet_item")}
-                      >
+                      <div key={`wallet_item_${index}`} onClick={() => w.onClick(w)} className={classNames("wallet_item")}>
                         <img className="item_image" src={w.image} />
                         <span className="item_name">{w.name}</span>
                       </div>
