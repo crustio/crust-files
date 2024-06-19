@@ -1,13 +1,13 @@
-import { LoginUser } from './wallet/hooks';
+import { WalletType } from "./types";
 
-export * from './wallet/types'
+export * from "./wallet/types";
 
 export interface ShareOptions {
-    from?: string,
-    gateway?: string,
-    name: string,
-    encrypted: boolean,
-    isDir: boolean,
-    fromAccount?: string,
-    fromWallet?: LoginUser['wallet']
+  from?: string;
+  gateway?: string;
+  name: string;
+  encrypted: boolean;
+  isDir: boolean;
+  fromAccount?: string;
+  fromWallet?: WalletType;
 }

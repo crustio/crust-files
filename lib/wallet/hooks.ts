@@ -281,7 +281,7 @@ export function useLoginUser(key: KEY_TYPE = "files:login"): WrapLoginUser {
       const mimir = WALLETMAP.mimir as Mimir;
       await mimir.init();
       if (mimir.provider) {
-        let [accounts, account] = await mimir.login(f);
+        const [accounts, account] = await mimir.login(f);
         setAccounts(accounts);
         setAccount(account);
         store.set(key, account);

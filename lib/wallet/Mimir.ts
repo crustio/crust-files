@@ -105,7 +105,7 @@ export class Mimir implements BaseWallet {
     // const hasAuth = await this.enable();
     // if (!hasAuth) throw "Error: cancel";
     // return await this.getAccounts();
-    let accounts = await this.getAccounts();
+    const accounts = await this.getAccounts();
     // accounts = accounts.map((item) => formatToCrustAccount(item));
     if(accounts.length == 0) throw "Error: no account";
     console.info("mimir:accounts", accounts);

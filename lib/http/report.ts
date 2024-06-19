@@ -1,6 +1,7 @@
-import { LoginUser } from "../wallet/hooks"
+
 import axios from 'axios'
 import { createUrl } from "./share_earn"
+import { WalletType } from '../types'
 /**
  * 
  * 1: user login
@@ -9,8 +10,6 @@ import { createUrl } from "./share_earn"
  * 
  */
 export type ReportType = 1 | 2 | 3
-
-export type WalletType = LoginUser['wallet']
 
 
 export interface R_File {

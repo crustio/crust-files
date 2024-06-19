@@ -75,6 +75,7 @@
     "web3": "^1.8.0"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "11.x",
     "@types/axios": "^0.14.0",
     "@types/node": "^16.3.3",
     "@types/react": "^17.0.14",
