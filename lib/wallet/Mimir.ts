@@ -7,7 +7,7 @@ import { templateApi } from "../initApi";
 import { ApiPromise } from "@polkadot/api";
 import { signatureVerify } from "@polkadot/util-crypto";
 import { u8aToHex, numberToHex } from "@polkadot/util";
-import { GenericExtrinsicEra, GenericSignerPayload } from "@polkadot/types";
+import { GenericExtrinsicEra, GenericSignerPayload, GenericCall } from "@polkadot/types";
 import { SubmittableExtrinsic } from "@polkadot/api/types";
 import { SignerPayloadJSON } from "@polkadot/types/types";
 import { ExtrinsicPayloadV4 } from "@polkadot/types/interfaces/extrinsics";
@@ -131,11 +131,15 @@ export class Mimir implements BaseWallet {
         signedExtensions: signOptions.signedExtensions,
         version: 4,
       });
+      
       console.info("mimir:res:", res);
       const payload = (res as any).payload as SignerPayloadJSON;
       const era = api.registry.createType<GenericExtrinsicEra>("ExtrinsicEra", payload.era)
+      const method = api.registry.createType<GenericCall>("GenericCall", payload.method)
+      const signer = payload.address
+      console.info('method:', method.toHex() == payload.method, method.toHex(), payload.method, remark.inner.method.toHex())
       console.info('era:', era.toHex(), payload.era)
-      const signPayload = remark.inner.signature.createPayload(remark.inner.method, {
+      const signPayload = remark.inner.signature.createPayload(method, {
         era,
         blockHash: payload.blockHash,
         genesisHash: payload.genesisHash,
@@ -146,7 +150,7 @@ export class Mimir implements BaseWallet {
       const hexData = u8aToHex(payloadU8a.length > 256 ? api.registry.hash(payloadU8a) : payloadU8a);
       const signature = res.signature;
       const prefix = getPerfix({ wallet: "mimir", account: address });
-      const perSignData = `${prefix}-${address}-${hexData}:${signature}`;
+      const perSignData = `${prefix}-${signer}-${hexData}:${signature}`;
       const base64Signature = window.btoa(perSignData);
       const authBasic = `${base64Signature}`;
       const authBearer = `${base64Signature}`;
@@ -157,7 +161,7 @@ export class Mimir implements BaseWallet {
         authBearer,
         signature,
       };
-      const sv = signatureVerify(hexData, signature, address);
+      const sv = signatureVerify(hexData, signature, signer);
       console.info("mimir:valid", sv.isValid);
       return [accounts, acc]
     }
