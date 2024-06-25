@@ -78,6 +78,8 @@ export const getPerfix = (user: LoginUser): string => {
   if (user.wallet == "aptos-petra") {
     return "aptos";
   }
-
+  if (user.wallet == 'ton-connect'){
+    return 'ton'
+  }
   return "substrate";
 };

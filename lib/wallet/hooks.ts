@@ -21,6 +21,7 @@ import { Talisman } from "./Talisman";
 import { BaseWallet, KEY_TYPE, LoginUser, SaveFile, WalletType } from "./types";
 import { Web3AuthWallet } from "./Web3AuthWallet";
 import { Mimir } from "./Mimir";
+import { TonConnect } from "./TonConnect";
 
 // eslint-disable-next-line
 const fcl = require("@onflow/fcl");
@@ -65,6 +66,7 @@ export const WalletName: { [k in WalletType]: string } = {
   talisman: "talisman",
   oasis: "Oasis",
   mimir: "Mimir",
+  'ton-connect': 'Ton Connect'
 };
 
 const NEED_REMEMBER_WALLET: WalletType[] = ["crust", "polkadot-js"];
@@ -174,7 +176,7 @@ export function useSign(wUser: WrapLoginUser): UseSign {
 
 const defLoginUser: LoginUser = { account: "", wallet: "crust", key: "files:login", authBasic: null, authBearer: null };
 
-const WALLETMAP: { [k in WalletType]: BaseWallet } = {
+export const WALLETMAP: { [k in WalletType]: BaseWallet } = {
   crust: new Crust(),
   "polkadot-js": new PolkadotJs(),
   subWallet: new SubWallet(),
@@ -192,6 +194,7 @@ const WALLETMAP: { [k in WalletType]: BaseWallet } = {
   web3auth: new Web3AuthWallet(),
   oasis: new Metamask(),
   mimir: new Mimir(),
+  'ton-connect': new TonConnect(),
 };
 
 export function useLoginUser(key: KEY_TYPE = "files:login"): WrapLoginUser {
@@ -385,7 +388,7 @@ export function useLoginUser(key: KEY_TYPE = "files:login"): WrapLoginUser {
           })
           .then(() => setIsLoad(false));
       } else if (
-        ["solana", "flow", "elrond", "algorand", "wallet-connect", "aptos-martian", "aptos-petra", "web3auth", "talisman"].includes(
+        ["solana", "flow", "elrond", "algorand", "wallet-connect", "aptos-martian", "aptos-petra", "web3auth", "talisman", "ton-connect"].includes(
           f.wallet
         )
       ) {

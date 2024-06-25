@@ -1,7 +1,7 @@
-import { BaseWallet } from "./types";
+import { BaseWallet, LoginUser } from "./types";
 import { InjectedExtension, InjectedWindowProvider } from "@polkadot/extension-inject/types";
 import { stringToHex } from "@polkadot/util";
-import { sleep } from "./tools";
+import { getPerfix, sleep } from "./tools";
 import { formatToCrustAccount } from "../utils";
 import { ApiPromise } from "@polkadot/api";
 import { typesBundleForPolkadot } from "@crustio/type-definitions";
@@ -68,9 +68,22 @@ export class Crust implements BaseWallet {
     }
   }
 
-  async login(): Promise<string[]> {
+  async login(f?: LoginUser): Promise<[string[], LoginUser]> {
     const hasAuth = await this.enable();
     if (!hasAuth) throw "Error: cancel";
-    return await this.getAccounts();
+    const accounts = await this.getAccounts();
+    if (accounts.length === 0) throw "Error: no account";
+    if (f && accounts.includes(f.account)) return [accounts, f];
+    const account = accounts[0];
+    const nUser: LoginUser = { account, wallet: "crust" };
+    const prefix = getPerfix(nUser);
+    const signature = await this.sign(account, account);
+    const perSignData = `${prefix}-${account}:${signature}`;
+    const base64Signature = window.btoa(perSignData);
+    const authBasic = `${base64Signature}`;
+    const authBearer = `${base64Signature}`;
+    nUser.authBasic = authBasic;
+    nUser.authBearer = authBearer;
+    return [accounts, nUser];
   }
 }

@@ -6,6 +6,7 @@ export interface BaseWallet {
   init: () => Promise<void>;
   sign: (data: string, account?: string) => Promise<string>;
   getProvider?: () => providers.Web3Provider | undefined;
+  // login?: (f?: LoginUser) => Promise<[string[], LoginUser]>;
 }
 
 // other
@@ -65,6 +66,7 @@ export const wallets = [
   "talisman",
   "oasis",
   "mimir",
+  "ton-connect"
 ] as const;
 
 export type WalletType = typeof wallets[number];

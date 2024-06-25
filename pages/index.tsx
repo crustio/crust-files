@@ -15,11 +15,12 @@ import { report } from "../lib/http/report";
 import { BaseWallet, LoginUser } from "../lib/types";
 import { openDocs } from "../lib/utils";
 import { nearConfig } from "../lib/wallet/config";
-import { lastUser, useContextWrapLoginUser } from "../lib/wallet/hooks";
+import { WALLETMAP, lastUser, useContextWrapLoginUser } from "../lib/wallet/hooks";
 import { useWeb3Auth } from "../lib/web3auth/web3auth";
 import { FiChevronDown, FiChevronLeft, FiChevronUp, FiDownload } from "react-icons/fi";
 import { StorageChainConfig } from "./setting";
 import { getPerfix } from "../lib/wallet/tools";
+import { TonConnect } from "../lib/wallet/TonConnect";
 interface ItemWallet {
   name: string;
   image: string;
@@ -144,19 +145,8 @@ function Home({ className }: { className?: string }) {
         setError(`Crust Wallet not installed`);
         return;
       }
-      const accounts = await user.crust.login();
-      const last = lastUser("crust");
-      if (last && accounts.includes(last.account)) {
-        setLogined(last, user.crust);
-      } else if (accounts.length > 0) {
-        setLogined(
-          {
-            account: accounts[0],
-            wallet: "crust",
-          },
-          user.crust
-        );
-      }
+      const [_, lu] = await user.crust.login(lastUser("crust"));
+      setLogined(lu, user.crust);
     } catch (e) {
       console.error(e);
     }
@@ -640,21 +630,21 @@ function Home({ className }: { className?: string }) {
       }
     }
   }, [user, t]);
-  const app = useApp()
+  const app = useApp();
   const _onClickMimir = useCallback(async () => {
     try {
-      app.loading.show()
+      app.loading.show();
       await user.mimir.init();
       if (user.mimir.provider) {
-        const [_accounts,luser] = await user.mimir.login()
+        const [_accounts, luser] = await user.mimir.login();
         setLogined(luser, user.mimir);
       } else {
         window.open("https://app.mimir.global", "_blank");
       }
     } catch (error) {
-      console.info('mimir:login:error:', error)
-    } finally{
-      app.loading.hide()
+      console.info("mimir:login:error:", error);
+    } finally {
+      app.loading.hide();
     }
   }, [user]);
 
@@ -675,6 +665,23 @@ function Home({ className }: { className?: string }) {
     }),
     [_onClickWalletConnect]
   );
+
+  const _onClickTonConnect = useCallback(async () => {
+    const tc = WALLETMAP["ton-connect"] as TonConnect;
+    await tc.init();
+    tc.tonconnectui.onStatusChange((w) => {
+      if (w) {
+        tc.login()
+          .then(([_accounts, lu]) => {
+            setLogined(lu, tc);
+          })
+          .catch(console.error);
+      }
+      tc.tonconnectui.closeModal()
+    });
+    await tc.tonconnectui.openModal();
+  }, []);
+
   const wallets = useMemo<Wallet[]>(() => {
     return [
       // {
@@ -838,7 +845,7 @@ function Home({ className }: { className?: string }) {
     _onClickAptosMartian,
     _onClickAptosPetra,
     _onClickWeb3Auth,
-    _onClickMimir
+    _onClickMimir,
   ]);
 
   const groupWallets = useMemo<WalletGroup[]>(() => {
@@ -917,6 +924,11 @@ function Home({ className }: { className?: string }) {
                 >
                   <img style={{ height: 32, position: "relative", top: 1 }} src={walletConnect.image} />
                   <span>{walletConnect.name}</span>
+                </div>
+                {/* Ton Connect */}
+                <div className="item_connect" style={{ justifyContent: "flex-start", paddingLeft: 43 }} onClick={_onClickTonConnect}>
+                  <img style={{ height: 26, position: "relative", top: 1 }} src="/images/ton-connect.png" />
+                  <span style={{ marginLeft: 3}}>{"Ton Connect"}</span>
                 </div>
                 <div className="more_opt" onClick={() => setShowMore(!showMore)}>
                   <span>More Options</span>
