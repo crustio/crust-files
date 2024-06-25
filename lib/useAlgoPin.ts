@@ -1,12 +1,12 @@
+import { PeraWalletConnect } from "@perawallet/connect";
+import { SignerTransaction } from "@perawallet/connect/dist/util/model/peraWalletModels";
+import algosdk, { ABIValue, BoxReference, Transaction } from "algosdk";
 import { BigNumber, ethers } from "ethers";
 import _, { uniqueId } from "lodash";
 import { useEffect, useRef, useState } from "react";
+import algorandABI from "./abi/algorand_storage_abi.json";
 import { CHAIN_SYMBOL, algorandConfig } from "./wallet/config";
 import { useContextWrapLoginUser } from "./wallet/hooks";
-import algosdk, { ABIValue, BoxReference, Transaction, verifyBytes } from "algosdk";
-import algorandABI from "./abi/algorand_storage_abi.json";
-import { PeraWalletConnect } from "@perawallet/connect";
-import { SignerTransaction } from "@perawallet/connect/dist/util/model/peraWalletModels";
 
 const algodClient = new algosdk.Algodv2(algorandConfig.token, algorandConfig.algodUrl);
 

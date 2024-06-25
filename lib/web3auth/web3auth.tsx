@@ -1,9 +1,8 @@
-import { ADAPTER_EVENTS, SafeEventEmitterProvider } from "@web3auth/base";
+import { ADAPTER_EVENTS, CHAIN_NAMESPACES } from "@web3auth/base";
 import { Web3Auth } from "@web3auth/modal";
-import React, { createContext, FunctionComponent, ReactNode, useCallback, useContext, useEffect, useState } from "react";
 import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
+import React, { FunctionComponent, ReactNode, createContext, useContext, useEffect, useState } from "react";
 import ethProvider from "./ethProvider";
-import { CHAIN_NAMESPACES } from "@web3auth/base";
 
 export interface IWeb3AuthContext {
     web3Auth: Web3Auth | null;
@@ -128,8 +127,8 @@ export const Web3AuthProvider: FunctionComponent<IWeb3AuthState> = ({ children }
             // const localProvider = await web3Auth.connect();
             // setWalletProvider(localProvider!);
             // console.log(`Already logined:::`, ethProvider(localProvider!))
-            return new Promise<IWalletProvider>((resolve, _) => {
-                web3Auth.connect().then(localProvider => resolve(ethProvider(localProvider!))).catch(err => {
+            return new Promise<IWalletProvider>((resolve) => {
+                web3Auth.connect().then(localProvider => resolve(ethProvider(localProvider))).catch(err => {
                     console.log(`connect error::`, err)
                     resolve(null)
                     // new Promise((resolve, _) => resolve(login()))

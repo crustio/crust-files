@@ -1,17 +1,13 @@
 import { MIMIR_REGEXP, inject, isMimirReady } from "@mimirdev/apps-inject";
-import { InjectedExtension, InjectedWindowProvider } from "@polkadot/extension-inject/types";
-import { stringToHex } from "@polkadot/util";
-import { BaseWallet, LoginUser } from "./types";
-import { formatToCrustAccount } from "../utils";
-import { templateApi } from "../initApi";
 import { ApiPromise } from "@polkadot/api";
-import { signatureVerify } from "@polkadot/util-crypto";
-import { u8aToHex, numberToHex } from "@polkadot/util";
-import { GenericExtrinsicEra, GenericSignerPayload, GenericCall } from "@polkadot/types";
-import { SubmittableExtrinsic } from "@polkadot/api/types";
+import { InjectedExtension, InjectedWindowProvider } from "@polkadot/extension-inject/types";
+import { GenericCall, GenericExtrinsicEra } from "@polkadot/types";
 import { SignerPayloadJSON } from "@polkadot/types/types";
-import { ExtrinsicPayloadV4 } from "@polkadot/types/interfaces/extrinsics";
+import { numberToHex, stringToHex, u8aToHex } from "@polkadot/util";
+import { signatureVerify } from "@polkadot/util-crypto";
+import { templateApi } from "../initApi";
 import { getPerfix } from "./tools";
+import { BaseWallet, LoginUser } from "./types";
 /**
  * getPayloadHex
  * @param {ApiPromise} api

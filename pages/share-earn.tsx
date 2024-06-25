@@ -6,9 +6,9 @@ import { useRouter } from "next/router";
 import React, { useEffect, useMemo, useState } from "react";
 import { Popup } from "semantic-ui-react";
 import styled, { keyframes } from "styled-components";
+import PageUserSideLayout from "../components/PageUserSideLayout";
 import { PixelBoard, PixelBtn, PixelBtn1 } from "../components/effect/Pixels";
 import { Coin } from "../components/icons";
-import PageUserSideLayout from "../components/PageUserSideLayout";
 import { ColorSpan } from "../components/texts/spans";
 import { useApp } from "../lib/AppContext";
 import { useCall } from "../lib/hooks/useCall";
@@ -19,7 +19,7 @@ import { useGetDepost } from "../lib/hooks/useGetDeposit";
 import { useToggle } from "../lib/hooks/useToggle";
 import { applyGrandDraw, getEarnRewards, getGrandApplyState, getGrandDraw, getLuckyNebie, getNetworkState, getShareEarnConfig } from "../lib/http/share_earn";
 import { useAutoUpdateToStore } from "../lib/initAppStore";
-import { cutEnd, formatCRU, getErrorMsg, getFormatValue, isSameCrustAddress, locationUrl, shortStr } from "../lib/utils";
+import { cutEnd, formatCRU, getErrorMsg, getFormatValue, isSameCrustAddress, locationUrl } from "../lib/utils";
 export interface Props {
   className?: string
 }

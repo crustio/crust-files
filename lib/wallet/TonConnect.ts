@@ -2,10 +2,10 @@ import { TonProofItemReplySuccess } from '@tonconnect/sdk';
 import { TonConnectUI, toUserFriendlyAddress } from '@tonconnect/ui-react';
 import { Buffer } from 'buffer';
 import { createHash } from 'crypto';
+import { numberToBytes } from 'viem';
 import { IS_DEV } from '../env';
 import { getPerfix } from './tools';
 import type { BaseWallet, LoginUser } from './types';
-import { numberToBytes } from 'viem';
 
 
 interface Domain {
@@ -95,11 +95,11 @@ export class TonConnect implements BaseWallet{
             console.info('tonwallet:', walelt)
         })
         this.isInit = true;
-    };
+    }
 
-    async sign(data: string, account?: string): Promise<string> {
+    async sign(_data: string, _account?: string): Promise<string> {
         throw "Not implementation"
-    };
+    }
 
     async login(f?: LoginUser): Promise<[string[], LoginUser]> {
         if(!this.tonProof) throw 'TonConnect tonProof not found'
@@ -139,6 +139,6 @@ export class TonConnect implements BaseWallet{
         console.info('signer', signer)
         console.info('signature', signature)
         return [[tonAddress], nUser]
-    };
+    }
 
 } 

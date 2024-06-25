@@ -1,22 +1,22 @@
 import _ from "lodash";
 import { useRouter } from "next/router";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
+import { FiCheck, FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { Dropdown, Item, Segment } from "semantic-ui-react";
 import styled from "styled-components";
+import { numberToHex } from "viem";
 import { useClipboard } from "../lib/hooks/useClipboard";
 import { useGet } from "../lib/hooks/useGet";
 import { useGetDepost } from "../lib/hooks/useGetDeposit";
+import useOnClickOutside from "../lib/hooks/useOnClickOut";
 import { useToggle } from "../lib/hooks/useToggle";
 import { getEarnRewards } from "../lib/http/share_earn";
 import { useAutoUpdateToStore } from "../lib/initAppStore";
-import { getFormatValue, shortStr, toHex } from "../lib/utils";
+import { getFormatValue, shortStr } from "../lib/utils";
+import { EVMChains } from "../lib/wallet/config";
 import { WalletName, WrapLoginUser } from "../lib/wallet/hooks";
 import { Links2 } from "./Links";
 import ModalSelectAccount from "./modal/ModalSelectAccount";
-import { FiCheck, FiChevronDown, FiChevronUp } from "react-icons/fi";
-import useOnClickOutside from "../lib/hooks/useOnClickOut";
-import { EVMChains } from "../lib/wallet/config";
-import { numberToHex } from "viem";
 export interface Props {
   className?: string;
 }

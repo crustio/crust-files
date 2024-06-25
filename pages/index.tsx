@@ -1,12 +1,13 @@
 import classNames from "classnames";
 import _ from "lodash";
-import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import styled from "styled-components";
 import { Links } from "../components/Links";
 import { PixelBg } from "../components/effect/PixelBg";
 import { Pixel } from "../components/effect/Pixels";
 // import BgAnim from '../components/effect/BgAnim';
+import { FiChevronDown, FiChevronLeft, FiChevronUp, FiDownload } from "react-icons/fi";
 import Logo from "../components/Logo";
 import { AppContext, useApp } from "../lib/AppContext";
 import { CrustGetCRU, CrustWalletDownUrl } from "../lib/config";
@@ -14,13 +15,12 @@ import useParallax from "../lib/hooks/useParallax";
 import { report } from "../lib/http/report";
 import { BaseWallet, LoginUser } from "../lib/types";
 import { openDocs } from "../lib/utils";
+import { TonConnect } from "../lib/wallet/TonConnect";
 import { nearConfig } from "../lib/wallet/config";
 import { WALLETMAP, lastUser, useContextWrapLoginUser } from "../lib/wallet/hooks";
-import { useWeb3Auth } from "../lib/web3auth/web3auth";
-import { FiChevronDown, FiChevronLeft, FiChevronUp, FiDownload } from "react-icons/fi";
-import { StorageChainConfig } from "./setting";
 import { getPerfix } from "../lib/wallet/tools";
-import { TonConnect } from "../lib/wallet/TonConnect";
+import { useWeb3Auth } from "../lib/web3auth/web3auth";
+import { StorageChainConfig } from "./setting";
 interface ItemWallet {
   name: string;
   image: string;
@@ -535,7 +535,7 @@ function Home({ className }: { className?: string }) {
             return;
           }
         })
-        .catch((_err) => {
+        .catch((_err: any) => {
           setError(`Aptos (Martian Wallet) not installed`);
           return;
         });
@@ -577,7 +577,7 @@ function Home({ className }: { className?: string }) {
             return;
           }
         })
-        .catch((_err) => {
+        .catch((_err: any) => {
           setError(`Aptos (Petra Wallet) not installed`);
           return;
         });

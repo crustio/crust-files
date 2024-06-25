@@ -1,7 +1,6 @@
-import { BaseWallet } from "./types";
-import {sleep} from "./tools";
-import {stringToHex} from "@polkadot/util";
 import { getWallets, Wallet } from '@talismn/connect-wallets';
+import { sleep } from "./tools";
+import { BaseWallet } from "./types";
 
 interface AccountInfo {
     address: string;

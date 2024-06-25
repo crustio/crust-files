@@ -1,9 +1,10 @@
 import { BlockNumber } from "@polkadot/types/interfaces/types";
+import { isFunction } from '@polkadot/util';
 import axios from "axios";
 import { saveAs } from 'file-saver';
 import filesize from "filesize";
 import _ from 'lodash';
-import React, { useCallback, useContext, useMemo, useState } from "react";
+import React, { useCallback, useContext, useMemo } from "react";
 import { Icon, Popup, Table } from "semantic-ui-react";
 import styled from "styled-components";
 import { AppContext } from "../lib/AppContext";
@@ -12,15 +13,14 @@ import { decryptFile } from "../lib/crypto/encryption";
 import { WrapUserCrypto } from "../lib/crypto/useUserCrypto";
 import { useCall } from "../lib/hooks/useCall";
 import { useClipboard } from "../lib/hooks/useClipboard";
+import { useDownloadGateway } from "../lib/hooks/useDownloadGateway";
 import { report } from "../lib/http/report";
 import { createShortUrl } from "../lib/http/share_earn";
 import { useAuthGateway } from "../lib/useAuth";
 import { getErrorMsg, shortStr } from "../lib/utils";
-import { useContextWrapLoginUser, WrapLoginUser } from "../lib/wallet/hooks";
+import { WrapLoginUser, useContextWrapLoginUser } from "../lib/wallet/hooks";
 import { SaveFile } from "../lib/wallet/types";
 import Btn from "./Btn";
-import { isFunction } from '@polkadot/util';
-import { useDownloadGateway } from "../lib/hooks/useDownloadGateway";
 
 export interface Props {
   type?: 'public' | 'vault',
