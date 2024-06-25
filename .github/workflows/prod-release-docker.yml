@@ -1,8 +1,8 @@
 name: Prod Release to Docker Hub
 
 on:
-  push:
-    branches: [ main ]
+  # push:
+    # branches: [ main ]
   # manual trigger
   workflow_dispatch:
 

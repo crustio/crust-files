@@ -19,7 +19,7 @@ jobs:
           node-version: "18.19.0"
 
       - name: Run install
-        run: yarn install
+        run: yarn install --frozen-lockfile
 
       - name: Build
         run: yarn export
