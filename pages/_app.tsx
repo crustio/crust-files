@@ -2,19 +2,26 @@ import '@decooio/crust-fonts/style.css';
 import { AppProps } from 'next/app';
 import Head from "next/head";
 import { useRouter } from 'next/router';
-import React from "react";
+import React, { useEffect, useState } from "react";
 import 'semantic-ui-css/semantic.min.css';
 import MApp from '../components/root/MApp';
 import MDocs from '../components/root/MDocs';
 import { useGaPageView } from '../lib/ga';
 import { Web3AuthProvider } from '../lib/web3auth/web3auth';
 import '../styles/global.css';
-
+import { useConfigDomain } from '../lib/hooks/useConfigDomain';
 
 export default function App({ Component, ...props }: AppProps) {
-
+  const [isClient,setIsClient] = useState(false)
+  useEffect(() => {
+    setIsClient(true)
+  },[])
+  useConfigDomain()
   const r = useRouter()
   useGaPageView()
+  if (!isClient) {
+    return null
+  }
   if (r.pathname.startsWith('/docs')) {
     return <MDocs Component={Component} {...props} />
   }

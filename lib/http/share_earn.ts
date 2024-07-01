@@ -6,7 +6,7 @@ import { BindAddress, CommonResponse, Deposit, GrandApplyState, GrandDraw, Lucky
 
 const base_url = ShareEarnBaseUrl
 export const createUrl = (path: string): string => {
-    return `${base_url}${path}`
+    return `${base_url()}${path}`
 }
 
 function getData<T>(res: AxiosResponse<CommonResponse<T>>): T {
