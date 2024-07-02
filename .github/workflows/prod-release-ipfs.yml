@@ -32,7 +32,7 @@ jobs:
           params: 'cid-version=1'
 
       - name: Place storage order on Crust
-        uses: crustio/ipfs-crust-action@v2.0.3
+        uses: crustio/ipfs-crust-action@v2.0.8
         continue-on-error: true
         timeout-minutes: 2
         with:
