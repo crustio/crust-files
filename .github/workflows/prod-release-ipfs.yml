@@ -48,3 +48,11 @@ jobs:
           release_name: ${{ github.ref }}
           body: |
             IPFS CIDV1: ${{ steps.upload.outputs.hash }}
+
+            IPFS gateways:
+              https://${{steps.upload.outputs.hash}}.ipfs.dweb.link/
+              https://${{steps.upload.outputs.hash}}.ipfs.cf-ipfs.com/
+              https://crustfiles-xyz.ipns.dweb.link/
+              https://crustfiles-com.ipns.dweb.link/
+
+
