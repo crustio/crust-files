@@ -1,0 +1,13 @@
+IPFS hash of the deployment:
+    CIDv1: bafybeidsucvs434zirxhib6npfzfqg4jagv6xkccfxjz3gmegib2bu36zq
+
+The latest release is always mirrored at [crustfiles.io](https://crustfiles.io).
+
+
+Your Uniswap settings are never remembered across different URLs.
+
+IPFS gateways:
+
+- https://bafybeidsucvs434zirxhib6npfzfqg4jagv6xkccfxjz3gmegib2bu36zq.ipfs.dweb.link/
+- https://bafybeidsucvs434zirxhib6npfzfqg4jagv6xkccfxjz3gmegib2bu36zq.ipfs.cf-ipfs.com/
+- [ipfs://QmW47HPC4SPLcqU9J19iTWNzjsqyaTmbUyhxUyNLcPNqhu/](ipfs://QmW47HPC4SPLcqU9J19iTWNzjsqyaTmbUyhxUyNLcPNqhu/)

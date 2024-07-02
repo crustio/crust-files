@@ -128,7 +128,7 @@ export function useUpload(user: WrapLoginUser, options: Options): UseUpload {
 
                     setUpState({ progress: Math.round(percent * 99), up: true });
                 },
-                params: { pin: true },
+                params: { pin: true, 'cid-version': 1, },
                 url: `${UpEndpoint}/api/v0/add`
             });
 
