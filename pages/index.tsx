@@ -21,6 +21,7 @@ import { WALLETMAP, lastUser, useContextWrapLoginUser } from "../lib/wallet/hook
 import { getPerfix } from "../lib/wallet/tools";
 import { useWeb3Auth } from "../lib/web3auth/web3auth";
 import { StorageChainConfig } from "./setting";
+import { TonProofItemReplySuccess } from "@tonconnect/ui-react";
 interface ItemWallet {
   name: string;
   image: string;
@@ -669,15 +670,17 @@ function Home({ className }: { className?: string }) {
   const _onClickTonConnect = useCallback(async () => {
     const tc = WALLETMAP["ton-connect"] as TonConnect;
     await tc.init();
-    tc.tonconnectui.onStatusChange((w) => {
-      if (w) {
+    const cancelStatusSub = tc.tonconnectui.onStatusChange((w) => {
+      if (w && w.connectItems && w.connectItems.tonProof && (w.connectItems.tonProof as TonProofItemReplySuccess).proof) {
+        tc.tonProof = (w.connectItems.tonProof as TonProofItemReplySuccess);
         tc.login()
           .then(([_accounts, lu]) => {
             setLogined(lu, tc);
           })
           .catch(console.error);
       }
-      tc.tonconnectui.closeModal()
+      tc.tonconnectui.closeModal();
+      cancelStatusSub();
     });
     await tc.tonconnectui.openModal();
   }, []);
@@ -928,7 +931,7 @@ function Home({ className }: { className?: string }) {
                 {/* Ton Connect */}
                 <div className="item_connect" style={{ justifyContent: "flex-start", paddingLeft: 43 }} onClick={_onClickTonConnect}>
                   <img style={{ height: 26, position: "relative", top: 1 }} src="/images/ton-connect.png" />
-                  <span style={{ marginLeft: 3}}>{"Ton Connect"}</span>
+                  <span style={{ marginLeft: 3 }}>{"Ton Connect"}</span>
                 </div>
                 <div className="more_opt" onClick={() => setShowMore(!showMore)}>
                   <span>More Options</span>

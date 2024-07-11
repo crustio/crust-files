@@ -70,30 +70,25 @@ export async function CreateMessage(message: ParsedMessage): Promise<Buffer> {
 }
 
 
-
+let _toncoonectui: TonConnectUI;
 export class TonConnect implements BaseWallet{
     isInit: boolean;
     tonconnectui: TonConnectUI
     tonProof?: TonProofItemReplySuccess
-
+    cancelStateSub?: () => void
     async init(): Promise<void> {
         if(this.isInit) return
         const payload =  await fetch('https://tonapi.io/v2/tonconnect/payload').then(res => res.json()).then(res => res.payload)
         this.tonProof = undefined
-        this.tonconnectui = new TonConnectUI({
-            manifestUrl: `${window.location.origin}/tonconnect-manifest${IS_DEV?'-dev':''}.json`,
-        });
+        if(_toncoonectui){
+            this.tonconnectui = _toncoonectui
+        }else{
+            this.tonconnectui = new TonConnectUI({
+                manifestUrl: `${window.location.origin}/tonconnect-manifest${IS_DEV?'-dev':''}.json`,
+            });
+        }
+        _toncoonectui = this.tonconnectui
         this.tonconnectui.setConnectRequestParameters({state: 'ready', value: { tonProof: payload }})
-        this.tonconnectui.onStatusChange((walelt) => {
-            this.tonProof = undefined
-            if(walelt?.connectItems?.tonProof){
-                const tonProof = walelt.connectItems.tonProof as TonProofItemReplySuccess
-                if(tonProof.proof){
-                    this.tonProof = tonProof
-                }
-            }
-            console.info('tonwallet:', walelt)
-        })
         this.isInit = true;
     }
 

@@ -447,6 +447,9 @@ export function useLoginUser(key: KEY_TYPE = "files:login"): WrapLoginUser {
       algorand.wallet.disconnect();
       algorand.isInit = false;
       algorand.account = null;
+    } else if(account.wallet === 'ton-connect'){
+      const tonConnect = WALLETMAP['ton-connect'] as TonConnect;
+      tonConnect.tonconnectui.disconnect();
     }
 
     setLoginUser({ ...defLoginUser });
