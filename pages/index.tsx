@@ -668,6 +668,11 @@ function Home({ className }: { className?: string }) {
   );
 
   const _onClickTonConnect = useCallback(async () => {
+    [
+      'ton-connect-ui_last-selected-wallet-info',
+      'ton-connect-storage_bridge-connection',
+      'ton-connect-ui_wallet-info',
+    ].forEach(key => window.localStorage.removeItem(key))
     const tc = WALLETMAP["ton-connect"] as TonConnect;
     await tc.init();
     const cancelStatusSub = tc.tonconnectui.onStatusChange((w) => {
