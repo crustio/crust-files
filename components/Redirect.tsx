@@ -1,4 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
+import React from "react";
 import Device from "device.js";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";

@@ -1,3 +1,4 @@
+import React from "react";
 import i18next from "i18next";
 // import I18nextBrowserLanguageDetector from "i18next-browser-languagedetector";
 import I18NextHttpBackend from "i18next-http-backend";

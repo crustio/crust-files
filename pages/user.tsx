@@ -214,7 +214,7 @@ function Index(props: Props) {
         <div className="title font-sans-semibold">Get Premium</div>
         {
           showPremiumLoading  ? <div style={{ paddingBottom: '1.2rem'}}><Loader active size='medium'/></div> : 
-          true ? <GetNickname/> :
+          !wUser.nickName ? <GetNickname/> :
           <>
             <div className="text font-sans-regular">
               {
