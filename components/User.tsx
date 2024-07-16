@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { useRouter } from "next/router";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { FiCheck, FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { Dropdown, Item, Segment } from "semantic-ui-react";
 import styled from "styled-components";
@@ -157,7 +157,11 @@ function User(props: Props) {
   const [ftmAccount, ftmAccont2] = useMemo(() => [shortStr(user.account), shortStr(user.account, 14)], [user]);
   const _onClickLogout = useCallback(user.logout, [user]);
   const showSwitchAccount = user.wallet === "crust" || user.wallet === "polkadot-js";
-  const [mRewards] = useGet(() => getEarnRewards(user.account), [user.account, isCrust], "getEarnRewards");
+  const [firstExpandUser, toggleFirstExpandUser] = useToggle();
+  useEffect(() => {
+    open && toggleFirstExpandUser(true);
+  },[open])
+  const [mRewards] = useGet(() => getEarnRewards(user.account), [user.account, isCrust, firstExpandUser], "getEarnRewards");
   const { rewards } = useAutoUpdateToStore({ key: "rewards", value: mRewards });
   const totalRewards = getFormatValue(rewards, "total.total");
   const r = useRouter();

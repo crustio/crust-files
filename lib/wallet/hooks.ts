@@ -82,6 +82,8 @@ export function saveLastUser(wallet: WalletType, data: LoginUser, key: KEY_TYPE 
 export interface WrapLoginUser extends LoginUser {
   nickName?: string;
   setNickName: Dispatch<SetStateAction<string>>;
+  isLoadingNickname?: boolean;
+  setIsLoadingNickname: Dispatch<SetStateAction<boolean>>;
   member?: Member;
   setMember: Dispatch<SetStateAction<Member>>;
   isLoad: boolean;
@@ -454,7 +456,7 @@ export function useLoginUser(key: KEY_TYPE = "files:login"): WrapLoginUser {
 
     setLoginUser({ ...defLoginUser });
   }, [setLoginUser, account]);
-
+  const [isLoadingNickname,setIsLoadingNickname] = useState();
   const wUser: WrapLoginUser = useMemo(() => {
     const wrapLoginUser: WrapLoginUser = {
       ...account,
@@ -484,9 +486,11 @@ export function useLoginUser(key: KEY_TYPE = "files:login"): WrapLoginUser {
       setNickName,
       setMember,
       member,
+      setIsLoadingNickname,
+      isLoadingNickname
     };
     return wrapLoginUser;
-  }, [account, accounts, isLoad, setLoginUser, logout, nickName, member, key]);
+  }, [account, accounts, isLoad, setLoginUser, logout, nickName, member, key, isLoadingNickname]);
   const uSign = useSign(wUser);
   wUser.sign = uSign.sign;
   return wUser;

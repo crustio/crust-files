@@ -3,6 +3,7 @@ import { format } from 'date-fns';
 import { toBlob } from 'html-to-image';
 import _ from 'lodash';
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Loader } from 'semantic-ui-react';
 import styled from "styled-components";
 import { BindAirdrop } from '../components/BindAirdrop';
 import Btn from "../components/Btn";
@@ -22,6 +23,8 @@ import { BlobFile } from '../lib/types';
 import { useAuthGateway, useAuthPinner } from '../lib/useAuth';
 import { useUpload } from '../lib/useUpload';
 import { formatCRU, trimZero } from '../lib/utils';
+import { useContextWrapLoginUser } from '../lib/wallet/hooks';
+import { GetNickname } from '../components/GetNickname';
 
 export interface Props {
   className?: string
@@ -30,6 +33,7 @@ export interface Props {
 function Index(props: Props) {
   const { className } = props
   const { alert, loading } = useApp()
+  const wUser = useContextWrapLoginUser()
   const { isCrust, isPremiumUser, deposit, doGetDeposit, hasDeposit, user, loading: isLoadingDeposit } = useGetDepost()
   const [nickStat, setNickStat] = useSafeState<{ error?: string, shareFrom?: string, checking: boolean }>({ checking: false })
   const [inputNickname, setInputNickname] = useState<string>()
@@ -60,11 +64,12 @@ function Index(props: Props) {
 
   //
   const [value, setValue] = useState<string>()
-  const [config] = useGet(() => getShareEarnConfig())
+  const [config, _doRegetConfig, isLoadingConfig] = useGet(() => getShareEarnConfig())
   const showBasePrice = config && config.showBase
-  const showDeposit = isCrust && !hasDeposit && !isLoadingDeposit
+  const showDeposit = isCrust && !hasDeposit
   const showClaim = isCrust && hasDeposit
-  const [dest] = useGet(() => getDepositAddress())
+  const [dest, _doRegetDepositAddress, isLoadingDepositAddress] = useGet(() => getDepositAddress())
+  const showPremiumLoading = isLoadingDeposit || wUser.isLoadingNickname || isLoadingConfig || isLoadingDepositAddress
   const fValue = useMemo(() => formatCRU(value), [value])
   const cTime = useMemo(() => new Date().getTime() / 1000, [])
   const fCalimValue = useMemo(() => {
@@ -158,7 +163,7 @@ function Index(props: Props) {
       .catch(console.error)
       .then(loading.hide)
   }
-
+  
 
   return <PageUserSideLayout path={'/user'} className={className}>
     <div className="user-Info">
@@ -207,29 +212,35 @@ function Index(props: Props) {
     {
       showDeposit && <MCard>
         <div className="title font-sans-semibold">Get Premium</div>
-        <div className="text font-sans-regular">
-          {
-            showBasePrice ? <>
-              Deposit <span className={classNames('origin', 'isBase')}>{baseGuaranteeAmount} CRU</span><span className='reffer'>(now {guaranteeAmount} CRU for Discount!)</span> to become a Premium User. <br />
-              Deposit <span className={classNames('origin', 'isBase')}>{baseGuaranteeDiscountWithReferer} CRU</span><span className='reffer'>(now {guaranteeDiscountWithReferer} CRU for Discount!)</span> if you have an invitation code (the Nickname of your inviter).<br />
-            </> : <>
-              Deposit <span className={classNames('origin')}>{guaranteeAmount} CRU</span> to become a Premium User. <br />
-              Deposit <span className={classNames('origin')}>{guaranteeDiscountWithReferer} CRU</span> if you have an invitation code (the Nickname of your inviter).<br />
-            </>
-          }
-          The deposit can be redeemed {days} days after your deposit date.
-        </div>
-        <div className={'btns mbtns'}>
-          <input
-            className="input-Nickname"
-            spellCheck="false"
-            placeholder="Enter inviter’s Nickname（Leave blank if you have no inviter.）"
-            onChange={_onChangeNickname} />
-          {nickStat.error && <span className="input-NickError">{nickStat.error}</span>}
-          <br />
-          <Btn content={onGoingDeposit ? 'Please wait for transaction finalization…' : `Deposit ${fValue} CRU`} disabled={disabledDeposit} onClick={_onClickDeposit} />
-          <a href="/docs/CrustFiles_Users" target="_blank">How to deposit?</a>
-        </div>
+        {
+          showPremiumLoading  ? <div style={{ paddingBottom: '1.2rem'}}><Loader active size='medium'/></div> : 
+          true ? <GetNickname/> :
+          <>
+            <div className="text font-sans-regular">
+              {
+                showBasePrice ? <>
+                  Deposit <span className={classNames('origin', 'isBase')}>{baseGuaranteeAmount} CRU</span><span className='reffer'>(now {guaranteeAmount} CRU for Discount!)</span> to become a Premium User. <br />
+                  Deposit <span className={classNames('origin', 'isBase')}>{baseGuaranteeDiscountWithReferer} CRU</span><span className='reffer'>(now {guaranteeDiscountWithReferer} CRU for Discount!)</span> if you have an invitation code (the Nickname of your inviter).<br />
+                </> : <>
+                  Deposit <span className={classNames('origin')}>{guaranteeAmount} CRU</span> to become a Premium User. <br />
+                  Deposit <span className={classNames('origin')}>{guaranteeDiscountWithReferer} CRU</span> if you have an invitation code (the Nickname of your inviter).<br />
+                </>
+              }
+              The deposit can be redeemed {days} days after your deposit date.
+            </div>
+            <div className={'btns mbtns'}>
+              <input
+                className="input-Nickname"
+                spellCheck="false"
+                placeholder="Enter inviter’s Nickname（Leave blank if you have no inviter.）"
+                onChange={_onChangeNickname} />
+              {nickStat.error && <span className="input-NickError">{nickStat.error}</span>}
+              <br />
+              <Btn content={onGoingDeposit ? 'Please wait for transaction finalization…' : `Deposit ${fValue} CRU`} disabled={disabledDeposit} onClick={_onClickDeposit} />
+              <a href="/docs/CrustFiles_Users" target="_blank">How to deposit?</a>
+            </div>
+          </>
+        }
       </MCard>}
     {
       showClaim && <MCard>

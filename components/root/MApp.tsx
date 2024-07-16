@@ -4,22 +4,22 @@ import I18NextHttpBackend from "i18next-http-backend";
 import { AppProps } from 'next/app';
 import Head from "next/head";
 import { useRouter } from "next/router";
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { initReactI18next } from "react-i18next";
 import { Dimmer, Loader } from "semantic-ui-react";
 import { AppProvider, AppType, useApp } from '../../lib/AppContext';
 import { initAlert } from "../../lib/initAlert";
 import { initApi } from "../../lib/initApi";
 import { initAppStore } from "../../lib/initAppStore";
+import { initReCaptcha } from "../../lib/initGoogleReCaptcha";
 import { initLoading } from "../../lib/initLoading";
 import { ContextWrapLoginUser, useLoginUser } from "../../lib/wallet/hooks";
 import AlertMessage from "../AlertMessage";
-import { GetNickname } from '../GetNickname';
+import { ReCaptcha } from "../comom/ReCaptcha";
 import Layout, { siteTitle } from "../layout";
 import Redirect from "../Redirect";
 import { BasePropsWithChildren } from "../types";
-import { ReCaptcha } from "../comom/ReCaptcha";
-import { initReCaptcha } from "../../lib/initGoogleReCaptcha";
+import { useLoadNickname } from "../../lib/useNickname";
 
 function initI18n() {
   const [init, setInit] = useState(false)
@@ -49,6 +49,7 @@ function MAppProvider(props: BasePropsWithChildren) {
   const loading = initLoading()
   const store = initAppStore()
   const recaptcha = initReCaptcha()
+  useLoadNickname()
   const appType = useMemo<AppType>(() => ({ alert, api, loading, store, recaptcha }), [alert, api, loading, store, recaptcha])
   return <AppProvider value={appType}>
     {props.children}
@@ -91,7 +92,7 @@ function DefAppPage({ Component, pageProps }: AppProps) {
         {
           showPage && <Redirect>
             <Component {...pageProps} />
-            <GetNickname />
+            {/* <GetNickname /> */}
           </Redirect>
         }
         <MAppLoading show={wUser.isLoad} />

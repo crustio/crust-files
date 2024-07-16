@@ -18,7 +18,7 @@ export default function App({ Component, ...props }: AppProps) {
   },[])
   useConfigDomain()
   const r = useRouter()
-  useGaPageView()
+  // useGaPageView()
   if (!isClient) {
     return null
   }
