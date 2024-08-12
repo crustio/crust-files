@@ -2,13 +2,13 @@ import React from "react";
 import i18next from "i18next";
 // import I18nextBrowserLanguageDetector from "i18next-browser-languagedetector";
 import I18NextHttpBackend from "i18next-http-backend";
-import { AppProps } from 'next/app';
+import { AppProps } from "next/app";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
 import { initReactI18next } from "react-i18next";
 import { Dimmer, Loader } from "semantic-ui-react";
-import { AppProvider, AppType, useApp } from '../../lib/AppContext';
+import { AppProvider, AppType, useApp } from "../../lib/AppContext";
 import { initAlert } from "../../lib/initAlert";
 import { initApi } from "../../lib/initApi";
 import { initAppStore } from "../../lib/initAppStore";
@@ -23,98 +23,104 @@ import { BasePropsWithChildren } from "../types";
 import { useLoadNickname } from "../../lib/useNickname";
 
 function initI18n() {
-  const [init, setInit] = useState(false)
+  const [init, setInit] = useState(false);
   useEffect(() => {
-    i18next.use(new I18NextHttpBackend())
+    i18next
+      .use(new I18NextHttpBackend())
       // .use(I18nextBrowserLanguageDetector)
       .use(initReactI18next)
-      .init({
-        backend: {
-          loadPath: '/locales/{{lng}}.json'
+      .init(
+        {
+          backend: {
+            loadPath: "/locales/{{lng}}.json",
+          },
+          lng: "en",
+          fallbackLng: "en",
+          interpolation: {
+            escapeValue: false,
+          },
         },
-        lng: 'en',
-        fallbackLng: 'en',
-        interpolation: {
-          escapeValue: false
+        () => {
+          setInit(true);
         }
-      }, () => {
-        setInit(true)
-      })
-  }, [])
+      );
+  }, []);
   return init;
 }
 
 function MAppProvider(props: BasePropsWithChildren) {
-  const alert = initAlert()
-  const api = initApi()
-  const loading = initLoading()
-  const store = initAppStore()
-  const recaptcha = initReCaptcha()
-  useLoadNickname()
-  const appType = useMemo<AppType>(() => ({ alert, api, loading, store, recaptcha }), [alert, api, loading, store, recaptcha])
-  return <AppProvider value={appType}>
-    {props.children}
-  </AppProvider>
+  const alert = initAlert();
+  const api = initApi();
+  const loading = initLoading();
+  const store = initAppStore();
+  const recaptcha = initReCaptcha();
+  const appType = useMemo<AppType>(() => ({ alert, api, loading, store, recaptcha }), [alert, api, loading, store, recaptcha]);
+  return <AppProvider value={appType}>{props.children}</AppProvider>;
 }
 
-function MAppLoading(p: { show?: boolean, msg?: string}) {
-  const { loading } = useApp()
-  const active = p.show || loading.isLoading
-  const msg =  p.show ? p.msg || 'Loading' : loading.msg 
-  return <Dimmer active={active} inverted style={{ position: 'fixed', left: 0, top: 0, width: '100vw', height: '100vh' }}>
-    <Loader size='large' inverted content={msg} />
-  </Dimmer>
+function MAppLoading(p: { show?: boolean; msg?: string }) {
+  const { loading } = useApp();
+  const active = p.show || loading.isLoading;
+  const msg = p.show ? p.msg || "Loading" : loading.msg;
+  return (
+    <Dimmer active={active} inverted style={{ position: "fixed", left: 0, top: 0, width: "100vw", height: "100vh" }}>
+      <Loader size="large" inverted content={msg} />
+    </Dimmer>
+  );
 }
-
-
 
 function SkipLoginPage({ Component, pageProps }: AppProps) {
-  return <MAppProvider >
-    <Head>
-      <title>{siteTitle}</title>
-    </Head>
-    <Layout>
-      <Component {...pageProps} />
-      <MAppLoading />
-    </Layout>
-    <AlertMessage />
-  </MAppProvider>
-}
-
-function DefAppPage({ Component, pageProps }: AppProps) {
-  const wUser = useLoginUser()
-  const showPage = !wUser.isLoad
-  return <ContextWrapLoginUser.Provider value={wUser}>
-    <MAppProvider >
+  return (
+    <MAppProvider>
       <Head>
         <title>{siteTitle}</title>
       </Head>
       <Layout>
-        {
-          showPage && <Redirect>
-            <Component {...pageProps} />
-            {/* <GetNickname /> */}
-          </Redirect>
-        }
-        <MAppLoading show={wUser.isLoad} />
-        <ReCaptcha/>
+        <Component {...pageProps} />
+        <MAppLoading />
       </Layout>
       <AlertMessage />
     </MAppProvider>
-  </ContextWrapLoginUser.Provider>
+  );
 }
 
-const SKIP_Login = [
-  '/share',
-  '/invite_bonus_guide',
-  '/rewards_history'
-]
+function LoadNickname() {
+  useLoadNickname();
+  return null;
+}
+function DefAppPage({ Component, pageProps }: AppProps) {
+  const wUser = useLoginUser();
+  const showPage = !wUser.isLoad;
+  return (
+    <ContextWrapLoginUser.Provider value={wUser}>
+      <LoadNickname />
+      <MAppProvider>
+        <Head>
+          <title>{siteTitle}</title>
+        </Head>
+        <Layout>
+          {showPage && (
+            <Redirect>
+              <Component {...pageProps} />
+              {/* <GetNickname /> */}
+            </Redirect>
+          )}
+          <MAppLoading show={wUser.isLoad} />
+          <ReCaptcha />
+        </Layout>
+        <AlertMessage />
+      </MAppProvider>
+    </ContextWrapLoginUser.Provider>
+  );
+}
+
+const SKIP_Login = ["/share", "/invite_bonus_guide", "/rewards_history"];
 
 export default function MApp(props: AppProps) {
-  const { pathname } = useRouter()
-  const skipLoginPage = useMemo(() => SKIP_Login.includes(pathname), [pathname])
-  const init = initI18n()
-  if (!init) return <div />
-  if (skipLoginPage) return <SkipLoginPage {...props} />
-  return <DefAppPage {...props} />
+  const { pathname } = useRouter();
+  const skipLoginPage = useMemo(() => SKIP_Login.includes(pathname), [pathname]);
+  const init = initI18n();
+  if (!init) return <div />;
+  if (skipLoginPage) return <SkipLoginPage {...props} />;
+  return <DefAppPage {...props} />;
 }
