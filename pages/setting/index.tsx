@@ -1,25 +1,25 @@
 import classNames from 'classnames';
-import Web3 from "web3";
 import FileSaver from 'file-saver';
 import { useRouter } from 'next/router';
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Accordion, AccordionContent, AccordionTitle, Segment } from "semantic-ui-react";
 import styled from "styled-components";
+import Web3 from "web3";
 import { BindAirdrop } from '../../components/BindAirdrop';
 import Btn from "../../components/Btn";
+import MDropdown from '../../components/MDropdown';
 import ModalNewKey from "../../components/modal/ModalNewKey";
 import PageUserSideLayout from '../../components/PageUserSideLayout';
 import { AppContext } from "../../lib/AppContext";
 import { parseUserCrypto, useUserCrypto } from "../../lib/crypto/useUserCrypto";
 import { useClipboard } from "../../lib/hooks/useClipboard";
+import { useDownloadGateway } from '../../lib/hooks/useDownloadGateway';
 import { useGetDepost } from '../../lib/hooks/useGetDeposit';
 import { useToggle } from "../../lib/hooks/useToggle";
 import { ExportObj, SaveFile } from "../../lib/types";
 import { useFilesInfo } from '../../lib/useFilesInfo';
 import { useFiles, WalletName } from "../../lib/wallet/hooks";
-import { AllDownloadGateways, useDownloadGateway } from '../../lib/hooks/useDownloadGateway';
-import MDropdown from '../../components/MDropdown';
 
 export const StorageChainConfig = {
   chainId: '0x5afe',
@@ -226,14 +226,14 @@ function Index(props: Props) {
     return true;
   }
 
-  const _onDowloadGateChange = useCallback((_, { value }) => {
-    dg.set(value)
-  }, [])
 
   const [tempDownloadGateway, setTempDownloadGateway] = useState<string>("")
   const _onChangeInputDownloadGateway = (e) => {
     setTempDownloadGateway(e.target.value)
   }
+  const _onDowloadGateChange = useCallback((_, { value }) => {
+    setTempDownloadGateway(value)
+  }, [])
 
   const _OnSaveDownloadGateway = () => {
     if (tempDownloadGateway == null || tempDownloadGateway == "") {
@@ -241,6 +241,7 @@ function Index(props: Props) {
       return;
     }
     dg.set(tempDownloadGateway)
+    alert.success("Save success");
   }
 
   return <PageUserSideLayout path={'/setting'} className={className}>
@@ -302,11 +303,10 @@ function Index(props: Props) {
         {`${t('Select a gateway from community contribution:')} `}
         <SelectDownloadGatewayDropdown
           icon={<span className="dropdown icon" />}
-          options={AllDownloadGateways}
+          options={dg.allDownloadGateways}
           onChange={_onDowloadGateChange}
         />
       </div>
-
       <div className="text font-sans-regular">Customized:</div>
       <input
         className='input-dowload-gateway'
