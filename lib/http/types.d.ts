@@ -27,6 +27,7 @@ export interface DepositDTO {
     share_from: string,
     deposit_state: number,// 1 deposited, 2 pendingRedeem
     expire_timestamp: number,
+    expire_block_number: number,
     extrinsic_hash: string,
 }
 
