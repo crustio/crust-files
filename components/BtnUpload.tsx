@@ -91,4 +91,4 @@ export const BtnUpload = React.memo<Props>(styled(btnUpload)`
       }
     }
   }
-`)
+` as any)

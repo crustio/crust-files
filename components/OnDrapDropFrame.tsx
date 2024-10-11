@@ -135,4 +135,4 @@ export const OnDrapDropFrame = React.memo<Props>(styled(_OnDrapDropFrame)`
   &.show {
     display: flex;
   }
-`);
+` as any);

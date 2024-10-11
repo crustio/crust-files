@@ -14,7 +14,7 @@ import { getEarnRewards } from "../lib/http/share_earn";
 import { useAutoUpdateToStore } from "../lib/initAppStore";
 import { getFormatValue, shortStr } from "../lib/utils";
 import { EVMChains } from "../lib/wallet/config";
-import { WalletName, WrapLoginUser } from "../lib/wallet/hooks";
+import { WrapLoginUser } from "../lib/wallet/hooks";
 import { Links2 } from "./Links";
 import ModalSelectAccount from "./modal/ModalSelectAccount";
 export interface Props {
@@ -31,18 +31,6 @@ function getWalletIcon(user: WrapLoginUser): string {
       return "/images/subwallet.png";
     case "metamask":
       return "/images/wallet_metamask.png";
-    // case "metamask-Polygon":
-    //   return "/images/wallet_polygon.png";
-    // case "metamask-Moonriver":
-    //   return "/images/wallet_moonriver.png";
-    // case "metamask-BSC":
-    //   return "/images/wallet_bsc.png";
-    // case "metamask-HECO":
-    //   return "/images/wallet_heco.png";
-    // case "metamask-Cubechain":
-    //   return "/images/wallet_cube.png";
-    case "near":
-      return "/images/wallet_near.png";
     case "solana":
       return "/images/wallet_solana.png";
     case "elrond":
@@ -57,8 +45,6 @@ function getWalletIcon(user: WrapLoginUser): string {
       return "/images/martian.png";
     case "aptos-petra":
       return "/images/aptos.svg";
-    case "web3auth":
-      return user.profileImage;
     case "talisman":
       return "/images/talisman.png";
     case "oasis":
@@ -160,7 +146,7 @@ function User(props: Props) {
   const [firstExpandUser, toggleFirstExpandUser] = useToggle();
   useEffect(() => {
     open && toggleFirstExpandUser(true);
-  },[open])
+  }, [open]);
   const [mRewards] = useGet(() => getEarnRewards(user.account), [user.account, isCrust, firstExpandUser], "getEarnRewards");
   const { rewards } = useAutoUpdateToStore({ key: "rewards", value: mRewards });
   const totalRewards = getFormatValue(rewards, "total.total");
@@ -236,9 +222,7 @@ function User(props: Props) {
             onClick={() => user && user.wallet === "metamask" && setShowChains(!showChains)}
           >
             <Item.Image src={getWalletIcon(user)} size={"tiny"} />
-            <div style={{ fontSize: 24, visibility: user.wallet === "metamask" ? "visible" : "hidden" }}>
-              {showChains ? <FiChevronUp /> : <FiChevronDown />}
-            </div>
+            <div style={{ fontSize: 24, visibility: user.wallet === "metamask" ? "visible" : "hidden" }}>{showChains ? <FiChevronUp /> : <FiChevronDown />}</div>
             {showChains && (
               <div
                 style={{
@@ -288,15 +272,10 @@ function User(props: Props) {
             )}
           </div>
           <Item.Content verticalAlign={"middle"} style={{ flex: "unset", paddingLeft: "0.7rem" }}>
-            <Dropdown
-              pointing={"top right"}
-              icon={<span className="cru-fo cru-fo-chevron-down" />}
-              basic
-              text={user.nickName || ftmAccount}
-            >
+            <Dropdown pointing={"top right"} icon={<span className="cru-fo cru-fo-chevron-down" />} basic text={user.nickName || ftmAccount}>
               <Dropdown.Menu>
                 <TwoText>
-                  <div className="title-text">Sign-in Wallet : {WalletName[user.wallet]}</div>
+                  <div className="title-text">Sign-in Wallet : {user.useWallet?.name}</div>
                   <div className="sub-text">
                     {ftmAccont2}
                     <span onClick={() => copy(user.account)} className="cru-fo cru-fo-copy" />
@@ -325,8 +304,7 @@ function User(props: Props) {
     </Segment>
   );
 }
-
-export default React.memo(styled(User)`
+const StyleUser = styled(User)`
   border-bottom: 1px solid var(--line-color) !important;
   margin: unset !important;
   padding: 1.1rem !important;
@@ -386,4 +364,6 @@ export default React.memo(styled(User)`
       margin-top: 1.6rem !important;
     }
   }
-`);
+`;
+
+export default React.memo(StyleUser as any);

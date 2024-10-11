@@ -17,42 +17,20 @@ export interface AuthIpfsEndpoint {
 //   location: IPFS gateway location
 export function createAuthIpfsEndpoints(t: TFunction): AuthIpfsEndpoint[] {
   return [
-    // for Beta
-    // {
-    //   location: t('BETA'),
-    //   text: t('Beta'),
-    //   value: 'https://beta.ipfs-auth.decoo.io'
-    // },
-    // for prod
     {
       location: t('️Shanghai'),
       text: t('️⚡ Thunder Gateway'),
       value: 'https://gw.crustfiles.net',
-      // group: "Thunder Gateway"
     },
-    //{
-    //  location: t('Seattle'),
-    //  text: t('⚡ Thunder Gateway'),
-    //  value: 'https://gw.crustfiles.app',
-      // group: "Public Gateway"
-    //},
-    // {
-    //   location: t('Beijing'),
-    //   text: t('⚡ Deklod'),
-    //   value: 'https://ipfs-gw.dkskcloud.com',
-    //   // group: "Public Gateway"
-    // },
     {
       location: t('Singapore'),
       text: t('DCF'),
       value: 'https://crustipfs.xyz',
-      // group: "Public Gateway"
     },
     {
       location: t('United States'),
       text: t('Crust Network'),
       value: 'https://ipfs-gw.decloud.foundation',
-      // group: "Public Gateway"
     },
     {
       location: t('Henan'),

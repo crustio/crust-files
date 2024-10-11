@@ -1,5 +1,5 @@
 import { parseInt } from "lodash";
-import { BaseWallet } from "./types";
+import { BaseWallet, LoginUser } from "./types";
 import { providers } from "ethers";
 
 export interface MetamaskReqOptions {
@@ -8,9 +8,10 @@ export interface MetamaskReqOptions {
   method: string;
 }
 
-export class Metamask implements BaseWallet {
-  isInit = false;
-  isInstalled = false;
+export class Metamask extends BaseWallet {
+  name = "Metamask";
+  icon = "/images/group_wallet_metamask.png";
+
   ethereum?: {
     isMetaMask: boolean;
     request: <T>(option: MetamaskReqOptions) => Promise<T>;
@@ -19,21 +20,15 @@ export class Metamask implements BaseWallet {
     isConnected: () => boolean;
     on: (type: string, handler: (data: any) => void) => void;
   } = undefined;
-  isAllowed = false;
-  accounts: string[] = [];
-  chainId: number;
-  onAccountChange?: (data: string[]) => void;
-  onChainChange?: (chainId: number) => void;
 
-  constructor(onAccountChange?: (data: string[]) => void) {
-    this.onAccountChange = onAccountChange;
-  }
+  chainId: number;
+
   getProvider() {
     return new providers.Web3Provider(this.ethereum, this.chainId);
   }
-  init(): Promise<void> {
+  async init(old?: LoginUser): Promise<void> {
     if (this.isInit) return Promise.resolve();
-    return new Promise<void>((resolve) => {
+    await new Promise<void>((resolve) => {
       let handled = false;
       const eWin = window as { ethereum?: Metamask["ethereum"] };
       const handleEthereum = () => {
@@ -42,32 +37,14 @@ export class Metamask implements BaseWallet {
         window.removeEventListener("ethereum#initialized", handleEthereum);
         const mWin = window as { ethereum?: Metamask["ethereum"] };
         const ethereum = mWin.ethereum;
-        this.chainId = parseInt(ethereum.chainId.replace("0x", ""), 16);
         console.info("ethereum::", mWin.ethereum);
-        if (ethereum && ethereum.isMetaMask) {
-          ethereum
-            .request<string[]>({ method: "eth_accounts" })
-            .then((accounts) => {
-              console.info("init-accounts:", accounts);
-              this.isInstalled = true;
-              this.isInit = true;
-              this.ethereum = ethereum;
-              this.isAllowed = true;
-              this.accounts = accounts;
-              this.setLis();
-              resolve();
-            })
-            .catch(() => {
-              this.isInstalled = true;
-              this.isInit = true;
-              resolve();
-            });
-        } else {
-          this.isInit = true;
-          resolve();
+        this.ethereum = ethereum;
+        if (this.ethereum) {
+          this.chainId = parseInt(ethereum.chainId.replace("0x", ""), 16);
+          this.setLis();
         }
+        resolve();
       };
-
       if (eWin.ethereum) {
         handleEthereum();
       } else {
@@ -75,6 +52,34 @@ export class Metamask implements BaseWallet {
         setTimeout(handleEthereum, 2000);
       }
     });
+    this.isInit = true;
+    await super.init(old);
+  }
+
+  async fetchAccounts(): Promise<string[]> {
+    try {
+      const accounts = this.ethereum.request<string[]>({ method: "eth_accounts" });
+      return accounts;
+    } catch (error) {
+      return [];
+    }
+  }
+
+  async connect(): Promise<LoginUser> {
+    if (!this.isConnected) {
+      if (!this.ethereum) throw "MetaMask not installed";
+      const accounts = await this.ethereum.request<string[]>({ method: "eth_requestAccounts" });
+      if (!accounts || accounts.length == 0) throw "MetaMask error";
+      this.accounts = accounts;
+      if (this.ethereum.selectedAddress && accounts.includes(this.ethereum.selectedAddress)) {
+        this.account = this.ethereum.selectedAddress;
+      } else {
+        this.account = accounts[0];
+      }
+      this.setLis();
+      this.isConnected = true;
+    }
+    return { account: this.account, wallet: "metamask" };
   }
 
   private setLis() {
@@ -83,8 +88,8 @@ export class Metamask implements BaseWallet {
       if (this.onAccountChange) {
         this.onAccountChange(data as string[]);
       }
-      this.isInit = false
-      this.init()
+      this.isInit = false;
+      this.init();
     });
 
     this.ethereum.on("chainChanged", (chainId) => {
@@ -94,7 +99,7 @@ export class Metamask implements BaseWallet {
     });
   }
 
-  sign(data: string, account?: string): Promise<string> {
+  async sign(data: string, account?: string): Promise<string> {
     console.log("data:::", data);
     const msg = Buffer.from(data, "utf8").toString("hex");
     // const msg = data;
@@ -113,7 +118,7 @@ export class Metamask implements BaseWallet {
       });
   }
 
-  switchChain(chainId: number): Promise<boolean> {
+  async switchChain(chainId: number): Promise<boolean> {
     if (!this.ethereum?.request) return Promise.reject("Error");
     const cId = `0x${chainId.toString(16)}`;
     return this.ethereum
@@ -125,24 +130,27 @@ export class Metamask implements BaseWallet {
       .then(() => true);
   }
 
-  switchAndInstallChain(chaincfg: any): Promise<boolean> {
+  async switchAndInstallChain(chaincfg: any): Promise<boolean> {
     if (!this.ethereum?.request) return Promise.reject("Error");
-    return this.ethereum.request({
-      from: this.ethereum.selectedAddress,
-      method: "wallet_switchEthereumChain",
-      params: [{ chainId: chaincfg.chainId }],
-    })
+    return this.ethereum
+      .request({
+        from: this.ethereum.selectedAddress,
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId: chaincfg.chainId }],
+      })
       .then(() => true)
       .catch((err) => {
         if (err.code === 4902) {
-          this.ethereum.request({
-            method: "wallet_addEthereumChain",
-            params: [chaincfg],
-          }).then(() => true)
+          this.ethereum
+            .request({
+              method: "wallet_addEthereumChain",
+              params: [chaincfg],
+            })
+            .then(() => true)
             .catch((addError) => {
               console.error(addError);
               return false;
-            })
+            });
         } else {
           return false;
         }

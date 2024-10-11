@@ -16,7 +16,7 @@ import MDropdown from "./MDropdown";
 import { BaseProps } from "./types";
 
 
-const BindTypeDropdown = styled(MDropdown)`
+const BindTypeDropdown = styled(MDropdown as any)`
     &.mdropdown {
       display: inline-block;
       vertical-align: top;

@@ -33,4 +33,4 @@ function _MAccordion(props: Props) {
 
 export const MAccordion = React.memo<Props>(styled(_MAccordion)`
 
-`)
+` as any)

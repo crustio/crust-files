@@ -1,13 +1,14 @@
-import { BaseWallet, LoginUser } from "./types";
+import { typesBundleForPolkadot } from "@crustio/type-definitions";
+import { ApiPromise } from "@polkadot/api";
 import { InjectedExtension, InjectedWindowProvider } from "@polkadot/extension-inject/types";
 import { stringToHex } from "@polkadot/util";
-import { getPerfix, sleep } from "./tools";
 import { formatToCrustAccount } from "../utils";
-import { ApiPromise } from "@polkadot/api";
-import { typesBundleForPolkadot } from "@crustio/type-definitions";
+import { getPerfix, sleep } from "./tools";
+import { BaseWallet, LoginUser } from "./types";
 
-export class Crust implements BaseWallet {
-  isInit = false;
+export class Crust extends BaseWallet {
+  name = "Crust Wallet";
+  icon = "/images/wallet_crust.png";
 
   provider?: InjectedWindowProvider;
   wallet?: InjectedExtension;
@@ -16,7 +17,7 @@ export class Crust implements BaseWallet {
     return new ApiPromise({ provider: this.wallet.provider, typesBundle: typesBundleForPolkadot });
   }
 
-  async init() {
+  async init(old?: LoginUser) {
     if (this.isInit) return;
     const win = window as { injectedWeb3?: Record<string, InjectedWindowProvider> };
     win.injectedWeb3 = win.injectedWeb3 || {};
@@ -26,6 +27,31 @@ export class Crust implements BaseWallet {
       this.provider = win.injectedWeb3["crust wallet"];
     }
     this.isInit = true;
+    await super.init(old);
+  }
+
+  async fetchAccounts(): Promise<string[]> {
+    try {
+      await this.enable();
+      const accounts = await this.wallet.accounts.get();
+      console.info("getAccounts::", accounts);
+      return accounts.map((a) => formatToCrustAccount(a.address));
+    } catch (e) {
+      return [];
+    }
+  }
+
+  async connect(): Promise<LoginUser> {
+    if (!this.isConnected) {
+      if (!this.provider) throw "Crust Wallet not installed";
+      const hasAuth = await this.enable();
+      if (!hasAuth) throw "Error: cancel";
+      const accounts = await this.fetchAccounts();
+      if (accounts.length === 0) throw "Error: no account";
+      this.isConnected = true;
+      this.account = accounts[0];
+    }
+    return { account: this.account, wallet: "crust" };
   }
 
   async sign(data: string, account: string | undefined): Promise<string> {
@@ -57,21 +83,10 @@ export class Crust implements BaseWallet {
     }
   }
 
-  async getAccounts(): Promise<string[]> {
-    try {
-      await this.enable();
-      const accounts = await this.wallet.accounts.get();
-      console.info("getAccounts::", accounts);
-      return accounts.map((a) => formatToCrustAccount(a.address));
-    } catch (e) {
-      return [];
-    }
-  }
-
   async login(f?: LoginUser): Promise<[string[], LoginUser]> {
     const hasAuth = await this.enable();
     if (!hasAuth) throw "Error: cancel";
-    const accounts = await this.getAccounts();
+    const accounts = await this.fetchAccounts();
     if (accounts.length === 0) throw "Error: no account";
     if (f && accounts.includes(f.account)) return [accounts, f];
     const account = accounts[0];
@@ -85,5 +100,9 @@ export class Crust implements BaseWallet {
     nUser.authBasic = authBasic;
     nUser.authBearer = authBearer;
     return [accounts, nUser];
+  }
+
+  disconnect() {
+    super.disconnect();
   }
 }

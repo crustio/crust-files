@@ -140,4 +140,4 @@ export default React.memo(styled(AlertMessage)`
       color: #333333;
     }
   }
-`)
+` as any)

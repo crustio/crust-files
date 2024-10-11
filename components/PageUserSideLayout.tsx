@@ -38,4 +38,4 @@ export default React.memo<Props>(styled(_PageUserSideLayout)`
         padding: 2.29rem;
         height: max-content;
     }
-`)
+` as any)

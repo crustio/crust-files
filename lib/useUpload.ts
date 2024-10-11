@@ -6,6 +6,7 @@ import { readFileAsync } from "./crypto/useUserCrypto";
 import { FileInfo, SaveFile, UploadRes } from "./types";
 import { UseEvmPin } from './useEvmPin';
 import { WrapLoginUser } from "./wallet/hooks";
+import { getErrorMsg } from './utils';
 
 export interface Params {
     signature: string,
@@ -73,7 +74,7 @@ export function useUpload(user: WrapLoginUser, options: Options): UseUpload {
             setBusy(true);
 
             // const prefix = getPerfix(user);
-            const msg = user.wallet === 'near' || user.wallet === 'aptos-martian' || user.wallet === 'aptos-petra' ? user.pubKey || '' : user.account;
+            const msg = user.wallet === 'aptos-martian' || user.wallet === 'aptos-petra' ? user.pubKey || '' : user.account;
             // const signature = await user.sign(msg, user.account);
             // const perSignData = user.wallet === 'elrond' ? signature : `${prefix}-${msg}:${signature}`;
             // const base64Signature = window.btoa(perSignData);
@@ -128,7 +129,7 @@ export function useUpload(user: WrapLoginUser, options: Options): UseUpload {
 
                     setUpState({ progress: Math.round(percent * 99), up: true });
                 },
-                params: { pin: true, 'cid-version': 1, },
+                params: { pin: true, 'cid-version': 1, hash: 'sha2-256' },
                 url: `${UpEndpoint}/api/v0/add`
             });
 
@@ -197,7 +198,8 @@ export function useUpload(user: WrapLoginUser, options: Options): UseUpload {
                 setError('User has rejected the operation.');
                 return 
             }
-            setError('Network Error,Please try to switch a Gateway.');
+            setError(getErrorMsg(e))
+            // setError('Network Error,Please try to switch a Gateway.');
             throw e
         }
     }

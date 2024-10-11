@@ -1,59 +1,61 @@
-import { SubmittableExtrinsic } from "@polkadot/api/types"
-import { ISubmittableResult } from "@polkadot/types/types"
-import { LoginUser } from "./types"
+import { SubmittableExtrinsic } from "@polkadot/api/types";
+import { ISubmittableResult } from "@polkadot/types/types";
+import { BaseWallet, LoginUser } from "./types";
+import { WALLETMAP } from "./hooks";
 
 export function sleep(time: number): Promise<void> {
-  return new Promise<void>((resolve => {
-    setTimeout(resolve, time)
-  }))
+  return new Promise<void>((resolve) => {
+    setTimeout(resolve, time);
+  });
 }
-
 
 const findEvent = (res, key) => {
-  return res.events.find((e) => `${e.event.section.toString()}(${e.event.method.toString()})` === key)
-}
+  return res.events.find((e) => `${e.event.section.toString()}(${e.event.method.toString()})` === key);
+};
 
-export function finalTxSignAndSend(tx: SubmittableExtrinsic<'promise', ISubmittableResult>, pair) {
+export function finalTxSignAndSend(tx: SubmittableExtrinsic<"promise", ISubmittableResult>, pair) {
   return new Promise<void>((resolve, reject) => {
     tx.signAndSend(pair, { nonce: -1, tip: 0 }, (res) => {
       if (res.status.isFinalized) {
-        const txCompletd = !!findEvent(res, 'system(ExtrinsicSuccess)')
+        const txCompletd = !!findEvent(res, "system(ExtrinsicSuccess)");
         if (txCompletd) {
-          resolve()
+          resolve();
         } else {
-          reject('Error')
+          reject("Error");
         }
-      } if (res.status.isFinalityTimeout || res.status.isRetracted) {
-        reject('Timeout')
       }
-    }).catch(reject)
-  })
+      if (res.status.isFinalityTimeout || res.status.isRetracted) {
+        reject("Timeout");
+      }
+    }).catch(reject);
+  });
 }
-export function finalTxSend(tx: SubmittableExtrinsic<'promise', ISubmittableResult>) {
+export function finalTxSend(tx: SubmittableExtrinsic<"promise", ISubmittableResult>) {
   return new Promise<void>((resolve, reject) => {
     tx.send((res) => {
       if (res.status.isFinalized) {
-        const txCompletd = !!findEvent(res, 'system(ExtrinsicSuccess)')
+        const txCompletd = !!findEvent(res, "system(ExtrinsicSuccess)");
         if (txCompletd) {
-          resolve()
+          resolve();
         } else {
-          reject('Error')
+          reject("Error");
         }
-      } if (res.status.isFinalityTimeout || res.status.isRetracted) {
-        reject('Timeout')
       }
-    }).catch(reject)
-  })
+      if (res.status.isFinalityTimeout || res.status.isRetracted) {
+        reject("Timeout");
+      }
+    }).catch(reject);
+  });
 }
 
 export const getPerfix = (user: LoginUser): string => {
-  if (user.wallet.startsWith("metamask") || user.wallet === "metax" || user.wallet === "wallet-connect" || user.wallet === "web3auth") {
+  if (user.wallet.startsWith("metamask") || user.wallet === "metax" || user.wallet === "wallet-connect") {
     return "eth";
   }
 
-  if (user.wallet === "near") {
-    return "near";
-  }
+  // if (user.wallet === "near") {
+  //   return "near";
+  // }
 
   if (user.wallet === "flow") {
     return "flow";
@@ -78,8 +80,21 @@ export const getPerfix = (user: LoginUser): string => {
   if (user.wallet == "aptos-petra") {
     return "aptos";
   }
-  if (user.wallet == 'ton-connect'){
-    return 'ton'
+  if (user.wallet == "ton-connect") {
+    return "ton";
   }
   return "substrate";
 };
+
+export async function updateAuth(u: LoginUser, w: BaseWallet = WALLETMAP[u.wallet]) {
+  const data = u.wallet === "aptos-martian" || u.wallet == "aptos-petra" ? u.pubKey || "" : u.account;
+  const signature = await w.sign(data, u.account);
+  u.signature = signature;
+  const prefix = getPerfix(u);
+  const authdata = u.wallet === "elrond" ? signature : `${prefix}-${data}${signature.includes(":") ? "-" + signature : ":" + signature}`;
+  const base64Auth = window.btoa(authdata);
+  const authBasic = `${base64Auth}`;
+  const authBearer = `${base64Auth}`;
+  u.authBasic = authBasic;
+  u.authBearer = authBearer;
+}

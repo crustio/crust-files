@@ -1,42 +1,60 @@
-import { AlgorandChainIDs } from '@perawallet/connect/dist/util/peraWalletTypes';
-import { algorandConfig } from './config';
-import { BaseWallet } from './types';
-import { PeraWalletConnect } from '@perawallet/connect';
+import { AlgorandChainIDs } from "@perawallet/connect/dist/util/peraWalletTypes";
+import { algorandConfig } from "./config";
+import { BaseWallet, LoginUser } from "./types";
+import { PeraWalletConnect } from "@perawallet/connect";
 
-export class Algorand implements BaseWallet {
+export class Algorand extends BaseWallet {
+  name = "Algorand";
+  icon = "/images/wallet_algorand.png";
+
   wallet: PeraWalletConnect;
-  account: string;
-  isInit = false;
 
-  async init() {
-    if (this.isInit) return
+  async init(old?: LoginUser) {
+    if (this.isInit) return;
     try {
       this.wallet = new PeraWalletConnect({
-        chainId: algorandConfig.chainId as AlgorandChainIDs
+        chainId: algorandConfig.chainId as AlgorandChainIDs,
       });
-      let accounts = await this.wallet.reconnectSession();
-      if (!this.wallet.isConnected || !accounts.length) {
-        accounts = await this.wallet.connect();
-      }
-      this.wallet.connector?.on("disconnect", () => {
-        this.wallet.disconnect();
-        this.account = null;
-        this.isInit = false;
-      });
-      this.account = accounts[0];
-      this.isInit = true
+      this.isInit = true;
     } catch (error) {
       console.log(error);
     }
+    await super.init(old);
+  }
+  async fetchAccounts(): Promise<string[]> {
+    try {
+      return this.wallet.reconnectSession();
+    } catch (error) {
+      console.error(error);
+    }
+    return [];
+  }
+  async connect(): Promise<LoginUser> {
+    if (this.isConnected && this.wallet.isConnected) {
+      return { account: this.account, wallet: "algorand" };
+    }
+    if (!this.wallet.isConnected) {
+      this.accounts = await this.wallet.connect();
+      this.isConnected = true;
+    }
+    this.wallet.connector?.on("disconnect", () => {
+      this.wallet.disconnect();
+      this.account = null;
+      this.isInit = false;
+      this.isConnected = false;
+    });
+    this.account = this.accounts[0];
+    return { account: this.account, wallet: "algorand" };
   }
 
   async sign(data: string, account?: string): Promise<string> {
-    return this.wallet.signData([{data:Buffer.from(data),message:'For login'}], account).then(signedData => {
+    return this.wallet.signData([{ data: Buffer.from(data) as any, message: "For login" }], account).then((signedData) => {
       return window.btoa(String.fromCharCode.apply(null, signedData[0]));
-    })
-    .catch((err) => {
-      console.error('Algorand wallet signMessage error', err);
-      return '';
     });
+  }
+
+  disconnect() {
+    this.wallet.disconnect();
+    super.disconnect();
   }
 }

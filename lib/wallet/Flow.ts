@@ -1,47 +1,71 @@
 // Copyright 2017-2021 @polkadot/app-files authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import {BaseWallet} from './types';
-import _ from 'lodash'
+import { BaseWallet, LoginUser } from "./types";
+import _ from "lodash";
 
-// eslint-disable-next-line
-const fcl = require('@onflow/fcl');
+import * as fcl from "@onflow/fcl";
 
-export class FlowM implements BaseWallet {
-  isInit = false;
+export class FlowM extends BaseWallet {
+  name = "Flow";
+  icon = "/images/wallet_flow.png";
 
   fcl?: {
-    currentUser: () => any
+    currentUser: () => any;
     authenticate(): Promise<void>;
-  }
-
-  async init(): Promise<void> {
-    if (this.isInit) return
-    fcl.config()
-      .put('accessNode.api', 'https://flow-access-mainnet.portto.io')
-      .put('challenge.handshake', 'https://flow-wallet.blocto.app/authn');
+  };
+  user?: any;
+  async init(old?: LoginUser): Promise<void> {
+    if (this.isInit) return;
+    fcl
+      .config()
+      .put("accessNode.api", "https://flow-access-mainnet.portto.io")
+      .put("challenge.handshake", "https://flow-wallet.blocto.app/authn");
     this.fcl = fcl;
     this.isInit = true;
-    return Promise.resolve(undefined);
+    await super.init(old);
   }
 
+  async fetchAccounts(): Promise<string[]> {
+    try {
+      const user = await fcl.currentUser.snapshot();
+      return [user.addr];
+    } catch (error) {
+      console.error(error);
+    }
+    return [];
+  }
+  async connect(): Promise<LoginUser> {
+    if (!this.isConnected) {
+      let user = await fcl.currentUser.snapshot();
+      if (!user.loggedIn) {
+        await fcl.authenticate();
+      }
+      user = await fcl.currentUser.snapshot();
+      this.user = user;
+      this.isConnected = true;
+    }
+    return { account: this.user.addr, wallet: "flow" };
+  }
 
-  sign(data: string): Promise<string> {
+  async sign(data: string): Promise<string> {
     const msg = Buffer.from(data);
-
     // eslint-disable-next-line
-    return fcl.currentUser().signUserMessage(msg.toString('hex'))
-      .then((res: any) => {
-        if (!res) {
-          throw new Error('Signature failed');
-        }
+    return fcl.currentUser.signUserMessage(msg.toString("hex")).then((res: any) => {
+      if (!res) {
+        throw new Error("Signature failed");
+      }
 
-        if (_.includes(res, 'Declined: User rejected signature')) {
-          throw new Error('User rejected signature');
-        }
+      if (_.includes(res, "Declined: User rejected signature")) {
+        throw new Error("User rejected signature");
+      }
 
-        return window.btoa(JSON.stringify(res));
-      });
+      return window.btoa(JSON.stringify(res));
+    });
   }
 
+  disconnect() {
+    super.disconnect();
+    fcl.unauthenticate();
+  }
 }

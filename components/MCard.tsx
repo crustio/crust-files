@@ -54,4 +54,4 @@ export const MCard = React.memo<BasePropsWithChildren>(styled(_MCard)`
         margin-right: 1rem;
       }
     }
-`)
+` as any)

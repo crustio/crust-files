@@ -236,6 +236,6 @@ export const Home = React.memo(styled(home)`
             }
         }
     }
-`)
+` as any)
 
 export default Home

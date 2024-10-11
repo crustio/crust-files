@@ -9,7 +9,7 @@ export interface Props extends ModalProps {
   winners: Winner[],
 }
 
-const MTable = styled(Table)`
+const MTable = styled(Table as any)`
   thead {
     font-family: OpenSans-SemiBold;
     font-size: 15px;
@@ -104,4 +104,4 @@ export default React.memo<Props>(styled(ModalWinner)`
       }
     }  */
   }
-`)
+` as any)

@@ -199,4 +199,4 @@ export default React.memo<Props>(styled(MDropdown)`
       }
     }
   }
-`)
+` as any)

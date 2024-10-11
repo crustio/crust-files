@@ -88,4 +88,4 @@ export default React.memo<Props>(styled(ModalNewKey)`
       }
     }
   }
-`)
+` as any)

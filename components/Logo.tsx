@@ -30,5 +30,5 @@ export default React.memo<Props>(styled(Logo)`
     color: white;
     display: inline-block;
   }
-`)
+` as any)
 

@@ -19,7 +19,7 @@ import { useGetDepost } from '../../lib/hooks/useGetDeposit';
 import { useToggle } from "../../lib/hooks/useToggle";
 import { ExportObj, SaveFile } from "../../lib/types";
 import { useFilesInfo } from '../../lib/useFilesInfo';
-import { useFiles, WalletName } from "../../lib/wallet/hooks";
+import { useFiles } from "../../lib/wallet/hooks";
 
 export const StorageChainConfig = {
   chainId: '0x5afe',
@@ -270,7 +270,7 @@ function Index(props: Props) {
       </div>
       <div className="text font-sans-regular">
         {`${t('Logged-in Wallet:')} `}
-        <span className="bold-text font-sans-semibold">{WalletName[user.wallet]}</span>
+        <span className="bold-text font-sans-semibold">{user.useWallet?.name}</span>
       </div>
       {
         isCrust && user.nickName && <div className="text font-sans-regular">
@@ -374,7 +374,7 @@ function Index(props: Props) {
   </PageUserSideLayout>
 }
 
-const SelectDownloadGatewayDropdown = styled(MDropdown)`
+const SelectDownloadGatewayDropdown = styled(MDropdown as any)`
     &.mdropdown {
       display: inline-block;
       vertical-align: top;
@@ -478,4 +478,4 @@ export default React.memo<Props>(styled(Index)`
       }
     }
   }
-`)
+` as any)

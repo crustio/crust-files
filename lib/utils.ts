@@ -106,8 +106,14 @@ export const unHex = (hex: string) => {
 }
 
 export const getErrorMsg = (error: any, def = 'Network Error'): string => {
-  if(!error) return def
-  if(typeof error === 'string') return error
-  if(typeof error.message === 'string' ) return error.message
-  return def
+    // msg
+    let msg = def
+    if (typeof error == 'string') msg = error
+    else if (typeof error?.msg == 'string') msg = error?.msg
+    else if (typeof error?.message == 'string') msg = error?.message
+    // replace
+    if (msg.includes('User denied') || msg.includes('user rejected transaction'))
+      return 'You declined the action in your wallet.'
+    if (msg.includes('transaction failed')) return 'Transaction failed'
+    return msg
 }

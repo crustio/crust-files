@@ -171,6 +171,6 @@ export const FilesTable = React.memo<Props>(styled(filesTable)`
         }
       }
     }
-`)
+` as any)
 
 export default FilesTable

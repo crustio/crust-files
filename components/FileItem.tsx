@@ -376,4 +376,4 @@ export default React.memo<Props>(styled(FileItem)`
     border-radius: 8px !important;
   }
 
-`)
+` as any)

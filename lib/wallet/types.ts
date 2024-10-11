@@ -1,12 +1,39 @@
 import { providers } from "ethers";
 
 // 0.Base
-export interface BaseWallet {
+export abstract class BaseWallet {
+  // base info
+  abstract readonly name: string;
+  abstract readonly icon: string;
+  group?: "Web3" | "Polkadot" | "Metamask";
+  accounts: string[] = [];
+  account: string;
   isInit: boolean;
-  init: () => Promise<void>;
-  sign: (data: string, account?: string) => Promise<string>;
-  getProvider?: () => providers.Web3Provider | undefined;
-  // login?: (f?: LoginUser) => Promise<[string[], LoginUser]>;
+  isConnected: boolean;
+  async init(old?: LoginUser): Promise<void> {
+    this.accounts = await this.fetchAccounts();
+    if (old && this.accounts.includes(old.account)) {
+      this.account = old.account;
+      this.isConnected = true;
+    }
+  }
+  abstract fetchAccounts(): Promise<string[]>;
+  abstract connect(): Promise<LoginUser>;
+  abstract sign(data: string, account?: string): Promise<string>;
+  disconnect() {
+    this.isConnected = false;
+    this.onAccountChange = undefined;
+    this.onChainChange = undefined;
+    this.isInit = false;
+  }
+  getProvider(): providers.Web3Provider | undefined {
+    return undefined;
+  }
+
+  onAccountChange?: (data: string[]) => void;
+  onChainChange?: (chainId: number) => void;
+
+  constructor() {}
 }
 
 // other
@@ -53,7 +80,6 @@ export const wallets = [
   "polkadot-js",
   "metamask",
   "metax",
-  "near",
   "flow",
   "solana",
   "algorand",
@@ -61,12 +87,11 @@ export const wallets = [
   "wallet-connect",
   "aptos-martian",
   "aptos-petra",
-  "web3auth",
   "subWallet",
   "talisman",
   "oasis",
   "mimir",
-  "ton-connect"
+  "ton-connect",
 ] as const;
 
 export type WalletType = typeof wallets[number];

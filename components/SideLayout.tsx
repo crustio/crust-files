@@ -239,4 +239,4 @@ export default React.memo<Props>(styled(SideLayout)`
     overflow: auto !important;
     background: white;
   }
-`)
+` as any)

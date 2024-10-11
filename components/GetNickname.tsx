@@ -239,4 +239,4 @@ export const GetNickname = React.memo<BaseProps>(styled(_GetNickname)`
     margin-top: 16px;
     text-align: left;
   }
-`);
+` as any);

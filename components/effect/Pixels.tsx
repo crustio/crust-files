@@ -237,8 +237,8 @@ export const PixelBtn1 = styled.div<{ height?: number }>`
 `
 
 
-const prixlBoardAttrs = (p: { board_size: number }) => ({ board_size: p.board_size || 12 });
-export const PixelBoard = styled.div.attrs(prixlBoardAttrs)`
+const prixlBoardAttrs = (p: { board_size?: number }) => ({ board_size: p.board_size || 12 });
+export const PixelBoard = styled.div.attrs<{ board_size?: number }>(prixlBoardAttrs)`
   padding: ${(p) => p.board_size}px;
   background-repeat: no-repeat;
   background-size: 

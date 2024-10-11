@@ -1,111 +1,78 @@
+import _ from "lodash";
 import React, { useCallback, useMemo, useState } from "react";
 import { Dropdown, DropdownItemProps, Modal, ModalProps } from "semantic-ui-react";
 import styled from "styled-components";
-import Btn from "../Btn";
-import { WrapLoginUser } from "../../lib/wallet/hooks";
-import { shortStr } from "../../lib/utils";
 import { useGet } from "../../lib/hooks/useGet";
 import { getNickPairList } from "../../lib/http/share_earn";
-import _ from 'lodash';
 import { NickPair } from "../../lib/http/types";
-import { getPerfix } from "../../lib/wallet/tools";
+import { LoginUser } from "../../lib/types";
+import { shortStr } from "../../lib/utils";
+import { WrapLoginUser } from "../../lib/wallet/hooks";
+import { updateAuth } from "../../lib/wallet/tools";
+import Btn from "../Btn";
 export interface Props extends ModalProps {
-  toggleOpen: (open?: boolean) => void,
-  user: WrapLoginUser,
+  toggleOpen: (open?: boolean) => void;
+  user: WrapLoginUser;
 }
 
 function ModalSelectAccount(props: Props) {
-  const { user, toggleOpen, ...other } = props
-  const [account, setAccount] = useState(user.account)
+  const { user, toggleOpen, ...other } = props;
+  const [account, setAccount] = useState(user.account);
 
   const _onChange = useCallback((_, { value }) => {
-    setAccount(value)
-  }, [])
+    setAccount(value);
+  }, []);
 
   const _onClickConfirm = useCallback(() => {
     if (user.account !== account) {
-      const prefix = getPerfix(user);
-      const msg = user.wallet === 'near' || user.wallet === 'aptos-martian' || user.wallet === 'aptos-petra' ? user.pubKey || '' : user.account;
-      user.sign(msg, user.account).then(signature => {
-        if (signature.length) {
-          const perSignData = user.wallet === 'elrond' ? signature : `${prefix}-${msg}:${signature}`;
-          const base64Signature = window.btoa(perSignData);
-          const authBasic = `${base64Signature}`;
-          const authBearer = `${base64Signature}`;
-          user.setLoginUser({
-            wallet: user.wallet,
-            account,
-            pubKey: user.pubKey,
-            authBasic,
-            authBearer,
-            signature
-          })
-        } else {
-          user.setLoginUser({
-            wallet: user.wallet,
-            account,
-            pubKey: user.pubKey,
-            // authBasic: null,
-            // authBearer: null
-          });
-        }
-      }).catch(() => {
-        user.setLoginUser({
-          wallet: user.wallet,
-          account,
-          pubKey: user.pubKey,
-          // authBasic: null,
-          // authBearer: null
-        });
-      })
-      // user.setLoginUser({
-      //   wallet: user.wallet,
-      //   account,
-      //   pubKey: user.pubKey
-      // })
+      const u = new LoginUser();
+      u.account = account;
+      u.pubKey = user.pubKey;
+      u.profileImage = user.profileImage;
+      u.wallet = user.wallet;
+      u.signature = user.signature;
+      updateAuth(u).then(() => user.setLoginUser(u));
     }
-    toggleOpen(false)
-  }, [account, user])
+    toggleOpen(false);
+  }, [account, user]);
 
   const [pairs] = useGet(() => {
     if (user.accounts.length > 50) {
-      const chunks = _.chunk(user.accounts, 50)
-      return Promise.all(chunks.map(acc => getNickPairList(acc)))
-        .then(data => _.flatten(data) as NickPair[])
+      const chunks = _.chunk(user.accounts, 50);
+      return Promise.all(chunks.map((acc) => getNickPairList(acc))).then((data) => _.flatten(data) as NickPair[]);
     }
-    return getNickPairList(user.accounts)
-  }, [user.accounts, user.wallet === 'crust'])
+    return getNickPairList(user.accounts);
+  }, [user.accounts, user.wallet === "crust"]);
   const options: DropdownItemProps[] = useMemo(() => {
-    const pairsMap = _.keyBy(pairs || [], 'address')
-    return user.accounts.map(item => ({
-      text: () => <>{shortStr(item)} <span style={{ float: 'right' }}>{_.get(pairsMap, `${item}.nick_name`, '')}</span></>,
-      value: item
-    }))
-  }, [user, pairs])
+    const pairsMap = _.keyBy(pairs || [], "address");
+    return (user.useWallet?.accounts || []).map((item) => ({
+      text: () => (
+        <>
+          {shortStr(item)} <span style={{ float: "right" }}>{_.get(pairsMap, `${item}.nick_name`, "") as string}</span>
+        </>
+      ),
+      value: item,
+    })) as any;
+  }, [user, pairs]);
 
-  return <Modal closeIcon={<span className="close icon cru-fo-x" />} onClose={() => toggleOpen(false)} {...other}>
-    <Modal.Header content={'Select Account'} />
-    <Modal.Content>
-      <Dropdown
-        fluid
-        selection
-        icon={<span className="icon cru-fo cru-fo-chevron-down" />}
-        defaultValue={account}
-        options={options}
-        onChange={_onChange}
-      />
-      <div className={"btns"}>
-        <Btn content={"Confirm"} onClick={_onClickConfirm} />
-        <Btn content={"Cancel"} onClick={() => toggleOpen(false)} />
-      </div>
-    </Modal.Content>
-  </Modal>
+  return (
+    <Modal closeIcon={<span className="close icon cru-fo-x" />} onClose={() => toggleOpen(false)} {...other}>
+      <Modal.Header content={"Select Account"} />
+      <Modal.Content>
+        <Dropdown fluid selection icon={<span className="icon cru-fo cru-fo-chevron-down" />} defaultValue={account} options={options} onChange={_onChange} />
+        <div className={"btns"}>
+          <Btn content={"Confirm"} onClick={_onClickConfirm} />
+          <Btn content={"Cancel"} onClick={() => toggleOpen(false)} />
+        </div>
+      </Modal.Content>
+    </Modal>
+  );
 }
 
 export default React.memo<Props>(styled(ModalSelectAccount)`
   overflow: unset !important;
   width: 34.3rem !important;
-  
+
   .header {
     height: 3.93rem;
     font-size: 1.3rem !important;
@@ -115,7 +82,6 @@ export default React.memo<Props>(styled(ModalSelectAccount)`
     border-top-right-radius: 0.6rem !important;
     border-top-left-radius: 0.6rem !important;
   }
-
 
   .close.icon {
     top: 0.5rem;
@@ -143,15 +109,15 @@ export default React.memo<Props>(styled(ModalSelectAccount)`
 
     .ui.dropdown {
       border-radius: 0.57rem !important;
-      border: 0.07rem solid #CCCCCC !important;
+      border: 0.07rem solid #cccccc !important;
       box-shadow: unset !important;
 
       .icon {
         position: absolute;
-        right: .8rem;
-        top: .7rem;
+        right: 0.8rem;
+        top: 0.7rem;
       }
-      
+
       .text {
         font-weight: 500 !important;
         color: var(--main-color) !important;
@@ -159,23 +125,23 @@ export default React.memo<Props>(styled(ModalSelectAccount)`
       }
 
       .menu {
-        background: #FFFFFF;
+        background: #ffffff;
         box-shadow: 0 0.57rem 1.43rem 0 rgba(0, 0, 0, 0.1) !important;
         border-radius: 0.57rem !important;
-        border: 0.07rem solid #EEEEEE !important;
+        border: 0.07rem solid #eeeeee !important;
         padding: unset !important;
         top: calc(100% + 0.6rem);
 
         .item {
           padding: 1rem 0.8rem !important;
           border-radius: unset !important;
-          border-top: 1px solid #EEEEEE;
+          border-top: 1px solid #eeeeee;
           font-weight: 500;
           color: var(--main-color) !important;
           font-family: OpenSans-Medium sans-serif;
 
           &:active {
-            background-color: #EEEEEE;
+            background-color: #eeeeee;
           }
         }
 
@@ -185,4 +151,4 @@ export default React.memo<Props>(styled(ModalSelectAccount)`
       }
     }
   }
-`)
+` as any);

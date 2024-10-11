@@ -16,7 +16,7 @@ export type UseEvmPin = {
 export function useEvmPin(size: number, isPermanent: boolean): UseEvmPin {
   const chainId = useChainId();
   const evms = useEvmStorage();
-  const { wallet } = useContextWrapLoginUser();
+  const { wallet, useWallet } = useContextWrapLoginUser();
   const [fee, setFee] = useState("-");
   const uniq = useRef("");
   useEffect(() => {
@@ -38,6 +38,9 @@ export function useEvmPin(size: number, isPermanent: boolean): UseEvmPin {
     const mSize = BigNumber.from(size);
     const amount = await evms.getPrice(mSize, isPermanent);
     const args = [cid, mSize, isPermanent];
+    // check balance
+    const balance = await useWallet.getProvider().getBalance(useWallet.account);
+    if (balance.lt(amount)) throw "Insufficient Balance";
     const gas = await evms.estimateGas.placeOrder(...args, { value: amount });
     const tx = await evms.placeOrder(...args, { value: amount, gasLimit: gas.mul(120).div(100) });
     const { transactionHash } = await tx.wait();

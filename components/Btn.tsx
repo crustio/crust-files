@@ -21,4 +21,4 @@ export default React.memo<Props>(styled(Btn)`
     background: var(--primary-color) !important;
     color: white !important;
   }
-`)
+` as any)

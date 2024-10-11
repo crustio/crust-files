@@ -36,7 +36,7 @@ export interface Props {
   isPremium?: boolean;
 }
 
-const NOOP = (): void => undefined;
+const NOOP = (): void => {};
 
 function UploadModal(p: Props): React.ReactElement<Props> {
   const { wallet } = useContextWrapLoginUser();
@@ -54,7 +54,6 @@ function UploadModal(p: Props): React.ReactElement<Props> {
   const { pin, fee, chainId } = wallet === 'algorand' ? useAlgoPin(fileSize, isPermanent) : useEvmPin(fileSize, isPermanent);
   const isEvmPin = !!pin;
   const encrypt = isVault && !!uc.secret;
-  const [showOptions, toggleShowOptions] = useToggle();
   const { error, cancelUp, upState, upload, isBusy, fileSizeError } = useUpload(user, {
     isEncrypt: !!encrypt,
     secret: uc.secret,
@@ -322,4 +321,4 @@ export default React.memo<Props>(styled(UploadModal)`
       }
     }
   }
-`);
+` as any);
