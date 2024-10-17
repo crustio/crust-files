@@ -52,11 +52,6 @@ export const getPerfix = (user: LoginUser): string => {
   if (user.wallet.startsWith("metamask") || user.wallet === "metax" || user.wallet === "wallet-connect") {
     return "eth";
   }
-
-  // if (user.wallet === "near") {
-  //   return "near";
-  // }
-
   if (user.wallet === "flow") {
     return "flow";
   }
@@ -91,7 +86,7 @@ export async function updateAuth(u: LoginUser, w: BaseWallet = WALLETMAP[u.walle
   const signature = await w.sign(data, u.account);
   u.signature = signature;
   const prefix = getPerfix(u);
-  const authdata = u.wallet === "elrond" ? signature : `${prefix}-${data}${signature.includes(":") ? "-" + signature : ":" + signature}`;
+  const authdata = `${prefix}-${data}${signature.includes(":") ? "-" + signature : ":" + signature}`;
   const base64Auth = window.btoa(authdata);
   const authBasic = `${base64Auth}`;
   const authBearer = `${base64Auth}`;

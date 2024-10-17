@@ -21,6 +21,8 @@
     "@mdx-js/loader": "^1.6.22",
     "@mimirdev/apps-inject": "^0.2.1",
     "@mimirdev/apps-sdk": "^0.1.1",
+    "@multiversx/sdk-core": "^13.9.0",
+    "@multiversx/sdk-extension-provider": "^4.0.0",
     "@next/mdx": "^12.0.7",
     "@onflow/fcl": "^1.12.1",
     "@onflow/types": "^0.0.5",
@@ -76,7 +78,6 @@
     "web3": "^1.8.0"
   },
   "devDependencies": {
-    "@walletconnect/types": "2.x",
     "@next/bundle-analyzer": "11.x",
     "@types/axios": "^0.14.0",
     "@types/node": "18.x",
@@ -84,6 +85,7 @@
     "@types/react-dom": "18.x",
     "@typescript-eslint/eslint-plugin": "4.26.1",
     "@typescript-eslint/parser": "4.26.1",
+    "@walletconnect/types": "2.x",
     "babel-plugin-styled-components": "^1.12.0",
     "eslint": "7.28.0",
     "eslint-plugin-react": "7.24.0",
