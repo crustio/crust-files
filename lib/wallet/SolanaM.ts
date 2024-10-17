@@ -28,10 +28,14 @@ export class SolanaM extends BaseWallet {
   }
 
   async fetchAccounts(): Promise<string[]> {
-    if (this.solana?.publicKey) return [this.solana?.publicKey.toBase58()];
+    try {
+      if (this.solana?.publicKey) return [this.solana?.publicKey.toBase58()];
+    } catch (error) {
+      console.info(error)
+    }
     return [];
   }
-  
+
   public async connect(): Promise<LoginUser> {
     if (!this.isConnected) {
       if (!this.solana) throw "Solana (Phantom Wallet) not installed";

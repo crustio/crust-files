@@ -32,7 +32,7 @@ export class MWalletConnect extends BaseWallet {
     this.ethereumProvider = await EthereumProvider.init({
       projectId,
       showQrModal: true,
-      qrModalOptions: { themeMode: "light" , explorerRecommendedWalletIds: "NONE", explorerExcludedWalletIds: "ALL" },
+      qrModalOptions: { themeMode: "light", explorerRecommendedWalletIds: "NONE", explorerExcludedWalletIds: "ALL" },
       optionalChains: [1],
       disableProviderPing: true,
       // methods: ["eth_sendTransaction", "personal_sign"],
@@ -44,10 +44,14 @@ export class MWalletConnect extends BaseWallet {
   }
 
   async fetchAccounts(): Promise<string[]> {
-    if (!this.ethereumProvider) return [];
-    const accounts = await this.ethereumProvider.request<string[]>({ method: "eth_accounts", params: [] });
-    // this.accounts = accounts;
-    return accounts;
+    try {
+      if (!this.ethereumProvider) return [];
+      const accounts = await this.ethereumProvider.request<string[]>({ method: "eth_accounts", params: [] });
+      // this.accounts = accounts;
+      return accounts;
+    } catch (error) {
+      return [];
+    }
   }
 
   public async connect(): Promise<LoginUser> {
@@ -75,7 +79,7 @@ export class MWalletConnect extends BaseWallet {
       ]);
       console.info("connectEnd:", this.ethereumProvider.accounts);
       // await this.ethereumProvider.connect()
-      if (_.isEmpty(this.ethereumProvider.accounts)) throw "You rejected";
+      if (_.isEmpty(this.ethereumProvider.accounts)) throw "";
       this.account = this.ethereumProvider.accounts[0];
       this.accounts = this.ethereumProvider.accounts;
       this.isConnected = true;
