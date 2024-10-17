@@ -117,7 +117,7 @@ function _OnDrapDropFrame(p: Props) {
   );
 }
 
-export const OnDrapDropFrame = React.memo<Props>(styled(_OnDrapDropFrame)`
+export const OnDrapDropFrame = React.memo<Props>(styled(_OnDrapDropFrame as any)`
   position: fixed;
   width: 100vw;
   height: 100vh;
