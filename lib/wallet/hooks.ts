@@ -173,7 +173,7 @@ export function useLoginUser(key: KEY_TYPE = "files:login"): WrapLoginUser {
     const wallet = WALLETMAP[account.wallet];
     wallet.onAccountChange = (data) => {
       console.info("accountsChange::", data, account);
-      if (_.isEmpty(data)) setLoginUser(defLoginUser);
+      if (_.isEmpty(data) || !data.find(item => item == account.account)) setLoginUser(defLoginUser);
     };
     wallet.onChainChange = (chainId) => {
       setLoginUser({ ...account });

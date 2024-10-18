@@ -134,6 +134,7 @@ function UploadModal(p: Props): React.ReactElement<Props> {
               label={t<string>("Select a free Web3 IPFS Gateway")}
               onChange={onChangeEndpoint}
               options={endpoints}
+              optionsMaxHeight="240px"
               defaultGroup={endpoint.group}
               defaultValue={endpoint.value}
               footer={<Contribute onClick={_onClickContributeGateway}>Contribute IPFS W3Auth Gateway</Contribute>}
