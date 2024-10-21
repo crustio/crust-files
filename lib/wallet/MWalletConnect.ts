@@ -1,11 +1,10 @@
 import IEthereumProvider, { EthereumProvider } from "@walletconnect/ethereum-provider";
-import { WalletConnectModal } from "@walletconnect/modal";
-import { BaseWallet, LoginUser } from "./types";
 import _ from "lodash";
+import { BaseWallet, LoginUser } from "./types";
 
 export class MWalletConnect extends BaseWallet {
   name = "Wallet Connect";
-  icon = "/images/wallet_connect.png";
+  icon = "/images/group_wallet_connect.png";
   ethereumProvider: IEthereumProvider;
   accounts: string[] = [];
   account: string;
@@ -88,7 +87,7 @@ export class MWalletConnect extends BaseWallet {
   }
 
   async sign(data: string, account: string | undefined): Promise<string> {
-    const res = await this.ethereumProvider.request({ method: "personal_sign", params: [Buffer.from(data, "utf8").toString("hex"), account] });
+    const res = await this.ethereumProvider.request({ method: "personal_sign", params: [data, account] });
     console.info("res:", res);
     // const res = await this.connector?.signPersonalMessage([convertUtf8ToHex(data), account]);
     return res as string;

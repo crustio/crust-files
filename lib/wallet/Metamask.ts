@@ -39,7 +39,7 @@ export class Metamask extends BaseWallet {
         const ethereum = mWin.ethereum;
         console.info("ethereum::", mWin.ethereum);
         this.ethereum = ethereum;
-        if (this.ethereum) {
+        if (this.ethereum && typeof this.ethereum.chainId == "string") {
           this.chainId = parseInt(ethereum.chainId.replace("0x", ""), 16);
           this.setLis();
         }

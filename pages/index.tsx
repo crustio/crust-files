@@ -23,7 +23,7 @@ declare global {
   }
 }
 
-const recomendWallets: BaseWallet[] = [WALLETMAP.crust, WALLETMAP.metamask, WALLETMAP["ton-connect"]];
+const recomendWallets: BaseWallet[] = [WALLETMAP.crust, WALLETMAP.metamask, WALLETMAP['wallet-connect'], WALLETMAP["ton-connect"]];
 const moreWallets: BaseWallet[] = [
   WALLETMAP.algorand,
   WALLETMAP["aptos-martian"],
@@ -31,7 +31,6 @@ const moreWallets: BaseWallet[] = [
   WALLETMAP.elrond,
   WALLETMAP.metax,
   WALLETMAP.mimir,
-  WALLETMAP["wallet-connect"],
   WALLETMAP["polkadot-js"],
   WALLETMAP.solana,
   WALLETMAP.subWallet,
