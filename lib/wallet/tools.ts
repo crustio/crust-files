@@ -82,7 +82,7 @@ export const getPerfix = (user: LoginUser): string => {
 };
 
 export async function updateAuth(u: LoginUser, w: BaseWallet = WALLETMAP[u.wallet]) {
-  const data = u.wallet === "aptos-martian" || u.wallet == "aptos-petra" ? u.pubKey || "" : u.account;
+  const data = u.wallet === "aptos-martian" || u.wallet == "aptos-petra" || u.wallet == "ton-connect" ? u.pubKey || "" : u.account;
   const signature = await w.sign(data, u.account);
   u.signature = signature;
   const prefix = getPerfix(u);

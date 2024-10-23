@@ -7,8 +7,6 @@ export class AptosPetra extends BaseWallet {
 
   provider?: any;
   connectInfo: any;
-  account = "";
-  pubKey = "";
   async init(old?: LoginUser) {
     // pass it
     if (this.isInit) return;
@@ -42,7 +40,7 @@ export class AptosPetra extends BaseWallet {
   }
 
   async sign(data: string): Promise<string> {
-    return this.provider.signMessage({ message: data, nonce: 'crust' }).then((message) => {
+    return this.provider.signMessage({ message: data, nonce: "crust" }).then((message) => {
       console.info("message:", message);
       return `${message.signature}`;
     });

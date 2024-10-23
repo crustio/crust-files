@@ -141,6 +141,7 @@ export class TonConnect extends BaseWallet {
             }
             const toTonAddress = (account: string) => toUserFriendlyAddress(account, !account.startsWith("0:"));
             const tonAddress = toTonAddress(account);
+            this.pubKey = this.tonconnectui.account?.publicKey;
             this.account = tonAddress;
             this.isConnected = true;
             isResloved = true;
@@ -163,7 +164,7 @@ export class TonConnect extends BaseWallet {
       });
       this.tonconnectui.openModal();
     });
-    return { account: this.account, wallet: "ton-connect" };
+    return { account: this.account, wallet: "ton-connect", pubKey: this.pubKey };
   }
   async login(f?: LoginUser): Promise<[string[], LoginUser]> {
     if (!this.tonProof) throw "TonConnect tonProof not found";

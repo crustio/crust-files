@@ -8,6 +8,7 @@ export abstract class BaseWallet {
   group?: "Web3" | "Polkadot" | "Metamask";
   accounts: string[] = [];
   account: string;
+  pubKey?: string;
   isInit: boolean;
   isConnected: boolean;
   async init(old?: LoginUser): Promise<void> {

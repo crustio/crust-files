@@ -6,8 +6,6 @@ export class AptosMartian extends BaseWallet {
   icon = "/images/martian.png";
   provider?: any;
   connectInfo: any;
-  account = "";
-  pubKey = "";
   async init(old?: LoginUser) {
     // pass it
     if (this.isInit) return;
