@@ -93,3 +93,6 @@ export async function updateAuth(u: LoginUser, w: BaseWallet = WALLETMAP[u.walle
   u.authBasic = authBasic;
   u.authBearer = authBearer;
 }
+
+export const UserRejectError = "User rejected action";
+export const UserClosed = "UserClosed";

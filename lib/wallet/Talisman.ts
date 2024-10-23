@@ -1,6 +1,7 @@
 import { getWallets, Wallet } from "@talismn/connect-wallets";
-import { sleep } from "./tools";
+import { sleep, UserRejectError } from "./tools";
 import { BaseWallet, LoginUser } from "./types";
+import { getErrorMsg } from "../utils";
 
 interface AccountInfo {
   address: string;
@@ -37,37 +38,51 @@ export class Talisman extends BaseWallet {
   }
 
   async connect(): Promise<LoginUser> {
-    if (!this.isConnected) {
-      if (!this.provider) throw "Talisman Wallet not installed";
-      const hasAuth = await this.enable();
-      if (!hasAuth) throw "Error: cancel";
-      this.accounts = await this.fetchAccounts();
-      if (this.accounts.length === 0) throw "Error: no account";
-      this.isConnected = true;
-      this.account = this.accounts[0];
+    try {
+      if (!this.isConnected) {
+        if (!this.provider) throw "Talisman Wallet not installed";
+        const hasAuth = await this.enable();
+        if (!hasAuth) throw UserRejectError;
+        this.accounts = await this.fetchAccounts();
+        if (this.accounts.length === 0) throw UserRejectError;
+        this.isConnected = true;
+        this.account = this.accounts[0];
+      }
+    } catch (error) {
+      console.info("error:", getErrorMsg(error), error);
+      if (getErrorMsg(error) == "Cancelled") {
+        throw UserRejectError;
+      }
+      throw error;
     }
     return { account: this.account, wallet: "talisman" };
   }
   async sign(data: string, account: string | undefined): Promise<string> {
-    if (!this.provider) throw "Error: no wallet";
-    if (!this.wallet.signer) throw "Error: wallet error no signer";
-    const accounts = ((await new Promise((resolve, _) => {
-      this.provider.subscribeAccounts((accounts) => {
-        resolve(accounts);
-      });
-    })) as unknown) as any[];
-    const walletAccount = accounts.find((e) => e.address === account);
-    /**
-     * walletAccount.type:  "ethereum" | "sr25519"
-     */
-    console.log("walletAccount:::", walletAccount);
+    try {
+      const accounts = ((await new Promise((resolve, _) => {
+        this.provider.subscribeAccounts((accounts) => {
+          resolve(accounts);
+        });
+      })) as unknown) as any[];
+      const walletAccount = accounts.find((e) => e.address === account);
+      /**
+       * walletAccount.type:  "ethereum" | "sr25519"
+       */
+      console.log("walletAccount:::", walletAccount);
 
-    const res: { signature } = await walletAccount.signer.signRaw({
-      address: account,
-      type: "bytes",
-      data,
-    });
-    return res.signature;
+      const res: { signature } = await walletAccount.signer.signRaw({
+        address: account,
+        type: "bytes",
+        data,
+      });
+      return res.signature;
+    } catch (error) {
+      console.info("error:", getErrorMsg(error), error);
+      if (getErrorMsg(error) == "Cancelled") {
+        throw UserRejectError;
+      }
+      throw error;
+    }
   }
 
   async enable(): Promise<boolean> {

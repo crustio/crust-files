@@ -3,7 +3,7 @@ import { TonConnectUI, toUserFriendlyAddress } from "@tonconnect/ui-react";
 import { createHash } from "crypto";
 import { numberToBytes } from "viem";
 import { IS_DEV } from "../env";
-import { getPerfix } from "./tools";
+import { getPerfix, UserClosed } from "./tools";
 import { BaseWallet, LoginUser } from "./types";
 
 interface Domain {
@@ -159,8 +159,8 @@ export class TonConnect extends BaseWallet {
       this.unSubModalStatusChange();
       this.unSubModalStatusChange = this.tonconnectui.onModalStateChange((s) => {
         console.info("ton modal:", s);
-        s.status == "closed" && !isResloved && reject(new Error("Cancelled"));
-        this.unSubModalStatusChange();
+        s.status == "closed" && !isResloved && reject(new Error(UserClosed));
+        s.status == "closed" && this.unSubModalStatusChange();
       });
       this.tonconnectui.openModal();
     });

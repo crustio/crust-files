@@ -13,7 +13,7 @@ import { report } from "../lib/http/report";
 import { BaseWallet } from "../lib/types";
 import { getErrorMsg, openDocs } from "../lib/utils";
 import { useContextWrapLoginUser, WALLETMAP } from "../lib/wallet/hooks";
-import { updateAuth } from "../lib/wallet/tools";
+import { updateAuth, UserClosed } from "../lib/wallet/tools";
 
 declare global {
   interface Window {
@@ -23,7 +23,7 @@ declare global {
   }
 }
 
-const recomendWallets: BaseWallet[] = [WALLETMAP.crust, WALLETMAP.metamask, WALLETMAP['wallet-connect'], WALLETMAP["ton-connect"]];
+const recomendWallets: BaseWallet[] = [WALLETMAP.crust, WALLETMAP.metamask, WALLETMAP["wallet-connect"], WALLETMAP["ton-connect"]];
 const moreWallets: BaseWallet[] = [
   WALLETMAP.algorand,
   WALLETMAP["aptos-martian"],
@@ -57,13 +57,13 @@ function Home({ className }: { className?: string }) {
     try {
       if (onClickedWallet.current) return;
       onClickedWallet.current = true;
-      console.info('do connnect wallet ', w.name)
+      console.info("do connnect wallet ", w.name);
       await w.init();
-      console.info('do connnect wallet Inited', w.name)
+      console.info("do connnect wallet Inited", w.name);
       const u = await w.connect();
-      console.info('do connnect wallet Connected', w.name)
+      console.info("do connnect wallet Connected", w.name);
       await updateAuth(u);
-      console.info('do connnect wallet Authed', w.name)
+      console.info("do connnect wallet Authed", w.name);
       user.setLoginUser(u);
       report({
         type: 1,
@@ -73,7 +73,10 @@ function Home({ className }: { className?: string }) {
       });
     } catch (error) {
       console.info("login Error", error);
-      setError(getErrorMsg(error));
+      const msg = getErrorMsg(error);
+      if (msg !== UserClosed) {
+        setError(msg);
+      }
     }
     onClickedWallet.current = false;
   };
@@ -99,7 +102,7 @@ function Home({ className }: { className?: string }) {
           </div>
           <div className="wallets_panel">
             {recomendWallets.map((w, i) => (
-              <div key={`recomendList_${i}`} className="item_connect" style={{ justifyContent: "flex-start", paddingLeft: 40 }} onClick={() => onClickWallet(w)}>
+              <div key={`recomendList_${i}`} className="item_connect" style={{ justifyContent: "flex-start", paddingLeft: 90 }} onClick={() => onClickWallet(w)}>
                 <img style={{ height: 32, padding: 2.5, position: "relative" }} src={w.icon} />
                 <span>{w.name}</span>
                 {w.name == "Crust Wallet" && <FiDownload style={{ fontSize: 24, marginLeft: 20 }} onClick={_onClickCrustDown} />}

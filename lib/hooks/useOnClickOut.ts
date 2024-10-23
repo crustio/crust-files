@@ -12,9 +12,11 @@ export default function useOnClickOutside(handler: (e: any) => void) {
       if (!ref.current || ref.current === e.target || ref.current.contains(e.target)) return;
       if (handRef.current) handRef.current(e);
     };
-    document?.addEventListener("click", handleClickOutside);
+    document?.addEventListener('mousedown', handleClickOutside)
+    document?.addEventListener('touchstart', handleClickOutside)
     return () => {
-      document?.removeEventListener("click", handleClickOutside);
+      document?.removeEventListener("mousedown", handleClickOutside);
+      document?.removeEventListener("touchend", handleClickOutside);
     };
   }, [ref.current]);
   return ref;

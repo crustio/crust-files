@@ -101,8 +101,8 @@ export class Metamask extends BaseWallet {
 
   async sign(data: string, account?: string): Promise<string> {
     console.log("data:::", data);
-    const msg = Buffer.from(data, "utf8").toString("hex");
-    // const msg = data;
+    // const msg = Buffer.from(data, "utf8").toString("hex");
+    const msg = data;
 
     console.info("msg::", msg);
     if (!this.ethereum?.request) return Promise.reject("Error");

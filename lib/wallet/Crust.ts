@@ -2,8 +2,8 @@ import { typesBundleForPolkadot } from "@crustio/type-definitions";
 import { ApiPromise } from "@polkadot/api";
 import { InjectedExtension, InjectedWindowProvider } from "@polkadot/extension-inject/types";
 import { stringToHex } from "@polkadot/util";
-import { formatToCrustAccount } from "../utils";
-import { getPerfix, sleep } from "./tools";
+import { formatToCrustAccount, getErrorMsg } from "../utils";
+import { getPerfix, sleep, UserRejectError } from "./tools";
 import { BaseWallet, LoginUser } from "./types";
 
 export class Crust extends BaseWallet {
@@ -42,27 +42,41 @@ export class Crust extends BaseWallet {
   }
 
   async connect(): Promise<LoginUser> {
-    if (!this.isConnected) {
-      if (!this.provider) throw "Crust Wallet not installed";
-      const hasAuth = await this.enable();
-      if (!hasAuth) throw "Error: cancel";
-      const accounts = await this.fetchAccounts();
-      if (accounts.length === 0) throw "Error: no account";
-      this.isConnected = true;
-      this.account = accounts[0];
+    try {
+      if (!this.isConnected) {
+        if (!this.provider) throw "Crust Wallet not installed";
+        const hasAuth = await this.enable();
+        if (!hasAuth) throw UserRejectError;
+        const accounts = await this.fetchAccounts();
+        if (accounts.length === 0) throw UserRejectError;
+        this.isConnected = true;
+        this.account = accounts[0];
+      }
+      return { account: this.account, wallet: "crust" };
+    } catch (error) {
+      console.info("error:", getErrorMsg(error), error);
+      if (getErrorMsg(error) == "Cancelled") {
+        throw UserRejectError;
+      }
+      throw error;
     }
-    return { account: this.account, wallet: "crust" };
   }
 
   async sign(data: string, account: string | undefined): Promise<string> {
-    if (!this.provider) throw "Error: no wallet";
-    if (!this.wallet.signer) throw "Error: wallet error no signer";
-    const res: { signature } = await this.wallet.signer.signRaw({
-      address: account,
-      type: "bytes",
-      data: stringToHex(data),
-    });
-    return res.signature;
+    try {
+      const res: { signature } = await this.wallet.signer.signRaw({
+        address: account,
+        type: "bytes",
+        data: stringToHex(data),
+      });
+      return res.signature;
+    } catch (error) {
+      console.info("error:", getErrorMsg(error), error);
+      if (getErrorMsg(error) == "The request was cancelled.") {
+        throw UserRejectError;
+      }
+      throw error;
+    }
   }
 
   async enable(): Promise<boolean> {

@@ -2,6 +2,8 @@ import { AlgorandChainIDs } from "@perawallet/connect/dist/util/peraWalletTypes"
 import { algorandConfig } from "./config";
 import { BaseWallet, LoginUser } from "./types";
 import { PeraWalletConnect } from "@perawallet/connect";
+import { getErrorMsg } from "../utils";
+import { UserClosed } from "./tools";
 
 export class Algorand extends BaseWallet {
   name = "Algorand";
@@ -30,20 +32,27 @@ export class Algorand extends BaseWallet {
     return [];
   }
   async connect(): Promise<LoginUser> {
-    if (this.isConnected && this.wallet.isConnected) {
-      return { account: this.account, wallet: "algorand" };
+    try {
+      if (this.isConnected && this.wallet.isConnected) {
+        return { account: this.account, wallet: "algorand" };
+      }
+      if (!this.wallet.isConnected) {
+        this.accounts = await this.wallet.connect();
+        this.isConnected = true;
+      }
+      this.wallet.connector?.on("disconnect", () => {
+        this.wallet.disconnect();
+        this.account = null;
+        this.isInit = false;
+        this.isConnected = false;
+      });
+      this.account = this.accounts[0];
+    } catch (error) {
+      if (getErrorMsg(error).includes("Connect modal is closed by user")) {
+        throw new Error(UserClosed);
+      }
+      throw error;
     }
-    if (!this.wallet.isConnected) {
-      this.accounts = await this.wallet.connect();
-      this.isConnected = true;
-    }
-    this.wallet.connector?.on("disconnect", () => {
-      this.wallet.disconnect();
-      this.account = null;
-      this.isInit = false;
-      this.isConnected = false;
-    });
-    this.account = this.accounts[0];
     return { account: this.account, wallet: "algorand" };
   }
 
