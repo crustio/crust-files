@@ -32,38 +32,44 @@ function home(p: BaseProps) {
       </div>
       <div className="home--cards">
         <div className="home--card">
-          <div className="home--card--front">
-            <img src="/images/w4.png" className="img-fluid" />
-            <h5>File Sharing</h5>
-            <p>Share your files with the public or totally in secret</p>
-          </div>
-          <div className="home--card--back">
-            <h5>FILE SHARING</h5>
-            <p>Share your files with friends, family and colleagues via direct link or with your personalized Twitter link.</p>
+          <div className="home--card-inner">
+            <div className="home--card--front">
+              <img src="/images/w4.png" className="img-fluid" />
+              <h5>File Sharing</h5>
+              <p>Share your files with the public or totally in secret</p>
+            </div>
+            <div className="home--card--back">
+              <h5>FILE SHARING</h5>
+              <p>Share your files with friends, family and colleagues via direct link or with your personalized Twitter link.</p>
+            </div>
           </div>
         </div>
         <div className="home--card" onClick={_onClickVault}>
-          <div className="home--card--front">
-            <img src="/images/w2.png" className="img-fluid" />
-            <h5>Vault</h5>
-            <p>100% secured and client side encrypted file storage</p>
-          </div>
-          <div className="home--card--back">
-            <h5>VAULT</h5>
-            <p>Encrypted cloud storage with the highest security possible. Nobody else but you is holding the keys to your most sensitive and private data. </p>
-            {/* <a href="#0">Learn more</a> */}
+          <div className="home--card-inner">
+            <div className="home--card--front">
+              <img src="/images/w2.png" className="img-fluid" />
+              <h5>Vault</h5>
+              <p>100% secured and client side encrypted file storage</p>
+            </div>
+            <div className="home--card--back">
+              <h5>VAULT</h5>
+              <p>Encrypted cloud storage with the highest security possible. Nobody else but you is holding the keys to your most sensitive and private data. </p>
+              {/* <a href="#0">Learn more</a> */}
+            </div>
           </div>
         </div>
         <div className="home--card" onClick={_onClickPay2Download}>
-          <div className="home--card--front">
-            <img src="/images/w3.png" className="img-fluid" />
-            <h5>Pay2Download</h5>
-            <p>Monetize your data in the easiest way possible</p>
-          </div>
-          <div className="home--card--back">
-            <h5>PAY 2 DOWNLOAD</h5>
-            <p>Upload your files, set a price and offer your data to potential buyers via payment links. Enjoy P2P data sales in a totally private and trustless environment.</p>
-            {/* <a href="#0">Learn more</a> */}
+          <div className="home--card-inner">
+            <div className="home--card--front">
+              <img src="/images/w3.png" className="img-fluid" />
+              <h5>Pay2Download</h5>
+              <p>Monetize your data in the easiest way possible</p>
+            </div>
+            <div className="home--card--back">
+              <h5>PAY 2 DOWNLOAD</h5>
+              <p>Upload your files, set a price and offer your data to potential buyers via payment links. Enjoy P2P data sales in a totally private and trustless environment.</p>
+              {/* <a href="#0">Learn more</a> */}
+            </div>
           </div>
         </div>
       </div>
@@ -144,12 +150,26 @@ export const Home = React.memo(
       width: 100%;
       margin: 2rem auto;
       height: max-content;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(3, calc(33.33% - 1rem));
       gap: 1.5rem;
+
       .home--card {
-        overflow: hidden;
+        width: 100%;
+        flex-shrink: 0;
         cursor: pointer;
+        &:hover {
+          .home--card--front {
+            display: none;
+          }
+          .home--card-inner {
+            transform: rotateY(180deg);
+          }
+        }
+      }
+      .home--card-inner {
+        overflow: hidden;
         display: flex;
+        width: 100%;
         flex-direction: row;
         box-shadow: 4px 4px 25px rgb(0 0 0 / 20%);
         border-radius: 20px;
@@ -158,16 +178,6 @@ export const Home = React.memo(
         transform-style: preserve-3d;
         height: 100%;
         min-height: max-content;
-        &:hover {
-          filter: drop-shadow(0px 10px 25px rgba(0, 0, 0, 0.2));
-          transform: rotateY(180deg);
-          .home--card--front {
-            display: none;
-          }
-          .home--CommingSoon {
-            display: flex;
-          }
-        }
       }
       .home--card-Title {
         display: inline-block;
