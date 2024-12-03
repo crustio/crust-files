@@ -62,6 +62,23 @@ const crustEvmParachainTest = defineChain({
     },
   },
 });
+const u2uMainnet = defineChain({
+  testnet: false,
+  id: 39,
+  name: "U2U Solaris Mainnet",
+  nativeCurrency: { name: "U2U", symbol: "U2U", decimals: 18 },
+  blockExplorers: {
+    default: {
+      name: "U2U Mainnet Scan",
+      url: "https://u2uscan.xyz",
+    },
+  },
+  rpcUrls: {
+    default: {
+      http: ["https://rpc-mainnet.u2u.xyz"],
+    },
+  },
+});
 
 export const SupportEVMChains = [mainnet, optimism, arbitrum, zkSync, blast, base, crustEvmParachainTest];
 
@@ -73,6 +90,7 @@ export const EVMChains = {
   blast,
   base,
   crustEvmParachainTest,
+  u2uMainnet
 };
 
 export const EVMStorageContract: { [k: number]: string } = {
@@ -102,6 +120,9 @@ export const EVMStorageContract: { [k: number]: string } = {
 
   // Crust Evm Parachain
   [crustEvmParachainTest.id]: "0xA40179e57280585D88899b2032E7eCF13B3B6c72",
+
+  // U2U network 
+  [39]: '0xA40179e57280585D88899b2032E7eCF13B3B6c72',
 };
 
 export const CHAIN_SYMBOL: { [k: number]: string } = {
@@ -111,6 +132,8 @@ export const CHAIN_SYMBOL: { [k: number]: string } = {
   56: "BNB",
   // Crust Evm Parachain
   [crustEvmParachainTest.id]: "CRU",
+  // 
+  [39]: 'U2U'
 };
 
 export const EVMStorageABI = [

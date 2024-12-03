@@ -73,7 +73,7 @@
     "styled-components": "6.x",
     "stylis": "4.x",
     "typeit-react": "2.0.8",
-    "viem": "^2.9.28",
+    "viem": "^2.21.53",
     "wagmi": "^2.7.0",
     "web3": "^1.8.0"
   },

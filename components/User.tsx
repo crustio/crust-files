@@ -168,6 +168,7 @@ function User(props: Props) {
         chainId: EVMChains.crustEvmParachainTest.id,
         chain: EVMChains.crustEvmParachainTest,
       },
+      { name: EVMChains.u2uMainnet.name, image: "/images/chain/u2u.png", chainId: EVMChains.u2uMainnet.id, chain: EVMChains.u2uMainnet },
     ];
   }, []);
 
