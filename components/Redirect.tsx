@@ -34,7 +34,7 @@ function RedirectLoading(p: { children?: React.ReactNode }) {
   );
 }
 
-const NO_CHECK_USER = ["/files/share", "/files/receive"];
+const NO_CHECK_USER = ["/files/share", "/files/receive",'/upfile'];
 export default function Redirect(props: { children: any }) {
   const wUser = useContextWrapLoginUser();
   const router = useRouter();

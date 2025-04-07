@@ -18,12 +18,12 @@ export interface LastGateway {
   value: string
 }
 
-export function useAuthGateway(key = 'upload:last-gateway'): AuthGateway {
+export function useAuthGateway(_endpoints?: AuthIpfsEndpoint[],key = 'upload:last-gateway'): AuthGateway {
   const {t} = useTranslation();
   const endpoints = useMemo<AuthIpfsEndpoint[]>(
-    () => createAuthIpfsEndpoints(t)
+    () => _endpoints && _endpoints.length > 0 ? _endpoints: createAuthIpfsEndpoints(t)
       .map((item) => ({...item, text: `${item.text ?? ''} (${item.location ?? ''})`})),
-    [t]
+    [t, _endpoints]
   );
 
   const defaultIndex = useMemo<number>(() => {
