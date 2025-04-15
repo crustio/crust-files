@@ -18,7 +18,7 @@ export interface UseUpload {
 }
 
 const M1 = 1024 * 1024;
-const MAX = 40;
+const MAX = 200;
 export interface Options {
   file?: FileInfo;
   endpoint: AuthIpfsEndpoint;
