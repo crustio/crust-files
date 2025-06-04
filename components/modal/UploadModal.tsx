@@ -17,6 +17,7 @@ import { WrapLoginUser, useContextWrapLoginUser } from "../../lib/wallet/hooks";
 import { FileInfo, SaveFile } from "../../lib/wallet/types";
 import Btn from "../Btn";
 import MDropdown from "../MDropdown";
+import { ScreenMobile } from "../../lib/config";
 
 const Contribute = styled.div`
   cursor: pointer;
@@ -321,5 +322,9 @@ export default React.memo<Props>(styled(UploadModal)`
         background-color: #2ed158 !important;
       }
     }
+  }
+
+  ${ScreenMobile} {
+    width: 95% !important;
   }
 ` as any);
