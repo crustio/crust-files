@@ -14,6 +14,7 @@ export class Coinbase extends BaseWallet {
 
   ethereum?: {
     isMetaMask: boolean;
+    isCoinbaseWallet: boolean;
     request: <T>(option: MetamaskReqOptions) => Promise<T>;
     selectedAddress?: string;
     chainId: string;
@@ -30,14 +31,15 @@ export class Coinbase extends BaseWallet {
     if (this.isInit) return Promise.resolve();
     await new Promise<void>((resolve) => {
       let handled = false;
-      const eWin = window as { coinbaseWalletExtension?: Coinbase["ethereum"] };
+
+      const eWin = window as { coinbaseWalletExtension?: Coinbase["ethereum"]; ethereum?: Coinbase["ethereum"] };
       const handleEthereum = () => {
         if (handled) return;
         handled = true;
         window.removeEventListener("ethereum#initialized", handleEthereum);
-        const mWin = window as { coinbaseWalletExtension?: Coinbase["ethereum"] };
-        const ethereum = mWin.coinbaseWalletExtension;
-        console.info("ethereum::", mWin.coinbaseWalletExtension);
+
+        const ethereum = eWin.coinbaseWalletExtension ? eWin.coinbaseWalletExtension : eWin.ethereum && eWin.ethereum.isCoinbaseWallet ? eWin.ethereum : undefined;
+        console.info("ethereum::", ethereum);
         this.ethereum = ethereum;
         if (this.ethereum && typeof this.ethereum.chainId == "string") {
           this.chainId = parseInt(ethereum.chainId.replace("0x", ""), 16);
@@ -45,10 +47,10 @@ export class Coinbase extends BaseWallet {
         }
         resolve();
       };
-      if (eWin.coinbaseWalletExtension) {
+      if (eWin.coinbaseWalletExtension || eWin.ethereum) {
         handleEthereum();
       } else {
-        window.addEventListener("coinbase#initialized", handleEthereum, { once: true });
+        window.addEventListener("ethereum#initialized", handleEthereum, { once: true });
         setTimeout(handleEthereum, 2000);
       }
     });
@@ -93,8 +95,8 @@ export class Coinbase extends BaseWallet {
     });
 
     this.ethereum.on("chainChanged", (chainId) => {
-      console.info("Coinbase:chainChanged:", typeof this.ethereum.chainId, this.ethereum.chainId);
-      this.chainId = parseInt(this.ethereum.chainId.replace("0x", ""), 16);
+      console.info("Coinbase:chainChanged:", chainId);
+      this.chainId = typeof chainId == "string" && chainId.startsWith("0x") ? parseInt(chainId.replace("0x", ""), 16) : parseInt(`${chainId}`);
       this.onChainChange && this.onChainChange(this.chainId);
     });
   }
@@ -103,7 +105,6 @@ export class Coinbase extends BaseWallet {
     console.log("data:::", data);
     // const msg = Buffer.from(data, "utf8").toString("hex");
     const msg = data;
-
     console.info("msg::", msg);
     if (!this.ethereum?.request) return Promise.reject("Error");
     return this.ethereum

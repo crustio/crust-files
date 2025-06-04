@@ -35,9 +35,8 @@ export class Metamask extends BaseWallet {
         if (handled) return;
         handled = true;
         window.removeEventListener("ethereum#initialized", handleEthereum);
-        const mWin = window as { ethereum?: Metamask["ethereum"] };
-        const ethereum = mWin.ethereum;
-        console.info("ethereum::", mWin.ethereum);
+        const ethereum = eWin.ethereum && eWin.ethereum.isMetaMask ? eWin.ethereum : undefined;
+        console.info("ethereum::", eWin.ethereum);
         this.ethereum = ethereum;
         if (this.ethereum && typeof this.ethereum.chainId == "string") {
           this.chainId = parseInt(ethereum.chainId.replace("0x", ""), 16);
@@ -45,7 +44,7 @@ export class Metamask extends BaseWallet {
         }
         resolve();
       };
-      if (eWin.ethereum) {
+      if (eWin.ethereum && eWin.ethereum.isMetaMask) {
         handleEthereum();
       } else {
         window.addEventListener("ethereum#initialized", handleEthereum, { once: true });
@@ -94,8 +93,8 @@ export class Metamask extends BaseWallet {
 
     this.ethereum.on("chainChanged", (chainId) => {
       console.info("metamask:chainChanged:", chainId);
-      this.chainId = parseInt(chainId.replace("0x", ""), 16);
-      this.onChainChange && this.onChainChange(chainId);
+      this.chainId = typeof chainId == "string" && chainId.startsWith("0x") ? parseInt(chainId.replace("0x", ""), 16) : parseInt(`${chainId}`);
+      this.onChainChange && this.onChainChange(this.chainId);
     });
   }
 
