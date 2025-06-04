@@ -372,7 +372,7 @@ function Index(props: Props) {
         <Btn content={t('Download key from Oasis')} onClick={_clickDownload} />
       </div>
     </Segment>
-    { !isMobile && <BindAirdrop />}
+    {!isMobile && <BindAirdrop />}
   </PageUserSideLayout>
 }
 
@@ -411,6 +411,7 @@ const SelectDownloadGatewayDropdown = styled(MDropdown as any)`
 `
 
 export default React.memo<Props>(styled(Index)`
+ 
   .pusl_center_flex_content {
     min-width: 60rem;
   }
@@ -420,7 +421,7 @@ export default React.memo<Props>(styled(Index)`
     border-radius: 1.14rem !important;
     border: 0.07rem solid #EEEEEE !important;
     margin-top: 2.21rem;
-  
+   
     .title {
       font-size: 1.3rem !important;
       font-weight: 600;
@@ -434,7 +435,7 @@ export default React.memo<Props>(styled(Index)`
     .text {
       font-size: 1rem;
       color: var(--secend-color);
-      line-height: 1.57rem;
+      line-height: 25px;
     }
     .icon {
       margin-left: 1rem;
@@ -454,10 +455,12 @@ export default React.memo<Props>(styled(Index)`
     }
 
     .btns {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 6px;
       margin-top: 1.7rem;
-      button: {
-        margin-right: 1rem;
-      }
+      flex-wrap: wrap;
     }
 
     .input-dowload-gateway {
@@ -479,13 +482,22 @@ export default React.memo<Props>(styled(Index)`
         color: #999999;
       }
     }
+  }
 
-    ${ScreenMobile} {
-      .input-dowload-gateway {
-        min-width: unset;
+ ${ScreenMobile} {
+    .input-dowload-gateway {
+      min-width: unset !important;
+    }
+    .getPreminum {
+      display: none;
+    }
+    .mcard {
+      .title{
+        font-size: 16px !important;
       }
-      .getPreminum {
-        display: none;
+      .text{
+        font-size: 12px;
+        line-height: 1.5;
       }
     }
   }

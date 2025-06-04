@@ -23,7 +23,7 @@ export function useEvmPin(size: number, isPermanent: boolean): UseEvmPin {
     const id = uniqueId();
     uniq.current = id;
     setFee("-");
-    if (wallet === "metamask" && evms) {
+    if ((wallet === "metamask" || wallet === 'coinbase') && evms) {
       evms
         .getPrice(BigNumber.from(size), isPermanent)
         .then((price) => {
