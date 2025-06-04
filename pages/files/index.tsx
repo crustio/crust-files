@@ -13,6 +13,7 @@ import { useFilesInfo } from "../../lib/useFilesInfo";
 import { useFiles } from "../../lib/wallet/hooks";
 import { FileInfo, SaveFile } from "../../lib/wallet/types";
 import { ScreenMobile } from "../../lib/config";
+import { useIsMobile } from "../../lib/hooks/useIsMobile";
 
 function Index(p: { className?: string }) {
   const wFiles = useFiles();
@@ -37,7 +38,7 @@ function Index(p: { className?: string }) {
     wInputFile.setFile(info)
   }
   const { publicCount, publicSize } = useFilesInfo(wFiles)
-
+  const isMobile = useIsMobile()
   return <PageUserSideLayout path="/files" className={p.className}>
     <OnDrapDropFrame onDrop={_onDrop} />
     <div className="uploadPanel">
@@ -59,7 +60,7 @@ function Index(p: { className?: string }) {
       </div>
       <BtnUpload
         onClickUpFile={wInputFile._onClickUpFile}
-        onClickUpFolder={wInputFile._onClickUpFolder}
+        onClickUpFolder={isMobile ? undefined : wInputFile._onClickUpFolder}
       />
       {
         wInputFile.file && <UploadModal

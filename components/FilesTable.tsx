@@ -61,13 +61,13 @@ export function filesTable(props: Props) {
         }
       </tbody>
 
-      {(localFiles.totalPage > 1 || !isMobile) && <tfoot>
+      <tfoot>
         <tr>
-          {!isMobile && <td colSpan={footerSpan} className={"btns"}>
+          <td colSpan={footerSpan} className={"btns"}>
             <div className="files-tip">
               The file list is locally cached. If you want to keep this list when switching to another device, please go to <span onClick={() => r.push('/setting')}>{'Settings->User Data Management'}</span> to migrate your user data.
             </div>
-          </td>}
+          </td>
           {
             localFiles.totalPage > 1 && <td colSpan={3}>
               <Pagination
@@ -84,7 +84,7 @@ export function filesTable(props: Props) {
             </td>
           }
         </tr>
-      </tfoot>}
+      </tfoot>
     </table>
   </div>
 }
