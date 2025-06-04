@@ -19,6 +19,7 @@ import { WrapLoginUser } from "../lib/wallet/hooks";
 import { Metamask } from "../lib/wallet/Metamask";
 import { Links2 } from "./Links";
 import ModalSelectAccount from "./modal/ModalSelectAccount";
+import { useIsMobile } from "../lib/hooks/useIsMobile";
 export interface Props {
   className?: string;
   onClickMenu?: () => void;
@@ -212,6 +213,7 @@ function User(props: Props) {
   const ref = useOnClickOutside(() => showChains && setShowChains(false));
   const chainId = useMemo(() => (user.useWallet as Metamask).chainId, [user]);
   const showSwichChains = user && user.wallet === "metamask" || user.wallet === "coinbase"
+  const isMobile = useIsMobile()
   return (
     <div className={props.className}>
       <div className="siderMenu" onClick={props.onClickMenu}>
@@ -292,7 +294,7 @@ function User(props: Props) {
           <Line />
           <TwoText>
             {renderTitleText()}
-            {renderSubText()}
+            {!isMobile && renderSubText()}
           </TwoText>
           <MBtns>
             {showSwitchAccount && (
