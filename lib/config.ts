@@ -107,7 +107,7 @@ export function createAuthIpfsPinner(t: TFunction): AuthIpfsPinner[] {
   ];
 }
 
-export const MOBILE_WIDTH = 960;
+export const MOBILE_WIDTH = 750;
 
 export const CrustWalletDownUrl =
   "https://chromewebstore.google.com/detail/crust-wallet-v3/bhnjponmcdginfhpmfnplhoajoolcfhh";
@@ -123,3 +123,5 @@ export const RecaptchKey = IS_DEV
   : "09ef6613-21f0-4fb6-ab1f-ded9bedb291e";
 export const GA_ID = IS_DEV ? "G-HH6CWDPZJ2" : "G-LP5BSW8V06";
 export const GTM_ID = "GTM-NPZMBPN";
+
+export const ScreenMobile = `@media screen and (max-width: ${MOBILE_WIDTH}px)`

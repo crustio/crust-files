@@ -1,12 +1,13 @@
 import classNames from "classnames";
 import { useRouter } from "next/router";
-import React, { useMemo } from "react";
+import React, { Ref, useMemo } from "react";
 import { Grid, Segment, Sidebar } from 'semantic-ui-react';
 import styled from "styled-components";
-import { CrustGetCRU } from "../lib/config";
+import { CrustGetCRU, ScreenMobile } from "../lib/config";
 import { useSessionState } from "../lib/hooks/useSessionState";
 import { PixelBtn } from "./effect/Pixels";
 import Logo from "./Logo";
+import { useIsMobile } from "../lib/hooks/useIsMobile";
 
 type Path = '/files' | '/setting' | '/home' | '/files/vault' | '/share-earn' | '/user'
 
@@ -14,6 +15,8 @@ export interface Props {
   className?: string
   children: any,
   path: Path,
+  show?: boolean,
+  refSider?: Ref<any>
 }
 
 interface MenuInfo {
@@ -21,6 +24,7 @@ interface MenuInfo {
   icon?: string,
   name: string,
   link?: string,
+  ennableOnMobile?: boolean
 }
 
 interface GroupMenuInfo extends MenuInfo {
@@ -31,14 +35,15 @@ interface GroupMenuInfo extends MenuInfo {
 type MenuItem = GroupMenuInfo | MenuInfo
 
 const menus: MenuItem[] = [
-  { path: "/home", icon: "cru-fo-home", name: 'Home' },
+  { path: "/home", icon: "cru-fo-home", name: 'Home', ennableOnMobile: true },
   {
     icon: "cru-fo-file", name: 'My Files', expand: true, items: [
-      { path: "/files", name: 'Public' },
-      { path: "/files/vault", name: 'Vault' }
-    ]
+      { path: "/files", name: 'Public', ennableOnMobile: true },
+      { path: "/files/vault", name: 'Vault', ennableOnMobile: true }
+    ],
+    ennableOnMobile: true
   },
-  { path: "/setting", icon: "cru-fo-settings", name: 'Settings' },
+  { path: "/setting", icon: "cru-fo-settings", name: 'Settings', ennableOnMobile: true },
   // { path: "/share-earn", icon: "cru-fo-share-2", name: 'Share-and-Earn' },
   { path: "/user", icon: "cru-fo-user", name: 'Premium User' },
   // { icon: "cru-fo-credit-card", name: 'Pay to Download',link: 'https://p2d.crustapps.net/' },
@@ -92,9 +97,12 @@ function GroupMenu(props: GroupMenuProps) {
 function SideLayout(props: Props) {
   const r = useRouter()
   const [expand, setExpand] = useSessionState(menus.map(item => !!(item as GroupMenuInfo).expand), 'side_menus_expand')
+  const isMobile = useIsMobile()
   const data = useMemo(() => {
-    return menus.map((item, index) => ({ ...item, expand: expand[index] }))
-  }, [expand])
+    const mdata = menus.map((item, index) => ({ ...item, expand: expand[index] }))
+    if (!isMobile) return mdata;
+    return mdata.filter(item => item.ennableOnMobile).map(item => (item as GroupMenuInfo).items ? ({ ...item, items: (item as GroupMenuInfo).items.filter(i => i.ennableOnMobile) }) : item)
+  }, [expand, isMobile])
 
   const _onTabClick = (m: MenuItem) => {
     if (m.path && m.path !== props.path)
@@ -108,14 +116,27 @@ function SideLayout(props: Props) {
       })
     }
   }
+
   return <Sidebar.Pushable
     as={Segment}
     className={classNames(props.className, 'basic')}>
     <Sidebar
+      ref={(siderbar) => {
+        if (!siderbar) return
+        const ref = (siderbar as any).ref.current;
+        if (props.refSider) {
+          if (typeof props.refSider == 'function') {
+            props.refSider(ref)
+          } else {
+            // @ts-ignore
+            props.refSider.current = ref;
+          }
+        }
+      }}
       as={Segment}
       animation={"push"}
       direction={"left"}
-      visible={true}
+      visible={props.show}
       className="basic"
     >
       <Grid textAlign='center'>
@@ -238,5 +259,12 @@ export default React.memo<Props>(styled(SideLayout)`
     transform: translate3d(${sideWidth}, 0, 0) !important;
     overflow: auto !important;
     background: white;
+  }
+
+  ${ScreenMobile}{
+    .pusher {
+      width: 100%;
+      transform: unset !important;
+    }
   }
 ` as any)

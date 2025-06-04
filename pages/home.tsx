@@ -4,6 +4,8 @@ import styled from "styled-components";
 import PageUserSideLayout from "../components/PageUserSideLayout";
 import { BaseProps } from "../components/types";
 import { useGetDepost } from "../lib/hooks/useGetDeposit";
+import { ScreenMobile } from "../lib/config";
+import { useIsMobile } from "../lib/hooks/useIsMobile";
 
 function home(p: BaseProps) {
   const r = useRouter();
@@ -15,7 +17,7 @@ function home(p: BaseProps) {
   const _onClickPay2Download = () => {
     window.location.href = "https://p2d.crustapps.net/";
   };
-
+  const isMobile = useIsMobile()
   return (
     <PageUserSideLayout path="/home" className={p.className}>
       <div className="home--slog">
@@ -26,10 +28,10 @@ function home(p: BaseProps) {
         </a>
         ’s decentralized storage network.
       </div>
-      <div className="home--activity">
+      {!isMobile && <div className="home--activity">
         <img className="hot-sale" src="/images/fire.png" />
         <a onClick={_onClickShareAndEarn}>Share-and-Earn</a>
-      </div>
+      </div>}
       <div className="home--cards">
         <div className="home--card">
           <div className="home--card-inner">
@@ -73,9 +75,9 @@ function home(p: BaseProps) {
           </div>
         </div>
       </div>
-      <div className="home--user-link">
+      {!isMobile && <div className="home--user-link">
         <a onClick={_onClickUser}>Become a Premium User and get more storage space</a>
-      </div>
+      </div>}
     </PageUserSideLayout>
   );
 }
@@ -179,11 +181,6 @@ export const Home = React.memo(
         height: 100%;
         min-height: max-content;
       }
-      .home--card-Title {
-        display: inline-block;
-        font-size: 2.285714rem;
-        line-height: 4.285714rem;
-      }
 
       .home--card--front,
       .home--card--back {
@@ -233,6 +230,28 @@ export const Home = React.memo(
         span {
           color: var(--primary-color);
           text-decoration: underline;
+        }
+      }
+    }
+    ${ScreenMobile} {
+      .home--slog{
+        font-size: 21px;
+        font-weight: 600;
+        padding-bottom: 20px;
+        line-height: 1.5;
+      }
+      .home--cards {
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+        margin: 0;
+        .home--card {
+          height: 30rem;
+        }
+
+        .home--card h5 {
+          font-size: 16px;
+        }
+        .home--card p {
+          font-size: 14px;
         }
       }
     }

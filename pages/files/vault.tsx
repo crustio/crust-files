@@ -13,6 +13,7 @@ import useInputFile from "../../lib/hooks/useInputFile";
 import { useFilesInfo } from "../../lib/useFilesInfo";
 import { useFiles } from "../../lib/wallet/hooks";
 import { FileInfo, SaveFile } from "../../lib/wallet/types";
+import { ScreenMobile } from "../../lib/config";
 
 function Vault(p: { className?: string }) {
 
@@ -42,7 +43,7 @@ function Vault(p: { className?: string }) {
 
   return <PageUserSideLayout path={'/files/vault'} className={p.className}>
     <OnDrapDropFrame onDrop={_onDrop} />
-    <Segment basic textAlign={'center'} className={"font-sans-semibold uploadPanel"}>
+    <div className="uploadPanel">
       <input
         onChange={wInputFile._onInputFile}
         ref={wInputFile.inputRef}
@@ -53,6 +54,7 @@ function Vault(p: { className?: string }) {
         <div>
           <div className="title">Vault</div>
           <Popup
+            style={{ width: 200 }}
             position={"top center"}
             trigger={<span className="helper cru-fo-help-circle" />}
             content={'This is your personal file vault which is 100% private, 100% secure and 100% owned by YOU. Every file will be encrypted by a locally-stored encryption key.'} />
@@ -81,7 +83,7 @@ function Vault(p: { className?: string }) {
           uc={uc}
         />
       }
-    </Segment>
+    </div>
     <div className="line" />
     <FilesTable type="vault" files={wFiles.files} onDeleteItem={wFiles.deleteItem} />
   </PageUserSideLayout>
@@ -91,14 +93,16 @@ export default React.memo(styled(Vault)`
 
   .line {
     margin: 0 2.3rem;
-    border-bottom: solid 1px var(--line-color) !important;
+    border-bottom: solid 1px var(--line-color);
   }
   
   .uploadPanel {
+    font-family: OpenSans-SemiBold;
     width: 100%;
     justify-content: space-between;
-    margin: unset !important;
     white-space: pre-wrap;
+    flex-wrap: wrap;
+    gap: 20px;
     padding: 3.14rem 2.3rem 4.2857rem 2.3rem;
     color: var(--main-color);
     display: flex;
@@ -145,4 +149,15 @@ export default React.memo(styled(Vault)`
     }
   }
 
+  ${ScreenMobile} {
+    .uploadPanel{
+      padding: 16px;
+      box-shadow: 0px 0px 16px 0px #0000001A;
+      border-radius: 12px;
+    }
+    .line{
+      margin: 10px 0;
+      border: none;
+    }
+  }
 `)

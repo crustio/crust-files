@@ -80,6 +80,7 @@ export const wallets = [
   "crust",
   "polkadot-js",
   "metamask",
+  'coinbase',
   "metax",
   "flow",
   "solana",

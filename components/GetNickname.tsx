@@ -9,7 +9,7 @@ import { checkNickName, getMemberByAccount, getNickNameByAccount, setMyNickName 
 import { getErrorMsg } from "../lib/utils";
 import { useContextWrapLoginUser } from "../lib/wallet/hooks";
 import { BaseProps } from "./types";
-import User from "./User";
+import User from "./Header";
 import { useToggle } from "../lib/hooks/useToggle";
 // import { useGoogleReCaptcha } from 'react-google-recaptcha-v3'
 

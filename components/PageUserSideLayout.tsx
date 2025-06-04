@@ -1,19 +1,26 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { CenterFlex, ColFlex } from "./layout";
 import SideLayout, { Props as SideProps } from "./SideLayout";
 import { BasePropsWithChildren } from "./types";
-import User from "./User";
+import Header from "./Header";
+import { useIsMobile } from "../lib/hooks/useIsMobile";
+import useOnClickOutside from "../lib/hooks/useOnClickOut";
+import { ScreenMobile } from "../lib/config";
 
 export interface Props extends BasePropsWithChildren {
     path: SideProps['path']
 }
 
 function _PageUserSideLayout(props: Props) {
+    const isMobile = useIsMobile()
+    const [mobileShow, setShow] = useState(false)
+    const show = isMobile ? mobileShow : true;
     const { path, className, children } = props
-    return <SideLayout path={path} className={className}>
+    const ref = useOnClickOutside(() => show && setShow(false))
+    return <SideLayout refSider={ref} show={show} path={path} className={className}>
         <ColFlex className="full">
-            <User />
+            <Header onClickMenu={() => setShow(!mobileShow)} />
             <CenterFlex className="pusl_center_flex">
                 <ColFlex className="pusl_center_flex_content">
                     {children}
@@ -38,4 +45,12 @@ export default React.memo<Props>(styled(_PageUserSideLayout)`
         padding: 2.29rem;
         height: max-content;
     }
+
+    ${ScreenMobile} {
+        .pusl_center_flex_content{
+            max-width: unset !important;
+            min-width: unset !important;
+        }
+    }
+
 ` as any)

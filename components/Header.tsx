@@ -2,9 +2,10 @@ import _ from "lodash";
 import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { FiCheck, FiChevronDown, FiChevronUp } from "react-icons/fi";
-import { Dropdown, Item, Segment } from "semantic-ui-react";
+import { Dropdown, Item } from "semantic-ui-react";
 import styled from "styled-components";
 import { numberToHex } from "viem";
+import { ScreenMobile } from "../lib/config";
 import { useClipboard } from "../lib/hooks/useClipboard";
 import { useGet } from "../lib/hooks/useGet";
 import { useGetDepost } from "../lib/hooks/useGetDeposit";
@@ -15,13 +16,16 @@ import { useAutoUpdateToStore } from "../lib/initAppStore";
 import { getFormatValue, shortStr } from "../lib/utils";
 import { EVMChains } from "../lib/wallet/config";
 import { WrapLoginUser } from "../lib/wallet/hooks";
+import { Metamask } from "../lib/wallet/Metamask";
 import { Links2 } from "./Links";
 import ModalSelectAccount from "./modal/ModalSelectAccount";
 export interface Props {
   className?: string;
+  onClickMenu?: () => void;
 }
 
 function getWalletIcon(user: WrapLoginUser): string {
+  if (user.useWallet && user.useWallet.icon) return user.useWallet.icon
   switch (user.wallet) {
     case "crust":
       return "/images/wallet_crust.png";
@@ -140,7 +144,7 @@ function User(props: Props) {
   };
   const copy = useClipboard();
   const { isPremiumUser, isCrust, user } = useGetDepost();
-  const [ftmAccount, ftmAccont2] = useMemo(() => [shortStr(user.account), shortStr(user.account, 14)], [user]);
+  const [ftmAccount, ftmAccont2] = useMemo(() => [shortStr(user.account, 4), shortStr(user.account, 14)], [user]);
   const _onClickLogout = useCallback(user.logout, [user]);
   const showSwitchAccount = user.wallet === "crust" || user.wallet === "polkadot-js";
   const [firstExpandUser, toggleFirstExpandUser] = useToggle();
@@ -206,138 +210,145 @@ function User(props: Props) {
   };
   const [showChains, setShowChains] = useState(false);
   const ref = useOnClickOutside(() => showChains && setShowChains(false));
-  const chainId = useMemo(() => user.metamask.chainId, [user]);
+  const chainId = useMemo(() => (user.useWallet as Metamask).chainId, [user]);
+  const showSwichChains = user && user.wallet === "metamask" || user.wallet === "coinbase"
   return (
-    <Segment basic textAlign={"right"} className={props.className}>
+    <div className={props.className}>
+      <div className="siderMenu" onClick={props.onClickMenu}>
+        <span className="cru-fo cru-fo-menu" />
+      </div>
       {open && <ModalSelectAccount size={"tiny"} open={true} user={user} toggleOpen={toggleOpen} />}
-      <Item.Group>
-        <Item style={{ justifyContent: "flex-end", alignItems: "center" }}>
-          <Links2 space={20} size={24} />
-          <div className="docs" onClick={_onClickDocs}>
-            <span className="cru-fo cru-fo-file-text" />
-            {/* Docs */}
-          </div>
+      <Links2 className="links" space={20} size={24} />
+      <div className="docs" onClick={_onClickDocs}>
+        <span className="cru-fo cru-fo-file-text" />
+      </div>
+      <div
+        ref={ref}
+        className="walletChains"
+        onClick={() => showSwichChains && setShowChains(!showChains)}
+      >
+        <Item.Image src={getWalletIcon(user)} size={"tiny"} />
+        <div className="walletArrow" style={{ fontSize: 24, visibility: showSwichChains ? "visible" : "hidden" }}>{showChains ? <FiChevronUp /> : <FiChevronDown />}</div>
+        {showChains && (
           <div
-            ref={ref}
-            style={{ display: "flex", alignItems: "center", cursor: "pointer", position: "relative" }}
-            onClick={() => user && user.wallet === "metamask" && setShowChains(!showChains)}
+            style={{
+              position: "absolute",
+              top: "100%",
+              zIndex: 1000,
+              right: 0,
+              background: "white",
+              boxShadow: "0 0.57rem 1.43rem 0 rgba(0, 0, 0, 0.1)",
+              borderRadius: 14,
+              width: "max-content",
+              gap: 10,
+              color: 'black',
+              display: "flex",
+              flexDirection: "column",
+              border: "0.07rem solid #eeeeee",
+              padding: 16,
+              fontSize: 12,
+              whiteSpace: "nowrap",
+              // marginTop: "1.6rem !important",
+            }}
           >
-            <Item.Image src={getWalletIcon(user)} size={"tiny"} />
-            <div style={{ fontSize: 24, visibility: user.wallet === "metamask" ? "visible" : "hidden" }}>{showChains ? <FiChevronUp /> : <FiChevronDown />}</div>
-            {showChains && (
+            {chains.map((c, i) => (
               <div
-                style={{
-                  position: "absolute",
-                  top: "100%",
-                  zIndex: 1000,
-                  right: 0,
-                  background: "white",
-                  boxShadow: "0 0.57rem 1.43rem 0 rgba(0, 0, 0, 0.1)",
-                  borderRadius: 14,
-                  width: "max-content",
-                  gap: 10,
-                  display: "flex",
-                  flexDirection: "column",
-                  border: "0.07rem solid #eeeeee",
-                  padding: 16,
-                  whiteSpace: "nowrap",
-                  // marginTop: "1.6rem !important",
+                key={`mi_${i}`}
+                onClick={() => {
+                  chainId !== c.chainId &&
+                    (user.useWallet as Metamask)
+                      .switchAndInstallChain({
+                        chainId: numberToHex(c.chainId),
+                        chainName: c.chain.name,
+                        nativeCurrency: c.chain.nativeCurrency,
+                        rpcUrls: c.chain.rpcUrls.default.http,
+                        blockExplorerUrls: [c.chain.blockExplorers.default.url],
+                      })
+                      .catch((err) => {
+                        console.info("error:", err);
+                      });
                 }}
+                style={{ display: "flex", gap: 10, alignItems: "center", cursor: "pointer" }}
               >
-                {chains.map((c, i) => (
-                  <div
-                    key={`mi_${i}`}
-                    onClick={() => {
-                      chainId !== c.chainId &&
-                        user.metamask
-                          .switchAndInstallChain({
-                            chainId: numberToHex(c.chainId),
-                            chainName: c.chain.name,
-                            nativeCurrency: c.chain.nativeCurrency,
-                            rpcUrls: c.chain.rpcUrls.default.http,
-                            blockExplorerUrls: [c.chain.blockExplorers.default.url],
-                          })
-                          .catch((err) => {
-                            console.info("error:", err);
-                          });
-                    }}
-                    style={{ display: "flex", gap: 10, alignItems: "center", cursor: "pointer" }}
-                  >
-                    <img src={c.image} style={{ height: 24 }} />
-                    <span>{c.name}</span>
-                    <div style={{ flex: "1" }} />
-                    {chainId === c.chainId && <FiCheck style={{ fontSize: 24, color: "#FC7823" }} />}
-                  </div>
-                ))}
+                <img src={c.image} style={{ height: 24 }} />
+                <span>{c.name}</span>
+                <div style={{ flex: "1" }} />
+                {chainId === c.chainId && <FiCheck style={{ fontSize: 24, color: "#FC7823" }} />}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <Dropdown pointing={"top right"} icon={<span className="cru-fo cru-fo-chevron-down" />} basic text={user.nickName || ftmAccount}>
+        <Dropdown.Menu>
+          <TwoText>
+            <div className="title-text">Sign-in Wallet : {user.useWallet?.name}</div>
+            <div className="sub-text">
+              {ftmAccont2}
+              <span onClick={() => copy(user.account)} className="cru-fo cru-fo-copy" />
+            </div>
+          </TwoText>
+          <Line />
+          <TwoText>
+            {renderTitleText()}
+            {renderSubText()}
+          </TwoText>
+          <MBtns>
+            {showSwitchAccount && (
+              <div className="btn" onClick={() => toggleOpen(true)}>
+                Switch Account
               </div>
             )}
-          </div>
-          <Item.Content verticalAlign={"middle"} style={{ flex: "unset", paddingLeft: "0.7rem" }}>
-            <Dropdown pointing={"top right"} icon={<span className="cru-fo cru-fo-chevron-down" />} basic text={user.nickName || ftmAccount}>
-              <Dropdown.Menu>
-                <TwoText>
-                  <div className="title-text">Sign-in Wallet : {user.useWallet?.name}</div>
-                  <div className="sub-text">
-                    {ftmAccont2}
-                    <span onClick={() => copy(user.account)} className="cru-fo cru-fo-copy" />
-                  </div>
-                </TwoText>
-                <Line />
-                <TwoText>
-                  {renderTitleText()}
-                  {renderSubText()}
-                </TwoText>
-                <MBtns>
-                  {showSwitchAccount && (
-                    <div className="btn" onClick={() => toggleOpen(true)}>
-                      Switch Account
-                    </div>
-                  )}
-                  <div className="btn" onClick={_onClickLogout}>
-                    Log Out
-                  </div>
-                </MBtns>
-              </Dropdown.Menu>
-            </Dropdown>
-          </Item.Content>
-        </Item>
-      </Item.Group>
-    </Segment>
+            <div className="btn" onClick={_onClickLogout}>
+              Log Out
+            </div>
+          </MBtns>
+        </Dropdown.Menu>
+      </Dropdown>
+
+    </div>
   );
 }
 const StyleUser = styled(User)`
-  border-bottom: 1px solid var(--line-color) !important;
-  margin: unset !important;
+  display: flex;
+  height: 56px;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1.5rem;
+  border-bottom: 1px solid var(--line-color);
   padding: 1.1rem !important;
   width: 100%;
   flex-shrink: 0;
   .docs {
     /* margin-top: 20px; */
-    margin-left: 20px;
     display: inline-block;
     color: var(--secend-color);
     height: 24px;
-    margin-right: 30px;
     cursor: pointer;
     font-size: 24px;
     .cru-fo {
       position: relative;
       top: 1px;
-      margin-right: 10px;
     }
-    padding-right: 30px;
+    padding-right: 1.5rem;
     border-right: 1px solid #eeeeee;
   }
 
   .tiny.image {
-    width: 50px !important;
-    height: 50px !important;
-    margin-right: 1rem !important;
-    /* filter: drop-shadow(0px 4px 5px rgba(0, 0, 0, 0.15)); */
+    width: 3.125rem;
+    /* height: auto; */
   }
 
   .items > .item.tiny {
     width: 4.3rem;
+  }
+  .walletChains {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    position: relative;
+    cursor: pointer;
   }
 
   .ui.dropdown {
@@ -365,6 +376,28 @@ const StyleUser = styled(User)`
       margin-top: 1.6rem !important;
     }
   }
+  .siderMenu {
+    display: none;
+  }
+  ${ScreenMobile} {
+    background-color: black !important;
+    color: white;
+    .siderMenu {
+      cursor: pointer;
+      margin-left: 8px;
+      margin-right: auto;
+      display: block;
+      font-size: 24px;
+    }
+
+    .links, .docs {
+      display: none;
+    }
+    .walletArrow {
+      display: none;
+    }
+  }
+
 `;
 
-export default React.memo(StyleUser as any);
+export default React.memo(StyleUser);

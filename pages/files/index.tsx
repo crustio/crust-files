@@ -12,6 +12,7 @@ import useInputFile from "../../lib/hooks/useInputFile";
 import { useFilesInfo } from "../../lib/useFilesInfo";
 import { useFiles } from "../../lib/wallet/hooks";
 import { FileInfo, SaveFile } from "../../lib/wallet/types";
+import { ScreenMobile } from "../../lib/config";
 
 function Index(p: { className?: string }) {
   const wFiles = useFiles();
@@ -39,7 +40,7 @@ function Index(p: { className?: string }) {
 
   return <PageUserSideLayout path="/files" className={p.className}>
     <OnDrapDropFrame onDrop={_onDrop} />
-    <Segment basic className="uploadPanel">
+    <div className="uploadPanel">
       <input
         onChange={wInputFile._onInputFile}
         ref={wInputFile.inputRef}
@@ -54,7 +55,7 @@ function Index(p: { className?: string }) {
             trigger={<span className="helper cru-fo-help-circle" />}
             content={'Your files will be just as they were meant to be. No encryption, open access for all. Great for storing and sharing non-sensitive files.'} />
         </div>
-        <div className="content font-sans-regular">File/Folder Stored: {publicCount}<span style={{marginLeft: '4rem'}}/>Space Usage: {publicSize}</div>
+        <div className="content font-sans-regular">File/Folder Stored: {publicCount}<span style={{ marginLeft: '4rem' }} />Space Usage: {publicSize}</div>
       </div>
       <BtnUpload
         onClickUpFile={wInputFile._onClickUpFile}
@@ -71,7 +72,7 @@ function Index(p: { className?: string }) {
           uc={uc}
         />
       }
-    </Segment>
+    </div>
     <div className="line" />
     <FilesTable files={wFiles.files} onDeleteItem={wFiles.deleteItem} />
   </PageUserSideLayout >
@@ -81,14 +82,16 @@ export default React.memo(styled(Index)`
 
   .line {
     margin: 0 2.3rem;
-    border-bottom: solid 1px var(--line-color) !important;
+    border-bottom: solid 1px var(--line-color);
   }
   
   .uploadPanel {
+    font-family: OpenSans-SemiBold;
     width: 100%;
     justify-content: space-between;
-    margin: unset !important;
     white-space: pre-wrap;
+    flex-wrap: wrap;
+    gap: 20px;
     padding: 3.14rem 2.3rem 4.2857rem 2.3rem;
     color: var(--main-color);
     display: flex;
@@ -121,5 +124,16 @@ export default React.memo(styled(Index)`
       }
     }
   }
-
+  ${ScreenMobile} {
+    .uploadPanel{
+      padding: 16px;
+      box-shadow: 0px 0px 16px 0px #0000001A;
+      border-radius: 12px;
+    }
+    .line{
+      margin: 10px 0;
+      border-bottom: none;
+    }
+  }
+  
 `)

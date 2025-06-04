@@ -20,6 +20,8 @@ import { useToggle } from "../../lib/hooks/useToggle";
 import { ExportObj, SaveFile } from "../../lib/types";
 import { useFilesInfo } from '../../lib/useFilesInfo';
 import { useFiles } from "../../lib/wallet/hooks";
+import { ScreenMobile } from '../../lib/config';
+import { useIsMobile } from '../../lib/hooks/useIsMobile';
 
 export const StorageChainConfig = {
   chainId: '0x5afe',
@@ -243,7 +245,7 @@ function Index(props: Props) {
     dg.set(tempDownloadGateway)
     alert.success("Save success");
   }
-
+  const isMobile = useIsMobile()
   return <PageUserSideLayout path={'/setting'} className={className}>
     <input
       onChange={_onInputImportFile}
@@ -281,7 +283,7 @@ function Index(props: Props) {
       }
       <div className="text font-sans-regular">
         {`${t('User Type:')} `}
-        <span className="bold-text font-sans-semibold">{userType}</span> {!isPremiumUser && <a onClick={() => r.push('/user')} rel="noreferrer">Get Premium</a>}
+        <span className="bold-text font-sans-semibold">{userType}</span> {!isPremiumUser && <a className='getPreminum' onClick={() => r.push('/user')} rel="noreferrer">Get Premium</a>}
       </div>
       <div className="text font-sans-regular">
         {`${t('File/Folder Stored:')} `} <span className="bold-text font-sans-semibold">{`${publicCount} in Public, ${valutCount} in Vault`}</span>
@@ -370,7 +372,7 @@ function Index(props: Props) {
         <Btn content={t('Download key from Oasis')} onClick={_clickDownload} />
       </div>
     </Segment>
-    <BindAirdrop />
+    { !isMobile && <BindAirdrop />}
   </PageUserSideLayout>
 }
 
@@ -475,6 +477,15 @@ export default React.memo<Props>(styled(Index)`
       font-size: 10px;
       &::placeholder{
         color: #999999;
+      }
+    }
+
+    ${ScreenMobile} {
+      .input-dowload-gateway {
+        min-width: unset;
+      }
+      .getPreminum {
+        display: none;
       }
     }
   }

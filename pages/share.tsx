@@ -14,6 +14,7 @@ import { report } from '../lib/http/report';
 import { getShortInfo } from '../lib/http/share_earn';
 import { ShareOptions } from '../lib/types';
 import { getErrorMsg } from '../lib/utils';
+import { ScreenMobile } from '../lib/config';
 
 function _share(props: BaseProps) {
     const { className } = props
@@ -79,7 +80,7 @@ function _share(props: BaseProps) {
                             from Crust Files.
                         </div>
                         <div className='link'>{`File CID: ${cid}`}</div>
-                        <RowFlex>
+                        <RowFlex className='btns'>
                             <PixelBtn
                                 onClick={_onClickDown}
                                 height={'4.29rem'}
@@ -219,5 +220,34 @@ export default React.memo(styled(_share)`
             align-items: center;
         }
 
+    }
+
+    ${ScreenMobile} {
+        min-width: unset;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+
+        .share--panel {
+            width: 100%;
+            padding: 16px;
+            .logo {
+                margin-bottom: 30px;
+            }
+            .share-info {
+                width: 100%;
+                padding-bottom: unset;
+                .btns {
+                    flex-wrap: wrap;
+                    gap: 12px;
+                }
+            }
+        }
+        .share--pixels {
+            display: none;
+        }
+        .share--activity {
+            width: 100%;
+        }
     }
 `)

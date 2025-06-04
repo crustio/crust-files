@@ -2,7 +2,7 @@ import { isValidAddress } from "ethereumjs-util";
 import React, { useCallback, useMemo, useState } from "react";
 import styled from "styled-components";
 import { useApp } from "../lib/AppContext";
-import { ShareEarnENV } from "../lib/config";
+import { ScreenMobile, ShareEarnENV } from "../lib/config";
 import { useGet } from "../lib/hooks/useGet";
 import { useGetDepost } from "../lib/hooks/useGetDeposit";
 import { useSafeState } from "../lib/hooks/useSafeState";
@@ -149,7 +149,7 @@ function _BindAirdrop(props: Props) {
                     onChange={_onChangeEthAddress} />
                 {exAddressError && <span className="input-EthError">{exAddressError}</span>}
                 <br />
-                <Btn disabled={disableBindEth} className='btn' style={{ width: 544, height: 40 }} onClick={_onClickBindEth}>Submit</Btn>
+                <Btn disabled={disableBindEth} className='btn' onClick={_onClickBindEth}>Submit</Btn>
                 {!isPremiumUser && <span className='submit-tip'>Get Premium User to bind your AirDrop addresses.</span>}
             </>}
     </MCard>
@@ -183,5 +183,17 @@ export const BindAirdrop = styled(_BindAirdrop)`
     margin-left: 12px;
     font-size: 10px;
     color: var(--secend-color);
+  }
+  .btn {
+    width: 544px;
+    height: 40px;
+  }
+  ${ScreenMobile} {
+    .input-eth {
+        min-width: 100%;
+    }
+    .btn {
+        width: 100%;
+    }
   }
 `

@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import React, { MouseEvent, useCallback, useContext, useRef, useState } from "react";
+import React, { MouseEvent, useCallback, useContext, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { Links } from "../components/Links";
 import { PixelBg } from "../components/effect/PixelBg";
@@ -8,7 +8,7 @@ import { Pixel } from "../components/effect/Pixels";
 import { FiChevronDown, FiChevronUp, FiDownload } from "react-icons/fi";
 import Logo from "../components/Logo";
 import { AppContext } from "../lib/AppContext";
-import { CrustWalletDownUrl } from "../lib/config";
+import { CrustWalletDownUrl, MOBILE_WIDTH, ScreenMobile } from "../lib/config";
 import { report } from "../lib/http/report";
 import { BaseWallet } from "../lib/types";
 import { getErrorMsg, openDocs } from "../lib/utils";
@@ -24,6 +24,7 @@ declare global {
 }
 
 const recomendWallets: BaseWallet[] = [WALLETMAP.crust, WALLETMAP.metamask, WALLETMAP["wallet-connect"], WALLETMAP["ton-connect"]];
+const recomendWalletsMobile: BaseWallet[] = [WALLETMAP.metamask, WALLETMAP["wallet-connect"], WALLETMAP['coinbase'], WALLETMAP['metax']];
 const moreWallets: BaseWallet[] = [
   WALLETMAP.algorand,
   WALLETMAP["aptos-martian"],
@@ -36,10 +37,25 @@ const moreWallets: BaseWallet[] = [
   WALLETMAP.subWallet,
   WALLETMAP.talisman,
 ];
+
+function useRecomendWallets() {
+  const [walelts, setWallets] = useState<BaseWallet[]>([])
+  useEffect(() => {
+    
+    const onSizeChange = () => {
+      setWallets(window.innerWidth <= MOBILE_WIDTH ? recomendWalletsMobile : recomendWallets)
+    }
+    onSizeChange()
+    window.addEventListener('resize', onSizeChange)
+    return () => window.removeEventListener('resize', onSizeChange)
+  }, [])
+  return walelts
+}
 function Home({ className }: { className?: string }) {
   // const { t } = useTranslation();
   const user = useContextWrapLoginUser();
   const { alert } = useContext(AppContext);
+  const reWallets = useRecomendWallets()
   // const [error, setError] = useState('');
   const setError = (data: string) => {
     if (data) {
@@ -80,6 +96,7 @@ function Home({ className }: { className?: string }) {
     }
     onClickedWallet.current = false;
   };
+
   return (
     <div className={className}>
       <div className="left_panel">
@@ -101,7 +118,7 @@ function Home({ className }: { className?: string }) {
             Your first personal <span>Web3.0</span> storage
           </div>
           <div className="wallets_panel">
-            {recomendWallets.map((w, i) => (
+            {reWallets.map((w, i) => (
               <div key={`recomendList_${i}`} className="item_connect" style={{ justifyContent: "flex-start", paddingLeft: 90 }} onClick={() => onClickWallet(w)}>
                 <img style={{ height: 32, padding: 2.5, position: "relative" }} src={w.icon} />
                 <span>{w.name}</span>
@@ -148,22 +165,17 @@ export default React.memo(
       flex: 1;
       // height: 100%;
       position: relative;
-      .bg {
-        overflow: hidden;
-        width: 100%;
-        height: 100%;
-        position: absolute;
-        z-index: 0;
-      }
       .panel {
-        // z-index: 1;
+        left: 0;
+        top: 0;
+        z-index: 10;
         display: flex;
         width: 100%;
         height: 100%;
         flex-direction: column;
         align-items: center;
         overflow: auto;
-        position: relative;
+        position: absolute;
       }
       .tabs {
         font-size: 1.29rem;
@@ -319,6 +331,52 @@ export default React.memo(
         line-height: 4.25rem !important;
         /* padding-left: 2rem; */
       }
+    }
+
+    ${ScreenMobile} {
+        .left_panel {
+          .logo {
+            margin: 0;
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 56px;
+            background: #373737;
+          }
+          .tabs {
+            position: absolute;
+            left: 1rem;
+            bottom: 2rem;
+            top: unset;
+            right: unset;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 100%;
+          }
+          .slog {
+            white-space: pre-wrap;
+            text-align: center;
+          }
+          .panel{
+            padding: 0 1rem;
+            .wallets_panel{
+              max-width: 386px;
+              width: 100%;
+              .more_opt{
+                display: none;
+              }
+            }
+          }
+
+        }
+        .center_panel{
+          display: none;
+        }
+        
     }
   ` as any
 );

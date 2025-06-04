@@ -79,7 +79,8 @@ export default React.memo(styled(AlertMessage)`
 
   .msg {
     flex-shrink: 0;
-    display: block;
+    display: flex;
+    align-items: center;
     padding: 1.14rem 1.7rem;
     background: #FFFFFF;
     box-shadow: 0 0.57rem 1.14rem 0 rgba(0, 0, 0, 0.1) !important;

@@ -49,7 +49,7 @@ export function finalTxSend(tx: SubmittableExtrinsic<"promise", ISubmittableResu
 }
 
 export const getPerfix = (user: LoginUser): string => {
-  if (user.wallet.startsWith("metamask") || user.wallet === "metax" || user.wallet === "wallet-connect") {
+  if (user.wallet.startsWith("metamask") || user.wallet === "metax" || user.wallet === "wallet-connect" || user.wallet == 'coinbase') {
     return "eth";
   }
   if (user.wallet === "flow") {

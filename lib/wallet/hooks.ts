@@ -19,6 +19,7 @@ import { SubWallet } from "./SubWallet";
 import { Talisman } from "./Talisman";
 import { TonConnect } from "./TonConnect";
 import { BaseWallet, KEY_TYPE, LoginUser, SaveFile, WalletType } from "./types";
+import { Coinbase } from "./Coinbase";
 export interface Files {
   files: SaveFile[];
   isLoad: boolean;
@@ -134,6 +135,7 @@ export const WALLETMAP: { [k in WalletType]: BaseWallet } = {
   subWallet: new SubWallet(),
   talisman: new Talisman(),
   metamask: new Metamask(),
+  coinbase: new Coinbase(),
   metax: new MetaX(),
   flow: new FlowM(),
   solana: new SolanaM(),
