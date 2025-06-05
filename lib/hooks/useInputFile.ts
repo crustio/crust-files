@@ -23,24 +23,22 @@ export default function useInputFile(): WrapInputFile {
     const inputRef = useRef<HTMLInputElement>(null);
     const _clickUploadFile = useCallback((dir = false) => {
         if (!inputRef.current) return;
-        if(dir){
-            // eslint-disable-next-line
-            // @ts-ignore
-            // eslint-disable-next-line
-            inputRef.current.webkitdirectory = dir;
-            // eslint-disable-next-line
-            inputRef.current.multiple = dir;
-        }
+        // eslint-disable-next-line
+        // @ts-ignore
+        // eslint-disable-next-line
+        inputRef.current.webkitdirectory = dir;
+        // eslint-disable-next-line
+        inputRef.current.multiple = dir;
         inputRef.current.click();
     }, [inputRef]);
     const _onClickUpFile = useCallback(() => _clickUploadFile(false), [_clickUploadFile]);
     const _onClickUpFolder = useCallback(() => _clickUploadFile(true), [_clickUploadFile]);
     const _onInputFile = useCallback<FunInputFile>((e) => {
         try {
-            
-            const files = e.target.files;
-            if (!files) return;
+            console.info('onInputFile:', e.target.files)
+            const files = _.filter(e.target.files||[]);
             const size = _.size(files)
+            if (!files || size == 0) return;
             if (size > 2000) {
                 alert.alert({
                     title: t('Upload'),
@@ -72,14 +70,14 @@ export default function useInputFile(): WrapInputFile {
                     // console.info('f:', files[index]);
                     dirFiles.push(files[index] as DirFile);
                 }
-    
                 console.info(dirFiles);
-    
                 const [dir] = dirFiles[0].webkitRelativePath.split('/');
-    
-                setFile({ files: dirFiles, dir });
+                if(!dir && size == 1){
+                    setFile({ file: files[0] });             
+                } else {
+                    setFile({ files: dirFiles, dir: dir || 'Files' });
+                }
             }
-    
             e.target.value = '';
         } catch (error) {
             alert.alert({
