@@ -71,7 +71,7 @@ export default function useInputFile(): WrapInputFile {
                     dirFiles.push(files[index] as DirFile);
                 }
                 console.info(dirFiles);
-                const [dir] = dirFiles[0].webkitRelativePath.split('/');
+                const [dir] = (dirFiles[0].webkitRelativePath || '').split('/');
                 if(!dir && size == 1){
                     setFile({ file: files[0] });             
                 } else {
