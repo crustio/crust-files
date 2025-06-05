@@ -9,10 +9,9 @@ import { useIsMobile } from "../lib/hooks/useIsMobile";
 
 function home(p: BaseProps) {
   const r = useRouter();
-  const { isPremiumUser } = useGetDepost();
-  // const _onClickPublick = () => r.push('/files')
+  const _onClickPublick = () => r.push('/files')
   const _onClickShareAndEarn = () => r.push("/share-earn");
-  const _onClickVault = () => isPremiumUser && r.push("/files/vault");
+  const _onClickVault = () => r.push("/files/vault");
   const _onClickUser = () => r.push("/user");
   const _onClickPay2Download = () => {
     window.location.href = "https://p2d.crustapps.net/";
@@ -33,7 +32,7 @@ function home(p: BaseProps) {
         <a onClick={_onClickShareAndEarn}>Share-and-Earn</a>
       </div>}
       <div className="home--cards">
-        <div className="home--card">
+        <div className="home--card" onClick={_onClickPublick}>
           <div className="home--card-inner">
             <div className="home--card--front">
               <img src="/images/w4.png" className="img-fluid" />
