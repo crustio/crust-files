@@ -108,9 +108,9 @@ export abstract class EvmInjectWallet extends BaseWallet {
       this.init();
     });
 
-    this.ethereum.on("chainChanged", (chainId) => {
+    this.ethereum.on("chainChanged", async (chainId) => {
       console.info(`${this.name}:chainChanged:`, chainId);
-      this.syncChainId();
+      await this.syncChainId();
       this.onChainChange && this.onChainChange(this.chainId);
     });
   }
@@ -160,7 +160,12 @@ export abstract class EvmInjectWallet extends BaseWallet {
         method: "wallet_switchEthereumChain",
         params: [{ chainId: chaincfg.chainId }],
       })
-      .then(() => true)
+      .then(() => {
+        this.syncChainId().then(() => {
+          this.onChainChange && this.onChainChange(this.chainId);
+        });
+        return true;
+      })
       .catch((err) => {
         if (err.code === 4902) {
           this.ethereum
