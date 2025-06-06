@@ -9,6 +9,19 @@ import MDocs from "../components/root/MDocs";
 import "../styles/global.css";
 import { useConfigDomain } from "../lib/hooks/useConfigDomain";
 
+import { ErrorBoundary } from "react-error-boundary";
+
+function fallbackRender({ error, resetErrorBoundary }) {
+  // Call resetErrorBoundary() to reset the error boundary and retry the render.
+
+  return (
+    <div role="alert">
+      <p>Something went wrong:</p>
+      <pre style={{ color: "red" }}>{error.message}</pre>
+    </div>
+  );
+}
+
 export default function App({ Component, ...props }: AppProps) {
   const [isClient, setIsClient] = useState(false);
   useEffect(() => {
@@ -24,7 +37,7 @@ export default function App({ Component, ...props }: AppProps) {
     return <MDocs Component={Component} {...props} />;
   }
   return (
-    <>
+    <ErrorBoundary fallbackRender={fallbackRender}>
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="twitter:card" content="summary_large_image" />
@@ -35,6 +48,6 @@ export default function App({ Component, ...props }: AppProps) {
         <meta name="twitter:image" content="https://gw.crustfiles.net/ipfs/QmfPTVDtSGuCp2mftrZdQE4Mf5FeYT1gYTiL9xTXoSEgqz?filename=Crust%20Files.png" />
       </Head>
       <MApp Component={Component} {...props} />
-    </>
+    </ErrorBoundary>
   );
 }
