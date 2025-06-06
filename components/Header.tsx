@@ -20,6 +20,7 @@ import { Metamask } from "../lib/wallet/Metamask";
 import { Links2 } from "./Links";
 import ModalSelectAccount from "./modal/ModalSelectAccount";
 import { useIsMobile } from "../lib/hooks/useIsMobile";
+import { EvmInjectWallet } from "../lib/wallet/EvmInjectWallet";
 export interface Props {
   className?: string;
   onClickMenu?: () => void;
@@ -258,12 +259,12 @@ function User(props: Props) {
                 key={`mi_${i}`}
                 onClick={() => {
                   chainId !== c.chainId &&
-                    (user.useWallet as Metamask)
+                    (user.useWallet as EvmInjectWallet)
                       .switchAndInstallChain({
                         chainId: numberToHex(c.chainId),
                         chainName: c.chain.name,
                         nativeCurrency: c.chain.nativeCurrency,
-                        rpcUrls: c.chain.rpcUrls.default.http,
+                        rpcUrls: c.chain.rpcUrls.default.http as any,
                         blockExplorerUrls: [c.chain.blockExplorers.default.url],
                       })
                       .catch((err) => {

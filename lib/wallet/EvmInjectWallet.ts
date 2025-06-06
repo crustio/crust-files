@@ -1,5 +1,5 @@
-import { parseInt } from "lodash";
-import { BaseWallet, LoginUser } from "./types";
+import _, { parseInt } from "lodash";
+import { BaseWallet, LoginUser, WalletType } from "./types";
 import { providers } from "ethers";
 import { Hex } from "viem";
 
@@ -9,39 +9,51 @@ export interface MetamaskReqOptions {
   method: string;
 }
 
-export class EvmInjectWallet extends BaseWallet {
+export abstract class EvmInjectWallet extends BaseWallet {
+  abstract readonly type: WalletType;
+
   name = "Evm Inject Wallet";
   icon = "/images/wallet.svg";
   isInjectWallet = true;
-
   ethereum?: {
     isMetaMask: boolean;
     request: <T>(option: MetamaskReqOptions) => Promise<T>;
     selectedAddress?: string;
     chainId: string;
+    selfChainId: string;
     isConnected: () => boolean;
     on: (type: string, handler: (data: any) => void) => void;
   } = undefined;
 
   chainId: number;
-
+  async syncChainId() {
+    if (!this.ethereum) return;
+    let chainId = this.ethereum.chainId || this.ethereum.selfChainId;
+    if (_.isNil(chainId)) {
+      chainId = await this.ethereum.request<string>({ method: "eth_chainId" });
+    }
+    if (_.isNil(chainId)) return;
+    this.chainId = typeof chainId == "string" && chainId.startsWith("0x") ? parseInt(chainId.replace("0x", ""), 16) : parseInt(`${chainId}`);
+  }
   getProvider() {
     return new providers.Web3Provider(this.ethereum, this.chainId);
   }
-  async init(old?: LoginUser): Promise<void> {
+
+  async initBy(old?: LoginUser, injectKey = "ethereum", checkKey?: string): Promise<void> {
     if (this.isInit) return Promise.resolve();
     await new Promise<void>((resolve) => {
       let handled = false;
-      const eWin = window as { ethereum?: EvmInjectWallet["ethereum"] };
+      const eWin = window as any;
       const handleEthereum = () => {
         if (handled) return;
         handled = true;
         window.removeEventListener("ethereum#initialized", handleEthereum);
-        const ethereum = eWin.ethereum ? eWin.ethereum : undefined;
-        console.info("ethereum::", eWin.ethereum);
+        const ethereum =
+          injectKey !== "ethereum" && eWin[injectKey] ? eWin[injectKey] : eWin["ethereum"] && (!checkKey || eWin["ethereum"][checkKey]) ? eWin["ethereum"] : undefined;
+        console.info(`${injectKey}:`, eWin.ethereum);
         this.ethereum = ethereum;
-        if (this.ethereum && typeof this.ethereum.chainId == "string") {
-          this.chainId = parseInt(ethereum.chainId.replace("0x", ""), 16);
+        if (this.ethereum) {
+          this.syncChainId();
           this.setLis();
         }
         resolve();
@@ -56,6 +68,9 @@ export class EvmInjectWallet extends BaseWallet {
     this.isInit = true;
     await super.init(old);
   }
+  async init(old?: LoginUser): Promise<void> {
+    this.initBy(old);
+  }
 
   async fetchAccounts(): Promise<string[]> {
     try {
@@ -68,9 +83,9 @@ export class EvmInjectWallet extends BaseWallet {
 
   async connect(): Promise<LoginUser> {
     if (!this.isConnected) {
-      if (!this.ethereum) throw "EvmInjectWallet not installed";
+      if (!this.ethereum) throw `${this.name} not installed`;
       const accounts = await this.ethereum.request<string[]>({ method: "eth_requestAccounts" });
-      if (!accounts || accounts.length == 0) throw "EvmInjectWallet error";
+      if (!accounts || accounts.length == 0) throw `${this.name} error`;
       this.accounts = accounts;
       if (this.ethereum.selectedAddress && accounts.includes(this.ethereum.selectedAddress)) {
         this.account = this.ethereum.selectedAddress;
@@ -80,12 +95,12 @@ export class EvmInjectWallet extends BaseWallet {
       this.setLis();
       this.isConnected = true;
     }
-    return { account: this.account, wallet: "metamask" };
+    return { account: this.account, wallet: this.type };
   }
 
   private setLis() {
     this.ethereum.on("accountsChanged", (data) => {
-      console.info("EvmInjectWallet:accountsChanged:", data);
+      console.info(`${this.name}:accountsChanged:`, data);
       if (this.onAccountChange) {
         this.onAccountChange(data as string[]);
       }
@@ -94,8 +109,8 @@ export class EvmInjectWallet extends BaseWallet {
     });
 
     this.ethereum.on("chainChanged", (chainId) => {
-      console.info("EvmInjectWallet:chainChanged:", chainId);
-      this.chainId = typeof chainId == "string" && chainId.startsWith("0x") ? parseInt(chainId.replace("0x", ""), 16) : parseInt(`${chainId}`);
+      console.info(`${this.name}:chainChanged:`, chainId);
+      this.syncChainId();
       this.onChainChange && this.onChainChange(this.chainId);
     });
   }
