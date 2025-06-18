@@ -3,7 +3,6 @@ import React from "react";
 import styled from "styled-components";
 import PageUserSideLayout from "../components/PageUserSideLayout";
 import { BaseProps } from "../components/types";
-import { useGetDepost } from "../lib/hooks/useGetDeposit";
 import { ScreenMobile } from "../lib/config";
 import { useIsMobile } from "../lib/hooks/useIsMobile";
 

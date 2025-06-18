@@ -21,7 +21,9 @@ function fallbackRender({ error, resetErrorBoundary }) {
     </div>
   );
 }
-
+function isDocs(pathname: string) {
+  return pathname.startsWith('/docs') || ['/terms-of-service', '/privacy-policy'].includes(pathname)
+}
 export default function App({ Component, ...props }: AppProps) {
   const [isClient, setIsClient] = useState(false);
   useEffect(() => {
@@ -33,8 +35,11 @@ export default function App({ Component, ...props }: AppProps) {
   if (!isClient) {
     return null;
   }
-  if (r.pathname.startsWith("/docs")) {
+  if (r.pathname.startsWith('/docs')) {
     return <MDocs Component={Component} {...props} />;
+  }
+  if (['/terms-of-service', '/privacy-policy'].includes(r.pathname)) {
+    return <MDocs Component={Component} {...props} menus={false} />;
   }
   return (
     <ErrorBoundary fallbackRender={fallbackRender}>

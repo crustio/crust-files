@@ -21,6 +21,7 @@ import { Links2 } from "./Links";
 import ModalSelectAccount from "./modal/ModalSelectAccount";
 import { useIsMobile } from "../lib/hooks/useIsMobile";
 import { EvmInjectWallet } from "../lib/wallet/EvmInjectWallet";
+import { EvmWallet } from "../lib/types";
 export interface Props {
   className?: string;
   onClickMenu?: () => void;
@@ -213,7 +214,7 @@ function User(props: Props) {
   const [showChains, setShowChains] = useState(false);
   const ref = useOnClickOutside(() => showChains && setShowChains(false));
   const chainId = useMemo(() => (user.useWallet as Metamask).chainId, [user]);
-  const showSwichChains = user && user.wallet === "metamask" || user.wallet === "coinbase"
+  const showSwichChains = user && (user.useWallet as unknown as EvmWallet)?.isEvmWallet
   const isMobile = useIsMobile()
   return (
     <div className={props.className}>
@@ -259,7 +260,7 @@ function User(props: Props) {
                 key={`mi_${i}`}
                 onClick={() => {
                   chainId !== c.chainId &&
-                    (user.useWallet as EvmInjectWallet)
+                    (user.useWallet as unknown as EvmWallet)
                       .switchAndInstallChain({
                         chainId: numberToHex(c.chainId),
                         chainName: c.chain.name,

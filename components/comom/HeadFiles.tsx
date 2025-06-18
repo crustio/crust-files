@@ -2,11 +2,12 @@ import styled from "styled-components";
 import React from "react";
 import classNames from "classnames";
 import { BaseProps } from "../types";
+import Link from "next/link";
 
 function _HeadFiles(props: BaseProps) {
     const { className } = props
     return <div className={classNames(className, "files_head")}>
-        <img className="logo" src="/images/logo_22x.png" />
+        <Link href="/"><img className="logo" src="/images/logo_22x.png" /></Link>
     </div>
 }
 
@@ -17,6 +18,7 @@ export const HeadFiles = styled(_HeadFiles)`
         background-color: black;
         .logo {
             display: inline-block;
+            cursor: pointer;
             height: 26px;
             width: auto;
             margin-top: 21px;

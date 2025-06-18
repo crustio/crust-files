@@ -12,7 +12,7 @@ interface Menu {
     path: string,
 }
 
-const menus: Menu[] = [
+const mMenus: Menu[] = [
     { name: 'Welcome', path: '/docs/CrustFiles_Welcome' },
     { name: 'FAQ', path: '/docs/CrustFiles_FAQ' },
     { name: 'Users', path: '/docs/CrustFiles_Users' },
@@ -20,21 +20,21 @@ const menus: Menu[] = [
     { name: 'Developer Guide', path: '/docs/CrustFiles_DeveloperGuide' },
 ]
 
-function _MDocs({ Component, pageProps, className }: AppProps & BaseProps) {
+function _MDocs({ Component, pageProps, className, menus = true }: AppProps & BaseProps & { menus?: boolean }) {
     const r = useRouter()
     return <div className={classNames(className)}>
         <Head>
-            <title>{'Crust Files Docs'}</title>
+            <title>{'Crust Files'}</title>
         </Head>
-        <HeadFiles/>
+        <HeadFiles />
         <div className="docs_panel">
-            <div className="left_menu">
-                {menus.map((m,index) =>
+            {menus && <div className="left_menu">
+                {mMenus.map((m, index) =>
                     <div
                         key={`docs_menu_${index}`}
                         className={classNames("item", { active: m.path === r.pathname })}
                         onClick={() => { r.push(m.path) }}>{m.name}</div>)}
-            </div>
+            </div>}
             <div className="md_content">
                 <Component {...pageProps} />
             </div>

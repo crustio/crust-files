@@ -20,6 +20,7 @@ import { Talisman } from "./Talisman";
 import { TonConnect } from "./TonConnect";
 import { BaseWallet, KEY_TYPE, LoginUser, SaveFile, WalletType } from "./types";
 import { Coinbase } from "./Coinbase";
+import { FarcasterWallet } from "./FarcasterEvm";
 export interface Files {
   files: SaveFile[];
   isLoad: boolean;
@@ -147,6 +148,7 @@ export const WALLETMAP: { [k in WalletType]: BaseWallet } = {
   oasis: new Metamask(),
   mimir: new Mimir(),
   "ton-connect": new TonConnect(),
+  farcaster: new FarcasterWallet()
 };
 
 export function useLoginUser(key: KEY_TYPE = "files:login"): WrapLoginUser {

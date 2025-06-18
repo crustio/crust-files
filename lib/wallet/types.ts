@@ -1,4 +1,5 @@
 import { providers } from "ethers";
+import { Hex } from "viem";
 
 // 0.Base
 export abstract class BaseWallet {
@@ -35,6 +36,18 @@ export abstract class BaseWallet {
   onChainChange?: (chainId: number) => void;
 
   constructor() {}
+}
+
+export interface EvmWallet {
+  readonly isEvmWallet: boolean;
+  switchAndInstallChain(chaincfg: {
+    chainId: Hex;
+    chainName: string;
+    nativeCurrency: { name: string; symbol: string; decimals: number };
+    rpcUrls: string[];
+    blockExplorerUrls: string[];
+  }): Promise<boolean>;
+  getProvider(): providers.Web3Provider | undefined;
 }
 
 // other
@@ -80,7 +93,7 @@ export const wallets = [
   "crust",
   "polkadot-js",
   "metamask",
-  'coinbase',
+  "coinbase",
   "metax",
   "flow",
   "solana",
@@ -94,6 +107,7 @@ export const wallets = [
   "oasis",
   "mimir",
   "ton-connect",
+  "farcaster",
 ] as const;
 
 export type WalletType = typeof wallets[number];

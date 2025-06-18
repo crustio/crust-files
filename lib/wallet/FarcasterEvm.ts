@@ -1,7 +1,7 @@
-import _, { parseInt } from "lodash";
-import { BaseWallet, EvmWallet, LoginUser, WalletType } from "./types";
 import { providers } from "ethers";
+import _, { parseInt } from "lodash";
 import { Hex } from "viem";
+import { BaseWallet, EvmWallet, LoginUser, WalletType } from "./types";
 
 export interface MetamaskReqOptions {
   from?: string;
@@ -9,73 +9,48 @@ export interface MetamaskReqOptions {
   method: string;
 }
 
-export abstract class EvmInjectWallet extends BaseWallet implements EvmWallet {
-  abstract readonly type: WalletType;
+export class FarcasterWallet extends BaseWallet implements EvmWallet {
+  readonly type: WalletType = "farcaster";
   readonly isEvmWallet: boolean = true;
-  name = "Evm Inject Wallet";
+  name = "Farcaster";
   icon = "/images/wallet.svg";
   isInjectWallet = true;
-  ethereum?: {
-    isMetaMask: boolean;
+  provider?: {
     request: <T>(option: MetamaskReqOptions) => Promise<T>;
-    selectedAddress?: string;
-    chainId: string;
-    selfChainId: string;
-    isConnected: () => boolean;
     on: (type: string, handler: (data: any) => void) => void;
   } = undefined;
 
   chainId: number;
   async syncChainId() {
-    if (!this.ethereum) return;
-    let chainId = this.ethereum.chainId || this.ethereum.selfChainId;
-    if (_.isNil(chainId)) {
-      chainId = await this.ethereum.request<string>({ method: "eth_chainId" });
-    }
+    if (!this.provider) return;
+    const chainId = await this.provider.request({ method: "eth_chainId", params: [] });
     if (_.isNil(chainId)) return;
     this.chainId = typeof chainId == "string" && chainId.startsWith("0x") ? parseInt(chainId.replace("0x", ""), 16) : parseInt(`${chainId}`);
   }
   getProvider() {
-    return new providers.Web3Provider(this.ethereum, this.chainId);
+    if (!this.provider) return undefined;
+    return new providers.Web3Provider(this.provider as any, this.chainId);
   }
 
-  async initBy(old?: LoginUser, injectKey = "ethereum", checkKey?: string): Promise<void> {
-    if (this.isInit) return Promise.resolve();
-    await new Promise<void>((resolve) => {
-      let handled = false;
-      const eWin = window as any;
-      const handleEthereum = () => {
-        if (handled) return;
-        handled = true;
-        window.removeEventListener("ethereum#initialized", handleEthereum);
-        const ethereum =
-          injectKey !== "ethereum" && eWin[injectKey] ? eWin[injectKey] : eWin["ethereum"] && (!checkKey || eWin["ethereum"][checkKey]) ? eWin["ethereum"] : undefined;
-        console.info(`${injectKey}:`, eWin.ethereum);
-        this.ethereum = ethereum;
-        if (this.ethereum) {
-          this.syncChainId();
-          this.setLis();
-        }
-        resolve();
-      };
-      if (eWin.ethereum) {
-        handleEthereum();
-      } else {
-        window.addEventListener("ethereum#initialized", handleEthereum, { once: true });
-        setTimeout(handleEthereum, 2000);
-      }
-    });
+  async init(old?: LoginUser): Promise<void> {
+    const FrameSDK = await require("@farcaster/frame-sdk");
+    if (this.isInit) return;
+    if (FrameSDK.wallet.ethProvider) {
+      this.provider = FrameSDK.wallet.ethProvider as any;
+    } else {
+      this.provider = (await FrameSDK.wallet.getEthereumProvider()) as any;
+    }
+    if (this.provider) {
+      this.setLis();
+    }
     this.isInit = true;
     await super.init(old);
-  }
-  async init(old?: LoginUser): Promise<void> {
-    this.initBy(old);
   }
 
   async fetchAccounts(): Promise<string[]> {
     try {
-      const accounts = this.ethereum.request<string[]>({ method: "eth_accounts" });
-      return accounts;
+      const accounts = await this.provider.request({ method: "eth_accounts", params: [] });
+      return accounts as string[];
     } catch (error) {
       return [];
     }
@@ -83,15 +58,11 @@ export abstract class EvmInjectWallet extends BaseWallet implements EvmWallet {
 
   async connect(): Promise<LoginUser> {
     if (!this.isConnected) {
-      if (!this.ethereum) throw `${this.name} not installed`;
-      const accounts = await this.ethereum.request<string[]>({ method: "eth_requestAccounts" });
+      if (!this.provider) throw `${this.name} not installed`;
+      const accounts = await this.provider.request<string[]>({ method: "eth_requestAccounts" });
       if (!accounts || accounts.length == 0) throw `${this.name} error`;
       this.accounts = accounts;
-      if (this.ethereum.selectedAddress && accounts.includes(this.ethereum.selectedAddress)) {
-        this.account = this.ethereum.selectedAddress;
-      } else {
-        this.account = accounts[0];
-      }
+      this.account = accounts[0];
       this.setLis();
       this.isConnected = true;
     }
@@ -99,7 +70,7 @@ export abstract class EvmInjectWallet extends BaseWallet implements EvmWallet {
   }
 
   private setLis() {
-    this.ethereum.on("accountsChanged", (data) => {
+    this.provider.on("accountsChanged", (data) => {
       console.info(`${this.name}:accountsChanged:`, data);
       if (this.onAccountChange) {
         this.onAccountChange(data as string[]);
@@ -108,7 +79,7 @@ export abstract class EvmInjectWallet extends BaseWallet implements EvmWallet {
       this.init();
     });
 
-    this.ethereum.on("chainChanged", async (chainId) => {
+    this.provider.on("chainChanged", async (chainId) => {
       console.info(`${this.name}:chainChanged:`, chainId);
       await this.syncChainId();
       this.onChainChange && this.onChainChange(this.chainId);
@@ -121,8 +92,8 @@ export abstract class EvmInjectWallet extends BaseWallet implements EvmWallet {
     const msg = data;
 
     console.info("msg::", msg);
-    if (!this.ethereum?.request) return Promise.reject("Error");
-    return this.ethereum
+    if (!this.provider?.request) return Promise.reject("Error");
+    return this.provider
       ?.request<string>({
         from: account,
         params: [msg, account],
@@ -141,10 +112,11 @@ export abstract class EvmInjectWallet extends BaseWallet implements EvmWallet {
     rpcUrls: string[];
     blockExplorerUrls: string[];
   }): Promise<boolean> {
-    if (!this.ethereum?.request) return Promise.reject("Error");
-    return this.ethereum
+    if (!this.provider?.request) return Promise.reject("Error");
+    const [user] = await this.fetchAccounts();
+    return this.provider
       .request({
-        from: this.ethereum.selectedAddress,
+        from: user,
         method: "wallet_switchEthereumChain",
         params: [{ chainId: chaincfg.chainId }],
       })
@@ -156,7 +128,7 @@ export abstract class EvmInjectWallet extends BaseWallet implements EvmWallet {
       })
       .catch((err) => {
         if (err.code === 4902) {
-          this.ethereum
+          this.provider
             .request({
               method: "wallet_addEthereumChain",
               params: [chaincfg],

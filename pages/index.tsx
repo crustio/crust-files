@@ -14,6 +14,8 @@ import { BaseWallet } from "../lib/types";
 import { getErrorMsg, openDocs } from "../lib/utils";
 import { useContextWrapLoginUser, WALLETMAP } from "../lib/wallet/hooks";
 import { updateAuth, UserClosed } from "../lib/wallet/tools";
+import { useRouter } from "next/router";
+import Link from "next/link";
 
 declare global {
   interface Window {
@@ -24,7 +26,7 @@ declare global {
 }
 
 const recomendWallets: BaseWallet[] = [WALLETMAP.crust, WALLETMAP.metamask, WALLETMAP["wallet-connect"], WALLETMAP["ton-connect"]];
-const recomendWalletsMobile: BaseWallet[] = [WALLETMAP.metamask, WALLETMAP["wallet-connect"], WALLETMAP['coinbase'], WALLETMAP['metax']];
+const recomendWalletsMobile: BaseWallet[] = [WALLETMAP['coinbase'], WALLETMAP.metamask, WALLETMAP["wallet-connect"], WALLETMAP['metax']];
 const moreWallets: BaseWallet[] = [
   WALLETMAP.algorand,
   WALLETMAP["aptos-martian"],
@@ -39,16 +41,17 @@ const moreWallets: BaseWallet[] = [
 ];
 
 function useRecomendWallets() {
+  const r = useRouter()
+  const isMiniApp = r.query.miniApp == 'true'
   const [walelts, setWallets] = useState<BaseWallet[]>([])
   useEffect(() => {
-    
     const onSizeChange = () => {
-      setWallets(window.innerWidth <= MOBILE_WIDTH ? recomendWalletsMobile : recomendWallets)
+      setWallets(window.innerWidth <= MOBILE_WIDTH ? isMiniApp ? [WALLETMAP.farcaster] : recomendWalletsMobile : recomendWallets)
     }
     onSizeChange()
     window.addEventListener('resize', onSizeChange)
     return () => window.removeEventListener('resize', onSizeChange)
-  }, [])
+  }, [isMiniApp])
   return walelts
 }
 function Home({ className }: { className?: string }) {
@@ -141,6 +144,10 @@ function Home({ className }: { className?: string }) {
             )}
           </div>
           <div style={{ flex: 1 }} />
+          <div className="privacy_terms">
+            <Link href="/privacy-policy">Privacy Policy</Link>
+            <Link href="/terms-of-service">Terms of Service</Link>
+          </div>
         </div>
       </div>
       <div className="center_panel">
@@ -323,6 +330,18 @@ export default React.memo(
       }
     }
 
+    .privacy_terms {
+      flex-shrink: 0;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .5rem 1.875rem;
+      flex-wrap: wrap;
+      font-size: 12px;
+      color: #373737;
+    }
+    
     @media screen and (max-width: 1440px) {
       .links,
       .slog {
@@ -376,7 +395,9 @@ export default React.memo(
         .center_panel{
           display: none;
         }
-        
+        .privacy_terms {
+          margin-bottom: 6rem;
+        }
     }
   ` as any
 );
