@@ -1,0 +1,11 @@
+{
+  "frame": {
+    "version": "1",
+    "name": "Crust Files",
+    "iconUrl": "https://crustfiles.io/logo.png",
+    "homeUrl": "https://crustfiles.io?miniApp=true",
+    "buttonTitle": "🚩 Start",
+    "requiredChains": ["eip155:1", "eip155:10", "eip155:8453", "eip155:42161"],
+    "requiredCapabilities": ["actions.signIn", "wallet.getEthereumProvider", "actions.swapToken"]
+  }
+}
