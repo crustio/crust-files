@@ -28,7 +28,7 @@ const RenderGroup = ({
   select,
   onClickItem,
   onClickGroup,
-  renderGroupTitle = null,
+  renderGroupTitle = () => {},
 }: {
   expand: boolean;
   list: DropdownItemProps[];
@@ -52,7 +52,7 @@ const RenderGroup = ({
           <div
             className={classNames("item", { active: groupActive && item.value === select.value })}
             key={`group_item_${index}`}
-            onClick={(e) => onClickItem(e, { group, value: item.value })}
+            onClick={(e) => onClickItem(e, { group, value: item.value as any})}
           >
             {item.text}
           </div>
@@ -63,7 +63,7 @@ const RenderGroup = ({
 
 function MDropdown(props: Props) {
   const { className, label, help, options, defaultValue, defaultGroup = NULL_GROUP, renderGroupTitle, footer } = props;
-  const [select, setSelect] = useState<SelectData>({ value: defaultValue, group: defaultGroup });
+  const [select, setSelect] = useState<SelectData>({ value: defaultValue as any, group: defaultGroup });
   const selectOption = useMemo(() => {
     return _.find(options, (item) => {
       const group = item.group || NULL_GROUP;
@@ -113,7 +113,7 @@ function MDropdown(props: Props) {
               }}
               onClickItem={(e, data) => {
                 setSelect(data);
-                props.onChange(e, data);
+                props.onChange?.(e, data);
               }}
             />
           ))}

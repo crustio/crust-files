@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import React, { Ref, useMemo } from "react";
 import { Grid, Segment, Sidebar } from 'semantic-ui-react';
 import styled from "styled-components";
@@ -123,7 +123,8 @@ function SideLayout(props: Props) {
     <Sidebar
       ref={(siderbar) => {
         if (!siderbar) return
-        const ref = (siderbar as any).ref.current;
+        console.info('siderbar:', siderbar)
+        const ref = (siderbar as any);
         if (props.refSider) {
           if (typeof props.refSider == 'function') {
             props.refSider(ref)

@@ -8,7 +8,7 @@ import { useContextWrapLoginUser } from "./wallet/hooks";
 import { useEvmStorage } from "./wallet/useEvmStorage";
 
 export type UseEvmPin = {
-  pin: (cid: string) => Promise<string>;
+  pin: ((cid: string) => Promise<string>) | undefined;
   fee: string;
   chainId: number;
 };
@@ -23,7 +23,7 @@ export function useEvmPin(size: number, isPermanent: boolean): UseEvmPin {
     const id = uniqueId();
     uniq.current = id;
     setFee("-");
-    if ((wallet === "metamask" || wallet === 'coinbase') && evms) {
+    if ((wallet === "metamask" || wallet === "coinbase") && evms) {
       evms
         .getPrice(BigNumber.from(size), isPermanent)
         .then((price) => {
@@ -36,13 +36,13 @@ export function useEvmPin(size: number, isPermanent: boolean): UseEvmPin {
 
   const pin = async (cid: string) => {
     const mSize = BigNumber.from(size);
-    const amount = await evms.getPrice(mSize, isPermanent);
+    const amount = await evms!.getPrice(mSize, isPermanent);
     const args = [cid, mSize, isPermanent];
     // check balance
-    const balance = await useWallet.getProvider().getBalance(useWallet.account);
+    const balance = await useWallet!.getProvider()!.getBalance(useWallet!.account);
     if (balance.lt(amount)) throw "Insufficient Balance";
-    const gas = await evms.estimateGas.placeOrder(...args, { value: amount });
-    const tx = await evms.placeOrder(...args, { value: amount, gasLimit: gas.mul(120).div(100) });
+    const gas = await evms!.estimateGas.placeOrder(...args, { value: amount });
+    const tx = await evms!.placeOrder(...args, { value: amount, gasLimit: gas.mul(120).div(100) });
     const { transactionHash } = await tx.wait();
     return transactionHash;
   };

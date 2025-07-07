@@ -29,7 +29,7 @@ export class FlowM extends BaseWallet {
   async fetchAccounts(): Promise<string[]> {
     try {
       const user = await fcl.currentUser.snapshot();
-      return [user.addr];
+      return [user.addr!];
     } catch (error) {
       console.error(error);
     }
@@ -50,7 +50,6 @@ export class FlowM extends BaseWallet {
 
   async sign(data: string): Promise<string> {
     const msg = Buffer.from(data);
-    // eslint-disable-next-line
     return fcl.currentUser.signUserMessage(msg.toString("hex")).then((res: any) => {
       if (!res) {
         throw new Error("Signature failed");

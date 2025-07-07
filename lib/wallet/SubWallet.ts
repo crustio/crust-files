@@ -35,9 +35,9 @@ export class SubWallet extends BaseWallet {
   }
   async sign(data: string, account: string | undefined): Promise<string> {
     if (!this.provider) throw "Error: no wallet";
-    if (!this.wallet.signer) throw "Error: wallet error no signer";
-    const res: { signature } = await this.wallet.signer.signRaw({
-      address: account,
+    if (!this.wallet!.signer) throw "Error: wallet error no signer";
+    const res: { signature } = await this.wallet!.signer.signRaw!({
+      address: account!,
       type: "bytes",
       data: stringToHex(data),
     });
@@ -65,7 +65,7 @@ export class SubWallet extends BaseWallet {
   async fetchAccounts(): Promise<string[]> {
     try {
       await this.enable();
-      const accounts = await this.wallet.accounts.get();
+      const accounts = await this.wallet!.accounts.get();
       console.info("getAccounts::", accounts);
       return accounts.map((a) => a.address);
     } catch (e) {

@@ -3,7 +3,7 @@ import { ApiPromise } from "@polkadot/api";
 import { InjectedExtension, InjectedWindowProvider } from "@polkadot/extension-inject/types";
 import { GenericCall, GenericExtrinsicEra } from "@polkadot/types";
 import { SignerPayloadJSON } from "@polkadot/types/types";
-import { numberToHex, stringToHex, u8aToHex } from "@polkadot/util";
+import { numberToHex, u8aToHex } from "@polkadot/util";
 import { signatureVerify } from "@polkadot/util-crypto";
 import { templateApi } from "../initApi";
 import { getPerfix } from "./tools";
@@ -43,7 +43,6 @@ export class Mimir extends BaseWallet {
 
   provider?: InjectedWindowProvider;
   wallet?: InjectedExtension;
-  account: string;
 
   async init(old?: LoginUser) {
     if (this.isInit) return;
@@ -64,7 +63,7 @@ export class Mimir extends BaseWallet {
   async fetchAccounts(): Promise<string[]> {
     try {
       await this.enable();
-      const accounts = await this.wallet.accounts.get(true);
+      const accounts = await this.wallet!.accounts.get(true);
       return accounts.map((a) => a.address);
     } catch (e) {
       return [];
@@ -86,6 +85,7 @@ export class Mimir extends BaseWallet {
 
   async enable(): Promise<boolean> {
     try {
+      if (!this.provider || !this.provider.enable) return false;
       const ext = await this.provider.enable("crust files");
       console.info("mimir:enable", ext);
       if (!ext) {
@@ -94,7 +94,7 @@ export class Mimir extends BaseWallet {
       this.wallet = {
         ...ext,
         name: "mimir",
-        version: this.provider.version,
+        version: this.provider!.version!,
       };
       return true;
     } catch (e) {
@@ -105,13 +105,13 @@ export class Mimir extends BaseWallet {
 
   async sign(data: string, account: string | undefined): Promise<string> {
     if (!this.provider) throw "Error: no wallet";
-    if (!this.wallet.signer) throw "Error: wallet error no signer";
+    if (!this.wallet!.signer) throw "Error: wallet error no signer";
     const api = await templateApi();
     const accounts = await this.fetchAccounts();
     const address = account || accounts[0];
     const remark = api.tx.system.remark("Signature for CrustFiles");
     const { signOptions } = await payloadTools(api, address);
-    const res = await this.wallet.signer.signPayload({
+    const res = await this.wallet!.signer!.signPayload!({
       address,
       blockHash: signOptions.blockHash,
       genesisHash: signOptions.genesisHash,
@@ -147,22 +147,19 @@ export class Mimir extends BaseWallet {
   }
 
   async login(f?: LoginUser): Promise<[string[], LoginUser]> {
-    // const hasAuth = await this.enable();
-    // if (!hasAuth) throw "Error: cancel";
-    // return await this.getAccounts();
     const accounts = await this.fetchAccounts();
     // accounts = accounts.map((item) => formatToCrustAccount(item));
     if (accounts.length == 0) throw "Error: no account";
     console.info("mimir:accounts", accounts);
     if (f && f.account && f.wallet == "mimir" && accounts.includes(f.account)) {
       return [accounts, f];
-    } else if (accounts.length) {
+    } else {
       // use remark as singmsg
       const api = await templateApi();
       const address = accounts[0];
       const remark = api.tx.system.remark("Signature for CrustFiles");
       const { signOptions } = await payloadTools(api, address);
-      const res = await this.wallet.signer.signPayload({
+      const res = await this.wallet!.signer.signPayload!({
         address,
         blockHash: signOptions.blockHash,
         genesisHash: signOptions.genesisHash,

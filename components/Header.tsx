@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { FiCheck, FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { Dropdown, Item } from "semantic-ui-react";
@@ -59,7 +59,7 @@ function getWalletIcon(user: WrapLoginUser): string {
     case "wallet-connect": {
       const icons = _.get(user.walletConnect.connect, "peerMeta.icons");
       if (_.size(icons)) {
-        return icons[0];
+        return icons![0];
       }
       return "/images/wallet_connect.png";
     }

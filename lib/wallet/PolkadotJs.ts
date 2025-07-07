@@ -25,7 +25,7 @@ export class PolkadotJs extends BaseWallet {
   async fetchAccounts(): Promise<string[]> {
     try {
       await this.enable();
-      const accounts = await this.wallet.accounts.get();
+      const accounts = await this.wallet!.accounts.get();
       return accounts.map((a) => a.address);
     } catch (e) {
       return [];
@@ -55,8 +55,8 @@ export class PolkadotJs extends BaseWallet {
 
   async sign(data: string, account: string | undefined): Promise<string> {
     try {
-      const res: { signature } = await this.wallet.signer.signRaw({
-        address: account,
+      const res: { signature } = await this.wallet!.signer.signRaw!({
+        address: account!,
         type: "bytes",
         data: stringToHex(data),
       });
@@ -72,14 +72,14 @@ export class PolkadotJs extends BaseWallet {
 
   async enable(): Promise<boolean> {
     try {
-      const ext = await this.provider.enable("crust files");
+      const ext = await this.provider!.enable!("crust files");
       if (!ext) {
         return false;
       }
       this.wallet = {
         ...ext,
         name: "polkadot-js",
-        version: this.provider.version,
+        version: this.provider!.version!,
       };
       return true;
     } catch (e) {

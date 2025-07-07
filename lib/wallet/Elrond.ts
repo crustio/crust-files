@@ -7,7 +7,6 @@ export class Elrond extends BaseWallet {
   icon = "/images/wallet_elrond.png";
 
   provider?: ExtensionProvider;
-  account: string;
 
   async init(old?: LoginUser) {
     if (this.isInit) return;
@@ -22,7 +21,7 @@ export class Elrond extends BaseWallet {
 
   async fetchAccounts(): Promise<string[]> {
     try {
-      const { address } = this.provider.getAccount();
+      const { address } = this.provider!.getAccount()!;
       return [address];
     } catch (error) {
       return [];
@@ -41,8 +40,8 @@ export class Elrond extends BaseWallet {
     const mc = new MessageComputer();
     const message = new Message({ data: Buffer.from("0x" + Buffer.from(this.account).toString("hex"), "ascii") as any });
     const msg = Buffer.from(mc.computeBytesForSigning(message)).toString("hex");
-    return this.provider.signMessage(message).then((data) => {
-      return `${msg}:${Buffer.from(data.signature).toString("hex")}`;
+    return this.provider!.signMessage(message).then((data) => {
+      return `${msg}:${Buffer.from(data.signature as any).toString("hex")}`;
     });
   }
 

@@ -1,10 +1,11 @@
-import React, { useContext } from "react";
+import { usePathname } from "@/lib/usePathname";
+import classNames from "classnames";
+import React, { Fragment, useContext } from "react";
 import { Message } from "semantic-ui-react";
+import styled from "styled-components";
 import { AppContext } from "../lib/AppContext";
 import { AlertMsg } from "../lib/initAlert";
-import styled from "styled-components";
-import classNames from "classnames";
-import { useRouter } from "next/router";
+
 import Btn from "./Btn";
 
 function getIcon(type: AlertMsg['type']): string {
@@ -29,12 +30,12 @@ function AlertMessage(props: Props) {
   const { className } = props
   const { alert } = useContext(AppContext)
 
-  const r = useRouter()
-  const isMain = (r.pathname === '' || r.pathname === '/')
+  const pathname = usePathname()
+  const isMain = (pathname === '' || pathname === '/')
   return <div className={classNames(className, { isMain })}>
     {
       alert.alerts.map((msg, index) =>
-        <>
+        <Fragment key={index}>
           {
             msg.modal ? <div style={{ position: 'fixed', top: 0, width: '100%', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center', background: 'rgba(0,0,0, 0.3)' }}>
               <div style={{ background: 'white', borderRadius: 8, overflow: 'hidden' }}>
@@ -60,7 +61,7 @@ function AlertMessage(props: Props) {
                 <Message.Content>{msg.msg}</Message.Content>
               </Message>
           }
-        </>)
+        </Fragment>)
     }
   </div>
 }

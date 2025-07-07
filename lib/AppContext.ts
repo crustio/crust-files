@@ -13,7 +13,7 @@ export interface AppType {
   recaptcha: WrapReCaptcha,
 }
 
-export const AppContext = React.createContext<AppType>(null)
+export const AppContext = React.createContext<AppType>({} as any)
 export const AppProvider = AppContext.Provider
 
 export function useApp(): AppType {

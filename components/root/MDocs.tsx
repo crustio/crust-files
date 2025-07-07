@@ -1,27 +1,20 @@
+"use client"
+
 import classNames from 'classnames';
-import { AppProps } from 'next/app';
 import Head from "next/head";
-import { useRouter } from 'next/router';
+
 import React from 'react';
 import styled from "styled-components";
 import { HeadFiles } from '../comom/HeadFiles';
 import { BaseProps } from '../types';
+import { docsMenus } from './menus';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { usePathname } from '@/lib/usePathname';
 
-interface Menu {
-    name: string,
-    path: string,
-}
-
-const mMenus: Menu[] = [
-    { name: 'Welcome', path: '/docs/CrustFiles_Welcome' },
-    { name: 'FAQ', path: '/docs/CrustFiles_FAQ' },
-    { name: 'Users', path: '/docs/CrustFiles_Users' },
-    { name: 'Share-and-Earn', path: '/docs/CrustFiles_ShareandEarn' },
-    { name: 'Developer Guide', path: '/docs/CrustFiles_DeveloperGuide' },
-]
-
-function _MDocs({ Component, pageProps, className, menus = true }: AppProps & BaseProps & { menus?: boolean }) {
+function _MDocs({ children, className, menus = true, }: BaseProps & { menus?: boolean, children: React.ReactNode }) {
     const r = useRouter()
+    const pathname = usePathname()
     return <div className={classNames(className)}>
         <Head>
             <title>{'Crust Files'}</title>
@@ -29,14 +22,17 @@ function _MDocs({ Component, pageProps, className, menus = true }: AppProps & Ba
         <HeadFiles />
         <div className="docs_panel">
             {menus && <div className="left_menu">
-                {mMenus.map((m, index) =>
+                {docsMenus.map((m, index) =>
                     <div
                         key={`docs_menu_${index}`}
-                        className={classNames("item", { active: m.path === r.pathname })}
-                        onClick={() => { r.push(m.path) }}>{m.name}</div>)}
+                        className={classNames("item", { active: m.path === pathname })}
+                        onClick={() => { r.push(m.path) }}
+                    >
+                        {m.name}
+                    </div>)}
             </div>}
             <div className="md_content">
-                <Component {...pageProps} />
+                {children}
             </div>
         </div>
 

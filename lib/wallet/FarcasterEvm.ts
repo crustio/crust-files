@@ -2,7 +2,7 @@ import { providers } from "ethers";
 import _, { parseInt } from "lodash";
 import { Hex } from "viem";
 import { BaseWallet, EvmWallet, LoginUser, WalletType } from "./types";
-
+import MiniappSDK, { sdk } from "@farcaster/miniapp-sdk";
 export interface MetamaskReqOptions {
   from?: string;
   params?: (string | any)[];
@@ -20,7 +20,7 @@ export class FarcasterWallet extends BaseWallet implements EvmWallet {
     on: (type: string, handler: (data: any) => void) => void;
   } = undefined;
 
-  chainId: number;
+  chainId: number = 1;
   async syncChainId() {
     if (!this.provider) return;
     const chainId = await this.provider.request({ method: "eth_chainId", params: [] });
@@ -33,12 +33,11 @@ export class FarcasterWallet extends BaseWallet implements EvmWallet {
   }
 
   async init(old?: LoginUser): Promise<void> {
-    const FrameSDK = await require("@farcaster/frame-sdk");
     if (this.isInit) return;
-    if (FrameSDK.wallet.ethProvider) {
-      this.provider = FrameSDK.wallet.ethProvider as any;
+    if (MiniappSDK.wallet.ethProvider) {
+      this.provider = MiniappSDK.wallet.ethProvider as any;
     } else {
-      this.provider = (await FrameSDK.wallet.getEthereumProvider()) as any;
+      this.provider = (await MiniappSDK.wallet.getEthereumProvider()) as any;
     }
     if (this.provider) {
       this.setLis();
@@ -49,7 +48,7 @@ export class FarcasterWallet extends BaseWallet implements EvmWallet {
 
   async fetchAccounts(): Promise<string[]> {
     try {
-      const accounts = await this.provider.request({ method: "eth_accounts", params: [] });
+      const accounts = await this.provider!.request({ method: "eth_accounts", params: [] });
       return accounts as string[];
     } catch (error) {
       return [];
@@ -70,7 +69,7 @@ export class FarcasterWallet extends BaseWallet implements EvmWallet {
   }
 
   private setLis() {
-    this.provider.on("accountsChanged", (data) => {
+    this.provider!.on("accountsChanged", (data) => {
       console.info(`${this.name}:accountsChanged:`, data);
       if (this.onAccountChange) {
         this.onAccountChange(data as string[]);
@@ -79,7 +78,7 @@ export class FarcasterWallet extends BaseWallet implements EvmWallet {
       this.init();
     });
 
-    this.provider.on("chainChanged", async (chainId) => {
+    this.provider!.on("chainChanged", async (chainId) => {
       console.info(`${this.name}:chainChanged:`, chainId);
       await this.syncChainId();
       this.onChainChange && this.onChainChange(this.chainId);
@@ -114,7 +113,7 @@ export class FarcasterWallet extends BaseWallet implements EvmWallet {
   }): Promise<boolean> {
     if (!this.provider?.request) return Promise.reject("Error");
     const [user] = await this.fetchAccounts();
-    return this.provider
+    return this.provider!
       .request({
         from: user,
         method: "wallet_switchEthereumChain",
@@ -128,7 +127,7 @@ export class FarcasterWallet extends BaseWallet implements EvmWallet {
       })
       .catch((err) => {
         if (err.code === 4902) {
-          this.provider
+          return this.provider!
             .request({
               method: "wallet_addEthereumChain",
               params: [chaincfg],
@@ -142,5 +141,8 @@ export class FarcasterWallet extends BaseWallet implements EvmWallet {
           return false;
         }
       });
+  }
+  ready() {
+    sdk.actions.ready();
   }
 }

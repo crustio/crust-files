@@ -13,8 +13,8 @@ export async function templateApi(providerIn?: ApiOptions['provider']): Promise<
   }).isReady;
 }
 
-export function initApi(): ApiPromise | null {
-  const [api, setApi] = useState<ApiPromise | null>(null);
+export function initApi(): ApiPromise | undefined {
+  const [api, setApi] = useState<ApiPromise | undefined>(undefined);
   useEffect(() => {
     const provider = new WsProvider(wss, 5000);
     provider.on("error", console.error);

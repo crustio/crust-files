@@ -2,7 +2,7 @@ import {useCallback, useEffect, useMemo, useState} from "react";
 import store from 'store';
 import {useToggle} from "../hooks/useToggle";
 
-const {Cypher} = require("@zheeno/mnemonic-cypher");
+import { Cypher } from "@zheeno/mnemonic-cypher";
 const WordsCount = 8
 const myCypher = new Cypher(WordsCount)
 

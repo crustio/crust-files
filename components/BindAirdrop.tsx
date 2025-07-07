@@ -1,5 +1,5 @@
 import { isValidAddress } from "ethereumjs-util";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { ChangeEvent, useCallback, useMemo, useState } from "react";
 import styled from "styled-components";
 import { useApp } from "../lib/AppContext";
 import { ScreenMobile, ShareEarnENV } from "../lib/config";
@@ -81,7 +81,7 @@ function _BindAirdrop(props: Props) {
     const _onTypeChange = useCallback((_, { value }) => {
         setType(value)
     }, [])
-    const _onChangeEthAddress = (e) => {
+    const _onChangeEthAddress = (e: ChangeEvent<HTMLInputElement>) => {
         setEXAddress(e.target.value)
         const isValid = isValidAddress(e.target.value)
         setEXAddressError(isValid ? '' : 'Check Input')
@@ -89,9 +89,10 @@ function _BindAirdrop(props: Props) {
     const _onClickBindEth = async () => {
         if (!isPremiumUser) return
         if (!exAddress) return
+        if (!api) return
         try {
             loading.show()
-            api.setSigner({ ...user.crust.wallet.signer })
+            api.setSigner({ ...user.crust.wallet!.signer })
             const remark = api.tx.system.remark(JSON.stringify({
                 "scope": "crustFiles",
                 "env": ShareEarnENV,
@@ -100,7 +101,7 @@ function _BindAirdrop(props: Props) {
                 "externalAddress": exAddress
             }))
             await finalTxSignAndSend(remark, user.account)
-            api.setSigner(undefined)
+            // api.setSigner(undefined)
             for (let i = 1; i <= 3; i++) {
                 await sleep(3000)
                 const data = await doGetBinded()

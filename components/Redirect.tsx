@@ -1,7 +1,8 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import Device from "device.js";
-import { useRouter } from "next/router";
-import React, { useEffect } from "react";
+'use client'
+
+import { usePathname } from "@/lib/usePathname";
+import { useRouter } from "next/navigation";
+import React from "react";
 import { Dimmer, Loader } from "semantic-ui-react";
 import { useContextWrapLoginUser } from "../lib/wallet/hooks";
 
@@ -16,32 +17,24 @@ function RedirectLoading(p: { children?: React.ReactNode }) {
   );
 }
 
-const NO_CHECK_USER = ["/files/share", "/files/receive",'/upfile'];
+const NO_CHECK_USER = ["/files/share", "/files/receive", '/upfile'];
 export default function Redirect(props: { children: any }) {
   const wUser = useContextWrapLoginUser();
   const router = useRouter();
-  useEffect(() => {
-    const isMobile = new Device().mobile;
-    if (router.pathname !== "/mobile" && isMobile) {
-      // router.replace("/mobile");
-    } else if (router.pathname === "/mobile" && !isMobile) {
-      router.replace("/");
-    }
-  }, [router]);
-
-  // no support mobile
-  if (router.pathname === "/mobile") return props.children;
+  const pathname = usePathname() ?? ''
+  // // no support mobile
+  // if (router.pathname === "/mobile") return props.children;
   // no check user
-  if (NO_CHECK_USER.includes(router.pathname)) return props.children;
+  if (NO_CHECK_USER.includes(pathname)) return props.children;
 
   // check user
-  if ((!wUser.account || !wUser.authBasic) && router.pathname !== "" && router.pathname !== "/") {
-    router.replace("/");
+  if ((!wUser.account || !wUser.authBasic) && pathname !== "" && pathname !== "/") {
+    setTimeout(() => router.replace("/"), 50);
     return <RedirectLoading>{props.children}</RedirectLoading>;
   }
 
-  if (wUser.account && wUser.authBasic && (router.pathname === "" || router.pathname === "/")) {
-    router.replace(`/home/${window.location.search}`);
+  if (wUser.account && wUser.authBasic && (pathname === "" || pathname === "/")) {
+    setTimeout(() => router.replace(`/home/${window.location.search}`), 50)
     return <RedirectLoading>{props.children}</RedirectLoading>;
   }
   return props.children;

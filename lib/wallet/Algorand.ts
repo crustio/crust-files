@@ -9,7 +9,7 @@ export class Algorand extends BaseWallet {
   name = "Algorand";
   icon = "/images/wallet_algorand.png";
 
-  wallet: PeraWalletConnect;
+  wallet: PeraWalletConnect = null as any;
 
   async init(old?: LoginUser) {
     if (this.isInit) return;
@@ -42,7 +42,7 @@ export class Algorand extends BaseWallet {
       }
       this.wallet.connector?.on("disconnect", () => {
         this.wallet.disconnect();
-        this.account = null;
+        this.account = "";
         this.isInit = false;
         this.isConnected = false;
       });
@@ -57,8 +57,8 @@ export class Algorand extends BaseWallet {
   }
 
   async sign(data: string, account?: string): Promise<string> {
-    return this.wallet.signData([{ data: Buffer.from(data) as any, message: "For login" }], account).then((signedData) => {
-      return window.btoa(String.fromCharCode.apply(null, signedData[0]));
+    return this.wallet.signData([{ data: Buffer.from(data) as any, message: "For login" }], account!).then((signedData) => {
+      return window.btoa(String.fromCharCode.apply(null, (signedData as any)[0]));
     });
   }
 

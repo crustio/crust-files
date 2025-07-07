@@ -8,12 +8,13 @@ export abstract class BaseWallet {
   abstract readonly icon: string;
   group?: "Web3" | "Polkadot" | "Metamask";
   accounts: string[] = [];
-  account: string;
+  account: string = "";
   pubKey?: string;
-  isInit: boolean;
-  isConnected: boolean;
+  isInit: boolean = false;
+  isConnected: boolean = false;
   async init(old?: LoginUser): Promise<void> {
     this.accounts = await this.fetchAccounts();
+    console.info("BaseWallet:", old, this.accounts);
     if (old && this.accounts.includes(old.account)) {
       this.account = old.account;
       this.isConnected = true;
@@ -107,6 +108,7 @@ export const wallets = [
   "oasis",
   "mimir",
   "ton-connect",
+  "baseminikit",
   "farcaster",
 ] as const;
 
@@ -114,10 +116,10 @@ export type WalletType = typeof wallets[number];
 export class LoginUser {
   account = "";
   pubKey?: string;
-  wallet: WalletType;
+  wallet: WalletType = "crust";
   key?: KEY_TYPE = "files:login";
-  authBasic?: string;
-  authBearer?: string;
+  authBasic?: string | null;
+  authBearer?: string | null;
   signature?: string;
   profileImage?: string;
 }

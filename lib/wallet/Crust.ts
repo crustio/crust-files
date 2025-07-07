@@ -14,7 +14,7 @@ export class Crust extends BaseWallet {
   wallet?: InjectedExtension;
 
   getApi() {
-    return new ApiPromise({ provider: this.wallet.provider, typesBundle: typesBundleForPolkadot });
+    return new ApiPromise({ provider: this.wallet!.provider, typesBundle: typesBundleForPolkadot });
   }
 
   async init(old?: LoginUser) {
@@ -33,7 +33,7 @@ export class Crust extends BaseWallet {
   async fetchAccounts(): Promise<string[]> {
     try {
       await this.enable();
-      const accounts = await this.wallet.accounts.get();
+      const accounts = await this.wallet!.accounts.get();
       console.info("getAccounts::", accounts);
       return accounts.map((a) => formatToCrustAccount(a.address));
     } catch (e) {
@@ -64,8 +64,8 @@ export class Crust extends BaseWallet {
 
   async sign(data: string, account: string | undefined): Promise<string> {
     try {
-      const res: { signature } = await this.wallet.signer.signRaw({
-        address: account,
+      const res: { signature } = await this.wallet!.signer.signRaw!({
+        address: account!,
         type: "bytes",
         data: stringToHex(data),
       });
@@ -81,13 +81,13 @@ export class Crust extends BaseWallet {
 
   async enable(): Promise<boolean> {
     try {
-      const ext = await this.provider.enable("crust files");
+      const ext = await this.provider!.enable!("crust files");
       console.info("enable::", ext);
       if (!ext) {
         return false;
       }
       this.wallet = {
-        version: this.provider.version,
+        version: this.provider!.version!,
         name: "crust wallet",
         ...ext,
       };

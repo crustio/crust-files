@@ -61,7 +61,7 @@ export class TonConnect extends BaseWallet {
   name = "Ton Connect";
   icon = "/images/ton-connect.png";
 
-  tonconnectui: TonConnectUI;
+  tonconnectui: TonConnectUI = undefined as any;
   tonProof?: TonProofItemReplySuccess;
 
   cancelStateSub?: () => void;
@@ -93,7 +93,7 @@ export class TonConnect extends BaseWallet {
 
   async fetchAccounts(): Promise<string[]> {
     if (this.tonconnectui?.wallet) {
-      this.tonProof = this.tonconnectui.wallet.connectItems.tonProof as any;
+      this.tonProof = this.tonconnectui.wallet.connectItems!.tonProof as any;
       return [this.tonconnectui.wallet.account.address];
     }
     return [];

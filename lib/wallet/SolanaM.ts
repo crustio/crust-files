@@ -31,7 +31,7 @@ export class SolanaM extends BaseWallet {
     try {
       if (this.solana?.publicKey) return [this.solana?.publicKey.toBase58()];
     } catch (error) {
-      console.info(error)
+      console.info(error);
     }
     return [];
   }
@@ -50,11 +50,11 @@ export class SolanaM extends BaseWallet {
   }
 
   sign(data: string): Promise<string> {
+    if (!this.solana) throw "not inited";
     const encodedMessage = new TextEncoder().encode(data);
     return (
       this.solana
-        ?.signMessage(encodedMessage, "utf8")
-        // eslint-disable-next-line
+        .signMessage(encodedMessage, "utf8")
         .then((sig: any) => Buffer.from(sig.signature).toString("hex"))
     );
   }

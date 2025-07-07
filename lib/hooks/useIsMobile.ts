@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { MOBILE_WIDTH } from "../config";
 
 export function useIsMobile() {
-  const [isMobile, setMobile] = useState(true);
+  const [isMobile, setMobile] = useState(window.innerWidth <= MOBILE_WIDTH);
   useEffect(() => {
     const onSizeChange = () => {
       setMobile(window.innerWidth <= MOBILE_WIDTH);

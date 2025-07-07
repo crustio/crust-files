@@ -10,7 +10,7 @@ export const createUrl = (path: string): string => {
 }
 
 function getData<T>(res: AxiosResponse<CommonResponse<T>>): T {
-    if (res.data.code === 200) return res.data.data
+    if (res.data.code === 200) return res.data.data as T
     throw { _type: "CommonResponseError", ...res.data }
 }
 

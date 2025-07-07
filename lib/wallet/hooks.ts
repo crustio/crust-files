@@ -1,13 +1,17 @@
+import { usePathname } from "@/lib/usePathname";
 import _ from "lodash";
-import { useRouter } from "next/router";
-import React, { Dispatch, SetStateAction, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import React, { Dispatch, SetStateAction, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import store from "store";
+import { useConfig } from "wagmi";
 import { Member } from "../http/types";
 import { Algorand } from "./Algorand";
 import { AptosMartian } from "./AptosMartian";
 import { AptosPetra } from "./AptosPetra";
+import { BaseMinikit } from "./BaseMinikit";
+import { Coinbase } from "./Coinbase";
 import { Crust } from "./Crust";
 import { Elrond } from "./Elrond";
+import { FarcasterWallet } from "./FarcasterEvm";
 import { FlowM } from "./Flow";
 import { MWalletConnect } from "./MWalletConnect";
 import { MetaX } from "./MetaX";
@@ -18,9 +22,8 @@ import { SolanaM } from "./SolanaM";
 import { SubWallet } from "./SubWallet";
 import { Talisman } from "./Talisman";
 import { TonConnect } from "./TonConnect";
+import { sleep } from "./tools";
 import { BaseWallet, KEY_TYPE, LoginUser, SaveFile, WalletType } from "./types";
-import { Coinbase } from "./Coinbase";
-import { FarcasterWallet } from "./FarcasterEvm";
 export interface Files {
   files: SaveFile[];
   isLoad: boolean;
@@ -54,7 +57,7 @@ export interface WrapLoginUser extends LoginUser {
   isLoadingNickname?: boolean;
   setIsLoadingNickname: Dispatch<SetStateAction<boolean>>;
   member?: Member;
-  setMember: Dispatch<SetStateAction<Member>>;
+  setMember: Dispatch<SetStateAction<Member | undefined>>;
   isLoad: boolean;
   accounts?: string[];
   setLoginUser: (u: LoginUser) => void;
@@ -119,11 +122,14 @@ export function useSign(wUser: WrapLoginUser): UseSign {
   const [state, setState] = useState<UseSign>({});
   useEffect(() => {
     if (!wUser.account) return () => {};
-    setState(() => ({
-      sign: async (data) => {
-        return wUser.useWallet?.sign(data, wUser.account);
-      },
-    }));
+    setState(
+      () =>
+        ({
+          sign: async (data) => {
+            return wUser.useWallet?.sign(data, wUser.account);
+          },
+        } as any)
+    );
   }, [wUser]);
   return state;
 }
@@ -148,7 +154,8 @@ export const WALLETMAP: { [k in WalletType]: BaseWallet } = {
   oasis: new Metamask(),
   mimir: new Mimir(),
   "ton-connect": new TonConnect(),
-  farcaster: new FarcasterWallet()
+  baseminikit: new BaseMinikit(),
+  farcaster: new FarcasterWallet(),
 };
 
 export function useLoginUser(key: KEY_TYPE = "files:login"): WrapLoginUser {
@@ -158,8 +165,7 @@ export function useLoginUser(key: KEY_TYPE = "files:login"): WrapLoginUser {
   const [member, setMember] = useState<Member>();
 
   const [isLoad, setIsLoad] = useState(true);
-  const r = useRouter();
-
+  const pathname = usePathname();
   const setLoginUser = useCallback(
     (loginUser: LoginUser) => {
       const nAccount = { ...loginUser, key };
@@ -177,15 +183,21 @@ export function useLoginUser(key: KEY_TYPE = "files:login"): WrapLoginUser {
     const wallet = WALLETMAP[account.wallet];
     wallet.onAccountChange = (data) => {
       console.info("accountsChange::", data, account);
-      if (_.isEmpty(data) || !data.find(item => item == account.account)) setLoginUser(defLoginUser);
+      if (_.isEmpty(data) || !data.find((item) => item == account.account)) setLoginUser(defLoginUser);
     };
     wallet.onChainChange = (chainId) => {
       setLoginUser({ ...account });
     };
   }, [account]);
-
+  const refIniting = useRef(false);
+  const config = useConfig();
+  useEffect(() => {
+    (WALLETMAP.baseminikit as BaseMinikit).ready(config);
+  }, [config]);
   useEffect(() => {
     const initialize = async () => {
+      if (refIniting.current) return;
+      refIniting.current = true;
       const f = store.get(key, defLoginUser) as LoginUser;
       setAccounts(undefined);
       const mimir = WALLETMAP.mimir as Mimir;
@@ -202,25 +214,27 @@ export function useLoginUser(key: KEY_TYPE = "files:login"): WrapLoginUser {
         setIsLoad(false);
         return;
       }
-      const w = WALLETMAP[f.wallet];
-      w.init(f)
-        .then(() => {
-          w.account && setAccount(f);
-          setAccounts(w.accounts);
-        })
-        .then(() => setIsLoad(false));
+      console.info("initialize:", f);
+      await WALLETMAP[f.wallet].init(f).catch(console.error);
+      await sleep(100);
+      if (WALLETMAP[f.wallet].account) {
+        setAccount(f);
+        setAccounts(WALLETMAP[f.wallet].accounts);
+      }
+      setIsLoad(false);
+      refIniting.current = false;
     };
     initialize().catch((e) => {
       console.error(e);
       setIsLoad(false);
     });
-  }, [key, r.pathname]);
+  }, [key, pathname]);
 
   const logout = useCallback(async () => {
     WALLETMAP[account.wallet].disconnect();
     setLoginUser({ ...defLoginUser });
   }, [setLoginUser, account]);
-  const [isLoadingNickname, setIsLoadingNickname] = useState();
+  const [isLoadingNickname, setIsLoadingNickname] = useState(false);
   const wUser: WrapLoginUser = useMemo(() => {
     const wrapLoginUser: WrapLoginUser = {
       ...account,
@@ -247,7 +261,7 @@ export function useLoginUser(key: KEY_TYPE = "files:login"): WrapLoginUser {
   return wUser;
 }
 
-export const ContextWrapLoginUser = React.createContext<WrapLoginUser>(null);
+export const ContextWrapLoginUser = React.createContext<WrapLoginUser>(null as any);
 
 export function useContextWrapLoginUser(): WrapLoginUser {
   return useContext(ContextWrapLoginUser);

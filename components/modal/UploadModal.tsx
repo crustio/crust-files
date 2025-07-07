@@ -119,7 +119,7 @@ function UploadModal(p: Props): React.ReactElement<Props> {
               <Card.Header content={file.dir ? "Folder" : "File"} />
               <Card.Description
                 content={
-                  file.dir ? `${file.dir} (${file.files.length} files)` : `${file.file.name} (${file.file.size} bytes)`
+                  file.dir ? `${file.dir} (${file.files!.length} files)` : `${file.file!.name} (${file.file!.size} bytes)`
                 }
               />
             </Card.Content>
@@ -133,7 +133,7 @@ function UploadModal(p: Props): React.ReactElement<Props> {
               help={t<string>("File streaming and wallet authentication will be processed by the chosen gateway.")}
               disabled={isBusy}
               label={t<string>("Select a free Web3 IPFS Gateway")}
-              onChange={onChangeEndpoint}
+              onChange={onChangeEndpoint as any}
               options={endpoints}
               optionsMaxHeight="240px"
               defaultGroup={endpoint.group}
@@ -168,7 +168,7 @@ function UploadModal(p: Props): React.ReactElement<Props> {
                   help={t<string>("Your file will be pinned to IPFS for long-term storage.")}
                   disabled={pins.length === 0}
                   label={t<string>("Select a Web3 IPFS Pinner")}
-                  onChange={onChangePinner}
+                  onChange={onChangePinner as any}
                   options={pins}
                   defaultValue={pinner.value}
                   footer={<Contribute onClick={_onClickContributePinner}>Contribute IPFS W3Auth Pinner</Contribute>}

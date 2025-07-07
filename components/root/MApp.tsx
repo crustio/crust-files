@@ -1,28 +1,30 @@
-import React from "react";
+'use client'
+
+// @ts-ignore
+import { usePathname } from "@/lib/usePathname";
+import { MiniKitProvider } from '@coinbase/onchainkit/minikit';
 import i18next from "i18next";
-// import I18nextBrowserLanguageDetector from "i18next-browser-languagedetector";
 import I18NextHttpBackend from "i18next-http-backend";
-import { AppProps } from "next/app";
 import Head from "next/head";
-import { useRouter } from "next/router";
-import { useEffect, useMemo, useState } from "react";
+import { PropsWithChildren, useEffect, useMemo, useState } from "react";
 import { initReactI18next } from "react-i18next";
 import { Dimmer, Loader } from "semantic-ui-react";
+import { base } from "viem/chains";
 import { AppProvider, AppType, useApp } from "../../lib/AppContext";
 import { initAlert } from "../../lib/initAlert";
 import { initApi } from "../../lib/initApi";
 import { initAppStore } from "../../lib/initAppStore";
 import { initReCaptcha } from "../../lib/initGoogleReCaptcha";
 import { initLoading } from "../../lib/initLoading";
-import { ContextWrapLoginUser, useLoginUser } from "../../lib/wallet/hooks";
+import { useLoadNickname } from "../../lib/useNickname";
 import AlertMessage from "../AlertMessage";
 import { ReCaptcha } from "../comom/ReCaptcha";
 import Layout, { siteTitle } from "../layout";
 import Redirect from "../Redirect";
 import { BasePropsWithChildren } from "../types";
-import { useLoadNickname } from "../../lib/useNickname";
+import { WrapLoginUserProvier } from "../WrapLoginUserProvider";
 
-function initI18n() {
+function useInitI18n() {
   const [init, setInit] = useState(false);
   useEffect(() => {
     i18next
@@ -69,14 +71,14 @@ function MAppLoading(p: { show?: boolean; msg?: string }) {
   );
 }
 
-function SkipLoginPage({ Component, pageProps }: AppProps) {
+function SkipLoginPage({ children }: PropsWithChildren) {
   return (
     <MAppProvider>
       <Head>
         <title>{siteTitle}</title>
       </Head>
       <Layout>
-        <Component {...pageProps} />
+        {children}
         <MAppLoading />
       </Layout>
       <AlertMessage />
@@ -88,39 +90,39 @@ function LoadNickname() {
   useLoadNickname();
   return null;
 }
-function DefAppPage({ Component, pageProps }: AppProps) {
-  const wUser = useLoginUser();
-  const showPage = !wUser.isLoad;
+function DefAppPage({ children }: PropsWithChildren) {
   return (
-    <ContextWrapLoginUser.Provider value={wUser}>
-      <LoadNickname />
-      <MAppProvider>
-        <Head>
-          <title>{siteTitle}</title>
-        </Head>
-        <Layout>
-          {showPage && (
-            <Redirect>
-              <Component {...pageProps} />
-              {/* <GetNickname /> */}
-            </Redirect>
-          )}
-          <MAppLoading show={wUser.isLoad} />
-          <ReCaptcha />
-        </Layout>
-        <AlertMessage />
-      </MAppProvider>
-    </ContextWrapLoginUser.Provider>
+    <MiniKitProvider chain={base} apiKey={process.env.NEXT_PUBLIC_CDP_CLIENT_API_KEY}>
+      <WrapLoginUserProvier>
+        {({ user }) => <> <LoadNickname />
+          <MAppProvider>
+            <Head>
+              <title>{siteTitle}</title>
+            </Head>
+            <Layout>
+              {!user.isLoad && (
+                <Redirect>
+                  {children}
+                  {/* <GetNickname /> */}
+                </Redirect>
+              )}
+              <MAppLoading show={user.isLoad} />
+              <ReCaptcha />
+            </Layout>
+            <AlertMessage />
+          </MAppProvider></>}
+
+      </WrapLoginUserProvier>
+    </MiniKitProvider>
   );
 }
-
 const SKIP_Login = ["/share", "/invite_bonus_guide", "/rewards_history"];
 
-export default function MApp(props: AppProps) {
-  const { pathname } = useRouter();
+export default function MApp({ children }: PropsWithChildren) {
+  const pathname = usePathname();
   const skipLoginPage = useMemo(() => SKIP_Login.includes(pathname), [pathname]);
-  const init = initI18n();
+  const init = useInitI18n();
   if (!init) return <div />;
-  if (skipLoginPage) return <SkipLoginPage {...props} />;
-  return <DefAppPage {...props} />;
+  if (skipLoginPage) return <SkipLoginPage >{children}</SkipLoginPage>;
+  return <DefAppPage>{children}</DefAppPage>;
 }

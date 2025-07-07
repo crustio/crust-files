@@ -31,7 +31,7 @@ export class MetaX extends BaseWallet {
         const mWin = window as { okexchain?: MetaX["okexchain"] };
         this.okexchain = mWin.okexchain;
         console.info("okexchain::", mWin.okexchain);
-        if (this.okexchain) {
+        if (this.okexchain!) {
           this.setLis();
         }
         resolve();
@@ -49,7 +49,7 @@ export class MetaX extends BaseWallet {
 
   async fetchAccounts(): Promise<string[]> {
     try {
-      const accounts = this.okexchain.request<string[]>({ method: "eth_accounts" });
+      const accounts = this.okexchain!.request<string[]>({ method: "eth_accounts" });
       return accounts;
     } catch (error) {
       return [];
@@ -57,12 +57,12 @@ export class MetaX extends BaseWallet {
   }
   async connect(): Promise<LoginUser> {
     if (!this.isConnected) {
-      if (!this.okexchain) throw "MetaX not installed";
-      const accounts = await this.okexchain.request<string[]>({ method: "eth_requestAccounts" });
+      if (!this.okexchain!) throw "MetaX not installed";
+      const accounts = await this.okexchain!.request<string[]>({ method: "eth_requestAccounts" });
       if (!accounts || accounts.length == 0) throw "MetaX error";
       this.accounts = accounts;
-      if (this.okexchain.selectedAddress && accounts.includes(this.okexchain.selectedAddress)) {
-        this.account = this.okexchain.selectedAddress;
+      if (this.okexchain!.selectedAddress && accounts.includes(this.okexchain!.selectedAddress)) {
+        this.account = this.okexchain!.selectedAddress;
       } else {
         this.account = accounts[0];
       }
@@ -73,7 +73,7 @@ export class MetaX extends BaseWallet {
   }
 
   private setLis() {
-    this.okexchain.on("accountsChanged", (data) => {
+    this.okexchain!.on("accountsChanged", (data) => {
       console.info("okexchain:accountsChanged:", data);
       if (this.onAccountChange) {
         this.onAccountChange(data as string[]);
@@ -90,7 +90,7 @@ export class MetaX extends BaseWallet {
     return this.okexchain
       ?.request<string>({
         from: account,
-        params: [msg, account],
+        params: [msg, account!],
         method: "personal_sign",
       })
       .then((signature) => {

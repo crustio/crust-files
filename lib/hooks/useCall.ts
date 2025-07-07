@@ -1,7 +1,6 @@
 // Copyright 2017-2021 @polkadot/react-hooks authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { Codec } from '@polkadot/types/types';
 import type { MountedRef } from './useIsMountedRef';
 

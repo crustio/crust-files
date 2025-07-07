@@ -25,7 +25,7 @@ export abstract class EvmInjectWallet extends BaseWallet implements EvmWallet {
     on: (type: string, handler: (data: any) => void) => void;
   } = undefined;
 
-  chainId: number;
+  chainId: number = undefined as any;
   async syncChainId() {
     if (!this.ethereum) return;
     let chainId = this.ethereum.chainId || this.ethereum.selfChainId;
@@ -36,7 +36,7 @@ export abstract class EvmInjectWallet extends BaseWallet implements EvmWallet {
     this.chainId = typeof chainId == "string" && chainId.startsWith("0x") ? parseInt(chainId.replace("0x", ""), 16) : parseInt(`${chainId}`);
   }
   getProvider() {
-    return new providers.Web3Provider(this.ethereum, this.chainId);
+    return new providers.Web3Provider(this.ethereum!, this.chainId);
   }
 
   async initBy(old?: LoginUser, injectKey = "ethereum", checkKey?: string): Promise<void> {
@@ -74,7 +74,7 @@ export abstract class EvmInjectWallet extends BaseWallet implements EvmWallet {
 
   async fetchAccounts(): Promise<string[]> {
     try {
-      const accounts = this.ethereum.request<string[]>({ method: "eth_accounts" });
+      const accounts = await this.ethereum!.request<string[]>({ method: "eth_accounts" });
       return accounts;
     } catch (error) {
       return [];
@@ -99,7 +99,7 @@ export abstract class EvmInjectWallet extends BaseWallet implements EvmWallet {
   }
 
   private setLis() {
-    this.ethereum.on("accountsChanged", (data) => {
+    this.ethereum!.on("accountsChanged", (data) => {
       console.info(`${this.name}:accountsChanged:`, data);
       if (this.onAccountChange) {
         this.onAccountChange(data as string[]);
@@ -108,7 +108,7 @@ export abstract class EvmInjectWallet extends BaseWallet implements EvmWallet {
       this.init();
     });
 
-    this.ethereum.on("chainChanged", async (chainId) => {
+    this.ethereum!.on("chainChanged", async (chainId) => {
       console.info(`${this.name}:chainChanged:`, chainId);
       await this.syncChainId();
       this.onChainChange && this.onChainChange(this.chainId);
@@ -142,12 +142,11 @@ export abstract class EvmInjectWallet extends BaseWallet implements EvmWallet {
     blockExplorerUrls: string[];
   }): Promise<boolean> {
     if (!this.ethereum?.request) return Promise.reject("Error");
-    return this.ethereum
-      .request({
-        from: this.ethereum.selectedAddress,
-        method: "wallet_switchEthereumChain",
-        params: [{ chainId: chaincfg.chainId }],
-      })
+    return this.ethereum!.request({
+      from: this.ethereum.selectedAddress,
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId: chaincfg.chainId }],
+    })
       .then(() => {
         this.syncChainId().then(() => {
           this.onChainChange && this.onChainChange(this.chainId);
@@ -156,11 +155,10 @@ export abstract class EvmInjectWallet extends BaseWallet implements EvmWallet {
       })
       .catch((err) => {
         if (err.code === 4902) {
-          this.ethereum
-            .request({
-              method: "wallet_addEthereumChain",
-              params: [chaincfg],
-            })
+          return this.ethereum!.request({
+            method: "wallet_addEthereumChain",
+            params: [chaincfg],
+          })
             .then(() => true)
             .catch((addError) => {
               console.error(addError);

@@ -33,7 +33,7 @@ export interface UseDeposit {
     finish: boolean,
     start: () => void;
 }
-export function useDeposit(dest: string, value: string, share_from?: string): UseDeposit {
+export function useDeposit(dest: string, value: string|undefined, share_from?: string): UseDeposit {
     const { api, alert, loading } = useApp()
     const user = useContextWrapLoginUser()
     const [ready, setReady] = useState<boolean>(false)
@@ -53,29 +53,29 @@ export function useDeposit(dest: string, value: string, share_from?: string): Us
         // const signer = user.crust.wallet.signer;
         // let msg, signature
         const signer: Signer = {
-            ...user.crust.wallet.signer,
+            ...user.crust.wallet!.signer,
             signPayload: (data) => {
                 console.info('payload:', data)
                 // msg = data
-                return user.crust.wallet.signer.signPayload(data)
+                return user.crust.wallet!.signer.signPayload!(data)
             }
         }
-        api.setSigner(signer)
+        api!.setSigner(signer)
         // setOnGoing(true)
         // const amount = strToBn(value).toString()
         const amount = value
         console.info('deposit:', dest, value, amount)
-        const tx = api.tx.balances.transfer(dest, amount)
-        const remark = api.tx.system.remark(JSON.stringify({
+        const tx = api!.tx.balances.transfer(dest, amount)
+        const remark = api!.tx.system.remark(JSON.stringify({
             scope: 'crustFiles',
             env: ShareEarnENV,
             action: 'deposit',
             share_from,
         }))
-        const batch = api.tx.utility.batchAll([tx, remark])
+        const batch = api!.tx.utility.batchAll([tx, remark])
         // console.info('human', batch.toHuman(), batch.toJSON())
         const statusCb: Callback<ISubmittableResult> = (res) => {
-            api.setSigner(undefined)
+            api!.setSigner(undefined as any)
             if (res.status.isFinalized) {
                 const batchCompletd = !!findEvent(res, 'utility(BatchCompleted)')
                 const txCompletd = !!findEvent(res, 'system(ExtrinsicSuccess)')
@@ -134,22 +134,22 @@ export function useClaim(): UseClaim {
         //--setSigner
         // let msg, signature
         const signer: Signer = {
-            ...user.crust.wallet.signer,
+            ...user.crust.wallet!.signer,
             signPayload: (data) => {
                 // console.info('payload:', data)
                 // msg = data
-                return user.crust.wallet.signer.signPayload(data)
+                return user.crust.wallet!.signer.signPayload!(data)
             }
         }
-        api.setSigner(signer)
+        api!.setSigner(signer)
         // remark
-        const ex = api.tx.system.remark(JSON.stringify({
+        const ex = api!.tx.system.remark(JSON.stringify({
             "scope": "crustFiles",
             "env": ShareEarnENV,
             "action": "claimDeposit"
         }))
         const statusCb: Callback<ISubmittableResult> = (res) => {
-            api.setSigner(undefined)
+            api!.setSigner(undefined as any)
             ex.hash.toString()
             if (res.status.isFinalized) {
                 const exCompletd = !!findEvent(res, 'system(ExtrinsicSuccess)')

@@ -6,7 +6,7 @@ import { SaveFile } from "../lib/types";
 import FileItem from "./FileItem";
 import { BaseProps } from "./types";
 import styled from 'styled-components'
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { ScreenMobile } from "../lib/config";
 import { useIsMobile } from "../lib/hooks/useIsMobile";
 
@@ -130,9 +130,7 @@ export const FilesTable = React.memo<Props>(styled(filesTable)`
           border-bottom-left-radius: 0.57rem;
           text-align: left;
         }
-        td {
-          text-align: center;
-        }
+
         td:last-child {
           overflow: hidden;
           border-top-right-radius: 0.57rem;

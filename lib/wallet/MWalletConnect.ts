@@ -5,9 +5,8 @@ import { BaseWallet, LoginUser } from "./types";
 export class MWalletConnect extends BaseWallet {
   name = "Wallet Connect";
   icon = "/images/group_wallet_connect.png";
-  ethereumProvider: IEthereumProvider;
+  ethereumProvider?: IEthereumProvider;
   accounts: string[] = [];
-  account: string;
   // onAccountChange?: (data: string[]) => void;
   // onChainChange?: (chainId: number) => void;
   getProvider() {
@@ -54,6 +53,7 @@ export class MWalletConnect extends BaseWallet {
   }
 
   public async connect(): Promise<LoginUser> {
+    if (!this.ethereumProvider) throw "not init";
     if (!this.isConnected) {
       if (this.ethereumProvider.session) {
         await this.ethereumProvider.disconnect();
@@ -61,12 +61,12 @@ export class MWalletConnect extends BaseWallet {
       await Promise.race([
         this.ethereumProvider.connect(),
         new Promise<void>((reslove, reject) => {
-          const unSub = this.ethereumProvider.modal?.subscribeModal((data) => {
+          const unSub = this.ethereumProvider!.modal?.subscribeModal((data) => {
             console.info("subModal:", data);
             if (!data.open) {
               console.info("modal closed");
               unSub();
-              if (!this.ethereumProvider.connected) {
+              if (!this.ethereumProvider!.connected) {
                 reject("");
               } else {
                 reslove();
@@ -87,7 +87,7 @@ export class MWalletConnect extends BaseWallet {
   }
 
   async sign(data: string, account: string | undefined): Promise<string> {
-    const res = await this.ethereumProvider.request({ method: "personal_sign", params: [data, account] });
+    const res = await this.ethereumProvider?.request({ method: "personal_sign", params: [data, account] });
     console.info("res:", res);
     // const res = await this.connector?.signPersonalMessage([convertUtf8ToHex(data), account]);
     return res as string;
@@ -95,6 +95,6 @@ export class MWalletConnect extends BaseWallet {
 
   disconnect() {
     super.disconnect();
-    this.ethereumProvider.disconnect();
+    this.ethereumProvider?.disconnect();
   }
 }

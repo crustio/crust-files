@@ -38,7 +38,7 @@ export const trimZero = (str: string, decimals = 4): string => {
   return t
 }
 
-export const formatCRU = (cru: string | BN, decimals = 4): string => {
+export const formatCRU = (cru: string | BN | undefined, decimals = 4): string => {
   if (!cru) return '-'
   const f = formatBalance(cru, { decimals: 12, forceUnit: "Unit", withSi: false })
   return trimZero(f, decimals)

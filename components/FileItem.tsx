@@ -90,7 +90,7 @@ function createUrl(f: SaveFile, endpoints: AuthIpfsEndpoint[], downloadGateway: 
 async function createShare(file: SaveFile, user: WrapLoginUser) {
   const code = await createShortUrl(file.Hash, {
     name: file.Name,
-    encrypted: file.Encrypted,
+    encrypted: file.Encrypted ?? false,
     gateway: file.UpEndpoint,
     fromAccount: user.account,
     fromWallet: user.wallet,
@@ -213,7 +213,7 @@ function FileItem(props: Props) {
       fStat.fileSize = file_size;
       fStat.confirmedReplicas = reported_replica_count;
       fStat.prepaid = prepaid;
-      if (expired_at && expired_at < bestNumber) {
+      if (expired_at && bestNumber && expired_at < bestNumber) {
         // expired
         fStat.status = 'Expired';
       }
@@ -221,7 +221,7 @@ function FileItem(props: Props) {
         // pending
         fStat.status = 'Submitted';
       }
-      if (expired_at && expired_at > bestNumber && reported_replica_count > 0) {
+      if (expired_at && bestNumber && expired_at > bestNumber && reported_replica_count > 0) {
         // success
         fStat.status = 'Success';
       }
@@ -239,7 +239,7 @@ function FileItem(props: Props) {
       fStat.fileSize = file_size;
       fStat.confirmedReplicas = reported_replica_count;
       fStat.prepaid = prepaid;
-      if (expired_at && expired_at < bestNumber) {
+      if (expired_at && bestNumber && expired_at < bestNumber) {
         // expired
         fStat.status = 'Expired';
       }
@@ -247,7 +247,7 @@ function FileItem(props: Props) {
         // pending
         fStat.status = 'Submitted';
       }
-      if (expired_at && expired_at > bestNumber && reported_replica_count > 0) {
+      if (expired_at && bestNumber && expired_at > bestNumber && reported_replica_count > 0) {
         // success
         fStat.status = 'Success';
       }
@@ -272,7 +272,7 @@ function FileItem(props: Props) {
           position={"top center"} />
       }
     </Table.Cell>
-    <Table.Cell textAlign={"right"}>
+    <Table.Cell textAlign={"center"}>
       {shortStr(file.Hash)}
       <Popup
         position={"top center"}
@@ -374,6 +374,13 @@ export default React.memo<Props>(styled(FileItem)`
   .item-share-btn {
     padding: 5px 11px !important;
     border-radius: 8px !important;
+  }
+
+  td.center {
+    text-align: center;
+  }
+  td.right {
+    text-align: right;
   }
 
 ` as any)
