@@ -1,10 +1,15 @@
 {
+  "accountAssociation": {
+    "header": "eyJmaWQiOjExMTQ4MDMsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHhmMDUyRDY4ZDg0NTM5RGRBM2M2YmQyODZiRjI3ZTk5NGM0NDk2ZDdjIn0",
+    "payload": "eyJkb21haW4iOiJjdXJzdGZpbGVzLmlvIn0",
+    "signature": "MHgyMDc5OGNjYmEyZmIxZTJmOTgwNjMwMzM4NmRhZjk2NWY0YTI0OThlMmZlNzM5M2E2M2EzZTc2NDE5Zjk3YmJiNmU2ZDQxODkyNDdlNGQwZWM0NmExZjIwYzlkYmEwZTk2NmM2MWI1YjZlNzFhZGZhNjViNTk5M2RiMDkyNmIyODFj"
+  },
   "frame": {
     "version": "1",
     "name": "Crust Files",
-    "iconUrl": "https://crustfiles.io/logo.png",
+    "iconUrl": "https://crustfiles.io/icon.png",
     "homeUrl": "https://crustfiles.io?miniApp=true",
-    "buttonTitle": "🚩 Start",
+    "buttonTitle": "Start",
     "requiredChains": ["eip155:1", "eip155:10", "eip155:8453", "eip155:42161"],
     "requiredCapabilities": ["actions.signIn", "wallet.getEthereumProvider", "actions.swapToken"]
   }
