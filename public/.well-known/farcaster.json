@@ -1,16 +1,18 @@
 {
-  "accountAssociation": {
-    "header": "eyJmaWQiOjExMTQ4MDMsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHhmMDUyRDY4ZDg0NTM5RGRBM2M2YmQyODZiRjI3ZTk5NGM0NDk2ZDdjIn0",
-    "payload": "eyJkb21haW4iOiJjdXJzdGZpbGVzLmlvIn0",
-    "signature": "MHgyMDc5OGNjYmEyZmIxZTJmOTgwNjMwMzM4NmRhZjk2NWY0YTI0OThlMmZlNzM5M2E2M2EzZTc2NDE5Zjk3YmJiNmU2ZDQxODkyNDdlNGQwZWM0NmExZjIwYzlkYmEwZTk2NmM2MWI1YjZlNzFhZGZhNjViNTk5M2RiMDkyNmIyODFj"
-  },
   "frame": {
-    "version": "1",
     "name": "Crust Files",
+    "version": "1",
     "iconUrl": "https://crustfiles.io/logo.png",
     "homeUrl": "https://crustfiles.io?miniApp=true",
-    "buttonTitle": "Start",
-    "requiredChains": ["eip155:1", "eip155:10", "eip155:8453", "eip155:42161"],
-    "requiredCapabilities": ["actions.signIn", "wallet.getEthereumProvider", "actions.swapToken"]
+    "splashImageUrl": "https://crustfiles.io/logo.png",
+    "splashBackgroundColor": "#FFFFFF",
+    "subtitle": "Crust Files",
+    "description": "Click to see what I am sharing on Crust Files - the personal Web3.0 storage application.",
+    "primaryCategory": "utility"
+  },
+  "accountAssociation": {
+    "header": "eyJmaWQiOjExMDYwOTUsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHhhNDlkNEU5YkNCNjUxN0RmMjhDQkU2ZkY1NjlDOWZkMkY3OGJhQmRlIn0",
+    "payload": "eyJkb21haW4iOiJjcnVzdGZpbGVzLmlvIn0",
+    "signature": "MHg0YWViNmYyMjUxN2UwNTgwMzQ2ZjU1NDg4ZTI0ZTlkYmQyOGUzZTJmMjRkNzBiYWMzM2JiYTdiNjQ2NGFkNDk3MWQ0NDU4MjZkMTIwNGJlZjlmOTJlOTdlZDI4ZDNjNWE1Y2Q5YTU2NmU4MWQxZjI3MTFjYjIyYjU4MTJkYWE2YTFi"
   }
 }
