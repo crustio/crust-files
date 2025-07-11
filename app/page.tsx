@@ -28,7 +28,7 @@ declare global {
 }
 
 const recomendWallets: BaseWallet[] = [WALLETMAP.crust, WALLETMAP.metamask, WALLETMAP["wallet-connect"], WALLETMAP["ton-connect"]];
-const recomendWalletsMobile: BaseWallet[] = [WALLETMAP['coinbase'], WALLETMAP.metamask, WALLETMAP["wallet-connect"], WALLETMAP['metax']];
+const recomendWalletsMobile: BaseWallet[] = [WALLETMAP.baseminikit, WALLETMAP.metamask, WALLETMAP["wallet-connect"], WALLETMAP['metax']];
 const moreWallets: BaseWallet[] = [
   WALLETMAP.algorand,
   WALLETMAP["aptos-martian"],
@@ -48,7 +48,7 @@ function useRecomendWallets() {
   const [walelts, setWallets] = useState<BaseWallet[]>([])
   useEffect(() => {
     const onSizeChange = () => {
-      setWallets(window.innerWidth <= MOBILE_WIDTH ? isMiniApp ? [WALLETMAP.baseminikit] : recomendWalletsMobile : recomendWallets)
+      setWallets(window.innerWidth <= MOBILE_WIDTH ? recomendWalletsMobile : recomendWallets)
     }
     onSizeChange()
     window.addEventListener('resize', onSizeChange)

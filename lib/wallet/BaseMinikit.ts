@@ -9,6 +9,6 @@ export interface MetamaskReqOptions {
 
 export class BaseMinikit extends WagmiWallet {
   readonly type: WalletType = "baseminikit";
-  name = "BaseWallet";
+  name = "Coinbase Wallet";
   icon = "/images/wallet_coinbase.svg";
 }
