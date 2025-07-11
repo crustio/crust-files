@@ -15,12 +15,12 @@ export function WrapLoginUserProvier(props: { children: ReactNode | ((p: { user:
     // }, [setFrameReady, isFrameReady]);
     const wUser = useLoginUser();
     const sq = useSearchParams()
-    const isFarcaster = sq.get("miniApp") == 'true'
+
     const showPage = !wUser.isLoad
     useEffect(() => {
-        if (isFarcaster && showPage) {
+        if (showPage) {
             (WALLETMAP.farcaster as FarcasterWallet).ready()
         }
-    }, [isFarcaster, showPage])
+    }, [showPage])
     return <ContextWrapLoginUser.Provider value={wUser}>{typeof props.children === 'function' ? props.children({ user: wUser }) : props.children}</ContextWrapLoginUser.Provider>
 }
