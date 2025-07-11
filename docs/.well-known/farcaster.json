@@ -8,11 +8,19 @@
     "splashBackgroundColor": "#FFFFFF",
     "subtitle": "Crust Files",
     "description": "Click to see what I am sharing on Crust Files - the personal Web3.0 storage application.",
-    "primaryCategory": "utility"
+    "primaryCategory": "utility",
+    "tags": [
+      "crust",
+      "utility",
+      "files"
+    ],
+    "buttonTitle": "Open",
+    "ogTitle": "Crust Files",
+    "ogDescription": "Click to see what I am sharing on Crust Files - the personal Web3.0 storage application."
   },
   "accountAssociation": {
-    "header": "eyJmaWQiOjExMDYwOTUsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHhhNDlkNEU5YkNCNjUxN0RmMjhDQkU2ZkY1NjlDOWZkMkY3OGJhQmRlIn0",
+    "header": "eyJmaWQiOjExMDYwOTUsInR5cGUiOiJhdXRoIiwia2V5IjoiMHhmMDUyRDY4ZDg0NTM5RGRBM2M2YmQyODZiRjI3ZTk5NGM0NDk2ZDdjIn0",
     "payload": "eyJkb21haW4iOiJjcnVzdGZpbGVzLmlvIn0",
-    "signature": "MHg0YWViNmYyMjUxN2UwNTgwMzQ2ZjU1NDg4ZTI0ZTlkYmQyOGUzZTJmMjRkNzBiYWMzM2JiYTdiNjQ2NGFkNDk3MWQ0NDU4MjZkMTIwNGJlZjlmOTJlOTdlZDI4ZDNjNWE1Y2Q5YTU2NmU4MWQxZjI3MTFjYjIyYjU4MTJkYWE2YTFi"
+    "signature": "+oddXW+eaWH4P4A7aBdeRQxvPyZjJrPdopdpoIgsLWgC6CbkT3k1bRkcRIDdikwGeQdx+LRmLBcUdJbxSLzrDBs="
   }
 }
