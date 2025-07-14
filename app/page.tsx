@@ -59,13 +59,13 @@ function useRecomendWallets() {
 function Home({ className }: { className?: string }) {
   // const { t } = useTranslation();
   const user = useContextWrapLoginUser();
-  const { alert } = useContext(AppContext);
+  const { alert, loading } = useContext(AppContext);
   const reWallets = useRecomendWallets()
   const refbaseminikit = useRef<HTMLDivElement>(null)
   useEffect(() => {
     console.info('autoClickBaseminikit:', user, refbaseminikit)
     if (!user.isLoad && !user.account && refbaseminikit.current) {
-      refbaseminikit.current.click()
+      setTimeout(() => refbaseminikit.current?.click(), 100)
     }
   }, [user.isLoad, user.account, refbaseminikit.current])
   // const [error, setError] = useState('');
@@ -85,6 +85,7 @@ function Home({ className }: { className?: string }) {
     try {
       if (onClickedWallet.current) return;
       onClickedWallet.current = true;
+      loading.show()
       console.info("do connnect wallet ", w.name);
       await w.init();
       console.info("do connnect wallet Inited", w.name);
@@ -105,6 +106,7 @@ function Home({ className }: { className?: string }) {
       if (msg !== UserClosed) {
         setError(msg);
       }
+      loading.hide()
     }
     onClickedWallet.current = false;
   };
