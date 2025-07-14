@@ -3,12 +3,15 @@ import { Account, Chain, Client, Hex, hexToNumber, Transport } from "viem";
 import { Config } from "wagmi";
 import { BaseWallet, EvmWallet, LoginUser, WalletType } from "./types";
 import { providers } from "ethers";
+import { genPromise } from "../utils";
 export abstract class WagmiWallet extends BaseWallet implements EvmWallet {
   abstract readonly type: WalletType;
   isEvmWallet: boolean = true;
   config: Config = null as any;
   connector: Connector = null as any;
   connectorClient: Client<Transport, Chain, Account> = null as any;
+  readypromise = genPromise<boolean>();
+  isReady: Promise<boolean> = this.readypromise.promise;
   ready(config: Config, connectorIndex: number = 0) {
     this.config = config;
     this.connector = this.config.connectors[connectorIndex];
@@ -19,6 +22,7 @@ export abstract class WagmiWallet extends BaseWallet implements EvmWallet {
           .then((c) => (this.connectorClient = c))
           .catch(console.error);
     });
+    this.readypromise.reslove(true);
   }
 
   getProvider() {
@@ -36,16 +40,14 @@ export abstract class WagmiWallet extends BaseWallet implements EvmWallet {
     if (this.connector && this.config) {
       const isAuthed = await this.connector.isAuthorized();
       if (isAuthed) {
-        const connections = await reconnect(this.config, { connectors: [this.connector]})
-        console.info("WagmiWallet:", this.connector, connections);
-        const conn = connections.find((item) => item.connector.id == this.connector.id);
-        if (conn) {
-          this.connectorClient = await getConnectorClient(this.config, { connector: this.connector });
-          this.setLis();
-        }
+        const connections = await reconnect(this.config, { connectors: [this.connector] });
+        this.connectorClient = await getConnectorClient(this.config, { connector: this.connector });
+        console.info("WagmiWallet:", this.connector, connections, this.connectorClient);
+        this.setLis();
       }
     }
     this.isInit = true;
+    this.isInited.reslove(true)
     await super.init(old);
     console.info("WagmiWallet:inited:", this.account, this.accounts);
   }

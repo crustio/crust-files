@@ -1,5 +1,6 @@
 import { providers } from "ethers";
 import { Hex } from "viem";
+import { genPromise } from "../utils";
 
 // 0.Base
 export abstract class BaseWallet {
@@ -11,6 +12,7 @@ export abstract class BaseWallet {
   account: string = "";
   pubKey?: string;
   isInit: boolean = false;
+  isInited = genPromise<boolean>();
   isConnected: boolean = false;
   async init(old?: LoginUser): Promise<void> {
     this.accounts = await this.fetchAccounts();
