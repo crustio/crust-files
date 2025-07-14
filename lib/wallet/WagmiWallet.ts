@@ -47,7 +47,7 @@ export abstract class WagmiWallet extends BaseWallet implements EvmWallet {
       }
     }
     this.isInit = true;
-    this.isInited.reslove(true)
+    this.isInited.reslove(true);
     await super.init(old);
     console.info("WagmiWallet:inited:", this.account, this.accounts);
   }
@@ -83,10 +83,18 @@ export abstract class WagmiWallet extends BaseWallet implements EvmWallet {
 
   async connect() {
     if (!this.isConnected) {
-      const { accounts } = await wagmiConnect(this.config, { connector: this.connector });
-      if (!accounts || accounts.length == 0) throw `${this.name} error`;
-      this.accounts = [...accounts];
-      this.account = accounts[0];
+      const isAuthed = await this.connector.isAuthorized();
+      if (isAuthed) {
+        const accounts = await this.fetchAccounts();
+        if (!accounts || accounts.length == 0) throw `${this.name} error`;
+        this.accounts = accounts;
+        this.account = accounts[0];
+      } else {
+        const { accounts } = await wagmiConnect(this.config, { connector: this.connector });
+        if (!accounts || accounts.length == 0) throw `${this.name} error`;
+        this.accounts = [...accounts];
+        this.account = accounts[0];
+      }
       this.setLis();
       this.isConnected = true;
     }
