@@ -31,6 +31,7 @@ export abstract class WagmiWallet extends BaseWallet implements EvmWallet {
     if (this.isInit) return;
     if (this.connector && this.config) {
       const connections = getConnections(this.config);
+      console.info('WagmiWallet:', this.connector, connections)
       const conn = connections.find((item) => item.connector.id == this.connector.id);
       if (conn) {
         this.connectorClient = await getConnectorClient(this.config, { connector: this.connector });
@@ -39,12 +40,12 @@ export abstract class WagmiWallet extends BaseWallet implements EvmWallet {
     }
     this.isInit = true;
     await super.init(old);
+    console.info("WagmiWallet:inited:", this.account, this.accounts)
   }
   async fetchAccounts() {
     try {
-      const { address } = getAccount(this.config);
-      if (address) return [address];
-      return [];
+      const accounts = await this.connector.getAccounts()
+      return [...accounts];
     } catch (error) {
       return [];
     }

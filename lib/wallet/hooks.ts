@@ -195,8 +195,9 @@ export function useLoginUser(key: KEY_TYPE = "files:login"): WrapLoginUser {
   useEffect(() => {
     if (!config) return () => {};
     _.forEach(WALLETMAP, item => {
-      if((item as WagmiWallet).ready)
+      if((item as WagmiWallet).ready){
         (item as WagmiWallet).ready(config)
+      }
     })
     const initialize = async () => {
       if (refIniting.current) return;
