@@ -1,4 +1,4 @@
-import { connect as wagmiConnect, Connector, getAccount, switchChain, watchAccount, watchChainId, signMessage, getConnections, getConnectorClient } from "@wagmi/core";
+import { connect as wagmiConnect, Connector, getAccount, switchChain, watchAccount, watchChainId, signMessage, getConnections, getConnectorClient, reconnect } from "@wagmi/core";
 import { Account, Chain, Client, Hex, hexToNumber, Transport } from "viem";
 import { Config } from "wagmi";
 import { BaseWallet, EvmWallet, LoginUser, WalletType } from "./types";
@@ -12,9 +12,13 @@ export abstract class WagmiWallet extends BaseWallet implements EvmWallet {
   ready(config: Config, connectorIndex: number = 0) {
     this.config = config;
     this.connector = this.config.connectors[connectorIndex];
-    getConnectorClient(this.config, { connector: this.connector })
-      .then((c) => (this.connectorClient = c))
-      .catch(console.error);
+    this.connector.isAuthorized().then((isAuthed) => {
+      isAuthed &&
+        reconnect(this.config)
+          .then(() => getConnectorClient(this.config, { connector: this.connector }))
+          .then((c) => (this.connectorClient = c))
+          .catch(console.error);
+    });
   }
 
   getProvider() {
@@ -30,21 +34,24 @@ export abstract class WagmiWallet extends BaseWallet implements EvmWallet {
   async init(old?: LoginUser) {
     if (this.isInit) return;
     if (this.connector && this.config) {
-      const connections = getConnections(this.config);
-      console.info('WagmiWallet:', this.connector, connections)
-      const conn = connections.find((item) => item.connector.id == this.connector.id);
-      if (conn) {
-        this.connectorClient = await getConnectorClient(this.config, { connector: this.connector });
-        this.setLis();
+      const isAuthed = await this.connector.isAuthorized();
+      if (isAuthed) {
+        const connections = await reconnect(this.config, { connectors: [this.connector]})
+        console.info("WagmiWallet:", this.connector, connections);
+        const conn = connections.find((item) => item.connector.id == this.connector.id);
+        if (conn) {
+          this.connectorClient = await getConnectorClient(this.config, { connector: this.connector });
+          this.setLis();
+        }
       }
     }
     this.isInit = true;
     await super.init(old);
-    console.info("WagmiWallet:inited:", this.account, this.accounts)
+    console.info("WagmiWallet:inited:", this.account, this.accounts);
   }
   async fetchAccounts() {
     try {
-      const accounts = await this.connector.getAccounts()
+      const accounts = await this.connector.getAccounts();
       return [...accounts];
     } catch (error) {
       return [];
