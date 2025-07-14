@@ -188,7 +188,8 @@ export function useLoginUser(key: KEY_TYPE = "files:login"): WrapLoginUser {
       if (_.isEmpty(data) || !data.find((item) => account.account && isAddressEqual(item as any, account.account as any))) setLoginUser(defLoginUser);
     };
     wallet.onChainChange = (chainId) => {
-      setLoginUser({ ...account });
+      console.info("chainChange::", chainId, account);
+      account.account && setLoginUser({ ...account });
     };
   }, [account]);
   const refIniting = useRef(false);

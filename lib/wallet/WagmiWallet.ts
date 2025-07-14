@@ -63,11 +63,11 @@ export abstract class WagmiWallet extends BaseWallet implements EvmWallet {
   unWatchAccount?: () => void;
   unWatchChainId?: () => void;
   private setLis() {
-    this.unWatchAccount = watchAccount(this.config, {
-      onChange: (account) => {
-        this.onAccountChange?.((account?.addresses ?? []) as any);
-      },
-    });
+    // this.unWatchAccount = watchAccount(this.config, {
+    //   onChange: (account) => {
+    //     this.onAccountChange?.((account?.addresses ?? []) as any);
+    //   },
+    // });
     this.unWatchChainId = watchChainId(this.config, {
       onChange: async (chainId) => {
         this.onChainChange?.(chainId);
