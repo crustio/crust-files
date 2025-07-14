@@ -106,8 +106,8 @@ function Home({ className }: { className?: string }) {
       if (msg !== UserClosed) {
         setError(msg);
       }
-      loading.hide()
     }
+    loading.hide()
     onClickedWallet.current = false;
   };
 
