@@ -25,6 +25,7 @@ import { TonConnect } from "./TonConnect";
 import { sleep } from "./tools";
 import { BaseWallet, KEY_TYPE, LoginUser, SaveFile, WalletType } from "./types";
 import { WagmiWallet } from "./WagmiWallet";
+import { isAddressEqual } from "viem";
 export interface Files {
   files: SaveFile[];
   isLoad: boolean;
@@ -184,7 +185,7 @@ export function useLoginUser(key: KEY_TYPE = "files:login"): WrapLoginUser {
     const wallet = WALLETMAP[account.wallet];
     wallet.onAccountChange = (data) => {
       console.info("accountsChange::", data, account);
-      if (_.isEmpty(data) || !data.find((item) => item == account.account)) setLoginUser(defLoginUser);
+      if (_.isEmpty(data) || !data.find((item) => account.account && isAddressEqual(item as any, account.account as any))) setLoginUser(defLoginUser);
     };
     wallet.onChainChange = (chainId) => {
       setLoginUser({ ...account });
@@ -194,11 +195,11 @@ export function useLoginUser(key: KEY_TYPE = "files:login"): WrapLoginUser {
   const config = useConfig();
   useEffect(() => {
     if (!config) return () => {};
-    _.forEach(WALLETMAP, item => {
-      if((item as WagmiWallet).ready){
-        (item as WagmiWallet).ready(config)
+    _.forEach(WALLETMAP, (item) => {
+      if ((item as WagmiWallet).ready) {
+        (item as WagmiWallet).ready(config);
       }
-    })
+    });
     const initialize = async () => {
       if (refIniting.current) return;
       refIniting.current = true;
