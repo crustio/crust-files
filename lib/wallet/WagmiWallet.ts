@@ -1,27 +1,41 @@
-import { connect as wagmiConnect, Connector, getAccount, switchChain, watchAccount, watchChainId, signMessage, getConnections } from "@wagmi/core";
-import { Hex, hexToNumber } from "viem";
+import { connect as wagmiConnect, Connector, getAccount, switchChain, watchAccount, watchChainId, signMessage, getConnections, getConnectorClient } from "@wagmi/core";
+import { Account, Chain, Client, Hex, hexToNumber, Transport } from "viem";
 import { Config } from "wagmi";
 import { BaseWallet, EvmWallet, LoginUser, WalletType } from "./types";
+import { providers } from "ethers";
 export abstract class WagmiWallet extends BaseWallet implements EvmWallet {
   abstract readonly type: WalletType;
   isEvmWallet: boolean = true;
   config: Config = null as any;
   connector: Connector = null as any;
+  connectorClient: Client<Transport, Chain, Account> = null as any;
   ready(config: Config, connectorIndex: number = 0) {
     this.config = config;
     this.connector = this.config.connectors[connectorIndex];
+    getConnectorClient(this.config, { connector: this.connector })
+      .then((c) => (this.connectorClient = c))
+      .catch(console.error);
   }
 
-  getProvider(){
-    
-    return undefined
+  getProvider() {
+    if (!this.connectorClient) return undefined;
+    const { chain, transport } = this.connectorClient;
+    const network = {
+      chainId: chain.id,
+      name: chain.name,
+      ensAddress: chain.contracts?.ensRegistry?.address,
+    };
+    return new providers.Web3Provider(transport, network);
   }
   async init(old?: LoginUser) {
     if (this.isInit) return;
     if (this.connector && this.config) {
       const connections = getConnections(this.config);
-      const conn = connections.find((item) => item.connector == this.connector);
-      if (conn) this.setLis();
+      const conn = connections.find((item) => item.connector.id == this.connector.id);
+      if (conn) {
+        this.connectorClient = await getConnectorClient(this.config, { connector: this.connector });
+        this.setLis();
+      }
     }
     this.isInit = true;
     await super.init(old);

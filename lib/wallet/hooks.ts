@@ -24,6 +24,7 @@ import { Talisman } from "./Talisman";
 import { TonConnect } from "./TonConnect";
 import { sleep } from "./tools";
 import { BaseWallet, KEY_TYPE, LoginUser, SaveFile, WalletType } from "./types";
+import { WagmiWallet } from "./WagmiWallet";
 export interface Files {
   files: SaveFile[];
   isLoad: boolean;
@@ -192,9 +193,11 @@ export function useLoginUser(key: KEY_TYPE = "files:login"): WrapLoginUser {
   const refIniting = useRef(false);
   const config = useConfig();
   useEffect(() => {
-    (WALLETMAP.baseminikit as BaseMinikit).ready(config);
-  }, [config]);
-  useEffect(() => {
+    if (!config) return () => {};
+    _.forEach(WALLETMAP, item => {
+      if((item as WagmiWallet).ready)
+        (item as WagmiWallet).ready(config)
+    })
     const initialize = async () => {
       if (refIniting.current) return;
       refIniting.current = true;
@@ -228,7 +231,7 @@ export function useLoginUser(key: KEY_TYPE = "files:login"): WrapLoginUser {
       console.error(e);
       setIsLoad(false);
     });
-  }, [key, pathname]);
+  }, [key, pathname, config]);
 
   const logout = useCallback(async () => {
     WALLETMAP[account.wallet].disconnect();
