@@ -63,10 +63,11 @@ function Home({ className }: { className?: string }) {
   const reWallets = useRecomendWallets()
   const refbaseminikit = useRef<HTMLDivElement>(null)
   useEffect(() => {
+    console.info('autoClickBaseminikit:', user, refbaseminikit)
     if (!user.isLoad && !user.account && refbaseminikit.current) {
       refbaseminikit.current.click()
     }
-  }, [user.isLoad])
+  }, [user.isLoad, user.account, refbaseminikit.current])
   // const [error, setError] = useState('');
   const setError = (data: string) => {
     if (data) {
