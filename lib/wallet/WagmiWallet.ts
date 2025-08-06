@@ -68,6 +68,7 @@ export abstract class WagmiWallet extends BaseWallet implements EvmWallet {
     //     this.onAccountChange?.((account?.addresses ?? []) as any);
     //   },
     // });
+    // this.connector.onAccountsChanged
     this.unWatchChainId = watchChainId(this.config, {
       onChange: async (chainId) => {
         this.onChainChange?.(chainId);

@@ -4,6 +4,7 @@
     "version": "1",
     "iconUrl": "https://crustfiles.io/logo.png",
     "homeUrl": "https://crustfiles.io?miniApp=true",
+    "buttonTitle": "Open",
     "splashImageUrl": "https://crustfiles.io/logo.png",
     "splashBackgroundColor": "#FFFFFF",
     "subtitle": "Crust Files",
@@ -14,9 +15,16 @@
       "utility",
       "files"
     ],
-    "buttonTitle": "Open",
     "ogTitle": "Crust Files",
-    "ogDescription": "Click to see what I am sharing on Crust Files - the personal Web3.0 storage application."
+    "ogDescription": "Click to see what I am sharing on Crust Files - the personal Web3.0 storage application.",
+    "screenshotUrls": [
+      "https://crustfiles.io/images/crust_s1.jpg",
+      "https://crustfiles.io/images/crust_s2.jpg",
+      "https://crustfiles.io/images/crust_s3.jpg"
+    ],
+    "imageUrl": "https://crustfiles.io/share.jpg",
+    "heroImageUrl": "https://crustfiles.io/share.jpg",
+    "ogImageUrl": "https://crustfiles.io/share.jpg"
   },
   "accountAssociation": {
     "header": "eyJmaWQiOjExMDYwOTUsInR5cGUiOiJhdXRoIiwia2V5IjoiMHhmMDUyRDY4ZDg0NTM5RGRBM2M2YmQyODZiRjI3ZTk5NGM0NDk2ZDdjIn0",
