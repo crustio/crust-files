@@ -8,24 +8,22 @@ import { ClientRoot } from "./clientroot";
 import { Metadata } from "next";
 
 export async function generateMetadata(): Promise<Metadata> {
-    const URL = process.env.NEXT_PUBLIC_URL;
     return {
-        title: process.env.NEXT_PUBLIC_ONCHAINKIT_PROJECT_NAME,
+        title: "Crust Files",
         description:
             "Click to see what I am sharing on Crust Files - the personal Web3.0 storage application.",
         other: {
             "fc:frame": JSON.stringify({
                 version: "next",
-                imageUrl: process.env.NEXT_PUBLIC_APP_HERO_IMAGE,
+                imageUrl: "https://crustfiles.io/share.jpg",
                 button: {
-                    title: `Launch ${process.env.NEXT_PUBLIC_ONCHAINKIT_PROJECT_NAME}`,
+                    title: `Launch Crust Files`,
                     action: {
                         type: "launch_frame",
-                        name: process.env.NEXT_PUBLIC_ONCHAINKIT_PROJECT_NAME,
-                        url: URL,
-                        splashImageUrl: process.env.NEXT_PUBLIC_SPLASH_IMAGE,
-                        splashBackgroundColor:
-                            process.env.NEXT_PUBLIC_SPLASH_BACKGROUND_COLOR,
+                        name: "Crust Files",
+                        url: "https://crustfiles.io",
+                        splashImageUrl: "https://crustfiles.io/logo.png",
+                        splashBackgroundColor: "#ffffff",
                     },
                 },
             }),
