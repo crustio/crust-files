@@ -349,7 +349,7 @@ function Index(props: Props) {
           <div className="text font-sans-regular">
             {`${t('Your File Encryption Key:')} `}
             {
-              uc.secret && <span className="bold-text font-sans-semibold">
+              uc.secret && <span className="bold-text font-sans-semibold secret">
                 {uc.secret}
                 <span className="icon cru-fo-copy" onClick={() => copy(uc.secret)} />
               </span>}
@@ -483,6 +483,10 @@ export default React.memo<Props>(styled(Index)`
       &::placeholder{
         color: #999999;
       }
+    }
+    .secret {
+      white-space: pre-wrap;
+      word-break: break-all;
     }
   }
 

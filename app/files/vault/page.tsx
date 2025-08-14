@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from "next/navigation";
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { Popup, Segment } from "semantic-ui-react";
 import styled from "styled-components";
 import { BtnUpload } from "@/components/BtnUpload";
@@ -71,7 +71,7 @@ function Vault(p: { className?: string }) {
         // onClickUpFolder={wInputFile._onClickUpFolder}
         />
         {/* {!isPremiumUser && <div className="unValut">Get <span onClick={() => r.push('/user')}>Premium</span> to Unlock.</div>} */}
-        {isPremiumUser && noSecret && <div className="unValut">Set your <span onClick={() => r.push('/setting')}>Encryption Key</span> first.</div>}
+        {noSecret && <div className="unValut">Set your <span onClick={() => r.push('/setting')}>Encryption Key</span> first.</div>}
       </div>
 
       {
