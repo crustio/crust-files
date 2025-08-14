@@ -20,7 +20,7 @@ export interface Props extends BaseProps {
 export function filesTable(props: Props) {
   const {
     className,
-    pageCount = 7,
+    pageCount = 10,
     files,
     type = 'public',
     onDeleteItem

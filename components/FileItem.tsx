@@ -287,7 +287,7 @@ function FileItem(props: Props) {
     </Table.Cell>
     <Table.Cell textAlign={"center"}
       style={{ textTransform: 'uppercase' }}>{filesize(Number(file.Size), { round: 2 })}</Table.Cell>
-    <Table.Cell textAlign={"center"}>
+    <Table.Cell textAlign={"center"} style={{ whiteSpace: 'nowrap' }}>
       {
         fileStat.status === 'Loading' &&
         <Icon loading name="spinner" />
@@ -336,9 +336,9 @@ function FileItem(props: Props) {
 
     </Table.Cell>
     {
-      isPublic && <Table.Cell textAlign={"center"}>
+      isPublic && <Table.Cell textAlign={"center"} singleLine>
         {
-          <>
+          <div className="btns">
             <Btn className="item-share-btn" onClick={_onClickShare}>Share</Btn>
             <Popup
               position={"top center"}
@@ -347,10 +347,11 @@ function FileItem(props: Props) {
                 <span
                   className="cru-fo cru-fo-twitter"
                   onClick={_onClickTweet}
-                  style={{ marginLeft: '0.5rem', top: '0.2rem' }} />
+                  style={{ top: 0 }}
+                />
               }
             />
-          </>}
+          </div>}
       </Table.Cell>}
   </Table.Row>
 }
@@ -381,6 +382,12 @@ export default React.memo<Props>(styled(FileItem)`
   }
   td.right {
     text-align: right;
+  }
+  .btns {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
   }
 
 ` as any)

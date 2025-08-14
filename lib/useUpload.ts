@@ -38,7 +38,7 @@ export interface Options {
 
 
 export function useUpload(user: WrapLoginUser, options: Options): UseUpload {
-    const [error, setError] = useState<string>()
+    const [error, setError] = useState<string>('')
     const [upState, setUpState] = useState({ progress: 0, up: false });
     const [cancelUp, setCancelUp] = useState<CancelTokenSource | null>(null);
     const [isBusy, setBusy] = useState(false);
@@ -69,6 +69,10 @@ export function useUpload(user: WrapLoginUser, options: Options): UseUpload {
 
     const upload = async (cFile?: FileInfo): Promise<[SaveFile, Params]> => {
         try {
+            const upFile = cFile || file;
+            if(!upFile) {
+                throw new Error("Not found file")
+            }
             setError('')
             // 1: sign
             setBusy(true);
@@ -89,8 +93,7 @@ export function useUpload(user: WrapLoginUser, options: Options): UseUpload {
             setUpState({ progress: 0, up: true });
             // 2.**** : encrypt
             const form = new FormData();
-            const upFile = cFile || file;
-            if (isEncrypt) { // encrypt
+            if (isEncrypt && secret) { // encrypt
                 if (upFile.file) {
                     const time1 = new Date().getTime()
                     const fileData = await readFileAsync(upFile.file)
@@ -152,9 +155,9 @@ export function useUpload(user: WrapLoginUser, options: Options): UseUpload {
             setUpState({ progress: 99, up: true })
             // remote pin order
             
-            let PinEndpoint = undefined;
-            let PinTx = undefined;
-            let PinChainId = undefined;
+            let PinEndpoint: string|undefined = undefined;
+            let PinTx: string|undefined = undefined;
+            let PinChainId: number|undefined = undefined;
             if(pin){
                 PinChainId = chainId;
                 PinTx = await pin(upRes.Hash)
@@ -183,7 +186,7 @@ export function useUpload(user: WrapLoginUser, options: Options): UseUpload {
             }
             const params: Params = {
                 msg,
-                signature: user.signature
+                signature: user.signature as any
             }
             return [sf, params]
         } catch (e) {
