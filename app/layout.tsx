@@ -11,7 +11,7 @@ export async function generateMetadata(): Promise<Metadata> {
     return {
         title: "Crust Files",
         description:
-            "Click to see what I am sharing on Crust Files - the personal Web3.0 storage application.",
+            "Your first personal Web3.0 storage",
         other: {
             "fc:frame": JSON.stringify({
                 version: "next",
@@ -39,7 +39,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <meta name="twitter:site" content="@CrustNetwork" />
             <meta name="twitter:creator" content="@CrustNetwork" />
             <meta name="twitter:title" content="Crust Files" />
-            <meta name="twitter:description" content="Click to see what I am sharing on Crust Files - the personal Web3.0 storage application." />
+            <meta name="twitter:description" content="Your first personal Web3.0 storage" />
             <meta name="twitter:image" content="https://gw.crustfiles.net/ipfs/QmfPTVDtSGuCp2mftrZdQE4Mf5FeYT1gYTiL9xTXoSEgqz?filename=Crust%20Files.png" />
         </head>
         <body>
