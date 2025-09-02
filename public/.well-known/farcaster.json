@@ -26,7 +26,7 @@
     }
   },
   "baseBuilder": {
-    "allowedAddresses": ["0xf052D68d84539DdA3c6bd286bF27e994c4496d7c"]
+    "allowedAddresses": ["0x345310916c2Abd521cc56106AD503ce0915Fe2FF"]
   },
   "accountAssociation": {
     "header": "eyJmaWQiOjExMDYwOTUsInR5cGUiOiJhdXRoIiwia2V5IjoiMHhmMDUyRDY4ZDg0NTM5RGRBM2M2YmQyODZiRjI3ZTk5NGM0NDk2ZDdjIn0",
