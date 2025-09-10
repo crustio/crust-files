@@ -18,6 +18,7 @@ import { BaseWallet } from "../lib/types";
 import { getErrorMsg, openDocs } from "../lib/utils";
 import { useContextWrapLoginUser, WALLETMAP } from "../lib/wallet/hooks";
 import { updateAuth, UserClosed } from "../lib/wallet/tools";
+import ShareApp from "@/components/ShareApp";
 
 declare global {
   interface Window {
@@ -120,6 +121,7 @@ function Home({ className }: { className?: string }) {
           <Logo className={"logo"} />
           <div className="tabs">
             <Links className="links" size={24} space={20} />
+            <ShareApp/>
             <div className="tutorial" onClick={() => window.open("https://www.youtube.com/watch?v=AXt-JjupBAo&t=69s", "_blank")}>
               Watch Tutorial
             </div>
@@ -207,15 +209,14 @@ export default React.memo(
         top: 3.57rem;
         right: 2.3rem;
         display: flex;
+        gap: 2rem;
         align-items: center;
         .links {
           display: inline-flex;
-          margin-right: 2rem;
         }
         .tutorial {
           display: inline-block;
           cursor: pointer;
-          margin-right: 2rem;
           text-decoration: underline;
           text-decoration-color: white;
         }

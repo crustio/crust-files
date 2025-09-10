@@ -8,6 +8,7 @@ import { useSessionState } from "../lib/hooks/useSessionState";
 import { PixelBtn } from "./effect/Pixels";
 import Logo from "./Logo";
 import { useIsMobile } from "../lib/hooks/useIsMobile";
+import ShareApp from "./ShareApp";
 
 type Path = '/files' | '/setting' | '/home' | '/files/vault' | '/share-earn' | '/user'
 
@@ -160,7 +161,9 @@ function SideLayout(props: Props) {
         </Grid.Row>
       </Grid>
       <div className="flex1" />
-      {/* <img className="share_earn" onClick={() => _onTabClick({}, { index: shareEarnIndex })} src="/images/share_earn.png" /> */}
+      <div style={{ color: 'white', padding: '1rem' }}>
+        <ShareApp />
+      </div>
     </Sidebar>
 
     <Sidebar.Pusher>
