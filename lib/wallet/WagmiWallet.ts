@@ -102,7 +102,7 @@ export abstract class WagmiWallet extends BaseWallet implements EvmWallet {
     return { account: this.account, wallet: this.type };
   }
   async sign(data: string, account?: string) {
-    const signature = await signMessage(this.config, { message: toHex(data), connector: this.connector });
+    const signature = await signMessage(this.config, { message: { raw: toHex(data) }, connector: this.connector });
     return signature;
   }
 
