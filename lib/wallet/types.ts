@@ -96,7 +96,6 @@ export const wallets = [
   "crust",
   "polkadot-js",
   "metamask",
-  "coinbase",
   "metax",
   "flow",
   "solana",
@@ -111,7 +110,6 @@ export const wallets = [
   "mimir",
   "ton-connect",
   "baseminikit",
-  "farcaster",
 ] as const;
 
 export type WalletType = typeof wallets[number];

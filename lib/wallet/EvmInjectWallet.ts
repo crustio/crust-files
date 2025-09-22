@@ -1,7 +1,7 @@
 import _, { parseInt } from "lodash";
 import { BaseWallet, EvmWallet, LoginUser, WalletType } from "./types";
 import { providers } from "ethers";
-import { Hex } from "viem";
+import { Hex, toHex } from "viem";
 
 export interface MetamaskReqOptions {
   from?: string;
@@ -14,6 +14,7 @@ export abstract class EvmInjectWallet extends BaseWallet implements EvmWallet {
   readonly isEvmWallet: boolean = true;
   name = "Evm Inject Wallet";
   icon = "/images/wallet.svg";
+  defChainId = 1;
   isInjectWallet = true;
   ethereum?: {
     isMetaMask: boolean;
@@ -118,7 +119,7 @@ export abstract class EvmInjectWallet extends BaseWallet implements EvmWallet {
   async sign(data: string, account?: string): Promise<string> {
     console.log("data:::", data);
     // const msg = Buffer.from(data, "utf8").toString("hex");
-    const msg = data;
+    const msg = toHex(data);
 
     console.info("msg::", msg);
     if (!this.ethereum?.request) return Promise.reject("Error");

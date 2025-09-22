@@ -1,5 +1,5 @@
 import { connect as wagmiConnect, Connector, getAccount, switchChain, watchAccount, watchChainId, signMessage, getConnections, getConnectorClient, reconnect } from "@wagmi/core";
-import { Account, Chain, Client, Hex, hexToNumber, Transport } from "viem";
+import { Account, Chain, Client, Hex, hexToNumber, toHex, Transport } from "viem";
 import { Config } from "wagmi";
 import { BaseWallet, EvmWallet, LoginUser, WalletType } from "./types";
 import { providers } from "ethers";
@@ -102,7 +102,7 @@ export abstract class WagmiWallet extends BaseWallet implements EvmWallet {
     return { account: this.account, wallet: this.type };
   }
   async sign(data: string, account?: string) {
-    const signature = await signMessage(this.config, { message: data, connector: this.connector });
+    const signature = await signMessage(this.config, { message: toHex(data), connector: this.connector });
     return signature;
   }
 

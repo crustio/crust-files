@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { NearConfig } from "near-api-js/lib/near";
-import { mainnet, optimism, arbitrum, base, zkSync, blast } from "viem/chains";
+import { mainnet, optimism, arbitrum, base, zkSync, blast, hedera } from "viem/chains";
 import { defineChain } from "viem";
 export interface WrapNearConfig extends NearConfig {
   contractName: string;
@@ -80,7 +80,6 @@ const u2uMainnet = defineChain({
   },
 });
 
-export const SupportEVMChains = [mainnet, optimism, arbitrum, zkSync, blast, base, crustEvmParachainTest];
 
 export const EVMChains = {
   mainnet,
@@ -90,50 +89,40 @@ export const EVMChains = {
   blast,
   base,
   crustEvmParachainTest,
-  u2uMainnet
+  u2uMainnet,
+  hedera,
 };
 
 export const EVMStorageContract: { [k: number]: string } = {
   // Ethereum
   [mainnet.id]: "0xf063A29f03d0A02FD96f270EE4F59158EF3d4860",
-  5: "0xDE52b55C3Ee0765d17564631570ec8E7fD3D499a", // ethereum goerli
   // Optimism
   [optimism.id]: "0xf063A29f03d0A02FD96f270EE4F59158EF3d4860",
-  420: "0x06Ae21caEEA438Aa3AA4D353332a7C124f8dF3c7", // op goerli
   // Arbitrum
   [arbitrum.id]: "0xf063A29f03d0A02FD96f270EE4F59158EF3d4860",
-  421613: "0x9AE6C9d00Fde0e0F774693Ca6099d06dfe2001C6", //arb goerli
   // zkSync
-  [zkSync.id]: "0x61ecfA2C8dF06A4f941A8529E4B707488B74e3bE", // zkSync
-  280: "0x6C0445ec09d49214Cbc21E3DC032d3dEA25ce2Ae", // zksync era testnet
-  // Polygon
-  137: "",
-  // Celo
-  42220: "",
-  // BNB Chain
-  56: "",
-
+  [zkSync.id]: "0x61ecfA2C8dF06A4f941A8529E4B707488B74e3bE",
   // Blast
   [blast.id]: "0xf063A29f03d0A02FD96f270EE4F59158EF3d4860",
   // Base
   [base.id]: "0xf063a29f03d0a02fd96f270ee4f59158ef3d4860",
-
   // Crust Evm Parachain
   [crustEvmParachainTest.id]: "0xA40179e57280585D88899b2032E7eCF13B3B6c72",
-
   // U2U network 
-  [39]: '0xA40179e57280585D88899b2032E7eCF13B3B6c72',
+  [u2uMainnet.id]: '0xA40179e57280585D88899b2032E7eCF13B3B6c72',
+  // Hedera
+  [hedera.id]: '0x304568d9A54Dd913454eAdcA79681B8f7C6B3C64',
 };
 
 export const CHAIN_SYMBOL: { [k: number]: string } = {
   416001: "ALGO",
   // 416002: "ALGO",
-  137: "Matic",
+  [137]: "Matic",
   56: "BNB",
   // Crust Evm Parachain
   [crustEvmParachainTest.id]: "CRU",
-  // 
-  [39]: 'U2U'
+  [u2uMainnet.id]: 'U2U',
+  [hedera.id]: 'HBAR',
 };
 
 export const EVMStorageABI = [

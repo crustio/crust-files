@@ -9,19 +9,18 @@ import { ScreenMobile } from "../lib/config";
 import { useClipboard } from "../lib/hooks/useClipboard";
 import { useGet } from "../lib/hooks/useGet";
 import { useGetDepost } from "../lib/hooks/useGetDeposit";
+import { useIsMobile } from "../lib/hooks/useIsMobile";
 import useOnClickOutside from "../lib/hooks/useOnClickOut";
 import { useToggle } from "../lib/hooks/useToggle";
 import { getEarnRewards } from "../lib/http/share_earn";
 import { useAutoUpdateToStore } from "../lib/initAppStore";
+import { EvmWallet } from "../lib/types";
 import { getFormatValue, shortStr } from "../lib/utils";
 import { EVMChains } from "../lib/wallet/config";
+import { EvmInjectWallet } from "../lib/wallet/EvmInjectWallet";
 import { WrapLoginUser } from "../lib/wallet/hooks";
-import { Metamask } from "../lib/wallet/Metamask";
 import { Links2 } from "./Links";
 import ModalSelectAccount from "./modal/ModalSelectAccount";
-import { useIsMobile } from "../lib/hooks/useIsMobile";
-import { EvmInjectWallet } from "../lib/wallet/EvmInjectWallet";
-import { EvmWallet } from "../lib/types";
 export interface Props {
   className?: string;
   onClickMenu?: () => void;
@@ -176,6 +175,7 @@ function User(props: Props) {
         chain: EVMChains.crustEvmParachainTest,
       },
       { name: EVMChains.u2uMainnet.name, image: "/images/chain/u2u.png", chainId: EVMChains.u2uMainnet.id, chain: EVMChains.u2uMainnet },
+      // { name: EVMChains.hedera.name, image: "/images/chain/hedera.svg", chainId: EVMChains.hedera.id, chain: EVMChains.hedera },
     ];
   }, []);
 
@@ -213,7 +213,7 @@ function User(props: Props) {
   };
   const [showChains, setShowChains] = useState(false);
   const ref = useOnClickOutside(() => showChains && setShowChains(false));
-  const chainId = useMemo(() => (user.useWallet as Metamask).chainId, [user]);
+  const chainId = useMemo(() => (user.useWallet as EvmInjectWallet).chainId, [user]);
   const showSwichChains = user && (user.useWallet as unknown as EvmWallet)?.isEvmWallet
   const isMobile = useIsMobile()
   return (

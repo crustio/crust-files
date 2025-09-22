@@ -2,6 +2,7 @@ import { BigNumber } from "ethers";
 import { formatEther } from "ethers/lib/utils";
 import { uniqueId } from "lodash";
 import { useEffect, useRef, useState } from "react";
+import { EvmWallet } from "./types";
 import { useChainId } from "./useChainId";
 import { CHAIN_SYMBOL } from "./wallet/config";
 import { useContextWrapLoginUser } from "./wallet/hooks";
@@ -16,14 +17,14 @@ export type UseEvmPin = {
 export function useEvmPin(size: number, isPermanent: boolean): UseEvmPin {
   const chainId = useChainId();
   const evms = useEvmStorage();
-  const { wallet, useWallet } = useContextWrapLoginUser();
+  const { useWallet } = useContextWrapLoginUser();
   const [fee, setFee] = useState("-");
   const uniq = useRef("");
   useEffect(() => {
     const id = uniqueId();
     uniq.current = id;
     setFee("-");
-    if ((wallet === "metamask" || wallet === "coinbase") && evms) {
+    if (useWallet && (useWallet as unknown as EvmWallet).isEvmWallet && evms) {
       evms
         .getPrice(BigNumber.from(size), isPermanent)
         .then((price) => {
@@ -32,7 +33,7 @@ export function useEvmPin(size: number, isPermanent: boolean): UseEvmPin {
         .catch(console.error);
     }
     return () => {};
-  }, [size, isPermanent, chainId, wallet]);
+  }, [size, isPermanent, chainId, useWallet]);
 
   const pin = async (cid: string) => {
     const mSize = BigNumber.from(size);

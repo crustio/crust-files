@@ -2,16 +2,15 @@ import { usePathname } from "@/lib/usePathname";
 import _ from "lodash";
 import React, { Dispatch, SetStateAction, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import store from "store";
+import { isAddressEqual } from "viem";
 import { useConfig } from "wagmi";
 import { Member } from "../http/types";
 import { Algorand } from "./Algorand";
 import { AptosMartian } from "./AptosMartian";
 import { AptosPetra } from "./AptosPetra";
 import { BaseMinikit } from "./BaseMinikit";
-import { Coinbase } from "./Coinbase";
 import { Crust } from "./Crust";
 import { Elrond } from "./Elrond";
-import { FarcasterWallet } from "./FarcasterEvm";
 import { FlowM } from "./Flow";
 import { MWalletConnect } from "./MWalletConnect";
 import { MetaX } from "./MetaX";
@@ -22,10 +21,9 @@ import { SolanaM } from "./SolanaM";
 import { SubWallet } from "./SubWallet";
 import { Talisman } from "./Talisman";
 import { TonConnect } from "./TonConnect";
+import { WagmiWallet } from "./WagmiWallet";
 import { sleep } from "./tools";
 import { BaseWallet, KEY_TYPE, LoginUser, SaveFile, WalletType } from "./types";
-import { WagmiWallet } from "./WagmiWallet";
-import { isAddressEqual } from "viem";
 export interface Files {
   files: SaveFile[];
   isLoad: boolean;
@@ -144,7 +142,6 @@ export const WALLETMAP: { [k in WalletType]: BaseWallet } = {
   subWallet: new SubWallet(),
   talisman: new Talisman(),
   metamask: new Metamask(),
-  coinbase: new Coinbase(),
   metax: new MetaX(),
   flow: new FlowM(),
   solana: new SolanaM(),
@@ -157,7 +154,6 @@ export const WALLETMAP: { [k in WalletType]: BaseWallet } = {
   mimir: new Mimir(),
   "ton-connect": new TonConnect(),
   baseminikit: new BaseMinikit(),
-  farcaster: new FarcasterWallet(),
 };
 
 export function useLoginUser(key: KEY_TYPE = "files:login"): WrapLoginUser {
