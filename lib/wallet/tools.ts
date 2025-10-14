@@ -2,6 +2,7 @@ import { SubmittableExtrinsic } from "@polkadot/api/types";
 import { ISubmittableResult } from "@polkadot/types/types";
 import { BaseWallet, LoginUser } from "./types";
 import { WALLETMAP } from "./hooks";
+import { DefaultAuth } from "../config";
 
 export function sleep(time: number): Promise<void> {
   return new Promise<void>((resolve) => {
@@ -87,7 +88,7 @@ export async function updateAuth(u: LoginUser, w: BaseWallet = WALLETMAP[u.walle
   u.signature = signature;
   const prefix = getPerfix(u);
   const authdata = `${prefix}-${data}${signature.includes(":") ? "-" + signature : ":" + signature}`;
-  const base64Auth = window.btoa(authdata);
+  const base64Auth = signature.length > 2000 ? DefaultAuth : window.btoa(authdata);
   const authBasic = `${base64Auth}`;
   const authBearer = `${base64Auth}`;
   u.authBasic = authBasic;

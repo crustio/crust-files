@@ -2,13 +2,13 @@
 
 // @ts-ignore
 import { usePathname } from "@/lib/usePathname";
-import { MiniKitProvider } from '@coinbase/onchainkit/minikit';
 import i18next from "i18next";
 import I18NextHttpBackend from "i18next-http-backend";
 import Head from "next/head";
 import { PropsWithChildren, useEffect, useMemo, useState } from "react";
 import { initReactI18next } from "react-i18next";
 import { Dimmer, Loader } from "semantic-ui-react";
+import { OnchainKitProvider } from '@coinbase/onchainkit';
 import { base } from "viem/chains";
 import { AppProvider, AppType, useApp } from "../../lib/AppContext";
 import { initAlert } from "../../lib/initAlert";
@@ -92,7 +92,13 @@ function LoadNickname() {
 }
 function DefAppPage({ children }: PropsWithChildren) {
   return (
-    <MiniKitProvider chain={base} apiKey={process.env.NEXT_PUBLIC_CDP_CLIENT_API_KEY}>
+    <OnchainKitProvider
+      apiKey={process.env.NEXT_PUBLIC_ONCHAINKIT_API_KEY}
+      chain={base}
+      miniKit={{
+        enabled: true
+      }}
+    >
       <WrapLoginUserProvier>
         {({ user }) => <> <LoadNickname />
           <MAppProvider>
@@ -111,9 +117,8 @@ function DefAppPage({ children }: PropsWithChildren) {
             </Layout>
             <AlertMessage />
           </MAppProvider></>}
-
       </WrapLoginUserProvier>
-    </MiniKitProvider>
+    </OnchainKitProvider>
   );
 }
 const SKIP_Login = ["/share", "/invite_bonus_guide", "/rewards_history"];

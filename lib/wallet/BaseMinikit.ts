@@ -1,6 +1,5 @@
 import { WalletType } from "./types";
 import { WagmiWallet } from "./WagmiWallet";
-
 export interface MetamaskReqOptions {
   from?: string;
   params?: (string | any)[];

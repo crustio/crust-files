@@ -1,12 +1,8 @@
 // Copyright 2017-2021 @polkadot/app-files authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { NearConfig } from "near-api-js/lib/near";
-import { mainnet, optimism, arbitrum, base, zkSync, blast, hedera } from "viem/chains";
+import { mainnet, optimism, arbitrum, base, zkSync, blast, hedera, avalanche } from "viem/chains";
 import { defineChain } from "viem";
-export interface WrapNearConfig extends NearConfig {
-  contractName: string;
-}
 
 export interface WrapAlgorandConfig {
   token: string;
@@ -15,21 +11,6 @@ export interface WrapAlgorandConfig {
   applicationAddress: string;
   algodUrl: string;
 }
-
-export const nearConfig: WrapNearConfig = {
-  // test
-  // networkId: 'testnet',
-  // contractName: 'eericxu.testnet',
-  // nodeUrl: 'https://rpc.testnet.near.org',
-  // walletUrl: 'https://wallet.testnet.near.org',
-  // helperUrl: 'https://helper.testnet.near.org'
-  // prod
-  networkId: "mainet",
-  contractName: "crust.near",
-  nodeUrl: "https://rpc.mainnet.near.org",
-  walletUrl: "https://wallet.near.org",
-  helperUrl: "https://helper.mainnet.near.org",
-};
 
 export const algorandConfig: WrapAlgorandConfig = {
   token: "a".repeat(64),
@@ -80,7 +61,6 @@ const u2uMainnet = defineChain({
   },
 });
 
-
 export const EVMChains = {
   mainnet,
   optimism,
@@ -91,6 +71,7 @@ export const EVMChains = {
   crustEvmParachainTest,
   u2uMainnet,
   hedera,
+  avalanche,
 };
 
 export const EVMStorageContract: { [k: number]: string } = {
@@ -108,10 +89,12 @@ export const EVMStorageContract: { [k: number]: string } = {
   [base.id]: "0xf063a29f03d0a02fd96f270ee4f59158ef3d4860",
   // Crust Evm Parachain
   [crustEvmParachainTest.id]: "0xA40179e57280585D88899b2032E7eCF13B3B6c72",
-  // U2U network 
-  [u2uMainnet.id]: '0xA40179e57280585D88899b2032E7eCF13B3B6c72',
+  // U2U network
+  [u2uMainnet.id]: "0xA40179e57280585D88899b2032E7eCF13B3B6c72",
   // Hedera
-  [hedera.id]: '0x304568d9A54Dd913454eAdcA79681B8f7C6B3C64',
+  [hedera.id]: "0x304568d9A54Dd913454eAdcA79681B8f7C6B3C64",
+  // avalanche
+  [avalanche.id]: "0x304568d9A54Dd913454eAdcA79681B8f7C6B3C64",
 };
 
 export const CHAIN_SYMBOL: { [k: number]: string } = {
@@ -121,8 +104,9 @@ export const CHAIN_SYMBOL: { [k: number]: string } = {
   56: "BNB",
   // Crust Evm Parachain
   [crustEvmParachainTest.id]: "CRU",
-  [u2uMainnet.id]: 'U2U',
-  [hedera.id]: 'HBAR',
+  [u2uMainnet.id]: "U2U",
+  [hedera.id]: "HBAR",
+  [avalanche.id]: "AVAX",
 };
 
 export const EVMStorageABI = [

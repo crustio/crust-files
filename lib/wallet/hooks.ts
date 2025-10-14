@@ -24,6 +24,7 @@ import { TonConnect } from "./TonConnect";
 import { WagmiWallet } from "./WagmiWallet";
 import { sleep } from "./tools";
 import { BaseWallet, KEY_TYPE, LoginUser, SaveFile, WalletType } from "./types";
+import { DefaultAuth } from "../config";
 export interface Files {
   files: SaveFile[];
   isLoad: boolean;
@@ -220,6 +221,11 @@ export function useLoginUser(key: KEY_TYPE = "files:login"): WrapLoginUser {
       await WALLETMAP[f.wallet].init(f).catch(console.error);
       await sleep(100);
       if (WALLETMAP[f.wallet].account) {
+        if (f.authBasic.length > 2000) {
+          f.authBasic = DefaultAuth;
+          f.authBearer = DefaultAuth;
+          store.set(key, f);
+        }
         setAccount(f);
         setAccounts(WALLETMAP[f.wallet].accounts);
       }

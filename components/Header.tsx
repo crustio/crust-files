@@ -176,6 +176,7 @@ function User(props: Props) {
       },
       { name: EVMChains.u2uMainnet.name, image: "/images/chain/u2u.png", chainId: EVMChains.u2uMainnet.id, chain: EVMChains.u2uMainnet },
       // { name: EVMChains.hedera.name, image: "/images/chain/hedera.svg", chainId: EVMChains.hedera.id, chain: EVMChains.hedera },
+      // { name: EVMChains.avalanche.name, image: "/images/chain/avalanche.png", chainId: EVMChains.avalanche.id, chain: EVMChains.avalanche },
     ];
   }, []);
 
