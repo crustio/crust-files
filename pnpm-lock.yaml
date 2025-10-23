@@ -28,6 +28,9 @@ dependencies:
   '@elrondnetwork/erdjs':
     specifier: 9.0.0
     version: 9.0.0
+  '@farcaster/miniapp-wagmi-connector':
+    specifier: ^1.1.0
+    version: 1.1.0(@farcaster/miniapp-sdk@0.2.1)(@wagmi/core@2.21.1)(viem@2.31.3)
   '@hcaptcha/react-hcaptcha':
     specifier: ^1.0.0
     version: 1.12.0(react-dom@18.2.0)(react@18.2.0)
@@ -697,7 +700,7 @@ packages:
       wagmi: ^2.16
     dependencies:
       '@farcaster/miniapp-sdk': 0.1.10(typescript@5.4.5)
-      '@farcaster/miniapp-wagmi-connector': 1.0.0(@farcaster/miniapp-sdk@0.1.10)(@wagmi/core@2.21.1)(viem@2.31.3)
+      '@farcaster/miniapp-wagmi-connector': 1.1.0(@farcaster/miniapp-sdk@0.1.10)(@wagmi/core@2.21.1)(viem@2.31.3)
       '@floating-ui/react': 0.27.16(react-dom@18.2.0)(react@18.2.0)
       '@radix-ui/react-dialog': 1.1.15(@types/react-dom@18.3.7)(@types/react@18.3.23)(react-dom@18.2.0)(react@18.2.0)
       '@radix-ui/react-dropdown-menu': 2.1.16(@types/react-dom@18.3.7)(@types/react@18.3.23)(react-dom@18.2.0)(react@18.2.0)
@@ -1352,6 +1355,19 @@ packages:
       - utf-8-validate
     dev: false
 
+  /@farcaster/miniapp-core@0.4.1(typescript@5.4.5):
+    resolution: {integrity: sha512-20FxHTRToYUKx7CQ8PvIy9OoQ6XjdmF1pRMS7dsj37qdqjVDeEkYoK8yXwnoReZoJRcYwIg8P3i6V8bTWNR5mg==}
+    dependencies:
+      '@solana/web3.js': 1.98.2(typescript@5.4.5)
+      ox: 0.4.4(typescript@5.4.5)(zod@3.25.67)
+      zod: 3.25.67
+    transitivePeerDependencies:
+      - bufferutil
+      - encoding
+      - typescript
+      - utf-8-validate
+    dev: false
+
   /@farcaster/miniapp-sdk@0.1.10(typescript@5.4.5):
     resolution: {integrity: sha512-ueoEAH3N7hIrV+L9pXdLJZpOY1GsOuwKN7MckouSEWY98H5A7KVajyGmGSDDVzjRWpu7Vndu4NZUHoOhF4nTOA==}
     dependencies:
@@ -1368,14 +1384,42 @@ packages:
       - zod
     dev: false
 
-  /@farcaster/miniapp-wagmi-connector@1.0.0(@farcaster/miniapp-sdk@0.1.10)(@wagmi/core@2.21.1)(viem@2.31.3):
-    resolution: {integrity: sha512-vMRZbekUUctnAUvBFhNoEsJlujRRdxop94fDy5LrKiRR9ax0wtp8gCvLYO+LpaP2PtGs0HFpRwlHNDJWvBR8bg==}
+  /@farcaster/miniapp-sdk@0.2.1(typescript@5.4.5):
+    resolution: {integrity: sha512-2SnDeOtDdlN1lGQt7UyH2jkrZRQDOkmhcrlzNWazYChyPh9XfV8+9fMS+Lr/E2pEws9Q40Xl9POrCzdpUC19lg==}
+    dependencies:
+      '@farcaster/miniapp-core': 0.4.1(typescript@5.4.5)
+      '@farcaster/quick-auth': 0.0.6(typescript@5.4.5)
+      comlink: 4.4.2
+      eventemitter3: 5.0.1
+      ox: 0.4.4(typescript@5.4.5)(zod@3.25.67)
+    transitivePeerDependencies:
+      - bufferutil
+      - encoding
+      - typescript
+      - utf-8-validate
+      - zod
+    dev: false
+
+  /@farcaster/miniapp-wagmi-connector@1.1.0(@farcaster/miniapp-sdk@0.1.10)(@wagmi/core@2.21.1)(viem@2.31.3):
+    resolution: {integrity: sha512-gf0nDx9nNJ6hJXbFBCgiTitb0eEqBvCU/njcyTXf7ebZhT0pzOrarOod2dkeisU5Py+WWjFyOVcqmeo4G3IvDA==}
     peerDependencies:
-      '@farcaster/miniapp-sdk': ^0.1.0
+      '@farcaster/miniapp-sdk': ^0.2.0
       '@wagmi/core': ^2.14.1
       viem: ^2.21.55
     dependencies:
       '@farcaster/miniapp-sdk': 0.1.10(typescript@5.4.5)
+      '@wagmi/core': 2.21.1(@types/react@18.3.23)(react@18.2.0)(typescript@5.4.5)(use-sync-external-store@1.4.0)(viem@2.31.3)
+      viem: 2.31.3(typescript@5.4.5)(zod@3.22.4)
+    dev: false
+
+  /@farcaster/miniapp-wagmi-connector@1.1.0(@farcaster/miniapp-sdk@0.2.1)(@wagmi/core@2.21.1)(viem@2.31.3):
+    resolution: {integrity: sha512-gf0nDx9nNJ6hJXbFBCgiTitb0eEqBvCU/njcyTXf7ebZhT0pzOrarOod2dkeisU5Py+WWjFyOVcqmeo4G3IvDA==}
+    peerDependencies:
+      '@farcaster/miniapp-sdk': ^0.2.0
+      '@wagmi/core': ^2.14.1
+      viem: ^2.21.55
+    dependencies:
+      '@farcaster/miniapp-sdk': 0.2.1(typescript@5.4.5)
       '@wagmi/core': 2.21.1(@types/react@18.3.23)(react@18.2.0)(typescript@5.4.5)(use-sync-external-store@1.4.0)(viem@2.31.3)
       viem: 2.31.3(typescript@5.4.5)(zod@3.22.4)
     dev: false
