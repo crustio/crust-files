@@ -62,13 +62,13 @@ function Home({ className }: { className?: string }) {
   const user = useContextWrapLoginUser();
   const { alert, loading } = useContext(AppContext);
   const reWallets = useRecomendWallets()
-  const refbaseminikit = useRef<HTMLDivElement>(null)
-  useEffect(() => {
-    console.info('autoClickBaseminikit:', user, refbaseminikit)
-    if (!user.isLoad && !user.account && refbaseminikit.current) {
-      setTimeout(() => refbaseminikit.current?.click(), 100)
-    }
-  }, [user.isLoad, user.account, refbaseminikit.current])
+  // const refbaseminikit = useRef<HTMLDivElement>(null)
+  // useEffect(() => {
+  //   console.info('autoClickBaseminikit:', user, refbaseminikit)
+  //   if (!user.isLoad && !user.account && refbaseminikit.current) {
+  //     setTimeout(() => refbaseminikit.current?.click(), 100)
+  //   }
+  // }, [user.isLoad, user.account, refbaseminikit.current])
   // const [error, setError] = useState('');
   const setError = (data: string) => {
     if (data) {
@@ -139,7 +139,8 @@ function Home({ className }: { className?: string }) {
                 key={`recomendList_${i}`}
                 className="item_connect"
                 style={{ justifyContent: "flex-start", paddingLeft: 90 }}
-                ref={(w as any).type == 'baseminikit' ? refbaseminikit : undefined} onClick={() => onClickWallet(w)}>
+                // ref={(w as any).type == 'baseminikit' ? refbaseminikit : undefined} 
+                onClick={() => onClickWallet(w)}>
                 <img style={{ height: 32, padding: 2.5, position: "relative" }} src={w.icon} />
                 <span>{w.name}</span>
                 {w.name == "Crust Wallet" && <FiDownload style={{ fontSize: 24, marginLeft: 20 }} onClick={_onClickCrustDown} />}

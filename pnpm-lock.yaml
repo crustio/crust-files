@@ -17,8 +17,8 @@ dependencies:
     specifier: 2.2.0
     version: 2.2.0(@types/react@18.3.23)(react@18.2.0)(typescript@5.4.5)(use-sync-external-store@1.4.0)
   '@coinbase/onchainkit':
-    specifier: ^1.0.3
-    version: 1.0.3(@types/react-dom@18.3.7)(@types/react@18.3.23)(react-dom@18.2.0)(react@18.2.0)(typescript@5.4.5)(viem@2.31.3)(wagmi@2.17.2)
+    specifier: ^1.1.1
+    version: 1.1.1(@types/react-dom@18.3.7)(@types/react@18.3.23)(react-dom@18.2.0)(react@18.2.0)(typescript@5.4.5)(viem@2.31.3)(wagmi@2.17.2)
   '@crustio/type-definitions':
     specifier: 1.3.0
     version: 1.3.0
@@ -28,12 +28,6 @@ dependencies:
   '@elrondnetwork/erdjs':
     specifier: 9.0.0
     version: 9.0.0
-  '@farcaster/frame-sdk':
-    specifier: ^0.1.10
-    version: 0.1.10(typescript@5.4.5)
-  '@farcaster/miniapp-sdk':
-    specifier: ^0.1.4
-    version: 0.1.4(typescript@5.4.5)
   '@hcaptcha/react-hcaptcha':
     specifier: ^1.0.0
     version: 1.12.0(react-dom@18.2.0)(react@18.2.0)
@@ -694,8 +688,8 @@ packages:
       '@chainsafe/is-ip': 2.1.0
     dev: false
 
-  /@coinbase/onchainkit@1.0.3(@types/react-dom@18.3.7)(@types/react@18.3.23)(react-dom@18.2.0)(react@18.2.0)(typescript@5.4.5)(viem@2.31.3)(wagmi@2.17.2):
-    resolution: {integrity: sha512-WmOz+CPb1Z1OrddejtvC5/rcbEB9YwSBeS6TzqCNSEOe0NlD2aR5e+mzq23QiYN3R1dYj9SO4MsIAX+aYz4zdg==}
+  /@coinbase/onchainkit@1.1.1(@types/react-dom@18.3.7)(@types/react@18.3.23)(react-dom@18.2.0)(react@18.2.0)(typescript@5.4.5)(viem@2.31.3)(wagmi@2.17.2):
+    resolution: {integrity: sha512-kQW852v5/SW0EXo2MY9uQCXrQLWmOOLObSUwAxsOLwL72GYfeg+GUzVKguydSwUEa08thBvdKFB/JvX4OA48Og==}
     peerDependencies:
       react: 18.2.0
       react-dom: 18.2.0
@@ -1345,36 +1339,6 @@ packages:
     resolution: {integrity: sha512-U0G1tt3/UEYnyCNNslWPi1dB7X1xQ9aoSip+B3GTKO/Bns8yz/p39vBkRSN9d25nkbHuCsbjky2coQftj5YVKw==}
     dev: false
 
-  /@farcaster/frame-sdk@0.1.10(typescript@5.4.5):
-    resolution: {integrity: sha512-4CtBkzHIGg7NVUbVZfgy6UiIeSqn0rx7vmwvOJ4pNRQoLG5guPkHKv9vc3D515aCVSATvrZXRT97xjss5kuN+Q==}
-    engines: {node: '>=22.11.0'}
-    dependencies:
-      '@farcaster/miniapp-sdk': 0.1.10(typescript@5.4.5)
-      '@farcaster/quick-auth': 0.0.6(typescript@5.4.5)
-      comlink: 4.4.2
-      eventemitter3: 5.0.1
-      ox: 0.4.4(typescript@5.4.5)
-    transitivePeerDependencies:
-      - bufferutil
-      - encoding
-      - typescript
-      - utf-8-validate
-      - zod
-    dev: false
-
-  /@farcaster/miniapp-core@0.3.4(typescript@5.4.5):
-    resolution: {integrity: sha512-rh7Da/GYKzGb+J0kaTSI7ZeUWbh45gwAdsKcXP2T4UE4vHLRsmf7+3R0KbfStvqtuHLhWv8s43REtQ9ytFTmUQ==}
-    dependencies:
-      '@solana/web3.js': 1.98.2(typescript@5.4.5)
-      ox: 0.4.4(typescript@5.4.5)(zod@3.25.67)
-      zod: 3.25.67
-    transitivePeerDependencies:
-      - bufferutil
-      - encoding
-      - typescript
-      - utf-8-validate
-    dev: false
-
   /@farcaster/miniapp-core@0.3.9(typescript@5.4.5):
     resolution: {integrity: sha512-7k2AHYycFABUEQFHGqsuZr6P6UQOE2WO4/Qj/kQ1ydKA8QjrWxO4HjiPfnTdvqH0xOKtdavbFOV5lK5bDLkemw==}
     dependencies:
@@ -1395,23 +1359,7 @@ packages:
       '@farcaster/quick-auth': 0.0.6(typescript@5.4.5)
       comlink: 4.4.2
       eventemitter3: 5.0.1
-      ox: 0.4.4(typescript@5.4.5)
-    transitivePeerDependencies:
-      - bufferutil
-      - encoding
-      - typescript
-      - utf-8-validate
-      - zod
-    dev: false
-
-  /@farcaster/miniapp-sdk@0.1.4(typescript@5.4.5):
-    resolution: {integrity: sha512-Lv6/HT5jZera4ttpgDRuWFez/Cfe7c2/puI2u5WumqFnsqmmIgx8DxvVKcr7+wdEsQKwIjLmcbK+W9EZ5B/jug==}
-    dependencies:
-      '@farcaster/miniapp-core': 0.3.4(typescript@5.4.5)
-      '@farcaster/quick-auth': 0.0.6(typescript@5.4.5)
-      comlink: 4.4.2
-      eventemitter3: 5.0.1
-      ox: 0.4.4(typescript@5.4.5)
+      ox: 0.4.4(typescript@5.4.5)(zod@3.25.67)
     transitivePeerDependencies:
       - bufferutil
       - encoding
@@ -2011,7 +1959,7 @@ packages:
     dependencies:
       '@babel/core': 7.28.4
       '@jest/types': 29.6.3
-      '@jridgewell/trace-mapping': 0.3.25
+      '@jridgewell/trace-mapping': 0.3.31
       babel-plugin-istanbul: 6.1.1
       chalk: 4.1.2
       convert-source-map: 2.0.0
@@ -2059,8 +2007,8 @@ packages:
   /@jridgewell/remapping@2.3.5:
     resolution: {integrity: sha512-LI9u/+laYG4Ds1TDKSJW2YPrIlcVYOwi2fUC6xB43lueCjgxV4lffOCZCtYFiH6TNOX+tQKXx97T4IKHbhyHEQ==}
     dependencies:
-      '@jridgewell/gen-mapping': 0.3.8
-      '@jridgewell/trace-mapping': 0.3.25
+      '@jridgewell/gen-mapping': 0.3.13
+      '@jridgewell/trace-mapping': 0.3.31
     dev: false
 
   /@jridgewell/resolve-uri@3.1.2:
@@ -2076,8 +2024,8 @@ packages:
   /@jridgewell/source-map@0.3.11:
     resolution: {integrity: sha512-ZMp1V8ZFcPG5dIWnQLr3NSI1MiCU7UETdS/A0G8V/XWHvJv3ZsFqutJn1Y5RPmAPX6F3BiE397OqveU/9NCuIA==}
     dependencies:
-      '@jridgewell/gen-mapping': 0.3.8
-      '@jridgewell/trace-mapping': 0.3.25
+      '@jridgewell/gen-mapping': 0.3.13
+      '@jridgewell/trace-mapping': 0.3.31
     dev: false
 
   /@jridgewell/sourcemap-codec@1.5.0:
@@ -7703,22 +7651,7 @@ packages:
       zod: 3.22.4
     dev: false
 
-  /abitype@1.0.8(typescript@5.4.5)(zod@3.25.67):
-    resolution: {integrity: sha512-ZeiI6h3GnW06uYDLx0etQtX/p8E24UaHHBj57RSjK7YBFe7iuVn07EDpOeP451D06sF27VOz9JJPlIKJmXgkEg==}
-    peerDependencies:
-      typescript: '>=5.0.4'
-      zod: ^3 >=3.22.0
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-      zod:
-        optional: true
-    dependencies:
-      typescript: 5.4.5
-      zod: 3.25.67
-    dev: false
-
-  /abitype@1.1.0(typescript@5.4.5):
+  /abitype@1.1.0(typescript@5.4.5)(zod@3.25.67):
     resolution: {integrity: sha512-6Vh4HcRxNMLA0puzPjM5GBgT4aAcFGKZzSgAXvuZ27shJP6NEpielTuqbBmZILR5/xd0PizkBGy5hReKz9jl5A==}
     peerDependencies:
       typescript: '>=5.0.4'
@@ -7730,6 +7663,7 @@ packages:
         optional: true
     dependencies:
       typescript: 5.4.5
+      zod: 3.25.67
     dev: false
 
   /abort-controller@3.0.0:
@@ -14462,26 +14396,6 @@ packages:
       safe-push-apply: 1.0.0
     dev: true
 
-  /ox@0.4.4(typescript@5.4.5):
-    resolution: {integrity: sha512-oJPEeCDs9iNiPs6J0rTx+Y0KGeCGyCAA3zo94yZhm8G5WpOxrwUtn2Ie/Y8IyARSqqY/j9JTKA3Fc1xs1DvFnw==}
-    peerDependencies:
-      typescript: '>=5.4.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@adraffy/ens-normalize': 1.11.0
-      '@noble/curves': 1.9.2
-      '@noble/hashes': 1.8.0
-      '@scure/bip32': 1.7.0
-      '@scure/bip39': 1.6.0
-      abitype: 1.0.8(typescript@5.4.5)(zod@3.22.4)
-      eventemitter3: 5.0.1
-      typescript: 5.4.5
-    transitivePeerDependencies:
-      - zod
-    dev: false
-
   /ox@0.4.4(typescript@5.4.5)(zod@3.25.67):
     resolution: {integrity: sha512-oJPEeCDs9iNiPs6J0rTx+Y0KGeCGyCAA3zo94yZhm8G5WpOxrwUtn2Ie/Y8IyARSqqY/j9JTKA3Fc1xs1DvFnw==}
     peerDependencies:
@@ -14495,7 +14409,7 @@ packages:
       '@noble/hashes': 1.8.0
       '@scure/bip32': 1.7.0
       '@scure/bip39': 1.6.0
-      abitype: 1.0.8(typescript@5.4.5)(zod@3.25.67)
+      abitype: 1.1.0(typescript@5.4.5)(zod@3.25.67)
       eventemitter3: 5.0.1
       typescript: 5.4.5
     transitivePeerDependencies:
@@ -14515,7 +14429,7 @@ packages:
       '@noble/hashes': 1.8.0
       '@scure/bip32': 1.7.0
       '@scure/bip39': 1.6.0
-      abitype: 1.1.0(typescript@5.4.5)
+      abitype: 1.1.0(typescript@5.4.5)(zod@3.25.67)
       eventemitter3: 5.0.1
       typescript: 5.4.5
     transitivePeerDependencies:
@@ -14535,7 +14449,7 @@ packages:
       '@noble/hashes': 1.8.0
       '@scure/bip32': 1.7.0
       '@scure/bip39': 1.6.0
-      abitype: 1.1.0(typescript@5.4.5)
+      abitype: 1.1.0(typescript@5.4.5)(zod@3.25.67)
       eventemitter3: 5.0.1
       typescript: 5.4.5
     transitivePeerDependencies:
@@ -14556,7 +14470,7 @@ packages:
       '@noble/hashes': 1.8.0
       '@scure/bip32': 1.7.0
       '@scure/bip39': 1.6.0
-      abitype: 1.1.0(typescript@5.4.5)
+      abitype: 1.1.0(typescript@5.4.5)(zod@3.25.67)
       eventemitter3: 5.0.1
       typescript: 5.4.5
     transitivePeerDependencies:
@@ -14598,7 +14512,7 @@ packages:
       '@noble/hashes': 1.8.0
       '@scure/bip32': 1.7.0
       '@scure/bip39': 1.6.0
-      abitype: 1.1.0(typescript@5.4.5)
+      abitype: 1.1.0(typescript@5.4.5)(zod@3.25.67)
       eventemitter3: 5.0.1
       typescript: 5.4.5
     transitivePeerDependencies:
@@ -17780,7 +17694,7 @@ packages:
       '@noble/hashes': 1.8.0
       '@scure/bip32': 1.7.0
       '@scure/bip39': 1.6.0
-      abitype: 1.1.0(typescript@5.4.5)
+      abitype: 1.1.0(typescript@5.4.5)(zod@3.25.67)
       isows: 1.0.7(ws@8.18.3)
       ox: 0.9.6(typescript@5.4.5)
       typescript: 5.4.5
