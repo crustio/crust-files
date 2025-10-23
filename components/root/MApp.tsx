@@ -23,6 +23,8 @@ import Layout, { siteTitle } from "../layout";
 import Redirect from "../Redirect";
 import { BasePropsWithChildren } from "../types";
 import { WrapLoginUserProvier } from "../WrapLoginUserProvider";
+import { MiniKitProvider } from "@coinbase/onchainkit/minikit";
+import { WagmiProvider, createConfig } from "wagmi";
 
 function useInitI18n() {
   const [init, setInit] = useState(false);
@@ -91,7 +93,9 @@ function LoadNickname() {
   return null;
 }
 function DefAppPage({ children }: PropsWithChildren) {
+
   return (
+
     <OnchainKitProvider
       apiKey={process.env.NEXT_PUBLIC_ONCHAINKIT_API_KEY}
       chain={base}
@@ -99,26 +103,36 @@ function DefAppPage({ children }: PropsWithChildren) {
         enabled: true
       }}
     >
-      <WrapLoginUserProvier>
-        {({ user }) => <> <LoadNickname />
-          <MAppProvider>
-            <Head>
-              <title>{siteTitle}</title>
-            </Head>
-            <Layout>
-              {!user.isLoad && (
-                <Redirect>
-                  {children}
-                  {/* <GetNickname /> */}
-                </Redirect>
-              )}
-              <MAppLoading show={user.isLoad} />
-              <ReCaptcha />
-            </Layout>
-            <AlertMessage />
-          </MAppProvider></>}
-      </WrapLoginUserProvier>
+      <OnchainKitProvider
+        apiKey={process.env.NEXT_PUBLIC_ONCHAINKIT_API_KEY}
+        chain={base}
+        miniKit={{
+          enabled: true
+        }}
+      >
+        <WrapLoginUserProvier>
+          {({ user }) => <> <LoadNickname />
+            <MAppProvider>
+              <Head>
+                <title>{siteTitle}</title>
+              </Head>
+              <Layout>
+                {!user.isLoad && (
+                  <Redirect>
+                    {children}
+                    {/* <GetNickname /> */}
+                  </Redirect>
+                )}
+                <MAppLoading show={user.isLoad} />
+                <ReCaptcha />
+              </Layout>
+              <AlertMessage />
+            </MAppProvider></>}
+        </WrapLoginUserProvier>
+      </OnchainKitProvider>
     </OnchainKitProvider>
+
+
   );
 }
 const SKIP_Login = ["/share", "/invite_bonus_guide", "/rewards_history"];
