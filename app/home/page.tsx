@@ -60,20 +60,6 @@ function home(p: BaseProps) {
             </div>
           </div>
         </div>
-        <div className="home--card" onClick={_onClickPay2Download}>
-          <div className="home--card-inner">
-            <div className="home--card--front">
-              <img src="/images/w3.png" className="img-fluid" />
-              <h5>Pay2Download</h5>
-              <p>Monetize your data in the easiest way possible</p>
-            </div>
-            <div className="home--card--back">
-              <h5>PAY 2 DOWNLOAD</h5>
-              <p>Upload your files, set a price and offer your data to potential buyers via payment links. Enjoy P2P data sales in a totally private and trustless environment.</p>
-              {/* <a href="#0">Learn more</a> */}
-            </div>
-          </div>
-        </div>
       </div>
       {!isMobile && <div className="home--user-link">
         <a onClick={_onClickUser}>Become a Premium User and get more storage space</a>
@@ -152,7 +138,7 @@ export const Home = React.memo(
       width: 100%;
       margin: 2rem auto;
       height: max-content;
-      grid-template-columns: repeat(3, calc(33.33% - 1rem));
+      grid-template-columns: repeat(2, calc(50% - 1rem));
       gap: 1.5rem;
 
       .home--card {
