@@ -221,7 +221,7 @@ export function useLoginUser(key: KEY_TYPE = "files:login"): WrapLoginUser {
       await WALLETMAP[f.wallet].init(f).catch(console.error);
       await sleep(100);
       if (WALLETMAP[f.wallet].account) {
-        if (f.authBasic.length > 2000) {
+        if (f.authBasic.length > 1000) {
           f.authBasic = DefaultAuth;
           f.authBearer = DefaultAuth;
           store.set(key, f);
